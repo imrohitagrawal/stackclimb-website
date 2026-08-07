@@ -37,6 +37,9 @@ Last updated: 2026-08-07
 | D9 | **Review is capped at two rounds, with a circuit breaker** | A new class of finding every round means the miss is upstream — requirements, planning, or understanding. Patching cannot fix those | 08-07 |
 | D10 | **Never write a skill that exists in public** | Public skills from known authors are tested by many people. One written here in an afternoon is shallow | 08-07 |
 | D11 | **Plain English, lead with the answer, no AI filler** | Owner had to ask twice. Now a rule loaded every session | 08-07 |
+| D13 | **Launch gate: SaafSaans copy + clickable contact links only.** Contrast, the 12 unchecked numbers, CI, hooks and the repo history all land *after* launch | Owner's call: live and honest, fast. Neither deferred item is *false* — one is a quality gap, the other unconfirmed-but-probably-right | 08-07 |
+| D14 | **Deploy via Cloudflare Pages connected to the private repo (approach A) — temporarily** | Only option that ships today. B risks deploying a stale `dist/` (DEF-11 is exactly that failure). C puts a red, partly-broken suite on the critical path | 08-07 |
+| D15 | **Approach C is the target. A is a recorded debt with a written exit condition** | See the standing notice at the top of `AGENTS.md`. A temporary state nobody mentions becomes permanent | 08-07 |
 | D12 | **Skills to install** (below) | Three agent reviews, applying the how/where-not/what-not criterion | 08-07 |
 
 ### D12 — the install list, not yet executed

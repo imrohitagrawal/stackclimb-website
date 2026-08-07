@@ -9,6 +9,27 @@ pointer that imports this file; **edit rules here, not there.** Convention adopt
 Personal site of Rohit Agrawal at `stackclimb.com`. Astro 5, static output, deploying to
 Cloudflare Pages. Application subdomains stay on Fly.io.
 
+## ⚠ STANDING DEBT — deployment is running in a degraded mode
+
+**Current: approach A.** Cloudflare Pages auto-deploys every push to `main`. **There is no gate
+between a push and production.**
+
+This was chosen deliberately, to ship. It is temporary. **Target: approach C** — deployment runs
+*through* CI, so nothing reaches production without passing the gates.
+
+**The exit condition, written here so it cannot be lost:**
+
+| Must be true before switching to C | Status |
+|---|---|
+| The 7 tests that cannot fail are repaired (DEF-11 … DEF-17) | open |
+| The suite builds before it tests (DEF-11) | open |
+| Contrast passes on all 7 plates, both viewports (DEF-5, DEF-18) | open |
+| CI workflow exists and has been green at least once | open |
+| Branch protection requires that check | open |
+
+**Say this out loud at the start of any deployment-related work**, until every row above reads
+done. A temporary state nobody mentions becomes the permanent state.
+
 ## Non-negotiable: disagree before you comply
 
 **The owner's instruction does not automatically outrank the evidence.** When an instruction

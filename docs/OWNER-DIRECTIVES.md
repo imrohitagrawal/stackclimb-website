@@ -81,6 +81,7 @@ forgotten and later recovered — kept visible on purpose).
 | I-2 | Repo public after removing playbook language | PARTIAL | Rewording pushed; **owner must run the visibility command** |
 | I-3 | Alignment regression testing — a toggle that drifts must fail | OPEN | Plan phase 1.4 |
 | I-4 | Memory management across projects, using dreaming | OPEN | Plan phase 7.2 |
+| **I-5** | **Deploy via A now, move to C once the gates work — and keep saying so until then** | **OPEN — standing debt** | Standing notice at the top of `AGENTS.md`, exit condition in a table |
 
 ---
 

@@ -34,6 +34,25 @@ Reason, from NarraTwin's governance learnings: *"AI-assisted work often spans ma
 Without a status ledger, context compaction, branch switches, merged PRs, and partially completed
 stages can cause the next agent run to act on an obsolete plan."*
 
+## Non-negotiable: close the session properly
+
+The last thing done in any session, never skipped. Full protocol:
+[`docs/practices/session-close.md`](docs/practices/session-close.md).
+
+1. **Say what happened in plain English** — the task, the expected output, how many issues were
+   resolved, how many are pending. A summary that cannot give numbers has not checked.
+2. **Merge and sync** — branch into `main`, `main` level with `origin/main`, verified by command.
+3. **Delete the branch** on both sides, and remove any dedicated worktree.
+4. **Clean up what the session created** — orphaned dev and preview servers, exited containers,
+   dangling images, temp files, dependencies added only to try something. Report "none" when
+   there is none; do not skip the check.
+5. **Write the handoff** — a standalone prompt for the next session that points at
+   `docs/STATUS.md` rather than restating it, and carries the commands that prove the current
+   state instead of claims about it.
+
+Cleanup is part of the work, not after it. A session judged complete while a process is still
+running or a remote is ahead has moved the mess somewhere the next session pays for it.
+
 ## Non-negotiable: the voice
 
 **State what is proven. Label what is not. Invent nothing.**

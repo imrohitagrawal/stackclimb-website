@@ -1,0 +1,24 @@
+---
+interface Row {
+  t: string;
+  d: string;
+}
+
+interface Props {
+  rows: Row[];
+  label: string;
+}
+
+const { rows, label } = Astro.props;
+---
+
+<dl class="ledger" aria-label={label}>
+  {
+    rows.map((r) => (
+      <div class="row">
+        <dt>{r.t}</dt>
+        <dd>{r.d}</dd>
+      </div>
+    ))
+  }
+</dl>

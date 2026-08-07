@@ -1,0 +1,42 @@
+---
+interface Chip {
+  role: string;
+  name: string;
+  hex: string;
+}
+
+interface Props {
+  id: string;
+  num: string;
+  name: string;
+  hue: string;
+  theme?: 'dark' | 'light';
+  chips?: Chip[];
+  class?: string;
+}
+
+const { id, num, name, hue, theme = 'dark', chips = [], class: className } = Astro.props;
+---
+
+<section class:list={['plate', className]} id={id} data-hue={hue} data-plate-theme={theme}>
+  <div class="plate-frame">
+    <div class="plate-tag" aria-hidden="true">
+      <span class="plate-no">Plate Nº {num} — {name}</span>
+      {
+        chips.length > 0 && (
+          <ul class="swatches">
+            {chips.map((c) => (
+              <li>
+                <i style={`background:${c.hex}`} />
+                <span>
+                  {c.role} · {c.name}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+    <slot />
+  </div>
+</section>

@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.astro/
+
+# OS
+.DS_Store
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# ---------------------------------------------------------------------------
+# .claude/ is DELIBERATELY NOT ignored.
+#
+# A hook only binds behaviour if the settings file defining it is tracked in
+# git. Quorum-AI's .gitignore:27 ignores `.claude/`, which silently demotes its
+# four hooks — including the one blocking `--no-verify` — to local-only: they
+# bind that machine and nobody else's.
+#
+# Per DAY-ONE-PROMPT.md: "to make a hook shared, deliberately un-ignore its
+# settings file." So `.claude/settings.json` is tracked and carries the shared
+# gates. Only the personal override below is ignored.
+# ---------------------------------------------------------------------------
+.claude/settings.local.json
+
+# Impeccable working state — regenerated, machine-specific
+.impeccable/hook.cache.json
+.impeccable/config.local.json

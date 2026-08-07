@@ -1,0 +1,33 @@
+---
+interface Item {
+  t: string; // label — the garment
+  d: string; // value — the fact
+  target?: string; // data-anchor id in the plate's figure
+  href?: string; // makes the caption a link (hero navigation)
+}
+
+interface Props {
+  items: Item[];
+  label: string;
+}
+
+const { items, label } = Astro.props;
+---
+
+<div class="caps" role="list" aria-label={label}>
+  {
+    items.map((i) =>
+      i.href ? (
+        <a class="cap" role="listitem" href={i.href} data-target={i.target}>
+          <span class="t">{i.t}</span>
+          <span class="d">{i.d}</span>
+        </a>
+      ) : (
+        <div class="cap" role="listitem" data-target={i.target} tabindex={i.target ? 0 : undefined}>
+          <span class="t">{i.t}</span>
+          <span class="d">{i.d}</span>
+        </div>
+      )
+    )
+  }
+</div>

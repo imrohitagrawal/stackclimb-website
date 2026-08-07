@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-05T00:00:00Z",
+  "title": "Design System: stackclimb.com — Portrait Plates",
+  "extensions": {
+    "colorMeta": {
+      "ochre": { "role": "primary", "displayName": "Ochre Thread", "canonical": "#c99b3f", "tonalRamp": ["oklch(25% 0.07 85)", "oklch(35% 0.09 85)", "oklch(45% 0.1 85)", "oklch(55% 0.11 85)", "oklch(65% 0.12 85)", "oklch(75% 0.1 85)", "oklch(85% 0.07 85)", "oklch(93% 0.04 85)"] },
+      "bone": { "role": "neutral", "displayName": "Bone Cloth", "canonical": "#f2ebdd", "tonalRamp": ["oklch(25% 0.015 85)", "oklch(38% 0.015 85)", "oklch(50% 0.018 85)", "oklch(62% 0.02 85)", "oklch(74% 0.02 85)", "oklch(84% 0.02 85)", "oklch(91% 0.02 85)", "oklch(95% 0.015 85)"] },
+      "ink": { "role": "neutral", "displayName": "Drawing Ink", "canonical": "#16213c", "tonalRamp": ["oklch(15% 0.04 265)", "oklch(25% 0.05 265)", "oklch(35% 0.06 265)", "oklch(47% 0.06 265)", "oklch(60% 0.05 265)", "oklch(72% 0.04 265)", "oklch(84% 0.03 265)", "oklch(94% 0.015 265)"] },
+      "ink-navy": { "role": "neutral", "displayName": "Ink Navy Ground", "canonical": "#1b2440", "tonalRamp": ["oklch(15% 0.05 268)", "oklch(24% 0.06 268)", "oklch(34% 0.07 268)", "oklch(45% 0.07 268)", "oklch(57% 0.06 268)", "oklch(70% 0.05 268)", "oklch(82% 0.03 268)", "oklch(93% 0.015 268)"] },
+      "bordeaux": { "role": "secondary", "displayName": "Bordeaux Ground", "canonical": "#5e2233", "tonalRamp": ["oklch(18% 0.06 10)", "oklch(27% 0.08 10)", "oklch(36% 0.1 10)", "oklch(46% 0.1 10)", "oklch(57% 0.09 10)", "oklch(69% 0.07 10)", "oklch(81% 0.05 10)", "oklch(92% 0.02 10)"] },
+      "viridian": { "role": "secondary", "displayName": "Viridian Ground", "canonical": "#1e4f46", "tonalRamp": ["oklch(17% 0.04 175)", "oklch(26% 0.05 175)", "oklch(36% 0.06 175)", "oklch(46% 0.07 175)", "oklch(58% 0.07 175)", "oklch(70% 0.06 175)", "oklch(82% 0.04 175)", "oklch(93% 0.02 175)"] },
+      "dusk-blue": { "role": "secondary", "displayName": "Dusk Blue Ground", "canonical": "#2e5877", "tonalRamp": ["oklch(18% 0.04 245)", "oklch(28% 0.06 245)", "oklch(38% 0.07 245)", "oklch(48% 0.08 245)", "oklch(60% 0.07 245)", "oklch(72% 0.06 245)", "oklch(84% 0.04 245)", "oklch(94% 0.015 245)"] },
+      "greyed-mauve": { "role": "secondary", "displayName": "Greyed Mauve Ground", "canonical": "#4a4653", "tonalRamp": ["oklch(17% 0.015 300)", "oklch(26% 0.02 300)", "oklch(36% 0.025 300)", "oklch(46% 0.025 300)", "oklch(58% 0.02 300)", "oklch(70% 0.018 300)", "oklch(82% 0.012 300)", "oklch(93% 0.008 300)"] },
+      "linen": { "role": "secondary", "displayName": "Linen Ground", "canonical": "#b5ac9c", "tonalRamp": ["oklch(22% 0.015 85)", "oklch(33% 0.018 85)", "oklch(44% 0.02 85)", "oklch(55% 0.022 85)", "oklch(66% 0.022 85)", "oklch(76% 0.02 85)", "oklch(86% 0.015 85)", "oklch(94% 0.01 85)"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero h1 only; uppercase Didone with one ochre accent word allowed." },
+      "headline": { "displayName": "Headline", "purpose": "Plate titles; uppercase serif, .tight variant for long names." },
+      "title": { "displayName": "Pull Quote", "purpose": "The plate's question; italic serif, warmed 8% toward ochre." },
+      "body": { "displayName": "Body", "purpose": "Plate prose; max 52ch at 88% currentColor." },
+      "label": { "displayName": "Label", "purpose": "Tracked-caps workhorse: nav, captions, ledgers, buttons, seals; tracking rises as size falls (0.16–0.24em)." }
+    },
+    "shadows": [
+      { "name": "garment-lift", "value": "drop-shadow(0 10px 18px rgb(0 0 0 / 0.35))", "purpose": "The only shadow in the system: cast by a figure region lifted 4px while its caption's leader line is drawn. Never a resting state." }
+    ],
+    "motion": [
+      { "name": "backdrop-repaint", "value": "background 0.8s ease", "purpose": "Page background cross-fades to the active plate's ground hue as it crosses the viewport middle (IntersectionObserver, rootMargin -45%/-45%)." },
+      { "name": "garment-lit", "value": "transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.28s ease", "purpose": "Anchored figure region lift when its caption is hovered/focused." },
+      { "name": "button-state", "value": "background 0.25s ease, color 0.25s ease", "purpose": "Button and chip fill/flip on hover." },
+      { "name": "nav-recolor", "value": "color 0.5s ease", "purpose": "Nav text bone↔ink when a light plate takes the easel." }
+    ],
+    "breakpoints": [
+      { "name": "stack", "value": "900px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ochre-filled square-cut action; fades to bone on hover.",
+      "html": "<a class=\"ds-btn ds-btn-primary\" href=\"#\">View the systems</a>",
+      "css": ".ds-btn { display: inline-block; font-family: 'Archivo Variable', 'Helvetica Neue', Arial, sans-serif; font-size: 0.78rem; font-weight: 640; letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none; padding: 0.95rem 1.5rem 0.85rem; border: 1px solid #c99b3f; border-radius: 0; transition: background 0.25s ease, color 0.25s ease; } .ds-btn-primary { background: #c99b3f; color: #16213c; } .ds-btn-primary:hover, .ds-btn-primary:focus-visible { background: #f2ebdd; border-color: #f2ebdd; } .ds-btn:focus-visible { outline: 2px solid #c99b3f; outline-offset: 3px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Ochre-ruled transparent action; fills ochre and flips to ink on hover.",
+      "html": "<a class=\"ds-btn-ghost\" href=\"#\">Email me</a>",
+      "css": ".ds-btn-ghost { display: inline-block; font-family: 'Archivo Variable', 'Helvetica Neue', Arial, sans-serif; font-size: 0.78rem; font-weight: 640; letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none; padding: 0.95rem 1.5rem 0.85rem; border: 1px solid #c99b3f; border-radius: 0; color: #f2ebdd; background: transparent; transition: background 0.25s ease, color 0.25s ease; } .ds-btn-ghost:hover, .ds-btn-ghost:focus-visible { background: #c99b3f; color: #16213c; } .ds-btn-ghost:focus-visible { outline: 2px solid #c99b3f; outline-offset: 3px; }"
+    },
+    {
+      "name": "Nav Chip",
+      "kind": "chip",
+      "refersTo": "nav-chip",
+      "description": "The one pill in the system: the nav's email chip.",
+      "html": "<a class=\"ds-nav-chip\" href=\"#\">Email me</a>",
+      "css": ".ds-nav-chip { display: inline-block; font-family: 'Archivo Variable', 'Helvetica Neue', Arial, sans-serif; font-size: 0.76rem; font-weight: 560; letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none; color: #f2ebdd; border: 1px solid currentColor; border-radius: 999px; padding: 0.5rem 1.05rem 0.44rem; white-space: nowrap; transition: background 0.25s ease, color 0.25s ease; } .ds-nav-chip:hover, .ds-nav-chip:focus-visible { background: #c99b3f; border-color: #c99b3f; color: #16213c; }"
+    },
+    {
+      "name": "Caption Strip",
+      "kind": "custom",
+      "description": "The billing strip: ruled LABEL-over-VALUE cells beneath every figure; state is a cell like any other fact.",
+      "html": "<div class=\"ds-caps\" role=\"list\"><div class=\"ds-cap\" role=\"listitem\"><span class=\"ds-cap-t\">State</span><span class=\"ds-cap-d\">Live — cold-starts</span></div><div class=\"ds-cap\" role=\"listitem\" tabindex=\"0\"><span class=\"ds-cap-t\">Citations</span><span class=\"ds-cap-d\">Every claim</span></div><div class=\"ds-cap\" role=\"listitem\" tabindex=\"0\"><span class=\"ds-cap-t\">Refusal</span><span class=\"ds-cap-d\">A feature</span></div></div>",
+      "css": ".ds-caps { display: flex; flex-wrap: wrap; color: #f2ebdd; font-family: 'Archivo Variable', 'Helvetica Neue', Arial, sans-serif; border-top: 1px solid color-mix(in srgb, currentColor 50%, transparent); border-bottom: 1px solid color-mix(in srgb, currentColor 50%, transparent); } .ds-cap { flex: 1 1 auto; display: grid; gap: 0.18rem; text-align: center; padding: 0.7rem 0.9rem 0.62rem; border-left: 1px solid color-mix(in srgb, currentColor 28%, transparent); min-width: 0; cursor: pointer; } .ds-cap:first-child { border-left: none; } .ds-cap-t { font-size: 0.6rem; font-weight: 560; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.62; } .ds-cap-d { font-size: 0.74rem; font-weight: 640; letter-spacing: 0.09em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-cap:hover .ds-cap-d, .ds-cap:focus-visible .ds-cap-d { color: #c99b3f; }"
+    },
+    {
+      "name": "Ledger",
+      "kind": "custom",
+      "description": "Dotted-ruled definition rows for the record: tracked-caps term, right-aligned value.",
+      "html": "<dl class=\"ds-ledger\"><div class=\"ds-ledger-row\"><dt>Experience</dt><dd>14+ yrs — Oracle, Amazon, LimeRoad</dd></div><div class=\"ds-ledger-row\"><dt>Role concluded</dt><dd>April 2026</dd></div><div class=\"ds-ledger-row\"><dt>Base</dt><dd>Bengaluru · open to relocation</dd></div></dl>",
+      "css": ".ds-ledger { margin: 0; max-width: 33rem; color: #f2ebdd; font-family: 'Archivo Variable', 'Helvetica Neue', Arial, sans-serif; border-top: 1px solid color-mix(in srgb, currentColor 50%, transparent); } .ds-ledger-row { display: grid; grid-template-columns: minmax(9.5rem, max-content) 1fr; gap: 1.2rem; align-items: baseline; padding: 0.38rem 0.15rem 0.32rem; border-bottom: 1px dotted color-mix(in srgb, currentColor 38%, transparent); } .ds-ledger dt { font-size: 0.64rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.62; } .ds-ledger dd { margin: 0; font-size: 0.84rem; font-weight: 520; letter-spacing: 0.03em; text-align: right; }"
+    },
+    {
+      "name": "Plate Frame + Tag",
+      "kind": "card",
+      "description": "The double-ruled frame with its printed corner label and three-color swatch tag.",
+      "html": "<div class=\"ds-frame\"><div class=\"ds-tag\"><span class=\"ds-plate-no\">Plate Nº 01 — CiteVyn</span><ul class=\"ds-swatches\"><li><i style=\"background:#5e2233\"></i><span>Ground · Bordeaux</span></li><li><i style=\"background:#f2ebdd\"></i><span>Cloth · Bone</span></li><li><i style=\"background:#c99b3f\"></i><span>Thread · Ochre</span></li></ul></div><p class=\"ds-frame-body\">Plate content sits inside the double rule.</p></div>",
+      "css": ".ds-frame { position: relative; background: #5e2233; color: #f2ebdd; font-family: 'Archivo Variable', 'Helvetica Neue', Arial, sans-serif; border: 1px solid color-mix(in srgb, currentColor 60%, transparent); outline: 1px solid color-mix(in srgb, currentColor 28%, transparent); outline-offset: 6px; padding: 2.5rem; margin: 10px; } .ds-tag { position: absolute; top: 1.2rem; right: 1.2rem; text-align: right; display: grid; gap: 0.4rem; justify-items: end; } .ds-plate-no { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.24em; text-transform: uppercase; opacity: 0.85; } .ds-plate-no::after { content: ''; display: block; width: 2.2rem; height: 2px; background: #c99b3f; margin: 0.45rem 0 0 auto; } .ds-swatches { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.28rem; } .ds-swatches li { display: flex; align-items: center; justify-content: flex-end; gap: 0.45rem; font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.75; } .ds-swatches i { width: 0.65rem; height: 0.65rem; flex: none; border: 1px solid color-mix(in srgb, currentColor 55%, transparent); } .ds-frame-body { margin: 3rem 0 0; font-size: 1rem; line-height: 1.68; }"
+    },
+    {
+      "name": "Nav",
+      "kind": "nav",
+      "description": "Fixed hairline nav: serif small-caps brand, tracked-caps links with ochre hover underline.",
+      "html": "<header class=\"ds-nav\"><a class=\"ds-brand\" href=\"#\">Rohit Agrawal<em>stackclimb</em></a><nav><a href=\"#\">Systems</a><a href=\"#\">Private</a><a href=\"#\">Contact</a></nav></header>",
+      "css": ".ds-nav { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.5rem; background: #1b2440; color: #f2ebdd; } .ds-brand { font-family: 'Bodoni Moda Variable', 'Bodoni MT', Didot, serif; font-weight: 560; font-size: 1rem; letter-spacing: 0.14em; text-transform: uppercase; color: currentColor; text-decoration: none; white-space: nowrap; } .ds-brand em { font-style: normal; opacity: 0.55; font-family: 'Archivo Variable', 'Helvetica Neue', Arial, sans-serif; font-weight: 500; font-size: 0.72rem; letter-spacing: 0.22em; margin-left: 0.6rem; } .ds-nav nav { display: flex; align-items: center; gap: 1.4rem; } .ds-nav nav a { color: currentColor; text-decoration: none; font-family: 'Archivo Variable', 'Helvetica Neue', Arial, sans-serif; font-size: 0.76rem; font-weight: 560; letter-spacing: 0.18em; text-transform: uppercase; border-bottom: 1px solid transparent; padding-bottom: 2px; } .ds-nav nav a:hover, .ds-nav nav a:focus-visible { border-bottom-color: #c99b3f; }"
+    },
+    {
+      "name": "Billing Link",
+      "kind": "custom",
+      "description": "Tracked-caps inline link with hairline underline; external links carry the authored square-cut SVG arrow.",
+      "html": "<a class=\"ds-link\" href=\"#\" target=\"_blank\">Use it live</a>",
+      "css": ".ds-link { color: #f2ebdd; text-decoration: none; font-family: 'Archivo Variable', 'Helvetica Neue', Arial, sans-serif; font-size: 0.76rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; border-bottom: 1px solid color-mix(in srgb, currentColor 45%, transparent); padding-bottom: 3px; } .ds-link:hover, .ds-link:focus-visible { border-bottom-color: #c99b3f; color: #c99b3f; } .ds-link[target='_blank']::after { content: ''; display: inline-block; width: 0.58em; height: 0.58em; margin-left: 0.35em; background: currentColor; -webkit-mask: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M3 1.5h7.5V9M10.5 1.5L1.5 10.5' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='square'/%3E%3C/svg%3E\") center / contain no-repeat; mask: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M3 1.5h7.5V9M10.5 1.5L1.5 10.5' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='square'/%3E%3C/svg%3E\") center / contain no-repeat; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Sapeur's Portrait Plate",
+    "overview": "Every surface is a numbered plate in a portrait series: a flat painted ground, a double-ruled frame, a figure at center, and every garment named in a ruled caption. The figures are the projects, not people — each system is drawn as flat garment-colored geometry, and the caption strip beneath it bills its facts like a tailor's ticket (LABEL over VALUE, tracked caps, hairline rules). Captions are wired: hovering a caption draws an ochre leader line to the exact region of the figure it names. The page proves rigor by practicing it — the copy register is part of the system: state what is proven, label what is not, invent nothing. The world explicitly refuses the two portfolio defaults: no dark-terminal aesthetic, no white-grid card gallery. Instead the backdrop itself repaints as each plate takes the easel, and a single fixed paint-grain raster (overlay-blended, opacity 0.5) gives every ground the matte mottle of gouache.",
+    "keyCharacteristics": [
+      "One flat painted ground per plate, tinting a shared grain material",
+      "Double-ruled hairline frames; all rules drawn from currentColor at mixed opacity",
+      "Bodoni Moda uppercase display against Archivo tracked-caps labels",
+      "Ochre is the only accent: thread, hover, focus, selection, leader lines",
+      "Facts live in ruled caption strips and dotted ledgers, never in pills or badges",
+      "Copy states what is proven and labels what is not"
+    ],
+    "rules": [
+      { "name": "The Three-Color Livery Rule", "body": "Every plate declares exactly three coordinated colors — Ground, Cloth, Thread — and prints them as its swatch tag. Cloth is bone and Thread is ochre on every plate; only the Ground changes.", "section": "colors" },
+      { "name": "The One Thread Rule", "body": "Ochre is the only accent color in the system. If an element needs emphasis, it gets ochre or it gets nothing; no second accent may be introduced.", "section": "colors" },
+      { "name": "The Painted Ground Rule", "body": "Grounds are flat hues, never gradients, never photos. Texture comes only from the single shared grain layer (/paint-grain.png, 480px tile, mix-blend-mode: overlay, opacity 0.5, fixed) so each plate's hue tints its own paint.", "section": "colors" },
+      { "name": "The Caps-or-Prose Rule", "body": "Type is either display/label uppercase or sentence-case body prose. There is no middle register: no title-case headings, no kickers, no eyebrows.", "section": "typography" },
+      { "name": "The One-Plate-One-Viewport Rule", "body": "Each plate is composed to be seen whole: frame, figure, and caption strip together at 100svh. Content that cannot fit becomes another plate, not a taller one.", "section": "layout" },
+      { "name": "The Flat-Paint Rule", "body": "Surfaces are flat paint at rest. The only shadow in the system is the drop-shadow on a garment region lit by its caption.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do give every new plate the Three-Color Livery: a ground hue, bone cloth, ochre thread — declared in its swatch tag and passed as hue so the backdrop repaints to it.",
+      "Do put every fact — including unflattering state — in a ruled caption cell or ledger row, in the label-over-value register.",
+      "Do derive all rules and borders from currentColor via color-mix so components recolor with the plate theme automatically.",
+      "Do wire new figure regions with data-anchor ids so captions can draw leader lines to them.",
+      "Do keep the copy register: state what is proven, label what is not, invent nothing."
+    ],
+    "donts": [
+      "Don't introduce a second accent, a gradient, or a photographic texture; the grain layer is the only material.",
+      "Don't use pills or badges for status; state belongs in the caption strip.",
+      "Don't round corners on UI surfaces (nav chip excepted) or add resting shadows.",
+      "Don't revert to the refused defaults: no dark-terminal styling, no white-grid card gallery, no kickers or eyebrow labels.",
+      "Don't draw people; figures are the systems themselves, dressed in the plate's colors."
+    ]
+  }
+}

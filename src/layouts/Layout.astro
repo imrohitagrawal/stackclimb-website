@@ -1,0 +1,77 @@
+---
+import '@fontsource-variable/bodoni-moda';
+import '@fontsource-variable/bodoni-moda/wght-italic.css';
+import '@fontsource-variable/archivo';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Rohit Agrawal — AI systems that show their work',
+  description = 'Independent, inspectable AI systems built on citation, disclosed uncertainty, honest refusal, and release gates — by a principal-level engineer with 14+ years of production reliability. Live on stackclimb.com.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" style="--bg:#1b2440" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content="Rohit Agrawal" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href="https://stackclimb.com/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content="https://stackclimb.com/" />
+    <meta property="og:image" content="https://stackclimb.com/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <!--
+    THESIS: A hiring manager meets a portfolio dressed as a portrait plate: every claim
+    captioned, every caption wired by a leader line to the thing it names. Refuses both
+    the dark-terminal and the white-grid portfolio defaults.
+    OWN-WORLD: Flat painted backdrop per plate — ink navy, bordeaux, viridian, dusk blue,
+    greyed mauve, linen; bone paper and ochre thread throughout; Bodoni Moda caps display;
+    Archivo tracked-caps billing strips; double-ruled plate frames; swatch tags naming each
+    plate's three coordinated colors.
+    STORY: Read the thesis, scan the record ledger (gap disclosed in it), walk four system
+    plates whose captions cite real gates and real states, end at contact. Believe the rigor
+    because the page practices it.
+    FIRST VIEWPORT: Left — display headline, lede naming Rohit, two CTAs, six-row record
+    ledger. Right — full-length figure tailored from the systems' hues, garment billing
+    strip beneath; plate frame Nº 00; hairline nav.
+    FORM: Sapeur portrait plate — user-chosen challenger over assigned grounded #7; seed b720fd1a.
+    FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+    -->
+    <a class="skip" href="#work">Skip to the systems</a>
+
+    <header class="site-nav">
+      <a class="brand" href="/">Rohit Agrawal<em>stackclimb</em></a>
+      <nav aria-label="Site">
+        <a href="#work">Systems</a>
+        <a href="#private">Private</a>
+        <a href="#contact">Contact</a>
+        <a class="chip" href="mailto:rohit.ra.agrawal@gmail.com">Email me</a>
+      </nav>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="colophon">
+      <p>© 2026 Rohit Agrawal · Bengaluru · Built as a work sample — static Astro, self-hosted type, no trackers, no invented claims</p>
+    </footer>
+
+    <script>
+      import '../scripts/plates.js';
+    </script>
+  </body>
+</html>

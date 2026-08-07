@@ -34,7 +34,7 @@ forgotten and later recovered — kept visible on purpose).
 | W-12 | Learnings filed by engineering phase, indexed, not one file | DONE | `docs/learnings/` |
 | W-13 | Five definitions: Ready, Developed, Tested, Done, Complete | DONE | `docs/practices/definitions.md` |
 | W-14 | PR describes behaviour before and after, exact changes, reviewer focus | DONE | `.github/PULL_REQUEST_TEMPLATE.md` |
-| W-15 | **Document and RCA a finding before working on it; get approval first** | OPEN | — |
+| W-15 | **Document and RCA a finding before working on it; get approval first** | DONE | `AGENTS.md` — 5-step table + DEF-1 worked example |
 | W-16 | **Do not drop or forget any instruction** | DONE | This file |
 | W-17 | Good practices harvested for reuse on future projects | DONE | `docs/practices/` |
 | W-18 | Planning defects cost more than development defects — research deeply, fan out | PARTIAL | 9 agents run; no standing rule yet |
@@ -108,6 +108,7 @@ produced better answers than either side had alone.
 | "Rules that can be evaded are good for nothing" | His own data: 0 of 16 defects were caught by an automated check; 10 of 16 by adversarial review | **Both** | Mechanise everything mechanisable; stop pretending the rest is covered. Gates prevent repeats; review finds new defects |
 | "Install `security-and-hardening`" | Five of its six sections are server-side; this site has no server | **Claude** | Skipped. The five applicable supply-chain rules copied into `AGENTS.md` instead |
 | "The repo has a LICENSE file" | Only `examples/doc-critic-demo/LICENSE` exists; the API reports none | **Claude** | `shared/licensing-and-credits.md` licenses the *output*, not the skills. A root LICENSE is still needed |
+| "Document the RCA before working" | I argued it would block a fix whose RCA *was* the investigation | **Owner** | Resolved by separating the two: investigating is not working. Investigate → write the RCA → get approval → then change code. `AGENTS.md` now carries the table and a worked example |
 
 ## Still unanswered by me
 

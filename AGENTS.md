@@ -90,14 +90,35 @@ running or a remote is ahead has moved the mess somewhere the next session pays 
 
 ## Non-negotiable: document and get approval before changing
 
-A finding is written down **before** it is worked on, never after.
+**Write the RCA before you start working. Not after. Not alongside.**
 
-For anything not already in the approved plan:
+The order is fixed:
 
-1. **Write the RCA first** — what happened, where it was introduced, where it was caught, what
-   it cost, and the evidence. Not a summary of the fix; the account of the problem.
-2. **State the need** — why this is worth changing now, and what happens if it is not.
-3. **Get approval.** Then work.
+| Step | Allowed | Not allowed |
+|---|---|---|
+| 1. **Investigate** | Read, run commands, measure, reproduce. Find the cause | Changing any file |
+| 2. **Write the RCA** | What happened, where introduced, where caught, cost, evidence | Starting the fix "while it is fresh" |
+| 3. **State the need** | Why now, and what happens if it is not done | — |
+| 4. **Get approval** | Wait for it | Assuming silence is approval |
+| 5. **Then work** | Change code | — |
+
+Investigating is not working. You cannot write a cause you have not found. But the moment the
+cause is known, the document comes before the fix — not after it, and not in parallel.
+
+**Worked example — DEF-1**, the plate that was invisible without JavaScript. How it should have
+run under this rule:
+
+1. *Investigate:* ran the page with JS on and off, measured `1.03:1` against `7.1:1`, traced it
+   to `plates.js:19` setting `--bg` only on scroll.
+2. *Write the RCA:* introduced in development, caught in testing by the no-JS walkthrough, cost
+   was a whole plate unreadable on a site promising near-zero JavaScript.
+3. *State the need:* it fails the accessibility bar the site stakes its credibility on.
+4. *Get approval.*
+5. *Then* change `Plate.astro`, `global.css`, `Layout.astro`.
+
+What actually happened: steps 1 and 5 ran together, and the RCA was written into the commit
+message afterwards. The fix was right, the order was wrong, and a commit message is not a record
+anyone audits.
 
 Documenting after the change records a conclusion, not a cause. The record exists so the
 practice can be audited later — which flaws recurred, which phase kept producing them — and a

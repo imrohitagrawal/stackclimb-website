@@ -110,7 +110,17 @@ html[data-theme='light'] .site-nav { color: var(--ink); }
   display: grid; place-items: center;
   padding: clamp(5.5rem, 11vh, 8rem) clamp(1.25rem, 4.5vw, 4rem) clamp(3.5rem, 7vh, 5.5rem);
   color: var(--bone);
+
+  /* Each plate paints its OWN ground in the static HTML. Without this the page
+     background is only ever set by the scroll handler, so with JavaScript off
+     every plate falls back to ink navy — and the light plate rendered ink text
+     on ink navy at 1.03:1, invisible. */
+  background: var(--plate-hue);
 }
+
+/* Once JS is running it owns the ground so the backdrop can cross-fade between
+   plates. The class is set before first paint, so there is no flash. */
+.js-ground .plate { background: transparent; }
 .plate[data-plate-theme='light'] { color: var(--ink); }
 
 .plate-frame {

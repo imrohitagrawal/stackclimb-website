@@ -86,7 +86,7 @@ looked like it and is not. Worth watching, since the NarraTwin avatar will need 
 
 | # | Item | What is needed |
 |---|---|---|
-| O1 | **The a11y fix** | Go or no-go. Asked three times, still unanswered. Blocks the most work |
+| ~~O1~~ | **Approved 08-07 and done.** Remaining contrast work is DEF-5 |
 | O2 | **Repo visibility** | Rewording is done and pushed. The `gh repo edit --visibility public` call was blocked for me — run it yourself |
 | O3 | **Logo files** | Not yet handed over. `docs/brand/candidates/rohit/` stays unopened until they are |
 
@@ -94,7 +94,7 @@ looked like it and is not. Worth watching, since the NarraTwin avatar will need 
 
 | # | Item | Blocked by |
 |---|---|---|
-| M1 | Fix the static-render defect (see Defects) | O1 |
+| M1 | ~~Static-render defect~~ **done** · now DEF-5, the opacity ramp | Nothing |
 | M2 | Install the D12 skill list | Nothing |
 | M3 | Visual **regression** baselines — `toHaveScreenshot`, generated in the CI container | Nothing |
 | M4 | CI workflow + a tracked `Stop` hook | Nothing |
@@ -110,7 +110,8 @@ looked like it and is not. Worth watching, since the NarraTwin avatar will need 
 
 | ID | Severity | What | Evidence |
 |---|---|---|---|
-| DEF-1 | **High** | The private plate is unreadable without JavaScript. Plate grounds are painted only by the scroll handler, so static HTML ships ink text on ink navy | Measured 1.03:1. With JS: 7.1:1. Screenshot confirms |
+| ~~DEF-1~~ | — | **FIXED.** Plates now paint their own ground in static HTML; JS reclaims it via `.js-ground` before first paint | No-JS plate bg now `rgb(181,172,156)` linen vs ink text = 7.1:1. Cross-fade unchanged |
+| DEF-5 | **Medium** | Colour contrast fails on 4 plates / 22 nodes: quorum, saafsaans, narratwin, private. The `DESIGN.md` opacity ramp (prose 88%, labels 62%) was tuned on ink navy and fails on lighter grounds | axe per-plate scan, 4 of 7 plates |
 | DEF-2 | Medium | `?at=<plate>` deep links are JS-only. Without JS the URL renders the hero | Visual walkthrough, step 24 |
 | DEF-3 | Low | No `rel="preload"` for fonts on a page whose LCP is a Bodoni headline | `grep -c 'rel="preload"' dist/index.html` → 0 |
 | DEF-4 | Low | No visual regression baselines, so alignment drift passes silently | 29 images captured, none compared |

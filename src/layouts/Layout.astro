@@ -20,6 +20,10 @@ const {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {/* Hands the ground back to JS before first paint, so the backdrop can
+        cross-fade. Without JS the class never lands and each plate keeps the
+        ground it painted itself. Inline and first so there is no flash. */}
+    <script is:inline>document.documentElement.classList.add('js-ground');</script>
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="author" content="Rohit Agrawal" />

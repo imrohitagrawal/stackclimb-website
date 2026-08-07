@@ -18,7 +18,13 @@ interface Props {
 const { id, num, name, hue, theme = 'dark', chips = [], class: className } = Astro.props;
 ---
 
-<section class:list={['plate', className]} id={id} data-hue={hue} data-plate-theme={theme}>
+<section
+  class:list={['plate', className]}
+  id={id}
+  data-hue={hue}
+  data-plate-theme={theme}
+  style={`--plate-hue:${hue}`}
+>
   <div class="plate-frame">
     <div class="plate-tag" aria-hidden="true">
       <span class="plate-no">Plate Nº {num} — {name}</span>

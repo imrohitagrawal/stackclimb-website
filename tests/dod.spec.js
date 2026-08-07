@@ -20,24 +20,46 @@ test.describe('Definition of Done', () => {
   for (const route of ROUTES) {
     test(`${route} — no accessibility violations (WCAG 2.1 AA)`, async ({ page }) => {
       // RED WHEN: a contrast failure, missing alt text, unlabelled control, or
-      // broken heading order is introduced anywhere on the page.
+      // broken heading order is introduced on any plate.
+      //
+      // Scanned PER PLATE, with the plate scrolled into view. A single whole-page
+      // scan at scroll position 0 judges every plate against the hero's ground,
+      // because the backdrop repaints as each plate reaches the viewport. That
+      // reports a contrast state no visitor ever sees. Scanning what is on screen
+      // is what a visitor actually experiences.
       await page.goto(route, { waitUntil: 'networkidle' });
 
-      const results = await new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
-        .analyze();
+      const plateIds = await page.$$eval('.plate[id]', (els) => els.map((e) => e.id));
 
-      // DENOMINATOR: axe must actually have run rules. A misconfigured builder
-      // returns zero violations AND zero passes, which would look identical to success.
-      expect(
-        results.passes.length + results.violations.length + results.incomplete.length,
-        'axe evaluated no rules — the scan did not run',
-      ).toBeGreaterThan(0);
+      // DENOMINATOR: zero plates means the selector broke and every assertion
+      // below would pass over nothing.
+      expect(plateIds.length, 'no plates found — this scan measured nothing').toBeGreaterThan(0);
 
-      const summary = results.violations.map(
-        (v) => `${v.id} (${v.impact}) × ${v.nodes.length}: ${v.help}`,
-      );
-      expect(summary, `axe found ${results.violations.length} violation(s)`).toEqual([]);
+      const found = [];
+      let rulesRun = 0;
+
+      for (const id of plateIds) {
+        await page.evaluate(
+          (p) => document.getElementById(p)?.scrollIntoView({ behavior: 'instant', block: 'start' }),
+          id,
+        );
+        await page.waitForTimeout(900); // the ground cross-fade is 0.8s
+
+        const results = await new AxeBuilder({ page })
+          .include(`#${id}`)
+          .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+          .analyze();
+
+        rulesRun += results.passes.length + results.violations.length + results.incomplete.length;
+        for (const v of results.violations) {
+          found.push(`#${id} — ${v.id} (${v.impact}) × ${v.nodes.length}: ${v.help}`);
+        }
+      }
+
+      // DENOMINATOR: axe must actually have evaluated rules. A misconfigured
+      // builder returns zero violations AND zero passes, indistinguishable from success.
+      expect(rulesRun, 'axe evaluated no rules — the scan did not run').toBeGreaterThan(0);
+      expect(found, `axe found ${found.length} violation(s) across ${plateIds.length} plates`).toEqual([]);
     });
 
     test(`${route} — no horizontal scroll at any viewport`, async ({ page }) => {

@@ -4,6 +4,25 @@ One driver per stage. Reviewers critique and request changes; they never write. 
 when two skills conflict: user's explicit instruction → `AGENTS.md` → the driver skill →
 reviewer findings.
 
+## The rule that governs this table: the builder is never the auditor
+
+**A skill that produced the work may not be the skill that judges it.** `impeccable` drives the
+design *and* ships `critique` and `audit`. Using its own audit on its own output is a skill
+grading its own homework — it applies the same heuristics that produced the design, so it
+agrees by construction and its blind spots are exactly the ones it built in.
+
+Every build stage therefore carries a reviewer from a **different lineage**:
+
+| Built by | Must be reviewed by | Why the lens is genuinely different |
+|---|---|---|
+| `impeccable` (layout, hierarchy, visual world) | **`ui-ux-pro-max`** | Different heuristic set — its own palette, typography, spacing, and interaction-state systems, authored independently |
+| `impeccable` (structure, abstractions) | `taste-check` | Torvalds' good-taste lens: special cases, nesting depth. Orthogonal to anything visual |
+| Any motion work | `review-animations` | Emil Kowalski's craft bar, not impeccable's |
+| Anything rendered | **the pixel reviewer** (`visual-review.md`) | Judges images only. Cannot inherit an assumption it never read |
+
+`impeccable audit` is still run — it catches a11y, performance, and responsive issues cheaply —
+but it is a **self-check, not the review**. It never satisfies the review requirement alone.
+
 Adapted from NarraTwin's `docs/SKILL_EXECUTION_PLAN.md` and `docs/SKILL_LOCK.md`.
 
 ## The route
@@ -17,8 +36,11 @@ Adapted from NarraTwin's `docs/SKILL_EXECUTION_PLAN.md` and `docs/SKILL_LOCK.md`
 | 5. Brand / wordmark | `brandkit` | `high-end-visual-design` |
 | 6. Build | `impeccable` (craft-floor) | `emil-design-eng` |
 | 7. Motion | `find-animation-opportunities` → implement | `review-animations` |
-| 8. Review | — | `taste-check`, `impeccable critique`, `impeccable audit` |
-| 9. Visual verification | **GAP — see below** | — |
+| 8. Review | — | **`ui-ux-pro-max`**, `taste-check`, `review-animations` |
+| 9. Visual verification | — | the pixel reviewer (`visual-review.md`) |
+
+`impeccable critique` and `impeccable audit` run at stage 8 as a **self-check** — cheap, useful,
+and not a substitute for an independent lens. See the builder-is-never-the-auditor rule above.
 
 ## Stage notes
 

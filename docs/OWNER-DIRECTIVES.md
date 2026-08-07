@@ -1,7 +1,12 @@
 # Owner directives — every instruction, and whether it was honoured
 
-The owner's words outrank every other file here. This is the register that proves it, and the
-place a dropped instruction becomes visible instead of forgotten.
+Every instruction the owner gives, recorded so none is dropped. This register exists because
+four directives had to be repeated between two and four times before they were honoured.
+
+**It is not a record of orders to obey.** An instruction that contradicts the evidence, the
+documented decisions, or my own analysis gets **raised and discussed before any work starts** —
+see the "disagree before you comply" rule in `AGENTS.md`. Recording a directive here is not the
+same as agreeing with it; the `Contested` column says which were argued, and how they resolved.
 
 **Checked at the start of every session and before every plan.** A directive marked `OPEN` is a
 debt, not a suggestion.
@@ -89,6 +94,20 @@ the pattern matters more than any single miss.
 here was solved by intending to remember it.
 
 ---
+
+## Contested — raised, discussed, resolved
+
+Where an instruction met evidence that pointed the other way. Kept because the disagreements
+produced better answers than either side had alone.
+
+| Instruction | The counter-evidence | Who was right | How it resolved |
+|---|---|---|---|
+| "A 250-line rule exists in our repos" | A search across the repos found none | **Owner** | The search read feature branches. `ADR/0047:55` on `main` has it. Rule adopted verbatim |
+| "The doc skills are useful — did you read them?" | A review reported dangling references | **Owner** | The review read `skills/<name>/`, a build input. `dist/*.skill` is complete. `architecture-and-decisions` is now a top-two install |
+| "Use a fan of six role-specific reviewers" | His own repo: a five-lens fan raised 32 findings, 23 refuted. `AGENTS.md` rule 10 says two lenses | **Both, partly** | Full fan for planning; scale to blast radius during development; spend the marginal budget on verification, not more finders |
+| "Rules that can be evaded are good for nothing" | His own data: 0 of 16 defects were caught by an automated check; 10 of 16 by adversarial review | **Both** | Mechanise everything mechanisable; stop pretending the rest is covered. Gates prevent repeats; review finds new defects |
+| "Install `security-and-hardening`" | Five of its six sections are server-side; this site has no server | **Claude** | Skipped. The five applicable supply-chain rules copied into `AGENTS.md` instead |
+| "The repo has a LICENSE file" | Only `examples/doc-critic-demo/LICENSE` exists; the API reports none | **Claude** | `shared/licensing-and-credits.md` licenses the *output*, not the skills. A root LICENSE is still needed |
 
 ## Still unanswered by me
 

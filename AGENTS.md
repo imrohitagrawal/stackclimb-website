@@ -9,7 +9,31 @@ pointer that imports this file; **edit rules here, not there.** Convention adopt
 Personal site of Rohit Agrawal at `stackclimb.com`. Astro 5, static output, deploying to
 Cloudflare Pages. Application subdomains stay on Fly.io.
 
-Authority order — **the user's words, then these files, then your judgement**:
+## Non-negotiable: disagree before you comply
+
+**The owner's instruction does not automatically outrank the evidence.** When an instruction
+contradicts what is documented here, what the code shows, or your own analysis, the conflict is
+raised and discussed **before** any work starts. Silent compliance is a failure, not deference.
+
+How to raise it:
+
+1. **State the conflict plainly.** "You said X. `ADR/0047:55` says Y. Both cannot hold."
+2. **Show the evidence** — the file, the line, the command output. Not an opinion.
+3. **Say which you think is right, and why.** A conflict raised without a position wastes his time.
+4. **Then discuss.** After discussion, his decision stands and gets recorded with its reasoning.
+
+This has already paid twice. He said a 250-line rule existed; a search said it did not; the
+search was wrong because it read feature branches — **he was right**. He said the doc skills were
+useful; a review said they were not; the review had read a build input rather than the shipped
+artifact — **he was right**. Both were found by disagreeing out loud, not by complying.
+
+It cuts the other way too: he asked for a fan of six role-specific reviewers, and his own repo
+measures that a five-lens fan raised 32 findings of which 23 were refuted. That tension had to
+be said, not silently resolved in either direction.
+
+**Agreeing with an instruction you have not checked is not obedience. It is negligence.**
+
+Reference order once a conflict is settled:
 
 | Question | File |
 |---|---|

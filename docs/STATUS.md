@@ -127,10 +127,17 @@ looked like it and is not. Worth watching, since the NarraTwin avatar will need 
 | **DEF-18** | **HIGH** | **Two real WCAG failures live outside `.plate`, where the suite cannot see them.** `footer > p` at **1.51:1**, `em` at **2.79:1** — the footer inherits the linen ground and keeps bone text | Verified: axe with `.exclude('.plate')`, scrolled to `#private` |
 | **DEF-19** | **HIGH** | **CSP fails silently, and the bad case is the default.** Blocking *both* inline scripts is safe. Blocking *only the module* renders a complete HTTP 200 page at 1.03:1. The head script's hash never changes; the module's changes on every edit — so the head stays valid while the module goes stale | Synthesizer, three policies served |
 | **DEF-20** | **Medium** | `npm audit` high is **`astro` itself** (direct dependency, 8 XSS advisories), not sharp/esbuild as first reported. Unreachable in this static build, but the fix is `5.18.2 → 7.2.0` — **two** majors | `npm audit --json` |
+| **DEF-22** | **HIGH** | **Render-blocking CSS is the real critical-path defect.** 18 KB raw / 3.7 KB brotli, and it gates font discovery. Inlining it takes mobile LCP **2.4s → 1.4s**, Lighthouse 98 → 100 | Lighthouse 13.4.1 + Playwright A/B |
+| **DEF-23** | **Medium** | `paint-grain.png` is **perfectly grayscale stored as 24-bit RGB** — three identical copies of one plane. Grayscale PNG saves 32% **pixel-identically**; WebP q95 saves 77% at max error 2.33/255 | Channel-spread check, rendered diff |
+| **DEF-24** | **Low** | `paint-grain.png`, `og.png`, `favicon.svg` ship **unhashed** from `/public` while CSS and fonts are content-hashed. With a long `immutable` cache, a grain change never propagates | Build output |
 | **DEF-21** | **Medium** | `scroll-behavior: smooth` (`global.css:18`) makes every fragment link a ~3-second animation. `?at=` is **not** vestigial — it sets `no-anim` for an instant jump. Migrating to `#` needs a settle wait or every deep-link screenshot captures mid-scroll | Synthesizer, timed |
 | DEF-2 | Medium | `?at=<plate>` deep links are JS-only. Without JS the URL renders the hero | Visual walkthrough, step 24 |
-| DEF-3 | Low | No `rel="preload"` for fonts on a page whose LCP is a Bodoni headline | `grep -c 'rel="preload"' dist/index.html` → 0 |
+| ~~DEF-3~~ | — | **KILLED. Preloading fonts made LCP *worse* in every configuration measured** — desktop +44ms, mobile +96ms. `font-display: swap` paints text instantly in fallback; a preload lands inside the block period and makes the browser wait | 7-run medians, A/B |
 | DEF-4 | Low | No visual regression baselines, so alignment drift passes silently | 29 images captured, none compared |
+
+**Measured performance baseline — the site is already fast.** Lighthouse 13.4.1: desktop **100**
+(LCP 0.4s, CLS 0.007, TBT 0ms), mobile **98** (LCP 2.4s, CLS 0.002, TBT 0ms). Scroll is locked at
+60fps with **zero long tasks** on both. Do not "optimise" scroll, animation, or the blend overlay.
 
 ---
 

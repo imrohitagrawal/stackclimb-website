@@ -324,7 +324,30 @@ stated requirements only; everything else is optional.
 **Verify before acting.** A five-lens fan in quorum-ai raised 32 findings; independent verifiers
 refuted 23. Findings are refuted before they are fixed.
 
-**Two adversarial reviewers on any test change**, always. Tests are where the make-it-pass loop
+**Two adversarial reviewers on any test change**, always — and **at least one from a different
+model family**, not merely a different context.
+
+A subagent spawned from this session is *context* isolation, not *model-weight* decorrelation.
+It shares the blind spots that produced the work. Say so in the verdict; never claim independence
+you did not have.
+
+Measured here on 2026-08-07. Two same-model reviewers ran 25 mutations against
+`tests/contact.spec.js` and found four real holes. Codex, a different family, then found **five
+more they had all missed** and corrected one of their findings:
+
+- `body { display: none }` passes every assertion — the gate reads the DOM, not the render
+- an address split as `rohit.ra.agrawal@<span>gmail.com</span>` matches neither node
+- `locator.count()` proves existence, never reachability — hidden, `inert`, overlaid, or
+  `preventDefault()`ed links all pass
+- two **completely unlabelled** links pass the label-agreement test: `["",""]` has one distinct
+  value, so it certifies sameness rather than the existence of a label
+- the email regex has no token boundary and matches inside `user@example.com_backup`
+
+Its verdict on what the file actually established: *"materially weaker than 'contact details must
+be labelled links, never printed as text'"* — the file's own header comment, refuted.
+
+`codex exec --sandbox read-only "<prompt>"` works today. The `/codex:adversarial-review` command
+from `openai/codex-plugin-cc` is the cleaner route once installed. Tests are where the make-it-pass loop
 does its damage: measured, pass-filtered generators keep bug-*validating* tests 59–68% of the
 time, versus 4.2% without the filter.
 

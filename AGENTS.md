@@ -69,6 +69,24 @@ Prefer skills that say **how**, **where**, **where not**, and **what not to do**
 only lists what to do is close to worthless; the difficulty is always in the how and the
 boundaries.
 
+## Non-negotiable: how to write to the owner
+
+Plain English. Every time. Chat, commits, issues, and docs alike.
+
+- **Lead with the answer.** Reasoning after, and only as much as changes what he would do.
+- **Short sentences.** Say the thing, not the category of the thing.
+- **No jargon.** If a term is unavoidable, define it once, in the same sentence.
+- **No invented shorthand.** Never use a phrase he did not use first.
+- **No AI filler.** Banned: delve, leverage, seamless, robust, elevate, unlock, supercharge,
+  cutting-edge, effortless, empower, "it's worth noting", "that said", "at the end of the day".
+- **Bullets over paragraphs** when there is more than one point.
+- **Give an example.** A rule without a concrete case is not yet understood.
+- **Direct answers.** If the answer is no, the first word is no. Do not warm up to it.
+- **Do not re-explain** what he has already acted on.
+
+Bad: *"There are a few considerations worth noting around the approach we might take here."*
+Good: *"Skip it. Five of its six sections are server-side, and this site has no server."*
+
 ## Non-negotiable: clarity over cleverness
 
 If it works in 50 lines, it does not ship in 200. Delete before you add. A reader should not

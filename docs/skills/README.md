@@ -15,13 +15,51 @@ Every build stage therefore carries a reviewer from a **different lineage**:
 
 | Built by | Must be reviewed by | Why the lens is genuinely different |
 |---|---|---|
-| `impeccable` (layout, hierarchy, visual world) | **`ui-ux-pro-max`** | Different heuristic set — its own palette, typography, spacing, and interaction-state systems, authored independently |
+| `impeccable` (layout, hierarchy, visual world) | **`design-review` agent** (from the ui-ux-pro-max repo) | Different **method** and an **unconstrained remedy space** — see the correction below |
 | `impeccable` (structure, abstractions) | `taste-check` | Torvalds' good-taste lens: special cases, nesting depth. Orthogonal to anything visual |
 | Any motion work | `review-animations` | Emil Kowalski's craft bar, not impeccable's |
 | Anything rendered | **the pixel reviewer** (`visual-review.md`) | Judges images only. Cannot inherit an assumption it never read |
 
 `impeccable audit` is still run — it catches a11y, performance, and responsive issues cheaply —
 but it is a **self-check, not the review**. It never satisfies the review requirement alone.
+
+### Correction: a second lens reciting the same standard is not a second opinion
+
+An earlier version of this file justified `ui-ux-pro-max` as the review lens because it has
+"its own heuristics, authored independently." **That was wrong**, and the way it was wrong is
+worth keeping.
+
+Of 208 rules in its quick reference, **115 cite Apple HIG, Material Design, WCAG, or Core Web
+Vitals** — the same standards `impeccable/reference/audit.md` checks against. On contrast, touch
+targets, focus visibility, alt text, heading order, and reduced motion the two **agree by
+construction**, because both are restatements of WCAG 2.1 AA. Independently *compiled* is not
+independently *derived*. That is a second printing, not a second opinion.
+
+Two further corrections from the same review:
+
+1. **`impeccable critique` already isolates its sub-agents** — "Assessment A and B MUST run as
+   two isolated sub-agents… They must not see each other's output," with a `⚠️ DEGRADED` banner
+   otherwise. The bias was never sloppy isolation.
+2. **The skill has no review mode at all.** It is generative — its mandatory workflow is
+   "Generate Design System (REQUIRED)". Handing it a built page yields a list of rules, not a
+   judgement.
+
+**Where the independence is real**, and why a second lens still belongs:
+
+- **Method.** `impeccable audit` opens: *"This is a code-level audit, not a design critique."*
+  The `design-review` agent is the inverse: *"You do not guess from the code; you open the page
+  in a real browser and observe it… Read code only to explain a defect you already observed."*
+  Same rules, different evidence, so they fail differently.
+- **Remedy space — the structural argument.** `audit.md` constrains itself: *"Only recommend
+  commands from: /impeccable adapt, /impeccable animate, …"* Its review can only ever prescribe
+  more impeccable. **A problem outside its command set is a problem it cannot name.**
+
+So the reviewer is the `design-review` agent (MIT, adapted) — not the skill. The skill stays
+where it belongs, as the stage-3 reference library.
+
+**Also:** the installed plugin is v2.5.0 and declares *"Stack: React Native (this project's only
+tech stack)"*. Upstream v2.14.1 supports 22 stacks including Astro. Upgrade before relying on it
+for anything.
 
 Adapted from NarraTwin's `docs/SKILL_EXECUTION_PLAN.md` and `docs/SKILL_LOCK.md`.
 

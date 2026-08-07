@@ -70,6 +70,14 @@ Prefer skills that say **how**, **where**, **where not**, and **what not to do**
 only lists what to do is close to worthless; the difficulty is always in the how and the
 boundaries.
 
+**Never write a skill that already exists in public.** Search GitHub first. Prefer well-starred
+work from known authors — Addy Osmani, Matt Pocock, obra, Anthropic — over anything authored
+here. Their skills have been used, tested, and corrected by many people; a fresh one written in
+an afternoon is shallow by comparison and carries loopholes nobody has found yet.
+
+Write one only after searching and finding nothing that fits, and record what was searched and
+why it did not fit. That record is what stops the same wheel being reinvented next time.
+
 ## Non-negotiable: how to write to the owner
 
 Plain English. Every time. Chat, commits, issues, and docs alike.

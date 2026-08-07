@@ -53,6 +53,39 @@ The last thing done in any session, never skipped. Full protocol:
 Cleanup is part of the work, not after it. A session judged complete while a process is still
 running or a remote is ahead has moved the mess somewhere the next session pays for it.
 
+## Non-negotiable: document and get approval before changing
+
+A finding is written down **before** it is worked on, never after.
+
+For anything not already in the approved plan:
+
+1. **Write the RCA first** — what happened, where it was introduced, where it was caught, what
+   it cost, and the evidence. Not a summary of the fix; the account of the problem.
+2. **State the need** — why this is worth changing now, and what happens if it is not.
+3. **Get approval.** Then work.
+
+Documenting after the change records a conclusion, not a cause. The record exists so the
+practice can be audited later — which flaws recurred, which phase kept producing them — and a
+document written after the fix has already forgotten what was tried and rejected.
+
+The five definitions govern each step: Ready, Developed, Tested, Done, Complete.
+See [`docs/practices/definitions.md`](docs/practices/definitions.md). Ready is the gate this
+rule enforces.
+
+## Non-negotiable: the owner's directives are a register, not a memory
+
+Every instruction the owner gives is recorded in
+[`docs/OWNER-DIRECTIVES.md`](docs/OWNER-DIRECTIVES.md) with a status, and that file is read at
+the start of every session and before every plan.
+
+Four directives had to be repeated between two and four times before they were honoured. Each
+was fixed only when it became a **file** rather than an intention. That is the whole reason this
+register exists: an instruction held in context is lost at the next compaction, and an
+instruction held in a file is not.
+
+A directive marked `OPEN` is a debt. Do not start new work while an `OPEN` directive is older
+than the work being proposed, without saying so.
+
 ## Non-negotiable: the voice
 
 **State what is proven. Label what is not. Invent nothing.**

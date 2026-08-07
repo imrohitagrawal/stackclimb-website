@@ -124,6 +124,10 @@ looked like it and is not. Worth watching, since the NarraTwin avatar will need 
 | **DEF-15** | **HIGH** | **`expect(widths.length).toBe(3)` goes red when coverage improves.** Adding a 4th viewport fails with "no viewports checked" — while four were checked. `AGENTS.md` bans exactly this | QA mutation M12 |
 | **DEF-16** | **Medium** | Destroying the colour system makes the gate *greener*: 5 of 7 grounds set to black left the screenshot hash unchanged and dropped axe violations from 4 to 1 | QA mutation M10 |
 | **DEF-17** | **Medium** | `@playwright/test: ^1.62.1` is a caret. One `npm install` moves the Chromium binary and invalidates every future baseline | `package.json` |
+| **DEF-18** | **HIGH** | **Two real WCAG failures live outside `.plate`, where the suite cannot see them.** `footer > p` at **1.51:1**, `em` at **2.79:1** — the footer inherits the linen ground and keeps bone text | Verified: axe with `.exclude('.plate')`, scrolled to `#private` |
+| **DEF-19** | **HIGH** | **CSP fails silently, and the bad case is the default.** Blocking *both* inline scripts is safe. Blocking *only the module* renders a complete HTTP 200 page at 1.03:1. The head script's hash never changes; the module's changes on every edit — so the head stays valid while the module goes stale | Synthesizer, three policies served |
+| **DEF-20** | **Medium** | `npm audit` high is **`astro` itself** (direct dependency, 8 XSS advisories), not sharp/esbuild as first reported. Unreachable in this static build, but the fix is `5.18.2 → 7.2.0` — **two** majors | `npm audit --json` |
+| **DEF-21** | **Medium** | `scroll-behavior: smooth` (`global.css:18`) makes every fragment link a ~3-second animation. `?at=` is **not** vestigial — it sets `no-anim` for an instant jump. Migrating to `#` needs a settle wait or every deep-link screenshot captures mid-scroll | Synthesizer, timed |
 | DEF-2 | Medium | `?at=<plate>` deep links are JS-only. Without JS the URL renders the hero | Visual walkthrough, step 24 |
 | DEF-3 | Low | No `rel="preload"` for fonts on a page whose LCP is a Bodoni headline | `grep -c 'rel="preload"' dist/index.html` → 0 |
 | DEF-4 | Low | No visual regression baselines, so alignment drift passes silently | 29 images captured, none compared |
@@ -159,5 +163,7 @@ looked like it and is not. Worth watching, since the NarraTwin avatar will need 
 | "Fonts are 76% of the payload" | Fonts are `unicode-range` subset; real cost ~91K. Two PNGs are 60% | Measure what is fetched, not what exists |
 | "ui-ux-pro-max has independent heuristics" | 115 of its 208 rules cite the same WCAG/HIG standards impeccable uses | Independently compiled is not independently derived |
 | "Going public needs one reworded line" | Four lines across three files; `PRODUCT.md` was worse | Scan before asserting scope |
+| The architect's proof that `.js-ground` fails open | The probe did not isolate the variable — at scroll 0 the **healthy** page also shows 14 nodes at 1.03:1, because `#private` was never scrolled into view. Conclusion right, evidence invalid | A right answer from a wrong proof is still a wrong proof |
+| Security: "LICENSE and RCA-002 are untracked" | Both present in `git archive HEAD`. Two false claims, each killable by one command | Widest brief, lowest floor — verify every individual claim |
 | "`project-doc-skills` has dangling references" | It does not. The earlier review read `skills/<name>/`, a build **input**. The product is `dist/*.skill`, a 66 KB zip with all 16 files | Test the artifact that ships, not the source that builds it |
 | "`project-doc-skills` is a poor fit" | `architecture-and-decisions` is now the **second-best** install of everything evaluated | A verdict inherited from one agent is a claim, not a finding |

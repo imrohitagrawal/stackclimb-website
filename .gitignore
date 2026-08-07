@@ -30,3 +30,7 @@ dist/
 # Impeccable working state — regenerated, machine-specific
 .impeccable/hook.cache.json
 .impeccable/config.local.json
+
+# Playwright
+test-results/
+playwright-report/

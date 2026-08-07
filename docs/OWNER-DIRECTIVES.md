@@ -38,6 +38,11 @@ forgotten and later recovered — kept visible on purpose).
 | W-16 | **Do not drop or forget any instruction** | DONE | This file |
 | W-17 | Good practices harvested for reuse on future projects | DONE | `docs/practices/` |
 | W-18 | Planning defects cost more than development defects — research deeply, fan out | PARTIAL | 9 agents run; no standing rule yet |
+| W-19 | Verify by **executing**, not by reading. Agent verdicts need their own reviewer | PARTIAL | Role reviewers now told to execute; synthesizer pending |
+| W-20 | Build a watermark skill — the spec exists, nothing applies it | OPEN | `docs/rca/RCA-001-watermark-skill.md` — awaiting approval |
+| W-21 | Add an everyday analogy when disagreeing | DONE | `AGENTS.md` step 4 |
+| W-22 | Copy quorum-ai's licence; attribute owner, GitHub, LinkedIn, Stackclimb | DONE | `LICENSE` |
+| W-23 | Get the plan reviewed by architect, dev, tester, PM, program, eng, ops, DevOps | PARTIAL | 4 role reviewers running |
 
 ## Review and orchestration
 

@@ -117,6 +117,13 @@ looked like it and is not. Worth watching, since the NarraTwin avatar will need 
 | **DEF-8** | **Medium** | Six of seven plates **print blank** — bone text on white paper. No `@media print`, no `print-color-adjust` anywhere | Architect review, print emulation |
 | **DEF-9** | **Medium** | Canonical and `og:url` are hard-coded to the home page (`Layout.astro:31,35`). Every future page will declare the home page as its canonical | Architect review |
 | **DEF-10** | **Medium** | `ROUTES = ['/']` in `dod.spec.js:11` is hand-typed. Add pages and every gate silently covers one page while reporting green. Same defect in `visual-walkthrough.mjs:14` | Both reviews |
+| **DEF-11** | **HIGH** | **The suite never builds.** `playwright.config.js:16` runs `astro preview`, not `astro build && astro preview`. Break the source, skip the rebuild, and every gate passes against a stale `dist/`. `reuseExistingServer` silently reuses a stale local server too | QA mutation M9 |
+| **DEF-12** | **HIGH** | **Deleting content makes the suite green.** `plateIds.length > 0` is satisfied by ONE plate. Removing 6 of 7 took the suite from 1 failed / 4 passed to **5 passed** | QA mutation M7 |
+| **DEF-13** | **HIGH** | **The focus test cannot fail for what it names.** It checks `outlineStyle`, `boxShadow`, `textDecorationLine` — none of which is *visibility*. A transparent outline passes | QA mutation M2 |
+| **DEF-14** | **HIGH** | **Nothing outside `.plate` is scanned.** axe scopes to `#${id}`. A missing `alt` and an empty link planted in the nav went undetected | QA mutation M8 |
+| **DEF-15** | **HIGH** | **`expect(widths.length).toBe(3)` goes red when coverage improves.** Adding a 4th viewport fails with "no viewports checked" — while four were checked. `AGENTS.md` bans exactly this | QA mutation M12 |
+| **DEF-16** | **Medium** | Destroying the colour system makes the gate *greener*: 5 of 7 grounds set to black left the screenshot hash unchanged and dropped axe violations from 4 to 1 | QA mutation M10 |
+| **DEF-17** | **Medium** | `@playwright/test: ^1.62.1` is a caret. One `npm install` moves the Chromium binary and invalidates every future baseline | `package.json` |
 | DEF-2 | Medium | `?at=<plate>` deep links are JS-only. Without JS the URL renders the hero | Visual walkthrough, step 24 |
 | DEF-3 | Low | No `rel="preload"` for fonts on a page whose LCP is a Bodoni headline | `grep -c 'rel="preload"' dist/index.html` → 0 |
 | DEF-4 | Low | No visual regression baselines, so alignment drift passes silently | 29 images captured, none compared |

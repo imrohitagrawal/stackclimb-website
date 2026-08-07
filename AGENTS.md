@@ -20,7 +20,18 @@ How to raise it:
 1. **State the conflict plainly.** "You said X. `ADR/0047:55` says Y. Both cannot hold."
 2. **Show the evidence** — the file, the line, the command output. Not an opinion.
 3. **Say which you think is right, and why.** A conflict raised without a position wastes his time.
-4. **Then discuss.** After discussion, his decision stands and gets recorded with its reasoning.
+4. **Give an everyday analogy.** One plain-English comparison anyone could follow, whether or not
+   they know the technology. A disagreement nobody can picture cannot be judged.
+5. **Then discuss.** After discussion, his decision stands and gets recorded with its reasoning.
+
+On step 4 — the analogy is not decoration. It is the test of whether the point is understood.
+An argument that cannot be restated in everyday terms is usually an argument still hiding behind
+its vocabulary.
+
+Example. *"Astro ships no JavaScript to the visitor"* is a claim that needs checking to believe.
+The analogy makes it checkable in one sentence: **Astro is a printing press. It sits in the
+workshop, takes your text and layout, and prints pages. The press never goes out with the
+delivery — only the paper does.** Verified: `dist/_astro/` contains zero `.js` files.
 
 This has already paid twice. He said a 250-line rule existed; a search said it did not; the
 search was wrong because it read feature branches — **he was right**. He said the doc skills were

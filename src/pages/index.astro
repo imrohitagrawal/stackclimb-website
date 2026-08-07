@@ -43,11 +43,13 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
           rows={[
             { t: 'Experience', d: '14+ yrs — Oracle, Amazon, LimeRoad, Mobileum, Snapdeal, Subex' },
             { t: 'Most recent', d: 'Oracle Principal MTS · 2019–2026' },
-            { t: 'Role concluded', d: 'April 2026' },
-            { t: 'Since then', d: 'Full-time independent portfolio engineering' },
-            { t: 'Seeking', d: 'Senior / Principal — Forward-Deployed AI · AI Platform · LLMOps' },
-            { t: 'Also open to', d: 'Principal AI Quality Engineering Architect · AI Test Automation & Agentic AI Leader' },
-            { t: 'Base', d: 'Bengaluru · open to global relocation' },
+            { t: 'Since April 2026', d: 'Building independent AI systems, full time' },
+            {
+              t: 'Seeking',
+              d: 'Senior / Principal — AI Platform · LLMOps · Forward-Deployed AI · AI Quality Engineering Architect · AI Test Automation & Agentic AI Leader',
+            },
+            { t: 'Base', d: 'Bengaluru, India · IST (UTC+5:30)' },
+            { t: 'Relocation', d: 'Open worldwide' },
           ]}
         />
       </div>
@@ -189,11 +191,15 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
           yet.
         </p>
         <p>
-          Runs on one small machine that scales to zero when idle — so the first visit after a
-          quiet spell is slow, and this page says so instead of pretending otherwise.
+          Started at <em>Build with AI</em> (Elastic × GDG Cloud New Delhi, 18 July 2026) as a
+          three-hour build, then rebuilt over the following four days into what runs today. It
+          lives on one small machine that scales to zero when idle. <strong>Right now that
+          machine is not answering</strong> — the certificate is valid and the address resolves,
+          so the fault is being investigated. This page says so rather than leaving you to find
+          out by clicking.
         </p>
         <div class="links">
-          <a href="https://saafsaans.stackclimb.com" target="_blank" rel="noopener">Deployment</a>
+          <a href="https://saafsaans.stackclimb.com" target="_blank" rel="noopener">Deployment (down)</a>
           <a href="https://github.com/imrohitagrawal/saaf-saans" target="_blank" rel="noopener">Source</a>
           <a
             href="https://github.com/imrohitagrawal/saaf-saans/blob/3bac09012cc1a5e36d24505e54d6155ff0664aa3/docs/CASE-STUDY.md"
@@ -207,7 +213,7 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
         <CapStrip
           label="SaafSaans, captioned"
           items={[
-            { t: 'State', d: 'Deployed — sleeps idle' },
+            { t: 'State', d: 'Deployed — not responding' },
             { t: 'Risk', d: 'Per person', target: 's-person' },
             { t: 'Scale', d: 'CPCB bands', target: 's-bands' },
             { t: 'Timing', d: 'Best window', target: 's-window' },
@@ -332,20 +338,22 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
         <h2 class="plate-title">One message away</h2>
         <p>
           Open to senior and principal roles in Forward-Deployed AI, AI Platform Engineering,
-          and LLMOps / AI Reliability — and closely aligned AI quality and platform work. Based
-          in Bengaluru; open to global relocation and international travel.
+          and LLMOps / AI Reliability — and closely aligned AI quality and platform work.
         </p>
         <div class="ctas">
-          <a class="btn primary" href="mailto:rohit.ra.agrawal@gmail.com">Email Rohit</a>
+          <a class="btn primary" href="mailto:rohit.ra.agrawal@gmail.com">Email me</a>
           <a class="btn ghost" href="https://www.linkedin.com/in/rohitagrawal14" target="_blank" rel="noopener">LinkedIn</a>
           <a class="btn ghost" href="https://github.com/imrohitagrawal" target="_blank" rel="noopener">GitHub</a>
         </div>
+        {/* The three destinations above are already labelled links. Repeating them
+            here as plain text was a duplicate a visitor could not click. These two
+            rows carry facts the paragraph was burying instead. Terms stay sentence
+            case — global.css applies text-transform: uppercase. */}
         <Ledger
-          label="Contact"
+          label="Where"
           rows={[
-            { t: 'Email', d: 'rohit.ra.agrawal@gmail.com' },
-            { t: 'LinkedIn', d: 'linkedin.com/in/rohitagrawal14' },
-            { t: 'Code', d: 'github.com/imrohitagrawal' },
+            { t: 'Based', d: 'Bengaluru, India · IST (UTC+5:30)' },
+            { t: 'Open to', d: 'Global relocation · international travel' },
           ]}
         />
       </div>

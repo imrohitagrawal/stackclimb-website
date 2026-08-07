@@ -14,7 +14,7 @@ Last updated: 2026-08-07
 | | |
 |---|---|
 | Repo | `github.com/imrohitagrawal/stackclimb-website` · **private, awaiting the owner's command to go public** |
-| Branch | `main` · 6 commits |
+| Branch | `main` — run `git rev-list --count HEAD` for the count; do not hard-code it here |
 | Site | Home page built — 7 plates, authored SVG figures, ruled caption strips |
 | Deployed | **No.** Nothing is live. `stackclimb.com` apex still resolves to nothing |
 | Tests | Definition-of-Done suite (10 pass, **2 fail — real defect**), visual walkthrough (29 images) |
@@ -111,7 +111,12 @@ looked like it and is not. Worth watching, since the NarraTwin avatar will need 
 | ID | Severity | What | Evidence |
 |---|---|---|---|
 | ~~DEF-1~~ | — | **FIXED.** Plates now paint their own ground in static HTML; JS reclaims it via `.js-ground` before first paint | No-JS plate bg now `rgb(181,172,156)` linen vs ink text = 7.1:1. Cross-fade unchanged |
-| DEF-5 | **Medium** | Colour contrast fails on 4 plates / 22 nodes: quorum, saafsaans, narratwin, private. The `DESIGN.md` opacity ramp (prose 88%, labels 62%) was tuned on ink navy and fails on lighter grounds | axe per-plate scan, 4 of 7 plates |
+| DEF-5 | **Medium** | Colour contrast fails. **Desktop: 4 plates / 22 nodes. Mobile: 3 plates / 16 nodes** — `#private` passes at 390px and fails at 1440px. The `DESIGN.md` opacity ramp (prose 88%, labels 62%) was tuned on ink navy and fails on lighter grounds | axe per-plate scan, both projects |
+| **DEF-6** | **HIGH** | **The DEF-1 fix fails open.** `.js-ground` is set by an inline script that always succeeds, while `plates.js` — which does the repainting — can throw independently. JS on + module dead = **1.03:1, 14 nodes**, the original defect in full | Architect review, by execution. RCA-002 |
+| **DEF-7** | **HIGH** | **`index.astro:196` links SaafSaans as "Deployment". It does not respond.** Verified: HTTP 000 after 5.3s. CiteVyn 200 in 0.64s, Quorum 200 in 0.37s | `curl --max-time 60` |
+| **DEF-8** | **Medium** | Six of seven plates **print blank** — bone text on white paper. No `@media print`, no `print-color-adjust` anywhere | Architect review, print emulation |
+| **DEF-9** | **Medium** | Canonical and `og:url` are hard-coded to the home page (`Layout.astro:31,35`). Every future page will declare the home page as its canonical | Architect review |
+| **DEF-10** | **Medium** | `ROUTES = ['/']` in `dod.spec.js:11` is hand-typed. Add pages and every gate silently covers one page while reporting green. Same defect in `visual-walkthrough.mjs:14` | Both reviews |
 | DEF-2 | Medium | `?at=<plate>` deep links are JS-only. Without JS the URL renders the hero | Visual walkthrough, step 24 |
 | DEF-3 | Low | No `rel="preload"` for fonts on a page whose LCP is a Bodoni headline | `grep -c 'rel="preload"' dist/index.html` → 0 |
 | DEF-4 | Low | No visual regression baselines, so alignment drift passes silently | 29 images captured, none compared |

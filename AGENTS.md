@@ -33,8 +33,9 @@ thesis, so this is a correctness rule, not a style preference.
 - NarraTwin's `Phase 1 — No-Go` is stated, not hidden.
 - A claim reaches the site only at `VERIFIED` or labelled `REPORTED`. See `docs/evidence/README.md`.
 
-The hiring goal must not appear on the site or in any public-facing document. Stating
-availability — roles sought, open to relocation — is fine and stays.
+The site states availability as plain fact — roles sought, open to relocation. It never
+pitches, never signals urgency, and never explains why it exists. Copy that reads as a
+campaign is wrong.
 
 ## Non-negotiable: execution is the source of truth
 

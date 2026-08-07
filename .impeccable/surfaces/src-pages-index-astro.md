@@ -9,11 +9,11 @@ related_targets: []
 
 Scope: `/` (src/pages/index.astro). Visitor mode: Persuade.
 
-Audience & job: hiring managers, recruiters, and senior engineers triaging Rohit as a
-candidate for senior/principal AI-platform roles, ~90 seconds, arriving cold. Job: believe
+Audience & job: hiring managers, recruiters, and senior engineers evaluating the work,
+~90 seconds, arriving cold. Job: believe
 the AI pivot is real and send a message.
 
-Action: email (mailto), with LinkedIn/GitHub secondary. Success is an inbound message.
+Action: email (mailto), with LinkedIn/GitHub secondary. Success is a message sent.
 
 Proof: four public systems (two verified live at build time), their gates and disclosed
 states, the 14-year record with the April-2026 role end named plainly, and the two private

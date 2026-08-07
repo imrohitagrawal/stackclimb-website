@@ -28,9 +28,9 @@ Reliability** — and closely aligned roles in AI Quality & Test Engineering, AI
 Architecture, and AI Platform & DevOps.
 
 They arrive cold — from a résumé, LinkedIn, a GitHub profile, or a referral — with limited time
-and other candidates open in other tabs. Their job is to decide quickly whether this person is
-worth a conversation. A material sub-question they will ask: *is the pivot from 14 years of
-distributed systems into applied AI real, or aspirational?*
+and several tabs open. They decide quickly whether the work is worth a longer look. A material
+sub-question they will ask: *is the move from 14 years of distributed systems into applied AI
+real, or aspirational?*
 
 **Secondary:** engineers who reach the site through a linked project or article.
 
@@ -40,7 +40,8 @@ The personal site of **Rohit Agrawal**, a principal-level engineer with 14+ year
 distributed systems, cloud platforms, CI/CD, observability, and production reliability, now
 building independent, inspectable AI systems.
 
-Success is an inbound message about a role. Not traffic, not time on page.
+Success is a reader who understands the work well enough to start a conversation. Not traffic,
+not time on page.
 
 ## Positioning
 
@@ -170,10 +171,10 @@ or traffic numbers, no press. None may be fabricated.
    uncertainty, and honest degraded modes. The site must hold itself to that standard — label
    NarraTwin's No-Go state, disclose a cold-starting instance, never assert unproven adoption.
    A site that overclaims would refute its own subject matter.
-3. **Built for a two-minute skim, rewarded on a ten-minute read.** The visitor is triaging
+3. **Built for a two-minute skim, rewarded on a ten-minute read.** The visitor is scanning
    candidates under time pressure. Answer "who is this and is the AI pivot real" before offering
    any depth.
-4. **No dead ends.** Success is a message. Every page — including a deep-linked case study or
+4. **No dead ends.** Every page — including a deep-linked case study or
    article reached cold — offers a clear way to make contact.
 5. **The site is itself a work sample.** The audience is technical and evaluates implementation
    quality alongside content. For a candidate selling AI *reliability*, performance, correctness,

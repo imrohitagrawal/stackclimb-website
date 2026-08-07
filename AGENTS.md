@@ -13,11 +13,26 @@ Authority order — **the user's words, then these files, then your judgement**:
 
 | Question | File |
 |---|---|
+| **What was decided, what is open, what was rejected?** | **`docs/STATUS.md`** |
 | What is true about the product? | `PRODUCT.md` |
 | What does it look like? | `DESIGN.md` |
 | What is true about the projects? | `docs/evidence/` |
 | What is this surface for? | `.impeccable/surfaces/` |
 | Logo and wordmark | `docs/brand/README.md` |
+
+## Non-negotiable: the ledger is updated in the same change
+
+`docs/STATUS.md` records decisions, open items, defects, rejected options, and corrections.
+
+- A decision made in conversation is **not recorded** until it is in that file.
+- Update it in the same change that alters any of it — never "later".
+- If the file and a conversation disagree, the file is wrong and gets fixed. Chat is not a record.
+- Rejected options carry their reason, so the same option is not re-proposed next month.
+- Corrections stay. A mistake deleted is a mistake repeated.
+
+Reason, from NarraTwin's governance learnings: *"AI-assisted work often spans many sessions.
+Without a status ledger, context compaction, branch switches, merged PRs, and partially completed
+stages can cause the next agent run to act on an obsolete plan."*
 
 ## Non-negotiable: the voice
 

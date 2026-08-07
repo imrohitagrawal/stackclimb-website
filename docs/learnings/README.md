@@ -14,6 +14,15 @@ in testing was introduced in design. File it under the phase that could have pre
 | Security & publishing | [`security.md`](security.md) | 2 |
 | Review & orchestration | [`review.md`](review.md) | 2 |
 
+## Case studies
+
+Longer than an entry, because the question was "did this approach work" rather than "what went
+wrong once".
+
+| # | Question | Verdict |
+|---|---|---|
+| [001](case-study-001-multi-agent-review.md) | Did the multi-agent review approach work? | Yes, with one systemic hole: verdicts were verified by reading, not running |
+
 ## Entry format
 
 Every entry carries all five fields. An entry missing the cost or the rule is a note, not a

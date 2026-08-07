@@ -12,7 +12,7 @@ in testing was introduced in design. File it under the phase that could have pre
 | Development | [`development.md`](development.md) | 1 |
 | Testing | [`testing.md`](testing.md) | 3 |
 | Security & publishing | [`security.md`](security.md) | 2 |
-| Review & orchestration | [`review.md`](review.md) | 2 |
+| Review & orchestration | [`review.md`](review.md) | 3 |
 
 ## Case studies
 

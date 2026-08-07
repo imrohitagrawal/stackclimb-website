@@ -42,17 +42,43 @@ Last updated: 2026-08-07
 ### D12 — the install list, not yet executed
 
 ```
+mattpocock/skills       domain-modeling, grilling, grill-with-docs        ← highest value
+project-doc-skills      architecture-and-decisions  (from dist/*.skill)  ← aimed at our problem
+project-doc-skills      doc-critic
 obra/superpowers        verification-before-completion, test-driven-development,
                         systematic-debugging, requesting-code-review,
                         receiving-code-review, dispatching-parallel-agents
 addyosmani/agent-skills code-review-and-quality, performance-optimization
 addyosmani/web-quality  performance
-project-doc-skills      doc-critic
 ui-ux-pro-max repo      design-review agent (adapted, MIT) — the independent UI lens
 ```
 
-Do **not** install both TDD skills — obra's and addyosmani's share a directory name and the
-second overwrites the first. obra wins on mandatory watch-it-fail.
+Three traps:
+
+1. **Do not install both TDD skills.** obra's and addyosmani's share a directory name; the
+   second overwrites the first. obra wins on mandatory watch-it-fail.
+2. **Install `project-doc-skills` from `dist/*.skill`, never by copying `skills/<name>/`.**
+   The source directories are build *inputs* — `house-style.md`, `project-profile.md`, and
+   `verify.py` are copied in by `build-skills.sh`. Copying the source yields dangling refs.
+3. **`grill-with-docs` is a 245-byte pointer.** Its whole body is *"Run a `/grilling` session,
+   using the `/domain-modeling` skill."* Install all three or it points at nothing. Also: the
+   "docs" it makes are ADRs and a glossary — it does **not** fetch documentation.
+
+### Conditional — install when the trigger fires
+
+| Skill | Install when |
+|---|---|
+| `graphify` | Pointed at `docs/` and prose, never `src/` — there is no `.astro` tree-sitter grammar, so the free AST path barely applies and everything falls to the token-costing path |
+| `claude-obsidian` | Only if memory living **outside** the site repo is acceptable. Its rule: *"The checkout contains the product. It is not your knowledge vault."* |
+| `project-faq` | If a Q&A page is wanted. It emits generated tabbed HTML, a foreign artifact next to Astro |
+| `learning-track` | If the writing section becomes a teaching series. It prescribes an 8-critic loop — heavy for one person |
+| `onboarding-companion` | If someone else contributes. Doubles as a re-entry doc after a long gap |
+| `operations-runbook` | If a case study covers a running service |
+
+### Uncovered capability
+
+**Grounding answers in fetched documentation** has no public skill I could find. `grill-with-docs`
+looked like it and is not. Worth watching, since the NarraTwin avatar will need exactly this.
 
 ---
 
@@ -101,6 +127,9 @@ second overwrites the first. obra wins on mandatory watch-it-fail.
 | Migrating apps off Fly to Cloud Run | Saves pennies, costs a GCP project, Artifact Registry, IAM, and three migrations |
 | Replacing the plate world entirely | Would rebuild six authored figures and the leader-line interaction to solve a page-structure problem |
 | `phuryn/pm-skills` | 66 of 68 fail the how/where-not/what-not test. `positioning-ideas` would drag competitor-matrix framing into the copy |
+| `andrej-karpathy-skills` | Not knowledge management — one 2.5 KB file duplicating the global `CLAUDE.md`. Claims MIT in frontmatter; **no LICENSE file exists** |
+| `notebooklm-py` | Drives an unofficial Google API and stores a bearer credential on disk. Wrong shape for maintaining a repo's knowledge |
+| `usage-guide` | Grade-2 reading level for end users operating a product. No such reader here |
 | `security-and-hardening` | Five of six sections are server-side. This site has no server, no auth, no database |
 | `VoltAgent`, `agentskills`, `vercel-labs`, `wednesday-solutions` | Two are not skills at all. The others are React/runtime-bound |
 | Writing our own visual-review skill | `design-review` already exists, MIT, and is battle-tested |
@@ -117,3 +146,5 @@ second overwrites the first. obra wins on mandatory watch-it-fail.
 | "Fonts are 76% of the payload" | Fonts are `unicode-range` subset; real cost ~91K. Two PNGs are 60% | Measure what is fetched, not what exists |
 | "ui-ux-pro-max has independent heuristics" | 115 of its 208 rules cite the same WCAG/HIG standards impeccable uses | Independently compiled is not independently derived |
 | "Going public needs one reworded line" | Four lines across three files; `PRODUCT.md` was worse | Scan before asserting scope |
+| "`project-doc-skills` has dangling references" | It does not. The earlier review read `skills/<name>/`, a build **input**. The product is `dist/*.skill`, a 66 KB zip with all 16 files | Test the artifact that ships, not the source that builds it |
+| "`project-doc-skills` is a poor fit" | `architecture-and-decisions` is now the **second-best** install of everything evaluated | A verdict inherited from one agent is a claim, not a finding |

@@ -71,6 +71,7 @@ forgotten and later recovered — kept visible on purpose).
 | P-10 | Comments facility, low priority | OPEN | Giscus recommended, not built |
 | P-11 | NarraTwin avatar as the site's representative | OPEN | Plan phase 7.3 |
 | P-12 | Logo — Claude produces options before opening the owner's | OPEN | Plan phase 5 |
+| **P-13** | **Contact details as labelled hyperlinks, never bare text** | **OPEN — raised twice, agreed once, never done** | Contact ledger still shows raw email and URLs |
 
 ## Infrastructure
 
@@ -94,9 +95,16 @@ the pattern matters more than any single miss.
 | Plain English, no jargon | 2 | A rule in `AGENTS.md`, loaded every session |
 | Learnings folder structured by phase | 2 | `docs/learnings/` |
 | Plan before implementing | 2 | `docs/plan/build-plan.md` |
+| **Contact links as hyperlinks (P-13)** | **2 — still not done** | **Nothing yet.** I replied "you're right, that was sloppy" and changed nothing |
 
 **The pattern:** each was fixed only once it became a *file* rather than a *promise*. Nothing
 here was solved by intending to remember it.
+
+**P-13 is worse than the others.** It was raised during the A/B/C direction review, I agreed in
+writing — *"You're right, that was sloppy. Plain text addresses are not affordances."* — and then
+never recorded it, never fixed it, and built this very register two turns later **without
+backfilling it.** The register was assembled from what I remembered, which is the failure it
+exists to prevent.
 
 ---
 

@@ -34,3 +34,6 @@ dist/
 # Playwright
 test-results/
 playwright-report/
+
+# Visual walkthrough output — regenerate with node tests/visual-walkthrough.mjs
+tests/shots/

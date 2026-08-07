@@ -71,7 +71,7 @@ forgotten and later recovered — kept visible on purpose).
 | P-10 | Comments facility, low priority | OPEN | Giscus recommended, not built |
 | P-11 | NarraTwin avatar as the site's representative | OPEN | Plan phase 7.3 |
 | P-12 | Logo — Claude produces options before opening the owner's | OPEN | Plan phase 5 |
-| **P-13** | **Contact details as labelled hyperlinks, never bare text** | **OPEN — raised twice, agreed once, never done** | Contact ledger still shows raw email and URLs |
+| **P-13** | **Contact details as labelled hyperlinks, never bare text** | **DONE** — fixed on `fix/qa-review-findings`, third ask | `index.astro` contact plate · gate in `tests/contact.spec.js` |
 
 ## Infrastructure
 
@@ -96,7 +96,7 @@ the pattern matters more than any single miss.
 | Plain English, no jargon | 2 | A rule in `AGENTS.md`, loaded every session |
 | Learnings folder structured by phase | 2 | `docs/learnings/` |
 | Plan before implementing | 2 | `docs/plan/build-plan.md` |
-| **Contact links as hyperlinks (P-13)** | **2 — still not done** | **Nothing yet.** I replied "you're right, that was sloppy" and changed nothing |
+| **Contact links as hyperlinks (P-13)** | **2 — fixed on the third pass** | The three bare rows became labelled links, and `tests/contact.spec.js` now fails if they revert |
 
 **The pattern:** each was fixed only once it became a *file* rather than a *promise*. Nothing
 here was solved by intending to remember it.
@@ -106,6 +106,19 @@ writing — *"You're right, that was sloppy. Plain text addresses are not afford
 never recorded it, never fixed it, and built this very register two turns later **without
 backfilling it.** The register was assembled from what I remembered, which is the failure it
 exists to prevent.
+
+**Closed on `fix/qa-review-findings`.** The record of the miss stays; only the status moved. Two
+things had to land together, because either alone would have left it open again:
+
+1. The contact plate's three bare rows became labelled links.
+2. `tests/contact.spec.js` gates it — and the first version of that gate could not fail for what
+   it claimed. Nine holes were found by three reviewers, five of them by a different model
+   family. The file was rebuilt and every hole was proved closed by mutation: the assertion was
+   watched going red with the defect planted, and green with it removed.
+
+The lesson is not "P-13 is done". It is that **a gate written after the fix is itself a claim** —
+it passed on the fixed page and on a page with the contact plate deleted, which is the same
+result an empty test file gives.
 
 ---
 

@@ -5,7 +5,7 @@ The ledger. What is decided, what is open, and what was rejected so it does not 
 Updated in the same change that alters any of it. If this file and the chat disagree, this file
 is wrong and must be fixed — chat is not a record.
 
-Last updated: 2026-08-07
+Last updated: 2026-08-08
 
 ---
 
@@ -17,7 +17,7 @@ Last updated: 2026-08-07
 | Branch | `main` — run `git rev-list --count HEAD` for the count; do not hard-code it here |
 | Site | Home page built — 7 plates, authored SVG figures, ruled caption strips |
 | Deployed | **No.** Nothing is live. `stackclimb.com` apex still resolves to nothing |
-| Tests | Definition-of-Done suite (10 pass, **2 fail — real defect**), visual walkthrough (29 images) |
+| Tests | `npx playwright test` on `fix/qa-review-findings`: **16 pass, 2 fail**. Both failures are DEF-5 contrast, deferred. Visual walkthrough (29 images) |
 | CI | **None.** Every rule in `AGENTS.md` is influence, not enforcement |
 
 ---
@@ -41,6 +41,8 @@ Last updated: 2026-08-07
 | D14 | **Deploy via Cloudflare Pages connected to the private repo (approach A) — temporarily** | Only option that ships today. B risks deploying a stale `dist/` (DEF-11 is exactly that failure). C puts a red, partly-broken suite on the critical path | 08-07 |
 | D15 | **Approach C is the target. A is a recorded debt with a written exit condition** | See the standing notice at the top of `AGENTS.md`. A temporary state nobody mentions becomes permanent | 08-07 |
 | D12 | **Skills to install** (below) | Three agent reviews, applying the how/where-not/what-not criterion | 08-07 |
+| D16 | **The SaafSaans origin ships with no duration at all, rather than a labelled one** | The approved spec (`specs/2026-08-07-launch-scope-design.md:36`) allowed the three-hour figure if labelled owner-stated. Dropping it is better: the site's whole subject is claims that survive a check, and a labelled figure still invites the reader to check a number that cannot be checked. What replaced it — entered at the event, as an app that already existed, rebuilt over the next three days — is checkable line by line in `saaf-saans`' commit log and case study | 08-08 |
+| D17 | **The certificate clause is off the site.** The plate states only what the endpoint returns | The spec read the certificate from Fly's record, not from the endpoint. Asked today, the endpoint presents no certificate at all, so "the certificate is valid" cannot be confirmed from where a visitor stands. What *is* confirmable stayed: the name resolves and the connection is accepted | 08-08 |
 
 ### D12 — the install list, not yet executed
 
@@ -134,6 +136,11 @@ looked like it and is not. Worth watching, since the NarraTwin avatar will need 
 | **DEF-23** | **Medium** | `paint-grain.png` is **perfectly grayscale stored as 24-bit RGB** — three identical copies of one plane. Grayscale PNG saves 32% **pixel-identically**; WebP q95 saves 77% at max error 2.33/255 | Channel-spread check, rendered diff |
 | **DEF-24** | **Low** | `paint-grain.png`, `og.png`, `favicon.svg` ship **unhashed** from `/public` while CSS and fonts are content-hashed. With a long `immutable` cache, a grain change never propagates | Build output |
 | **DEF-21** | **Medium** | `scroll-behavior: smooth` (`global.css:18`) makes every fragment link a ~3-second animation. `?at=` is **not** vestigial — it sets `no-anim` for an instant jump. Migrating to `#` needs a settle wait or every deep-link screenshot captures mid-scroll | Synthesizer, timed |
+| ~~DEF-25~~ | — | **FIXED.** The SaafSaans plate claimed a "three-hour build" started at the event. Nothing in `saaf-saans` records a duration, and all three commits on 18 July land 14:17–15:21, before the buildathon's 16:45 slot. The first is titled "existing UI baseline"; the linked case study says the app was built for a hackathon *before* 18 July. Copy now says the project was **entered** at the event as a four-tab Streamlit app that already existed | `git log` in `saaf-saans` (master); `docs/CASE-STUDY.md:32` |
+| ~~DEF-26~~ | — | **FIXED.** The same plate said "the certificate is valid and the address resolves". Half true. The name resolves (`66.241.125.120`) and TCP 443 accepts, but the server closes the connection without presenting a certificate. Copy now states only what a command returns | `nc -z 66.241.125.120 443` succeeds; `openssl s_client` → "unexpected eof while reading" during init |
+| ~~DEF-27~~ | — | **FIXED.** Relocation was stated twice in two wordings — hero ledger "Relocation / Open worldwide" and contact ledger "Open to / Global relocation · international travel" — in the change whose commit message said nothing was said twice. The hero row was removed; the contact row carries strictly more (it also states international travel) | `index.astro:52` and `:356` before the fix |
+| ~~DEF-28~~ | — | **FIXED.** `tests/contact.spec.js` had **nine** holes and could not fail for what its own header claimed. Deleting the whole contact plate passed; `body { display: none }` passed; two unlabelled links passed. Rebuilt, with every hole proved closed by a watched mutation | Three reviewers, five holes found only by a different model family |
+| **DEF-29** | **Low** | **Open, found while fixing DEF-27 and deliberately not fixed here.** The location is still stated twice, *verbatim*: `index.astro` hero ledger `Base — Bengaluru, India · IST (UTC+5:30)` and contact ledger `Based — Bengaluru, India · IST (UTC+5:30)`. Same value, near-same label. It is the same defect class as DEF-27 and arguably worse, but it was outside the approved brief, and `AGENTS.md` puts the RCA and the approval before the change. Needs a decision on which block owns the fact | `grep -n 'Bengaluru' src/pages/index.astro` returns two rows |
 | DEF-2 | Medium | `?at=<plate>` deep links are JS-only. Without JS the URL renders the hero | Visual walkthrough, step 24 |
 | ~~DEF-3~~ | — | **KILLED. Preloading fonts made LCP *worse* in every configuration measured** — desktop +44ms, mobile +96ms. `font-display: swap` paints text instantly in fallback; a preload lands inside the block period and makes the browser wait | 7-run medians, A/B |
 | DEF-4 | Low | No visual regression baselines, so alignment drift passes silently | 29 images captured, none compared |
@@ -177,3 +184,7 @@ looked like it and is not. Worth watching, since the NarraTwin avatar will need 
 | Security: "LICENSE and RCA-002 are untracked" | Both present in `git archive HEAD`. Two false claims, each killable by one command | Widest brief, lowest floor — verify every individual claim |
 | "`project-doc-skills` has dangling references" | It does not. The earlier review read `skills/<name>/`, a build **input**. The product is `dist/*.skill`, a 66 KB zip with all 16 files | Test the artifact that ships, not the source that builds it |
 | "`project-doc-skills` is a poor fit" | `architecture-and-decisions` is now the **second-best** install of everything evaluated | A verdict inherited from one agent is a claim, not a finding |
+| SaafSaans "started at Build with AI as a three-hour build" | The repo records no duration anywhere, and all three commits that day precede the buildathon's first slot. The first is "existing UI baseline" | An owner-stated figure the design doc itself said to label went to the site unlabelled. The rule was written and then not applied in the same change |
+| "The certificate is valid and the address resolves" | The address resolves; the server presents no certificate at all | A sentence with two clauses needs two checks. Half a verified claim is an unverified claim |
+| A commit message saying "nothing said twice" | Relocation was stated in two places, in two wordings | Claiming an absence needs a search for it, not a memory of intending it |
+| `tests/contact.spec.js` "prevents the contact plate being deleted" | Deleting the entire plate passed. So did hiding the whole page | A gate written after its fix has never been observed failing. Watch it fail or it proves nothing |

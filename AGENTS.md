@@ -90,8 +90,32 @@ work from known authors — Addy Osmani, Matt Pocock, obra, Anthropic — over a
 here. Their skills have been used, tested, and corrected by many people; a fresh one written in
 an afternoon is shallow by comparison and carries loopholes nobody has found yet.
 
-Write one only after searching and finding nothing that fits, and record what was searched and
-why it did not fit. That record is what stops the same wheel being reinvented next time.
+**Write a custom skill in exactly two cases**, and record which one applies:
+
+1. Nothing public covers the capability. Record what was searched and why each candidate failed.
+2. The capability exists but is **scattered across three or four skills**. Compose the best parts
+   into one, credit every source with its licence, and write it to be portable — it will be
+   reused on other projects, so it must not assume this repo's paths or stack.
+
+### Skill currency — a phase, not an afterthought
+
+Skills load at **session start**. A skill installed or updated mid-session is not active in that
+session. So currency is checked during planning, never during implementation:
+
+| Phase | Action |
+|---|---|
+| **Plan** | Decide which skills the work needs |
+| **Refresh** | `npx skills update` · verify against `skills-lock.json` · record versions in `docs/STATUS.md` |
+| **Restart** | End the session. Skills reload on the next one |
+| **Implement** | Only now, with skills known current |
+
+Never start implementation on a skill whose currency has not been checked in the current planning
+cycle. Most skills carry no `version:` field, so `skills-lock.json`'s `computedHash` is the real
+currency signal, not the frontmatter.
+
+Anything installed outside the `skills` CLI — a `dist/*.skill` bundle, a manual copy — is
+**unlocked**, has no hash, and cannot be currency-checked. Record it in `docs/STATUS.md` with its
+source and install date, and re-fetch it deliberately.
 
 ## Non-negotiable: how to write to the owner
 

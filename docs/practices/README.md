@@ -13,6 +13,9 @@ One concern per file. No file over 250 lines. A parent indexes and links; it nev
 | `review.md` | Fan sizing, independence, the circuit breaker |
 | `skills.md` | Choosing, composing, and keeping skills current |
 | `memory.md` | Structured records, consolidation, keeping files small as a project grows |
+| `measuring-practice.md` | How to know whether any of the above is actually working |
+| `session-close.md` | The five steps that end a session |
+| `definitions.md` | Ready, Developed, Tested, Done, Complete |
 
 ## How a finding gets in here
 

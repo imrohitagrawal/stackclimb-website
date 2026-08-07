@@ -37,3 +37,24 @@ playwright-report/
 
 # Visual walkthrough output — regenerate with node tests/visual-walkthrough.mjs
 tests/shots/
+
+# ---------------------------------------------------------------------------
+# Brand candidates are NEVER tracked.
+#
+# Two reasons, both learned the hard way on 2026-08-07:
+#
+# 1. PRIVACY. The owner's visiting-card images contain a personal mobile
+#    number and a LinkedIn QR, rendered as pixels. Every text-based secret
+#    scanner missed them. They were swept in by `git add -A` and reached a
+#    commit in a repo being prepared for publication. Caught before any push.
+#
+# 2. PROTOCOL. Claude must produce wordmark options WITHOUT seeing the
+#    owner's, or the second opinion is just a reaction to the first.
+#    Untracked files cannot be swept in by accident.
+#
+# The chosen mark gets added deliberately, as a single file, after review.
+# ---------------------------------------------------------------------------
+docs/brand/candidates/rohit/*
+!docs/brand/candidates/rohit/PUT-YOURS-HERE.txt
+docs/brand/candidates/claude/*
+!docs/brand/candidates/claude/.gitkeep

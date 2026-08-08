@@ -41,6 +41,8 @@ The single largest gap. Nothing below is cosmetic.
 | 1.3 | **Name at display size.** Currently 18.24px against a 96px headline | O-30SEC |
 | 1.4 | **Add a CV/résumé link.** Verified absent — zero matches on the page | O-30SEC |
 | 1.5 | Apply the Phase 0 copy | D23 · D24 · D26 |
+| 1.6 | **Avatar beside his name in the lede.** Owner's decision 09 Aug: avatar-sized is fine, it need not read as a portrait. The only placement that fits — the hero is already 191px over a 900px viewport | D27 |
+| 1.7 | **Rebuild the nav: `WORK · APPROACH · CONTACT · Email me`.** "Private" leaves the menu; the private work becomes a row on the overview with `closed` as its state | D28 |
 
 **Gate:** a reader who has never met him can say what he does, what he built, and how to reach
 him, without scrolling past the second screen.
@@ -63,7 +65,13 @@ Use `improve-animations` (emilkowalski — author of Sonner and Vaul). **One bui
 parallel writers share one working tree.
 
 **Gate:** every animation interruptible, `prefers-reduced-motion` honoured, no CLS regression,
-Lighthouse ≥ 94 mobile.
+and **Lighthouse mobile no worse than 98** — the current measured value. An earlier draft of this
+plan set the gate at 94, which would have silently authorised a four-point regression on the
+site's strongest measured property. Caught in adversarial review, not by me.
+
+**Rule conflict, resolved 09 Aug.** `docs/STATUS.md` says in bold *"Do not 'optimise' scroll,
+animation, or the blend overlay."* Owner confirmed that means do not micro-tune an already-fast
+site; it does not forbid adding purposeful motion, which he has now asked for twice.
 
 ---
 
@@ -77,15 +85,15 @@ The strongest answer to *"is the AI move real, or four weekend projects?"*
 | 3.2 | Build the page around it: discovery → design → assure → run, with trust/provenance/evaluation across every stage | D25 |
 | 3.3 | Employment evidence, **labelled self-reported**: Oracle MTTD −35%, cycle time −25% | D25 |
 | 3.4 | "Shift-left by default, shift-right by design" appears here in full, where context defends it | D26 |
-| 3.5 | **Photo goes here, not the hero** — reasoning in `docs/positioning-decisions.md` | new |
+| 3.5 | A second, larger portrait may sit beside the diagram here — optional. **The primary photo is in the hero**, owner's decision 09 Aug | D27 |
 
 ---
 
 ## Phase 4 — the critique's remaining findings
 
-Roughly sixteen items, still open. Full text in the critique snapshot.
+**Thirteen items listed below, of which eleven are actionable** — the other two are recorded-not-fixed. An earlier draft claimed "roughly sixteen"; the count was inflated by about 45% and corrected in adversarial review. Full text in the critique snapshot.
 
-**Composition (P1)** — plate heights 900–1091px in a 900px viewport, violating `DESIGN.md:191`'s
+**Composition (P1)** — plate heights 900–1091px in a 900px viewport, violating `DESIGN.md:199`'s
 own one-plate-one-viewport rule · contact plate has **no figure and 86.6% empty ground**, so the
 page ends by going blank · mobile page is 10,305px.
 
@@ -103,6 +111,33 @@ DEF-33 (the private plate still draws 3 placeholder rectangles, and reads as hea
 
 ---
 
+## Phase 4b — findings scheduled nowhere until 09 Aug
+
+Four HIGH defects sat in `docs/STATUS.md` and in no phase. Found by adversarial review.
+
+| # | Item | Verified |
+|---|---|---|
+| 4b.1 | **DEF-7 — the SaafSaans link is dead and still on the page.** `curl` returns `000` after 20s; `index.astro:196` still links it. **Highest-cost item on the site**: the one click that tests the thesis returns nothing | 09 Aug |
+| 4b.2 | **DEF-27 has regressed.** The ledger says FIXED; `index.astro:48` and `:368` both state relocation again. Re-introduced by me in `e54ebd5` | 09 Aug |
+| 4b.3 | DEF-6 — the DEF-1 fix fails open when the module dies | `STATUS.md:137` |
+| 4b.4 | DEF-19 — CSP fails silently and the bad case is the default | `STATUS.md:150` |
+| 4b.5 | DEF-22 — render-blocking CSS; mobile LCP 2.4s → 1.4s | `STATUS.md:152` |
+| 4b.6 | **Re-verify every FIXED row in the ledger before trusting Phase 4.** DEF-27 already failed that check | — |
+
+Also dropped from Phase 4 and now restored: the four lowest-scoring heuristics — nav marks no
+active plate (H1, 2/4), compressed cell labels (H6, 2/4), nav reaches 3 of 7 plates (H7, 2/4),
+and unskippable smooth scroll over 6,638px (H3).
+
+---
+
+## Phase 6 — deferred, with reasons, so they do not come back
+
+| Item | Decision |
+|---|---|
+| **Light and dark theme** | **Deferred 09 Aug, not rejected.** Owner: do the agreed work first. Cost is high — seven grounds and seven surfaces re-derived, the value ladder rebuilt, ~14 contrast pairs re-checked, and `data-theme` is already used for plate theming. It moves the 30-second test not at all. Counter-argument recorded honestly: the site honours `prefers-reduced-motion` but ignores `prefers-color-scheme`, and respecting one stated preference while ignoring the other is the weak point of the position |
+
+---
+
 ## Phase 5 — the standing debt
 
 Untouched since it was written. `AGENTS.md` says to say this out loud at the start of any
@@ -117,7 +152,7 @@ deployment work, and it has not been said.
 | Branch protection requires that check | **open** (needs the repo public, or Pro) |
 
 Plus: secrets gate (gitleaks, `fetch-depth: 0`) · tracked `.claude/settings.json` · gitignore the
-434 vendored skill files before publishing · #9 wordmark (owner protocol: options produced before
+**216** vendored skill files before publishing · #9 wordmark (owner protocol: options produced before
 his candidates folder is opened) · #10 RCA for the skipped render check.
 
 ---

@@ -61,6 +61,12 @@ ORDER OF WORK
   Phase 4   the thirteen remaining critique findings
   Phase 5   the standing deployment debt
 
+COPY THAT IS LIVE AND WRONG — DEF-36, do this in Phase 0
+  Layout.astro:77 reads "Built as a work sample - static Astro, self-hosted type, no trackers,
+  no invented claims". Every clause is the site describing itself instead of him. "Built as a
+  work sample" is the worst of it: it reframes the whole page as a demo rather than a record.
+  Use brand-voice. A colophon may be a colophon -- copyright and location are enough.
+
 SCOPED REVIEWS TO RUN, NOT OPINIONS TO INVENT
   - Colour: run /impeccable colorize against https://stackclimb.com. The value ladder is
     measured and green (bone 13.8-15.6:1, ochre 6.4-7.25:1), so do NOT change hues on taste.

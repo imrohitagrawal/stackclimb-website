@@ -23,10 +23,22 @@ const {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {/* Hands the ground back to JS before first paint, so the backdrop can
-        cross-fade. Without JS the class never lands and each plate keeps the
-        ground it painted itself. Inline and first so there is no flash. */}
-    <script is:inline>document.documentElement.classList.add('js-ground');</script>
+    {/* An is:inline script that added a `js-ground` class lived here.
+        Deleted 2026-08-09: the class gated exactly one CSS rule,
+        `.js-ground .plate { background: transparent }`, and commit 75ea9a7 —
+        the DEF-30 fix — deleted that rule on 08-08. Verified before removing:
+        `grep -c js-ground dist/_astro/*.css` returns 0. It had been setting a
+        class nothing read for a day.
+
+        This also settles DEF-6, whose recorded mechanism was that this script
+        "always succeeds" while plates.js can throw, so the pair fails open.
+        With no CSS behind the class there was nothing to fail open into.
+        The real fail-open was elsewhere and larger — see RCA-003.
+
+        Worth keeping: this was the one script Astro's CSP support cannot hash
+        automatically, so it is also the script that would have needed a
+        hand-maintained hash. That is precisely the stale-hash trap DEF-19
+        describes. Deleting it leaves the trap nowhere to live. */}
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="author" content="Rohit Agrawal" />

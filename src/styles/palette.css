@@ -32,6 +32,17 @@
   background: var(--ground);
 }
 
+/* The fixed nav's own ground — RCA-003.
+   It is deliberately NOT var(--ground): that variable is redefined per plate,
+   and the nav is fixed, so it would inherit whichever plate happened to be the
+   nearest ancestor and change under scroll. The whole point of the fix is that
+   the bar stops depending on what is behind it. This is the step-one value from
+   the ladder above, pinned as a constant on :root where no plate can reach it.
+   Measured against --bone: 15.60:1. */
+:root {
+  --nav-ground: #0e1322;
+}
+
 #work {
   --ground: #230d13;
   --surface: #3f1a25;

@@ -88,3 +88,28 @@ would hide the one-line fix inside a refactor.
 ## Decision
 
 **Not approved. Nothing changed.**
+
+---
+
+## Superseded 2026-08-09 — the mechanism described here was refuted
+
+**Do not implement the fix below.** It is a no-op.
+
+`.js-ground` gated exactly one CSS rule, `.js-ground .plate { background: transparent }`, and
+commit `75ea9a7` — the DEF-30 fix, 2026-08-08 — deleted that rule. From that moment the class had
+no consumer, so there was nothing for it to fail open *into*. Verified before acting:
+`grep -c js-ground dist/_astro/*.css` returns **0**.
+
+This RCA's proposed one-line change (set the class from `plates.js` instead of the head) would
+therefore have changed nothing, and the "flash" it weighs as the cost of that change cannot occur.
+The inline script has now simply been deleted.
+
+**The document is kept, not removed, because the reasoning was sound and the conclusion was
+overtaken by a fix landing elsewhere.** That is the ordinary way a defect record goes stale, and
+this repo's own Corrections table already records that a right answer from a wrong proof is still
+a wrong proof.
+
+**What was actually wrong is in [`RCA-003-nav-has-no-ground.md`](RCA-003-nav-has-no-ground.md)**,
+and it is larger: the fixed nav had no ground of its own and was below AA at 46% of desktop scroll
+positions, worst 1.00:1, on the live site — while all three of the site's contrast gates reported
+green, because none of them could see it.

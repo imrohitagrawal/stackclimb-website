@@ -1,31 +1,28 @@
-// Portrait-plate behaviors:
-// 1. The backdrop repaints as each plate takes the easel (scroll).
-// 2. Captions draw a leader line to the garment they name (hover/focus).
+// Portrait-plate behaviours:
+// 1. Captions draw a leader line to the garment they name (hover/focus).
+// 2. ?at=<plate-id> jumps to a plate without the smooth-scroll ride.
+//
+// REMOVED 2026-08-09 — "the backdrop repaints as each plate takes the easel".
+// It said that for months and it had not been true since 08-08. The observer
+// read `entry.target.dataset.hue`, and Plate.astro emits `data-plate-theme`
+// only — `data-hue` appears on ZERO elements in the built HTML, so `--bg` was
+// never once set and the 0.8s cross-fade never ran. Its other effect, mirroring
+// the plate theme onto <html>, had exactly one CSS consumer, and RCA-003
+// deleted that: the nav no longer reacts to what is behind it, because it now
+// has a ground of its own.
+//
+// So the block was a no-op wearing the description of a feature. On a site
+// whose subject is systems that disclose their own limits, a comment claiming
+// a behaviour that does not happen is the fault it argues against.
+// Verified before deleting: `grep -c data-hue dist/index.html` -> 0,
+// `grep -o "\[data-theme[^]]*\]" dist/_astro/*.css` -> no matches after the
+// nav fix. Phase 2 adds real scroll-linked motion; it will bring its own
+// observer with a purpose, not inherit this one.
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const canHover = window.matchMedia('(hover: hover)').matches;
 const html = document.documentElement;
 const SVG_NS = 'http://www.w3.org/2000/svg';
-
-/* ---------- backdrop repaint ---------- */
-
-const plates = Array.from(document.querySelectorAll('.plate'));
-
-const io = new IntersectionObserver(
-  (entries) => {
-    for (const entry of entries) {
-      if (!entry.isIntersecting) continue;
-      const { hue, plateTheme } = entry.target.dataset;
-      if (hue) html.style.setProperty('--bg', hue);
-      html.dataset.theme = plateTheme === 'light' ? 'light' : 'dark';
-    }
-  },
-  // Fire when a plate crosses the middle band of the viewport,
-  // so tall plates on small screens still register.
-  { rootMargin: '-45% 0px -45% 0px', threshold: 0 }
-);
-
-plates.forEach((p) => io.observe(p));
 
 /* ---------- leader lines ---------- */
 
@@ -99,12 +96,9 @@ const at = new URLSearchParams(location.search).get('at');
 if (at) {
   html.classList.add('no-anim');
   const target = document.getElementById(at);
-  if (target) {
-    target.scrollIntoView({ behavior: 'auto', block: 'start' });
-    const { hue, plateTheme } = target.dataset;
-    if (hue) html.style.setProperty('--bg', hue);
-    html.dataset.theme = plateTheme === 'light' ? 'light' : 'dark';
-  }
+  if (target) target.scrollIntoView({ behavior: 'auto', block: 'start' });
+  // The --bg and data-theme lines that were here went with the observer above:
+  // same dead `data-hue` read, same now-unread theme mirror.
   // restore motion once the jumped-to state has painted; a timer (not rAF)
   // so it also fires in throttled or background tabs
   setTimeout(() => html.classList.remove('no-anim'), 400);

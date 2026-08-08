@@ -13,8 +13,11 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html {
+  /* Only ever seen in the overscroll bounce — every plate paints its own
+     ground since DEF-30. `transition: background 0.8s` was removed with the
+     dead observer in plates.js: --bg was set once inline and nothing ever
+     changed it, so the transition had no second value to animate to. */
   background: var(--bg, #1b2440);
-  transition: background 0.8s ease;
   scroll-behavior: smooth;
 }
 
@@ -52,17 +55,45 @@ body::before {
 }
 .skip:focus { left: 1rem; top: 1rem; }
 
-/* ---------- Fixed hairline nav ---------- */
+/* ---------- Fixed nav ---------- */
 
+/* RCA-003. This bar used to be a hairline with NO background at all, floating
+   over whatever plate scrolled beneath it. That was survivable while every
+   plate was dark. The value ladder (D18) added the near-white #private paper
+   plate and the .lit-surface panels, and nobody re-checked the nav — so bone
+   text started landing on bone ground.
+
+   Measured in rendered pixels before the fix: 22 of 48 desktop scroll
+   positions and 26 of 78 mobile positions had a nav link below 4.5:1, worst
+   1.00:1 — foreground and background the same value, the link invisible.
+
+   No gate saw it, and none could: axe scopes to .plate (DEF-14),
+   boundary-check.mjs samples plate seams only, and axe's contrast rule reads
+   the DOM — where a background-less fixed bar computes to rgba(0,0,0,0) and
+   gets scored against an ancestor colour that is not what renders there.
+   A fixed element has no fixed backdrop. It has to be measured in pixels.
+
+   So the bar carries its own ground, and no longer reacts to what is behind
+   it. tests/nav-contrast.mjs holds this: delete the background line and it
+   reports those 22 and 26 positions again. */
 .site-nav {
   position: fixed; inset-inline: 0; top: 0; z-index: 50;
   display: flex; align-items: center; justify-content: space-between;
   gap: 1rem;
   padding: 1rem clamp(1.25rem, 4vw, 2.5rem);
+  background: var(--nav-ground);
   color: var(--bone);
-  transition: color 0.5s ease;
 }
-html[data-theme='light'] .site-nav { color: var(--ink); }
+
+/* Deleted with the fix: html[data-theme='light'] .site-nav { color: var(--ink) }
+   It turned the nav dark for the light plate — which, once the bar has a dark
+   ground of its own, paints dark on dark. Measured: the background alone still
+   left 8 of 48 positions failing; both halves together leave 0.
+   It was also mistimed by construction. plates.js flipped that theme when a
+   plate crossed the MIDDLE of the viewport while the nav sits at the TOP, so
+   for ~480px of scroll the nav had already changed and the plate behind it had
+   not. That cannot be fixed by retiming; the two are in different places.
+   `transition: color` went with it — there is no longer a colour change. */
 
 .site-nav .brand {
   font-family: var(--serif);

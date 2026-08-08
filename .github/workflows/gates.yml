@@ -104,3 +104,12 @@ jobs:
           npx astro preview --port 4321 &
           npx wait-on http://localhost:4321 -t 30000
           node tests/boundary-check.mjs http://localhost:4321
+
+      # RCA-003. The other three contrast checks are all structurally blind to
+      # the fixed nav: axe scopes to .plate, boundary-check samples plate seams,
+      # and axe's contrast rule reads the DOM where a background-less fixed bar
+      # computes to transparent. This one samples rendered pixels at every
+      # scroll position. Before the fix it reported 22 of 48 desktop positions
+      # below AA at 1.00:1 while all three others were green.
+      - name: the fixed nav stays readable over every plate
+        run: node tests/nav-contrast.mjs http://localhost:4321

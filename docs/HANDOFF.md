@@ -86,15 +86,39 @@ SCOPED REVIEWS TO RUN, NOT OPINIONS TO INVENT
     Persist it in localStorage. Control goes in the FOOTER, not the nav. prefers-reduced-motion
     is layer one and already works; the toggle is for people who never set the OS preference.
 
-BLOCKED ON THE OWNER — DO NOT FABRICATE, DO NOT SKIP SILENTLY
-  1. CV content. D31 chose a printable /cv page. He must supply title, years and one line of
-     scope for Amazon, LimeRoad, Mobileum, Snapdeal, Subex. PRODUCT.md:101 says résumé content
-     is "Undecided - do not invent". BUILD THE PAGE AND ITS PRINT STYLES with the Oracle row
-     only, leave the rest as clearly marked empty rows, and list it in the morning report.
-  2. The photograph. D27 puts an avatar beside his name in the hero lede. No file exists yet.
-     Build the slot, ship it hidden behind a feature check, and say so.
-  3. Anything under docs/brand/candidates/. Owner protocol: produce your own wordmark options
-     BEFORE opening his folder. Never track those files.
+EVERYTHING THE OWNER OWED IS NOW SUPPLIED — assets/inbox/, delivered 09 Aug 01:20-01:29
+Read assets/inbox/README.md first. THE WHOLE INBOX IS UNTRACKED, on purpose.
+
+  1. CV -- five files. PRECEDENCE, owner's exact instruction:
+       "First preference should be given to the data present in Rohit_V3. If there is any
+        conflicting information in FINAL-Rohit_Master_Resume when compared to Rohit_V3, then
+        Rohit_V3 should have been considered correct."
+     Rohit_V3.pdf / .docx is AUTHORITATIVE and wins every conflict.
+     FINAL-Rohit_Master_Resume.md is the easy one to parse. Convenience is not authority --
+     use it only to fill gaps Rohit_V3 does not cover, and where the two disagree, record
+     both values in docs/STATUS.md so this is not rediscovered.
+
+     *** FINAL-Rohit_Master_Resume.md CONTAINS A PHONE NUMBER. ***
+     It does not go on the /cv page, in the HTML, in a commit, or in a build artefact.
+     Contact stays email + LinkedIn + GitHub. Before every commit:
+       grep -oiE "\+?[0-9]{10,}" dist/**/*.html
+     This is the third time source material has carried personal contact details into this
+     repo. Visiting cards on 08-07, a CV now. Assume the next upload does too.
+
+  2. Photo -- assets/inbox/photo/github_profile_photo.jpeg. Verified by eye: professional
+     headshot, plain grey background, no card, no QR. PORTRAIT orientation, so the hero
+     avatar needs a SQUARE CENTRE CROP around the face. Optimise it: paint-grain.png at
+     166KB is already 63% of page weight.
+
+  3. Brand -- wordmark-light/dark.png, logo-light/dark.png. The protocol is satisfied:
+     Claude's own recommendation was written in docs/brand/README.md on 09 Aug BEFORE these
+     were opened, so a comparison now is a second opinion, not a reaction. COMPARE, do not
+     install: put his marks beside the existing wordmark and the RA plate monogram at 16px
+     favicon, at nav height, and on an OG card, and judge what survives each. They are PNG;
+     whatever wins needs an SVG before it ships.
+
+NOTHING IS BLOCKED ON HIM ANY MORE. If you find yourself wanting to invent content, you have
+misread the inbox -- go back and read it.
 
 HARD RULES, FROM AGENTS.md
   - One work package, one branch, one PR, merged before the next starts. Six packages went onto

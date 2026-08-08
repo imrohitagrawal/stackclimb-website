@@ -62,6 +62,23 @@ docs/brand/candidates/claude/*
 # Workflow worktrees — scratch, never committed
 .claude/worktrees/
 
-# Inbox: brand candidates are never tracked (see assets/inbox/README.md)
-assets/inbox/brand/*
-!assets/inbox/brand/.gitkeep
+# ---------------------------------------------------------------------------
+# The WHOLE inbox is untracked. It is staging, not a site directory.
+#
+# Widened 2026-08-09, from brand-only to everything, after the owner uploaded
+# his CV and a scan found a 10-digit phone number in
+# FINAL-Rohit_Master_Resume.md. Those files were still untracked, so nothing
+# reached a commit -- but under the previous rule photo/ and resume/ WERE
+# tracked, and the next `git add -A` would have put a personal number into a
+# repo being prepared to go public.
+#
+# This is the third time source material has carried personal contact details
+# into this repo: visiting cards on 08-07, and now a CV.
+#
+# Files graduate from here into public/ or into page content DELIBERATELY,
+# one at a time, after a human has looked at what is in them.
+# ---------------------------------------------------------------------------
+assets/inbox/**
+!assets/inbox/README.md
+!assets/inbox/*/
+!assets/inbox/*/.gitkeep

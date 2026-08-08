@@ -127,7 +127,41 @@ conversation. Summary of the finding:
 
 ---
 
-## 7. Skills plan for this work
+## 7. The photograph — yes, but not in the hero
+
+Owner asked whether to include one, and whether it would hurt credibility or clash with the hero
+diagram and the interaction work.
+
+**Recommendation: include it, on the Engineering Operating Model page, not the home hero.**
+
+**Why include one at all.** A portfolio with no face reads as evasive to a recruiter, and this
+site is otherwise almost entirely systems and tables. One human anchor helps.
+
+**Why not the hero.** Three reasons, in order of weight:
+
+1. **The hero has one job and thirty seconds to do it** — what he does, proof it is real, how to
+   reach him. A portrait competes with the overview plate for the same space and the same glance.
+2. **It shifts the argument from the work to the person.** This site's whole thesis is that the
+   artefact is the evidence. Leading with a face quietly contradicts it. Leading with four
+   systems and their states does not.
+3. **Hiring-norm difference, worth naming plainly.** Photographs on CVs and portfolios are
+   normal in India and actively discouraged in US, UK, Canadian and much EU hiring, because
+   they invite bias before the work is read. The owner is open to relocation worldwide. Putting
+   the photo one click in rather than first-view lowers exposure at the moment of first
+   judgement, without hiding anything.
+
+**Does it clash with the lifecycle diagram or the motion work?** No — the opposite. On the
+Operating Model page a portrait beside the four-gate diagram reads as *person and practice*,
+which is exactly that page's argument. The interaction work in Phase 2 is scroll and pointer
+response on cards; a static portrait neither competes with it nor is harmed by it.
+
+**What is needed from the owner:** the file. Landscape or square crop, plain background, at least
+1200px on the short edge. It must not be a visiting card or anything carrying a phone number or
+QR code — see `.gitignore`, where that has already gone wrong once.
+
+---
+
+## 8. Skills plan for this work
 
 | Phase | Skill | Why |
 |---|---|---|
@@ -140,6 +174,27 @@ conversation. Summary of the finding:
 
 **Review capped at two rounds** (D9), with the circuit breaker.
 
-**Recorded gap:** nothing installed covers positioning or messaging. Every skill above is UI,
-code quality, or documentation. Per the owner's own rule, search GitHub before authoring one; if
-nothing public fits, record what was searched and why each candidate failed.
+**Gap closed 08-08 — what was searched, and why each candidate failed or won.**
+
+| Repo | Stars | Licence | Verdict |
+|---|---|---|---|
+| `coreyhaines31/marketingskills` | 43,542 | MIT | **Rejected.** Known author, most-starred by far, and **not one of its 50 skills covers positioning or messaging** — it is tactics: ads, SEO, email, CRO, pricing. Stars are not relevance |
+| `borghei/Claude-Skills` | 464 | **NOASSERTION** | **Rejected on licence.** Its `brand-strategist` cites April Dunford, the actual authority, but GitHub cannot identify the licence. Too risky to vendor into a repo being prepared for publication |
+| `zubair-trabzada/ai-marketing-claude` | 2,283 | MIT | Not evaluated in depth — described as a marketing suite, same tactics shape as Corey Haines |
+| **`arnabbagxd/Brand-building-skills`** | 481 | MIT | **Chosen.** Has `brand-positioning`, `brand-messaging`, `brand-story`, `brand-voice`, `brand-audit` |
+
+**Why the chosen one passes the how/where-not/what-not test.** `brand-positioning` is ~210 lines
+with seven explicit HOW steps, trigger conditions for WHERE it applies, and real anti-patterns
+under "Positioning Red Flags":
+
+- *"Positioning that could apply to any competitor in the category"*
+- *"A differentiator that's a table stake"*
+- *"Positioning the brand can't substantiate with proof points"*
+
+The third is this site's own thesis stated back at it.
+
+**Its named weakness, recorded rather than glossed:** it cites **no established framework** — no
+April Dunford, no Geoffrey Moore. It is the author's own synthesis, which by this project's own
+rule is evidence of practice rather than a source of authority. **Mitigation:** pair every run of
+it with `grilling` (Matt Pocock), which interrogates a claim rather than accepting it. It also
+does not say WHERE NOT to apply itself.

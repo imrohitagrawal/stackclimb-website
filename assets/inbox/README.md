@@ -2,10 +2,18 @@
 
 **Everything in this directory is untracked.** Only this README is in git.
 
-That is deliberate. On 2026-08-09 a scan of the uploaded CV found a **10-digit phone number** in
-`FINAL-Rohit_Master_Resume.md`. The files were still untracked so nothing reached a commit — but
-under the previous rule `photo/` and `resume/` *were* tracked, and the next `git add -A` would
-have put a personal number into a repo being prepared to go public.
+That is deliberate. On 2026-08-09 a scan of the uploaded CV found a **10-digit phone number**.
+The files were still untracked so nothing reached a commit — but under the previous rule `photo/`
+and `resume/` *were* tracked, and the next `git add -A` would have put a personal number into a
+repo being prepared to go public.
+
+> **Corrected 2026-08-09, overnight.** This paragraph used to name `FINAL-Rohit_Master_Resume.md`
+> as the file carrying the number. **It does not.** That `.md` holds e-mail, LinkedIn and Visa
+> only — zero digit-runs of eight or more in the entire file. The number is in
+> **`Rohit_V3.pdf` and `FINAL-Rohit_Master_Resume.pdf`**, on the contact line beside the e-mail.
+> The wrong location was the more dangerous half of the error: it pointed at the one resume file
+> that is safe and away from the two that are not, and it concealed **DEF-37** — `no-pii.mjs`
+> does not scan `.pdf` or `.docx` at all, so those two files are invisible to the gate.
 
 That is the **third** time source material has carried personal contact details into this repo:
 visiting cards on 08-07, and now a CV. So the rule is now the simplest one that cannot fail:

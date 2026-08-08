@@ -82,3 +82,6 @@ assets/inbox/**
 !assets/inbox/README.md
 !assets/inbox/*/
 !assets/inbox/*/.gitkeep
+
+# Local wrangler state — miniflare caches and trace stores, machine-local
+.wrangler/

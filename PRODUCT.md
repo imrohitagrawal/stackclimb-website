@@ -154,10 +154,21 @@ regression) and `aegis-contracts`.
   `docs/20-architecture.md`, SaafSaans `docs/CASE-STUDY.md`, NarraTwin
   `docs/RELEASE_READINESS_REVIEW.md`.
 
-**Career facts** (from the profile README, i.e. self-reported, not independently verified):
-Oracle Principal Member of Technical Staff, April 2019 – April 2026; led and mentored 11+
-engineers; prior experience across Amazon, LimeRoad, Mobileum, Snapdeal, and Subex. Two stated
-Oracle outcomes: MTTD reduced ~35%, release cycle time reduced ~25%.
+**Career facts** (self-reported, not independently verified): Oracle Principal Member of Technical
+Staff, April 2019 – April 2026; led and mentored 11+ engineers; prior experience across Amazon,
+LimeRoad, Mobileum, Snapdeal, and Subex.
+
+**Corrected 2026-08-09 against the authoritative CV.** This line previously read *"MTTD reduced
+~35%, release cycle time reduced ~25%"*, taken from the profile README. `Rohit_V3` — which D36
+makes authoritative — **never uses the term MTTD.** Its two claims are:
+
+- *"reducing root-cause analysis time by 35%"* — time to **diagnose**, not time to **detect**.
+  MTTD is a different metric and the stronger-sounding one.
+- *"reducing release validation time by 25%"* — validation is a **component** of cycle time,
+  not cycle time itself.
+
+Both restatements made the claim larger than its source. Four planning documents had inherited
+them. Use the CV's own words, labelled self-reported. See `docs/positioning-phase0.md`.
 
 **Absences future work must not fill:** no testimonials, no named users or customers, no adoption
 or traffic numbers, no press. None may be fabricated.

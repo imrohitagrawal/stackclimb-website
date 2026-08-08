@@ -15,6 +15,12 @@ on:
 
 permissions:
   contents: read
+  # gitleaks-action calls GET /repos/{o}/{r}/pulls/{n}/commits on a
+  # pull_request event. With contents:read alone that returns 403 "Resource
+  # not accessible by integration" and the whole job dies. DEF-39: the
+  # workflow had only ever run on push, so the PR path — the one branch
+  # protection actually gates on — had never been exercised.
+  pull-requests: read
 
 jobs:
   secrets-and-pii:
@@ -53,15 +59,22 @@ jobs:
           fi
           echo "ok: inbox is untracked"
 
-      - name: gitleaks
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      # DEF-39, second half. This step used to run AFTER gitleaks, which
+      # contradicted the header comment above it — "the cheap checks that
+      # protect the owner run first". It mattered: when gitleaks 403'd on the
+      # first pull_request run, the job died before this ever executed, so the
+      # gate D39 exists to enforce silently did not run. A gate that can be
+      # skipped by an unrelated step failing upstream is not enforcement.
+      # It needs no network and no token, so nothing can stop it but a real hit.
       - name: personal contact details (D38)
         run: |
           node tests/no-pii.mjs --self-test
           node tests/no-pii.mjs
+
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-and-test:
     name: build, test, and scan the build

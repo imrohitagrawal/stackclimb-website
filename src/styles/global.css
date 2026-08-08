@@ -118,20 +118,25 @@ html[data-theme='light'] .site-nav { color: var(--ink); }
      It used to go transparent once JS was running, so a single html-level
      background cross-faded between plates. But 94% of desktop scroll positions
      show two plates at once, and the one below was being painted on the ground
-     of the one above. Measured on the live site: private text on the contact
-     ground at 1.37:1, saafsaans text on the narratwin ground at 2.28:1 — the
-     top 468px of the Private plate was invisible while scrolling past it.
-     The cross-fade cost more than it bought. */
-  background: var(--plate-hue);
+     of the one above. Measured on the built site: private text on the contact
+     ground at 1.03:1, narratwin text on the private ground at 1.77:1 — the top
+     468px of the Private plate was invisible while scrolling past it. The
+     cross-fade cost more than it bought.
+
+     The ground colour itself now comes from styles/palette.css, which owns the
+     four-step lightness ladder. */
 }
 .plate[data-plate-theme='light'] { color: var(--ink); }
 
+/* Step two of the ladder: the frame is a raised panel, not an outline drawn on
+   the ground. The old double hairline — 1px border plus a 1px offset outline —
+   was the diploma device, and it is the single clearest 1990s tell on the page.
+   One rule, on a surface that is lighter than what it sits on, replaces it. */
 .plate-frame {
   position: relative;
   width: min(1240px, 100%);
-  border: 1px solid color-mix(in srgb, currentColor 60%, transparent);
-  outline: 1px solid color-mix(in srgb, currentColor 28%, transparent);
-  outline-offset: 6px;
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
   padding: clamp(1.75rem, 4vw, 4rem);
 }
 
@@ -154,19 +159,16 @@ html[data-theme='light'] .site-nav { color: var(--ink); }
 .plate-no::after {
   content: ''; display: block;
   width: 2.2rem; height: 2px;
-  background: var(--ochre);
+  background: var(--accent);
   margin: 0.45rem 0 0 auto;
 }
-.swatches { list-style: none; display: grid; gap: 0.28rem; }
-.swatches li {
-  display: flex; align-items: center; justify-content: flex-end; gap: 0.45rem;
-  font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase;
-  opacity: 0.75;
-}
-.swatches i {
-  width: 0.65rem; height: 0.65rem; flex: none;
-  border: 1px solid color-mix(in srgb, currentColor 55%, transparent);
-}
+
+/* The swatch tags are gone. They printed GROUND / CLOTH / THREAD on all seven
+   plates — 21 lines of permanent type describing the site's own paint, in the
+   highest-value space on the page, and two of the three lines were identical
+   on every plate by rule. A recruiter under time pressure reads that as noise.
+   The corner now carries the plate's STATE instead, which is the fact they
+   came for. */
 
 /* ---------- Plate grid: copy left, figure right ---------- */
 
@@ -296,7 +298,21 @@ a.cap:hover .d { color: var(--ochre); }
 
 /* ---------- Hero plate ---------- */
 
-.hero .plate-grid { grid-template-columns: 1.08fr 0.92fr; }
+/* Hero on a wide screen: claim and ledger stack down the left, the artefact
+   holds the right column across both rows and is vertically centred against
+   them. Three children, two columns — placed explicitly so nothing wraps. */
+@media (min-width: 901px) {
+  .hero .plate-grid {
+    grid-template-columns: 1.08fr 0.92fr;
+    align-items: start;
+  }
+  .hero .plate-copy { grid-column: 1; grid-row: 1; }
+  .hero .hero-ledger { grid-column: 1; grid-row: 2; margin-top: 2rem; }
+  .hero .plate-figure {
+    grid-column: 2; grid-row: 1 / span 2;
+    align-self: center;
+  }
+}
 
 .hero .plate-frame { padding-block: clamp(1.5rem, 2.6vw, 2.6rem); }
 .hero { padding-block: clamp(4.5rem, 8.5vh, 6rem) clamp(2.5rem, 5vh, 4rem); }
@@ -438,6 +454,10 @@ a.cap:hover .d { color: var(--ochre); }
   .plate-grid, .hero .plate-grid { grid-template-columns: 1fr; }
   .plate-figure { order: 2; margin-top: 2rem; }
   .plate-copy { order: 1; max-width: none; }
+  /* Phone reading order on the hero: claim, then the proof, then the CV.
+     The artefact used to sit below a five-row ledger, so a scanner never
+     reached it. */
+  .hero-ledger { order: 3; margin-top: 2rem; }
   .figure { max-height: 62svh; margin-inline: auto; }
   .plate-tag {
     position: static;
@@ -445,7 +465,6 @@ a.cap:hover .d { color: var(--ochre); }
     text-align: left; justify-items: start; max-width: none;
   }
   .plate-no::after { margin-left: 0; }
-  .swatches { display: none; }
   .caps { display: grid; grid-template-columns: 1fr 1fr; }
   .cap { border-left: none; border-top: 1px solid color-mix(in srgb, currentColor 22%, transparent); }
   .cap:nth-child(-n + 2) { border-top: none; }

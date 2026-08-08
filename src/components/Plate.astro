@@ -1,48 +1,37 @@
 ---
-interface Chip {
-  role: string;
-  name: string;
-  hex: string;
-}
-
 interface Props {
   id: string;
   num: string;
   name: string;
-  hue: string;
+  /* What the system is actually doing, right now. This is the fact the
+     audience came for, so it sits in the plate's corner at the top of the
+     page rather than inside a 9.6px caption cell four rows down.
+     It replaces the GROUND / CLOTH / THREAD swatch tags, which printed the
+     site's own paint colours on all seven plates. */
+  state?: string;
   theme?: 'dark' | 'light';
-  chips?: Chip[];
   class?: string;
 }
 
-const { id, num, name, hue, theme = 'dark', chips = [], class: className } = Astro.props;
+const { id, num, name, state, theme = 'dark', class: className } = Astro.props;
 ---
 
-<section
-  class:list={['plate', className]}
-  id={id}
-  data-hue={hue}
-  data-plate-theme={theme}
-  style={`--plate-hue:${hue}`}
->
+<section class:list={['plate', className]} id={id} data-plate-theme={theme}>
   <div class="plate-frame">
-    <div class="plate-tag" aria-hidden="true">
-      <span class="plate-no">Plate Nº {num} — {name}</span>
-      {
-        chips.length > 0 && (
-          <ul class="swatches">
-            {chips.map((c) => (
-              <li>
-                <i style={`background:${c.hex}`} />
-                <span>
-                  {c.role} · {c.name}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )
-      }
+    <div class="plate-tag">
+      <span class="plate-no" aria-hidden="true">Plate Nº {num} — {name}</span>
+      {state && <span class="plate-state">{state}</span>}
     </div>
     <slot />
   </div>
 </section>
+
+<style>
+  .plate-state {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+</style>

@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Plate from '../components/Plate.astro';
 import CapStrip from '../components/CapStrip.astro';
 import Ledger from '../components/Ledger.astro';
-import HeroFigure from '../components/figures/HeroFigure.astro';
+import RefusalCard from '../components/figures/RefusalCard.astro';
 import CiteVynFigure from '../components/figures/CiteVynFigure.astro';
 import QuorumFigure from '../components/figures/QuorumFigure.astro';
 import SaafSaansFigure from '../components/figures/SaafSaansFigure.astro';
@@ -17,13 +17,7 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
     id="top"
     num="00"
     name="The Record"
-    hue="#1b2440"
     class="hero"
-    chips={[
-      { role: 'Ground', name: 'Ink navy', hex: '#1b2440' },
-      { role: 'Cloth', name: 'Bone', hex: '#f2ebdd' },
-      { role: 'Thread', name: 'Ochre', hex: '#c99b3f' },
-    ]}
   >
     <div class="plate-grid">
       <div class="plate-copy">
@@ -38,6 +32,12 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
           <a class="btn primary" href="#work">View the systems</a>
           <a class="btn ghost" href="mailto:rohit.ra.agrawal@gmail.com">Email me</a>
         </div>
+      </div>
+      {/* The ledger is a sibling of the copy, not a child, so that on a phone
+          the artefact can sit between the buttons and the career facts. The
+          proof of the headline should be seen before the CV detail, and it
+          used to be twelve screens down. */}
+      <div class="hero-ledger">
         <Ledger
           label="The record"
           rows={[
@@ -49,22 +49,13 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
               d: 'Senior / Principal — AI Platform · LLMOps · Forward-Deployed AI · AI Quality Engineering Architect · AI Test Automation & Agentic AI Leader',
             },
             { t: 'Base', d: 'Bengaluru, India · IST (UTC+5:30)' },
+            { t: 'Relocation', d: 'Open worldwide' },
           ]}
         />
       </div>
-      <figure class="plate-figure">
-        <HeroFigure />
-        <CapStrip
-          label="The portfolio, worn as a suit — each garment is a system"
-          items={[
-            { t: 'Jacket', d: 'CiteVyn', href: '#work', target: 'g-citevyn' },
-            { t: 'Jacket', d: 'Quorum-AI', href: '#quorum', target: 'g-quorum' },
-            { t: 'Vest', d: 'SaafSaans', href: '#saafsaans', target: 'g-saafsaans' },
-            { t: 'Trousers', d: 'NarraTwin', href: '#narratwin', target: 'g-narratwin' },
-            { t: 'Pocket sq.', d: 'Private work', href: '#private', target: 'g-private' },
-          ]}
-        />
-      </figure>
+      <div class="plate-figure">
+        <RefusalCard />
+      </div>
     </div>
   </Plate>
 
@@ -73,12 +64,7 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
     id="work"
     num="01"
     name="CiteVyn"
-    hue="#5e2233"
-    chips={[
-      { role: 'Ground', name: 'Bordeaux', hex: '#5e2233' },
-      { role: 'Cloth', name: 'Bone', hex: '#f2ebdd' },
-      { role: 'Thread', name: 'Ochre', hex: '#c99b3f' },
-    ]}
+    state="Live — cold-starts"
   >
     <div class="plate-grid">
       <div class="plate-copy">
@@ -104,7 +90,6 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
         <CapStrip
           label="CiteVyn, captioned"
           items={[
-            { t: 'State', d: 'Live — cold-starts' },
             { t: 'Answers', d: 'Quoted verbatim', target: 'cite-quote' },
             { t: 'Citations', d: 'Every claim', target: 'cite-tabs' },
             { t: 'Refusal', d: 'A feature', target: 'cite-refusal' },
@@ -122,12 +107,7 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
     id="quorum"
     num="02"
     name="Quorum-AI"
-    hue="#1e4f46"
-    chips={[
-      { role: 'Ground', name: 'Viridian', hex: '#1e4f46' },
-      { role: 'Cloth', name: 'Bone', hex: '#f2ebdd' },
-      { role: 'Thread', name: 'Ochre', hex: '#c99b3f' },
-    ]}
+    state="Live"
   >
     <div class="plate-grid">
       <div class="plate-copy">
@@ -154,7 +134,6 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
         <CapStrip
           label="Quorum-AI, captioned"
           items={[
-            { t: 'State', d: 'Live' },
             { t: 'Models', d: '4 in parallel', target: 'q-models' },
             { t: 'Debate', d: '2 critique rounds', target: 'q-debate' },
             { t: 'Verdict', d: '5 fields', target: 'q-synth' },
@@ -171,12 +150,7 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
     id="saafsaans"
     num="03"
     name="SaafSaans"
-    hue="#2e5877"
-    chips={[
-      { role: 'Ground', name: 'Dusk blue', hex: '#2e5877' },
-      { role: 'Cloth', name: 'Bone', hex: '#f2ebdd' },
-      { role: 'Thread', name: 'Ochre', hex: '#c99b3f' },
-    ]}
+    state="Deployed — not answering"
   >
     <div class="plate-grid">
       <div class="plate-copy">
@@ -213,7 +187,6 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
         <CapStrip
           label="SaafSaans, captioned"
           items={[
-            { t: 'State', d: 'Deployed' },
             { t: 'Risk', d: 'Per person', target: 's-person' },
             { t: 'Scale', d: 'CPCB bands', target: 's-bands' },
             { t: 'Timing', d: 'Best window', target: 's-window' },
@@ -230,12 +203,7 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
     id="narratwin"
     num="04"
     name="NarraTwin"
-    hue="#4a4653"
-    chips={[
-      { role: 'Ground', name: 'Greyed mauve', hex: '#4a4653' },
-      { role: 'Cloth', name: 'Bone', hex: '#f2ebdd' },
-      { role: 'Thread', name: 'Ochre', hex: '#c99b3f' },
-    ]}
+    state="Phase 1 — No-Go"
   >
     <div class="plate-grid">
       <div class="plate-copy">
@@ -261,7 +229,6 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
         <CapStrip
           label="NarraTwin, captioned"
           items={[
-            { t: 'State', d: 'Phase 1 — No-Go', target: 'n-gate' },
             { t: 'Gates', d: 'Claim · consent · release', target: 'n-latches' },
             { t: 'Deployment', d: 'None — local only', target: 'n-frame' },
             { t: 'Distribution', d: 'Withheld by design' },
@@ -276,13 +243,8 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
     id="private"
     num="05"
     name="Kept Close"
-    hue="#b5ac9c"
+    state="In progress — closed"
     theme="light"
-    chips={[
-      { role: 'Ground', name: 'Linen', hex: '#b5ac9c' },
-      { role: 'Cloth', name: 'Olive', hex: '#8f8672' },
-      { role: 'Thread', name: 'Ochre', hex: '#c99b3f' },
-    ]}
   >
     <div class="plate-grid">
       <div class="plate-copy">
@@ -325,13 +287,7 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
     id="contact"
     num="06"
     name="The Sitting"
-    hue="#1b2440"
     class="contact"
-    chips={[
-      { role: 'Ground', name: 'Ink navy', hex: '#1b2440' },
-      { role: 'Cloth', name: 'Bone', hex: '#f2ebdd' },
-      { role: 'Thread', name: 'Ochre', hex: '#c99b3f' },
-    ]}
   >
     <div class="plate-grid">
       <div class="plate-copy">

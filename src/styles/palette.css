@@ -1,0 +1,91 @@
+/* stackclimb.com — the value ladder
+   ---------------------------------------------------------------------------
+   Every plate is built from four steps of LIGHTNESS, not four hues:
+
+     --ground   L 9.5%   the near-black field the plate is printed on
+     --surface  L 17.5%  the raised panel that carries the frame and the copy
+     --lit      L 96%    one near-white surface per plate, holding real content
+     --accent            ochre, or a darkened ochre where the ground is paper
+
+   Why this file exists. The palette used to sit between L18% and L32% on six
+   of seven plates — a 14-point band. Two thirds of every rendered screen fell
+   inside a 20-point band. Scrolling changed hue and nothing else, so the page
+   read as printed rather than lit, which is what "dark and dull" actually
+   described. The hues were never the problem: they measure 41–47% saturation.
+
+   The hue of each plate is preserved exactly. Only lightness moved.
+
+     bone on ground   was ~7–9:1     now 13.8–15.6:1
+     ochre on ground  was 2.97:1     now 6.4–7.25:1   (fixes the focus ring)
+     lit on ground    did not exist  now 14.3–16.1:1  (the light source)
+
+   Derived, not eyeballed: hue and saturation read off the original hex, then
+   re-rendered at a fixed lightness. See the commit for the derivation script.
+   --------------------------------------------------------------------------- */
+
+.plate {
+  --ground: #0e1322;
+  --surface: #1a233f;
+  --lit: #f4efe4;
+  --accent: var(--ochre);
+
+  background: var(--ground);
+}
+
+#work {
+  --ground: #230d13;
+  --surface: #3f1a25;
+}
+
+#quorum {
+  --ground: #0d231f;
+  --surface: #1a3f38;
+}
+
+#saafsaans {
+  --ground: #0e1a23;
+  --surface: #1a2f3f;
+}
+
+#narratwin {
+  --ground: #17161a;
+  --surface: #2b2930;
+}
+
+/* The one paper plate in the series. It is the rhythm break: six near-black
+   fields and then a lit one. Upgraded from the old muddy linen #b5ac9c
+   (saturation 15%, and the only ground above L60) to a clean paper.
+
+   Ochre cannot be the accent here — it measures 1.97:1 on paper and failed
+   WCAG 1.4.11 as a focus ring at 1.13:1 on the old linen.
+
+   The accent is measured against the DARKEST of the three light surfaces, not
+   the ground. A first attempt at #7a5a19 cleared 4.92:1 on the ground and was
+   still caught by axe at 4.21:1, because the plate's state label sits on the
+   frame surface, which is darker than the ground behind it. Checking one
+   surface out of three is not checking.
+
+     #6b4e14   surface 5.11:1   ground 5.97:1   lit 7.01:1   — all pass AA */
+#private {
+  --ground: #e8e2d4;
+  --surface: #d9d2c0;
+  --lit: #f7f4ec;
+  --accent: #6b4e14;
+}
+
+/* The lit surface: the only near-white field on a dark plate, and the reason
+   the page now looks lit instead of printed. It exists to hold a REAL artefact
+   — actual system output, at a size you can read. Never a grey placeholder
+   bar: a page that promises "AI that shows its work" cannot show a wireframe
+   where the work belongs. */
+.lit-surface {
+  background: var(--lit);
+  color: var(--ink);
+  border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
+}
+
+/* The accent follows the plate, so the focus ring survives every ground. */
+.plate :focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}

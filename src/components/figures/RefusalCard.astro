@@ -1,0 +1,140 @@
+---
+/* The hero artefact.
+ *
+ * Every value below is copied verbatim from a recorded CiteVyn run:
+ *   citevyn/backend/artifacts/golden_report.json
+ *   case claude_api_006 · generated 2026-07-17T22:44:54Z · 52 of 52 passed
+ *
+ * Nothing here is written for the website. The question is the golden case's
+ * own question, the refusal is the string the system returned, and the three
+ * fields are its own response fields. A page that promises "AI that shows its
+ * work" cannot illustrate itself with an invented answer.
+ *
+ * The obvious question is the point: CiteVyn plainly "knows" the capital of
+ * France, and refuses anyway, because no indexed source supports it.
+ */
+const REFUSAL =
+  'I can answer questions about Claude, Claude Code, Codex, and Gemini using their ' +
+  'official documentation. I do not have credible source material in this assistant ' +
+  'to answer that.';
+
+const FIELDS = [
+  { k: 'citations', v: '0' },
+  { k: 'domain', v: 'unsupported' },
+  { k: 'confidence', v: 'none' },
+];
+---
+
+<figure class="artefact">
+  <div class="lit-surface card">
+    <p class="ask">“What is the capital of France?”</p>
+    <p class="verdict"><span class="mark">Refused</span></p>
+    <p class="said">{REFUSAL}</p>
+    <dl class="fields">
+      {
+        FIELDS.map((f) => (
+          <div>
+            <dt>{f.k}</dt>
+            <dd>{f.v}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+  <figcaption>
+    Real output, not an illustration — golden case <code>claude_api_006</code>, recorded
+    17 July 2026. All 52 cases passed; a red case blocks the release.
+  </figcaption>
+</figure>
+
+<style>
+  .artefact {
+    margin: 0;
+    display: grid;
+    gap: 0.9rem;
+    align-content: center;
+  }
+
+  .card {
+    padding: clamp(1.4rem, 2.6vw, 2.1rem);
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  /* The documented `title` step from DESIGN.md, not a new size. */
+  .ask {
+    font-family: var(--serif);
+    font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+    line-height: 1.3;
+    font-style: italic;
+  }
+
+  .verdict {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  .verdict::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: color-mix(in srgb, var(--ink) 25%, transparent);
+  }
+  .mark {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    /* Bordeaux, already in the palette as CiteVyn's own ground. 10.45:1 here. */
+    color: #5e2233;
+    border: 1px solid currentColor;
+    padding: 0.28rem 0.6rem;
+  }
+
+  .said {
+    font-size: 0.98rem;
+    line-height: 1.55;
+    max-width: 34ch;
+  }
+
+  .fields {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    justify-content: start;
+    gap: 0 2rem;
+    margin: 0;
+    padding-top: 0.8rem;
+    border-top: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  }
+  .fields dt {
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0.68;
+  }
+  .fields dd {
+    margin: 0.15rem 0 0;
+    font-size: 0.86rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  figcaption {
+    font-size: 0.74rem;
+    line-height: 1.5;
+    opacity: 0.78;
+    max-width: 42ch;
+  }
+  /* No third font family. The case id is set in the sans with tracking, which
+     reads as a machine identifier without adding a typeface to the system. */
+  figcaption code {
+    font-family: inherit;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+
+  @media (max-width: 900px) {
+    .fields { grid-template-columns: repeat(3, auto); gap: 0 1.2rem; }
+    .said { max-width: none; }
+  }
+</style>

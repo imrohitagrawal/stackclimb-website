@@ -5,12 +5,20 @@ colors:
   bone: "#f2ebdd"
   ink: "#16213c"
   ochre: "#c99b3f"
-  ink-navy: "#1b2440"
-  bordeaux: "#5e2233"
-  viridian: "#1e4f46"
-  dusk-blue: "#2e5877"
-  greyed-mauve: "#4a4653"
-  linen: "#b5ac9c"
+  ochre-dark: "#6b4e14"
+  lit: "#f4efe4"
+  ground-navy: "#0e1322"
+  ground-bordeaux: "#230d13"
+  ground-viridian: "#0d231f"
+  ground-dusk: "#0e1a23"
+  ground-mauve: "#17161a"
+  ground-paper: "#e8e2d4"
+  surface-navy: "#1a233f"
+  surface-bordeaux: "#3f1a25"
+  surface-viridian: "#1a3f38"
+  surface-dusk: "#1a2f3f"
+  surface-mauve: "#2b2930"
+  surface-paper: "#d9d2c0"
 typography:
   scale:
     caption-label: "0.6rem"
@@ -190,10 +198,43 @@ clamps throughout rather than a fixed step scale.
 
 **The One-Plate-One-Viewport Rule.** Each plate is composed to be seen whole: frame, figure, and caption strip together at 100svh. Content that cannot fit becomes another plate, not a taller one.
 
+## The Value Ladder
+
+**Amended 2026-08-08.** Depth is carried by lightness, not by shadow. Every plate
+is built from three steps, and the hue of each plate is unchanged from the original
+palette — only lightness moved.
+
+| Step | Lightness | What it is |
+|---|---|---|
+| `--ground` | L 9.5% | The near-black field the plate is printed on |
+| `--surface` | L 17.5% | The raised panel carrying the frame and the copy |
+| `--lit` | L 96% | One near-white surface per plate, holding a real artefact |
+
+**Why.** The palette used to sit between L18% and L32% on six of seven plates — a
+14-point band — and two thirds of every rendered screen fell inside a 20-point band.
+Scrolling changed hue and nothing else, so the page read as printed rather than lit.
+The owner called it "dark and dull" and "1980s, 1990s". The hues were never the
+problem: they measure 41–47% saturation. A dark interface reads as advanced when it
+has a value ladder; this one had a single step.
+
+    bone on ground    was ~7–9:1     now 13.8–15.6:1
+    ochre on ground   was 2.97:1     now 6.4–7.25:1     (fixes the focus ring)
+    lit on ground     did not exist  now 14.3–16.1:1    (the light source)
+
+**The Lit-Surface Rule.** Exactly one near-white surface per plate, and it must hold
+a **real artefact** — actual system output at a size you can read. Never a grey
+placeholder bar. A page that promises "AI that shows its work" cannot show a
+wireframe where the work belongs.
+
+**The Darkest-Surface Rule.** An accent is measured against the *darkest* surface it
+can land on, not the ground. The light plate's accent cleared 4.92:1 on its ground
+and still failed at 4.21:1, because the state label sits on the frame surface.
+Checking one surface out of three is not checking.
+
 ## Elevation & Depth
 
 Flat by doctrine. No box-shadows on any surface at rest; depth is conveyed by the
-painted grain material, hairline rules at mixed opacities, and the backdrop repaint.
+painted grain material, hairline rules at mixed opacities, and the value ladder above.
 The single permitted shadow is interactional: when a caption lights its garment, the
 anchored SVG region lifts 4px and casts `drop-shadow(0 10px 18px rgb(0 0 0 / 0.35))`
 for the duration of the leader line. It is a spotlight response, never a resting state.

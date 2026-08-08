@@ -58,3 +58,6 @@ docs/brand/candidates/rohit/*
 !docs/brand/candidates/rohit/PUT-YOURS-HERE.txt
 docs/brand/candidates/claude/*
 !docs/brand/candidates/claude/.gitkeep
+
+# Workflow worktrees — scratch, never committed
+.claude/worktrees/

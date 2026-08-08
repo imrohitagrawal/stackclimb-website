@@ -111,16 +111,19 @@ html[data-theme='light'] .site-nav { color: var(--ink); }
   padding: clamp(5.5rem, 11vh, 8rem) clamp(1.25rem, 4.5vw, 4rem) clamp(3.5rem, 7vh, 5.5rem);
   color: var(--bone);
 
-  /* Each plate paints its OWN ground in the static HTML. Without this the page
-     background is only ever set by the scroll handler, so with JavaScript off
-     every plate falls back to ink navy — and the light plate rendered ink text
-     on ink navy at 1.03:1, invisible. */
+  /* Every plate paints its OWN ground, always — with JavaScript on or off.
+     This is not negotiable: a plate is a printed page, and two pages cannot
+     share one sheet of paper.
+
+     It used to go transparent once JS was running, so a single html-level
+     background cross-faded between plates. But 94% of desktop scroll positions
+     show two plates at once, and the one below was being painted on the ground
+     of the one above. Measured on the live site: private text on the contact
+     ground at 1.37:1, saafsaans text on the narratwin ground at 2.28:1 — the
+     top 468px of the Private plate was invisible while scrolling past it.
+     The cross-fade cost more than it bought. */
   background: var(--plate-hue);
 }
-
-/* Once JS is running it owns the ground so the backdrop can cross-fade between
-   plates. The class is set before first paint, so there is no flash. */
-.js-ground .plate { background: transparent; }
 .plate[data-plate-theme='light'] { color: var(--ink); }
 
 .plate-frame {

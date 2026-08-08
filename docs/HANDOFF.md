@@ -98,9 +98,18 @@ Read assets/inbox/README.md first. THE WHOLE INBOX IS UNTRACKED, on purpose.
      use it only to fill gaps Rohit_V3 does not cover, and where the two disagree, record
      both values in docs/STATUS.md so this is not rediscovered.
 
-     *** FINAL-Rohit_Master_Resume.md CONTAINS A PHONE NUMBER. ***
+     *** FINAL-Rohit_Master_Resume.md CONTAINS A PHONE NUMBER. D38 GOVERNS IT. ***
      It does not go on the /cv page, in the HTML, in a commit, or in a build artefact.
-     Contact stays email + LinkedIn + GitHub. Before every commit:
+     Verified 09 Aug: the number is NOT public anywhere today, so shipping it would be a
+     new and irreversible exposure, not a re-exposure. Contact stays email + LinkedIn.
+
+     DO NOT build any of these three -- all are theatre, and D38 bans them by name:
+       reveal-on-click JavaScript  scrapers execute JS
+       the number as an image      OCR reads it, screen readers cannot
+       @media print only           the number stays in the HTML source, so every
+                                   scraper gets it and every human does not
+
+     Before every commit:
        grep -oiE "\+?[0-9]{10,}" dist/**/*.html
      This is the third time source material has carried personal contact details into this
      repo. Visiting cards on 08-07, a CV now. Assume the next upload does too.

@@ -35,6 +35,17 @@ If a change does not serve that, it is Phase 4 or later.
 
 ORDER OF WORK
   Phase 0   install the positioning skills, END THE SESSION so they load, then run them
+            arnabbagxd/Brand-building-skills -> brand-positioning, brand-messaging,
+              brand-story, brand-voice   (MIT). DO NOT take brand-guidelines: it collides
+              with borghei's skill of the same name and one would overwrite the other.
+            borghei/Claude-Skills -> marketing/brand-strategist ONLY. Its licence is
+              Commons Clause + MIT, which restricts SELLING; internal use is fine, but do
+              not describe it as MIT and do not redistribute it.
+            wonjyou/portfolio-review-skill -> READ IT, DO NOT INSTALL. It is the closest
+              match to the 30-second test (reviews a portfolio URL as a hiring manager at a
+              stated seniority) but it has 5 stars and NO LICENCE, so it cannot be vendored
+              into a repo being prepared to go public. Use its checklist, credit it.
+            Verified 09 Aug: zero collisions between either new repo and the 38 installed.
   Phase 4b  FIRST among build work — four HIGH defects, one of them live and wrong now
   Phase 1   the 30-second page: overview plate, nav rework, avatar, name at display size
   Phase 2   motion. Gate: Lighthouse mobile NO WORSE THAN 98. It measures 98 today

@@ -169,7 +169,8 @@ deployment work, and it has not been said.
 | The 7 tests that cannot fail are repaired — DEF-11, DEF-12, DEF-13, DEF-14, DEF-15, DEF-16, DEF-17 | **open** |
 | The suite builds before it tests (DEF-11) | **open** |
 | Contrast passes on all 7 plates, both viewports | **done 08-08** |
-| CI workflow exists and has been green at least once | **open** |
+| CI workflow exists | **done 08-09** — `.github/workflows/gates.yml` |
+| CI has been green at least once | **open** — it has never run |
 | Branch protection requires that check | **open** (needs the repo public, or Pro) |
 
 Plus: secrets gate (gitleaks, `fetch-depth: 0`) · tracked `.claude/settings.json` · gitignore the

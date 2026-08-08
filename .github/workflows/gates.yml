@@ -1,0 +1,93 @@
+name: gates
+
+# The first mechanical enforcement this repo has had. Until now every rule in
+# AGENTS.md was influence: nothing stopped a push that broke one.
+#
+# Order matters. The cheap checks that protect the owner run first, so a commit
+# carrying a phone number or a secret fails in seconds rather than after a
+# five-minute browser install.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  secrets-and-pii:
+    name: secrets and personal data
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # gitleaks scans history, not just the tip. A secret committed and
+          # then "removed" in a later commit is still in the pack file and
+          # still retrievable, so a shallow clone would report it clean.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: .env must never be tracked
+        run: |
+          if git ls-files --error-unmatch .env 2>/dev/null; then
+            echo "::error::.env is tracked. It must be gitignored; only .env.example ships."
+            exit 1
+          fi
+          echo "ok: .env is not tracked"
+
+      - name: the inbox must never be tracked
+        run: |
+          # assets/inbox/ holds owner-supplied source material. Three times it
+          # has carried personal contact details: visiting cards with a mobile
+          # number and a LinkedIn QR as pixels, and a CV with a phone number.
+          tracked=$(git ls-files 'assets/inbox/' | grep -v '^assets/inbox/README.md$' | grep -v '\.gitkeep$' || true)
+          if [ -n "$tracked" ]; then
+            echo "::error::files tracked under assets/inbox/ — it is staging and must stay untracked"
+            echo "$tracked"
+            exit 1
+          fi
+          echo "ok: inbox is untracked"
+
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: personal contact details (D38)
+        run: |
+          node tests/no-pii.mjs --self-test
+          node tests/no-pii.mjs
+
+  build-and-test:
+    name: build, test, and scan the build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # DEF-11: the suite used to test whatever dist/ happened to hold. It
+      # builds first here, so a green run means the code in this commit is
+      # what was tested.
+      - run: npm run build
+
+      - name: no personal data in the BUILD, not just the source
+        run: node tests/no-pii.mjs
+
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test
+
+      - name: plate seams stay above AA
+        run: |
+          npx astro preview --port 4321 &
+          npx wait-on http://localhost:4321 -t 30000
+          node tests/boundary-check.mjs http://localhost:4321

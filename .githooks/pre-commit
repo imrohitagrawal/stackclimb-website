@@ -1,0 +1,31 @@
+#!/bin/sh
+# Local mirror of the CI gate. CI is the authority; this just fails faster.
+#
+# Enable once per clone:   git config core.hooksPath .githooks
+# Bypassing it (--no-verify) does not bypass CI. That is the point.
+
+fail=0
+
+# 1. Personal contact details — D38. Staged files only, so it stays fast.
+if ! node tests/no-pii.mjs --staged; then fail=1; fi
+
+# 2. The inbox is staging and must never be committed.
+staged_inbox=$(git diff --cached --name-only | grep '^assets/inbox/' | grep -v 'README.md$' | grep -v '.gitkeep$' || true)
+if [ -n "$staged_inbox" ]; then
+  echo "✖ files staged under assets/inbox/ — it is staging, not a site directory:"
+  echo "$staged_inbox" | sed 's/^/    /'
+  fail=1
+fi
+
+# 3. .env must never be staged.
+if git diff --cached --name-only | grep -qx '.env'; then
+  echo "✖ .env is staged. Only .env.example ships."
+  fail=1
+fi
+
+# 4. Secrets, if gitleaks is installed locally. CI runs it either way.
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks protect --staged --redact --no-banner || fail=1
+fi
+
+[ "$fail" = "0" ] || { echo "\ncommit blocked. CI enforces the same rules, so --no-verify only delays it.\n"; exit 1; }

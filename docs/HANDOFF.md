@@ -65,7 +65,10 @@ ORDER OF WORK
                      and /cv would each tell Google they are the home page
               DEF-10 ROUTES = ['/'] in dod.spec.js:11 is hand-typed, so a new page gets
                      zero test coverage and nothing says so
-  Phase 5   the standing deployment debt
+  Phase 5   the standing deployment debt. TWO ROWS MOVED on 09 Aug:
+              CI workflow exists  -> DONE, .github/workflows/gates.yml
+              CI has been green   -> STILL OPEN. It has never run. Push and watch it.
+                                     A workflow that has never been green proves nothing.
 
 COPY THAT IS LIVE AND WRONG — DEF-36, do this in Phase 0
   Layout.astro:77 reads "Built as a work sample - static Astro, self-hosted type, no trackers,
@@ -109,8 +112,13 @@ Read assets/inbox/README.md first. THE WHOLE INBOX IS UNTRACKED, on purpose.
        @media print only           the number stays in the HTML source, so every
                                    scraper gets it and every human does not
 
-     Before every commit:
-       grep -oiE "\+?[0-9]{10,}" dist/**/*.html
+     THIS IS NOW ENFORCED, not advisory (D39). You do not need to remember it:
+       .githooks/pre-commit    blocks the commit locally
+       .github/workflows/gates.yml   blocks the push in CI
+     Enable the hook once per clone:  git config core.hooksPath .githooks
+     Check the gate yourself:         node tests/no-pii.mjs --self-test
+     If it fires on something genuinely safe, add the CONTEXT to ALLOW in
+     tests/no-pii.mjs and say why in the commit message. Never delete a rule.
      This is the third time source material has carried personal contact details into this
      repo. Visiting cards on 08-07, a CV now. Assume the next upload does too.
 

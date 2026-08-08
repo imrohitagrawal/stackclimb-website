@@ -1,0 +1,61 @@
+/* stackclimb.com — the caption strip
+   ---------------------------------------------------------------------------
+   The signature component: a ruled strip under each figure, one cell per fact.
+   Extracted from global.css on 2026-08-08 to keep that file under its
+   grandfathered 500-line ceiling (AGENTS.md, File size and modularization).
+   One concern per file; this is the concern.
+   --------------------------------------------------------------------------- */
+
+/* Fixed 3-column grid, not flex-wrap: wrapping left a ragged last row on every
+   plate (6/5/5/3 cells landing in 5/4/4/2 columns), which reads as a broken
+   table. The two rules below stretch a short last row to fill its width. */
+.caps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid color-mix(in srgb, currentColor 50%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, currentColor 50%, transparent);
+  margin-top: 1.4rem;
+}
+.cap:last-child:nth-child(3n + 2) { grid-column: span 2; }
+.cap:last-child:nth-child(3n + 1) { grid-column: span 3; }
+.cap {
+  display: grid; gap: 0.18rem;
+  text-align: center;
+  padding: 0.7rem 0.9rem 0.62rem;
+  border-left: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+  color: currentColor; text-decoration: none;
+  min-width: 0;
+}
+/* First cell of each ROW, else later rows open with a stray rule. */
+.cap:nth-child(3n + 1) { border-left: none; }
+.cap .t {
+  font-size: 0.6rem; font-weight: 560;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  opacity: 0.62;
+}
+/* Values wrap; they used to be nowrap with an ellipsis, which silently ate the
+   end of every long one — "CLAIM · CONSENT …", "WITHHELD BY DES…". A caption
+   that hides the fact it is captioning is worse than a taller strip. */
+.cap .d {
+  font-size: 0.74rem; font-weight: 640;
+  letter-spacing: 0.09em; text-transform: uppercase;
+  text-wrap: balance;
+}
+.cap[data-target], a.cap { cursor: pointer; }
+.cap[data-target]:hover .d,
+.cap[data-target]:focus-visible .d,
+a.cap:hover .d { color: var(--ochre); }
+
+
+/* Two columns on a phone. These live here, not in global.css, because this file
+   loads after it — leaving them behind meant the 3-column desktop rule above
+   overrode the media query and every strip stayed 3-wide at 390px. */
+@media (max-width: 900px) {
+  .caps { grid-template-columns: 1fr 1fr; }
+  .cap { border-left: none; border-top: 1px solid color-mix(in srgb, currentColor 22%, transparent); }
+  .cap:nth-child(-n + 2) { border-top: none; }
+  .cap:nth-child(2n) { border-left: 1px solid color-mix(in srgb, currentColor 28%, transparent); }
+  /* Two columns, so an odd last cell is the one left half-width.
+     Measured on NarraTwin: last row summed 146px against a 292px strip. */
+  .cap:last-child:nth-child(odd) { grid-column: span 2; }
+}

@@ -251,36 +251,6 @@ html[data-theme='light'] .site-nav { color: var(--ink); }
 }
 
 /* Billing strip: LABEL · VALUE cells ruled like the reference sheet */
-.caps {
-  display: flex; flex-wrap: wrap;
-  border-top: 1px solid color-mix(in srgb, currentColor 50%, transparent);
-  border-bottom: 1px solid color-mix(in srgb, currentColor 50%, transparent);
-  margin-top: 1.4rem;
-}
-.cap {
-  flex: 1 1 auto;
-  display: grid; gap: 0.18rem;
-  text-align: center;
-  padding: 0.7rem 0.9rem 0.62rem;
-  border-left: 1px solid color-mix(in srgb, currentColor 28%, transparent);
-  color: currentColor; text-decoration: none;
-  min-width: 0;
-}
-.cap:first-child { border-left: none; }
-.cap .t {
-  font-size: 0.6rem; font-weight: 560;
-  letter-spacing: 0.2em; text-transform: uppercase;
-  opacity: 0.62;
-}
-.cap .d {
-  font-size: 0.74rem; font-weight: 640;
-  letter-spacing: 0.09em; text-transform: uppercase;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.cap[data-target], a.cap { cursor: pointer; }
-.cap[data-target]:hover .d,
-.cap[data-target]:focus-visible .d,
-a.cap:hover .d { color: var(--ochre); }
 
 /* Leader-line overlay */
 .leads {
@@ -307,7 +277,7 @@ a.cap:hover .d { color: var(--ochre); }
     align-items: start;
   }
   .hero .plate-copy { grid-column: 1; grid-row: 1; }
-  .hero .hero-ledger { grid-column: 1; grid-row: 2; margin-top: 2rem; }
+  .hero .hero-ledger { grid-column: 1; grid-row: 2; margin-top: 1.1rem; }
   .hero .plate-figure {
     grid-column: 2; grid-row: 1 / span 2;
     align-self: center;
@@ -342,6 +312,7 @@ a.cap:hover .d { color: var(--ochre); }
 .btn {
   display: inline-block;
   font-size: 0.78rem; font-weight: 640;
+  min-height: 44px;
   letter-spacing: 0.18em; text-transform: uppercase;
   text-decoration: none;
   padding: 0.95rem 1.5rem 0.85rem;
@@ -465,11 +436,6 @@ a.cap:hover .d { color: var(--ochre); }
     text-align: left; justify-items: start; max-width: none;
   }
   .plate-no::after { margin-left: 0; }
-  .caps { display: grid; grid-template-columns: 1fr 1fr; }
-  .cap { border-left: none; border-top: 1px solid color-mix(in srgb, currentColor 22%, transparent); }
-  .cap:nth-child(-n + 2) { border-top: none; }
-  .cap:nth-child(2n) { border-left: 1px solid color-mix(in srgb, currentColor 28%, transparent); }
-  .cap .d { white-space: normal; }
   .ledger dd { text-align: left; }
   .ledger .row { grid-template-columns: 1fr; gap: 0.1rem; }
   .private-pair { grid-template-columns: 1fr; }

@@ -1,0 +1,44 @@
+/* stackclimb.com — touch targets
+   ---------------------------------------------------------------------------
+   Scoped to `pointer: coarse` so a finger gets a 44px target while a mouse
+   keeps the page's density. Applying these everywhere would inflate the
+   caption strips and the nav on desktop, where they are not a problem.
+
+   Measured before this file existed, on the built page:
+
+     .site-nav a     22px tall     16 targets under 44px at 1440
+     .links a        23px tall     13 targets under 44px at 390
+     .btn            36px tall
+
+   44px is the Apple HIG figure. WCAG 2.5.8 AA only asks for 24px, which every
+   one of these already cleared — so this is a usability fix, not a conformance
+   one, and it is worth saying which is which.
+   --------------------------------------------------------------------------- */
+
+@media (pointer: coarse) {
+  .site-nav a,
+  .links a,
+  .cap {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* The caption cells stay two-line and centred; flex would collapse them. */
+  .cap {
+    display: grid;
+    align-content: center;
+  }
+
+  .links {
+    gap: 0 1.6rem;
+  }
+
+  /* The brand is the home link and carries the wordmark; it needs the height
+     without the nav's centring, or the two lines lose their baseline. */
+  .site-nav .brand {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+}

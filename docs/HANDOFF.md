@@ -61,6 +61,19 @@ ORDER OF WORK
   Phase 4   the thirteen remaining critique findings
   Phase 5   the standing deployment debt
 
+SCOPED REVIEWS TO RUN, NOT OPINIONS TO INVENT
+  - Colour: run /impeccable colorize against https://stackclimb.com. The value ladder is
+    measured and green (bone 13.8-15.6:1, ochre 6.4-7.25:1), so do NOT change hues on taste.
+    One concrete lead to test: NarraTwin's ground #17161a is 8% saturation and reads as dark
+    grey while every other plate has a clear hue. Confirm or refute by measurement.
+  - Positioning: run brand-positioning + brand-strategist + grilling BEFORE writing any hero
+    copy. Every copy recommendation on record from 08-09 Aug is unaided judgement (D33) and
+    is there to be tested, not implemented on trust.
+  - Motion: owner wants animation ON by default with a user toggle to stop it. The mechanism
+    already exists -- plates.js sets html.no-anim which forces transition/animation to none.
+    Persist it in localStorage. Control goes in the FOOTER, not the nav. prefers-reduced-motion
+    is layer one and already works; the toggle is for people who never set the OS preference.
+
 BLOCKED ON THE OWNER — DO NOT FABRICATE, DO NOT SKIP SILENTLY
   1. CV content. D31 chose a printable /cv page. He must supply title, years and one line of
      scope for Amazon, LimeRoad, Mobileum, Snapdeal, Subex. PRODUCT.md:101 says résumé content

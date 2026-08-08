@@ -79,7 +79,7 @@ industry*, and the skill would over-apply.
 |---|---|
 | `coreyhaines31/marketingskills` — **43,542★**, MIT, known author | **Not one of its 50 skills covers positioning or messaging.** All tactics: ads, SEO, email, CRO, pricing. Stars are not relevance |
 | `wonjyou/portfolio-review-skill` — 5★, **no licence** | The single closest match to the 30-second test: it reviews a portfolio URL as a hiring manager at a stated seniority. **No licence means all rights reserved**, and `.claude/` is tracked here, so installing it would commit it. **Read it and credit it; do not vendor it** |
-| `MadeByTokens/resume-helper` — 6★, MIT | Philosophically the closest thing to how this project already works: four adversarial agents — Writer, Fact-Checker, Interviewer, Coach — aiming at resumes that are compelling **and** honest. Six stars. The shape is right; revisit if it grows |
+| `MadeByTokens/resume-helper` — 6★, MIT | **Not a skill — a plugin.** Ships `agents/`, `commands/`, `.claude-plugin/` and no `skills/` directory, so `npx skills add` finds nothing. Tried 09 Aug at the owner's second request; it is not installable by this route. Philosophically the closest match to how this project already works (four adversarial agents: Writer, Fact-Checker, Interviewer, Coach), but installing it means adopting a plugin with four subagents, and the adversarial method here is already measured and working. **Evaluated, not installable as a skill. Do not retry.** |
 | `brand-guidelines` (in **both** new brand repos) | **Collision.** One would silently overwrite the other — the same trap the two TDD skills sprang here before. Taken from neither |
 
 ---

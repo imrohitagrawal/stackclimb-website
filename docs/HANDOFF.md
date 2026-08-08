@@ -45,7 +45,15 @@ ORDER OF WORK
               match to the 30-second test (reviews a portfolio URL as a hiring manager at a
               stated seniority) but it has 5 stars and NO LICENCE, so it cannot be vendored
               into a repo being prepared to go public. Use its checklist, credit it.
-            Verified 09 Aug: zero collisions between either new repo and the 38 installed.
+            Paramchoudhary/ResumeSkills (1,477 stars, MIT) -> executive-resume-writer,
+              tech-resume-optimizer, resume-quantifier, portfolio-case-study-writer,
+              job-description-analyzer. This is the CV work (D31, approach B).
+              SKIP career-changer-translator: its worked examples are Teacher->Corporate
+              and Military->Corporate. His is a specialisation shift inside tech, and the
+              skill would over-apply.
+            Verified 09 Aug by set comparison, not assumed: zero collisions between any of
+              these repos and the 38 already installed. The ONLY clash is brand-guidelines,
+              which exists in both arnabbagxd and borghei -- take it from neither.
   Phase 4b  FIRST among build work — four HIGH defects, one of them live and wrong now
   Phase 1   the 30-second page: overview plate, nav rework, avatar, name at display size
   Phase 2   motion. Gate: Lighthouse mobile NO WORSE THAN 98. It measures 98 today

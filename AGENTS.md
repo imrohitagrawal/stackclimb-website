@@ -181,6 +181,22 @@ The site states availability as plain fact — roles sought, open to relocation.
 pitches, never signals urgency, and never explains why it exists. Copy that reads as a
 campaign is wrong.
 
+**Amended 2026-08-08 — whose urgency.** The rule above was read as banning any copy that names a
+reader's problem. That reading is wrong, and the owner corrected it. Two different things were
+collapsed into one word:
+
+| Not allowed — **his** urgency | Allowed — the **reader's** problem |
+|---|---|
+| "Available immediately", "limited availability" | "If your AI features work in the demo and not in the release, we should talk" |
+| Anything that reads as a job-search campaign | Naming a failure mode the reader recognises from their own week |
+| Superlatives, invented traction, manufactured scarcity | Stating plainly who he is useful to, and why |
+
+In his words: *"It is not signalling pain or urgency from my side, but it is addressing the pain
+and urgency of the reader to whom I would cater. These are two different aspects."*
+
+A site whose subject is systems that disclose their limits may absolutely say which limits it
+helps with. What it may never do is manufacture pressure about itself.
+
 ## Non-negotiable: execution is the source of truth
 
 **The source of truth is not what is written. It is what you get by running the code.**

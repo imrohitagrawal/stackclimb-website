@@ -167,10 +167,10 @@ deployment work, and it has not been said.
 | Exit condition for approach C | Status |
 |---|---|
 | The 7 tests that cannot fail are repaired — DEF-11, DEF-12, DEF-13, DEF-14, DEF-15, DEF-16, DEF-17 | **open** |
-| The suite builds before it tests (DEF-11) | **open** |
+| The suite builds before it tests (DEF-11) | **half done** — CI runs `npm run build` before `playwright test`, so a green CI run tests this commit. `playwright.config.js:16` still starts `astro preview` without building, so a **local** run can still test a stale `dist/` |
 | Contrast passes on all 7 plates, both viewports | **done 08-08** |
 | CI workflow exists | **done 08-09** — `.github/workflows/gates.yml` |
-| CI has been green at least once | **open** — it has never run |
+| CI has been green at least once | **done 08-09** — run `31276450288`, both jobs success on the first attempt |
 | Branch protection requires that check | **open** (needs the repo public, or Pro) |
 
 Plus: secrets gate (gitleaks, `fetch-depth: 0`) · tracked `.claude/settings.json` · gitignore the

@@ -18,7 +18,7 @@ Last updated: 2026-08-08
 | Site | Home page built — 7 plates, five record cards each quoting a named file at a named commit, ruled caption strips |
 | Deployed | **Yes, 08-08.** `stackclimb.com` and `www` both serve HTTP 200 from Cloudflare Pages project `stackclimb`, production branch `main`, cert CN=stackclimb.com valid to 24 Oct 2026. Two CNAMEs added by the owner; the three Fly subdomains were verified unchanged before and after |
 | Tests | `npx playwright test` on `fix/qa-review-findings`: **18 pass, 0 fail** (08-08). The contrast gate is green for the first time. `tests/boundary-check.mjs` measures plate seams; run it with `--legacy` to watch it go red |
-| CI | **`.github/workflows/gates.yml`, added 08-09 — the first mechanical enforcement this repo has had.** Two jobs: secrets-and-PII (gitleaks with `fetch-depth: 0`, `.env` untracked, inbox untracked, `tests/no-pii.mjs`) and build-and-test (build **before** test per DEF-11, PII scan of the *build*, playwright, plate-seam contrast). **Has not run yet** — it fires on the next push. A workflow that has never been green proves nothing |
+| CI | **`.github/workflows/gates.yml`, added 08-09 — the first mechanical enforcement this repo has had.** Two jobs: secrets-and-PII (gitleaks with `fetch-depth: 0`, `.env` untracked, inbox untracked, `tests/no-pii.mjs`) and build-and-test (build **before** test per DEF-11, PII scan of the *build*, playwright, plate-seam contrast). **Green on its first run**, `31276450288`, both jobs, 08-09. Branch protection cannot require it until the repo is public or on Pro |
 
 ---
 

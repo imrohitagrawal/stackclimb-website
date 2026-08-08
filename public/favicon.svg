@@ -1,5 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="8" fill="#1B2440"/>
+  <!-- The mark is the plate, not a logo bolted on: ground, ruled frame, monogram.
+       Ground updated 2026-08-09 from the pre-value-ladder #1B2440 to #0e1322,
+       the current hero ground in styles/palette.css. See docs/brand/README.md. -->
+  <rect width="64" height="64" rx="8" fill="#0e1322"/>
   <rect x="7.5" y="7.5" width="49" height="49" fill="none" stroke="#F2EBDD" stroke-width="1.5"/>
   <rect x="11.5" y="11.5" width="41" height="41" fill="none" stroke="#C99B3F" stroke-width="1"/>
   <text x="32" y="43" font-family="Didot, 'Bodoni MT', serif" font-size="28" font-weight="600" fill="#F2EBDD" text-anchor="middle">RA</text>

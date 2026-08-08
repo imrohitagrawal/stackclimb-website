@@ -61,3 +61,7 @@ docs/brand/candidates/claude/*
 
 # Workflow worktrees — scratch, never committed
 .claude/worktrees/
+
+# Inbox: brand candidates are never tracked (see assets/inbox/README.md)
+assets/inbox/brand/*
+!assets/inbox/brand/.gitkeep

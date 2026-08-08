@@ -19,6 +19,36 @@
       "skillPath": "skills/brainstorming/SKILL.md",
       "computedHash": "225b53fce53d627d3a1e94bfea84060ccdbf11a58a2d5cf11eefef89d598020e"
     },
+    "brand-messaging": {
+      "source": "arnabbagxd/Brand-building-skills",
+      "sourceType": "github",
+      "skillPath": "skills/brand-messaging/SKILL.md",
+      "computedHash": "86a18bdb61a602fabb1b81f9e0a3e80e4904afaba0f7d3b7f9065a709a5be81c"
+    },
+    "brand-positioning": {
+      "source": "arnabbagxd/Brand-building-skills",
+      "sourceType": "github",
+      "skillPath": "skills/brand-positioning/SKILL.md",
+      "computedHash": "bc0ae740c12153cd7f791cb14e44f9fb1e606ed701504c808d6119389811822a"
+    },
+    "brand-story": {
+      "source": "arnabbagxd/Brand-building-skills",
+      "sourceType": "github",
+      "skillPath": "skills/brand-story/SKILL.md",
+      "computedHash": "900df958c59687f5d7322d4fdabd1906b0b28e9fa1e5791da5cd943081948106"
+    },
+    "brand-strategist": {
+      "source": "borghei/Claude-Skills",
+      "sourceType": "github",
+      "skillPath": "marketing/brand-strategist/SKILL.md",
+      "computedHash": "8af09f6eb824409b4bba45d65f41bfaf06fadc78f7d1cbdaead0b823055b43fc"
+    },
+    "brand-voice": {
+      "source": "arnabbagxd/Brand-building-skills",
+      "sourceType": "github",
+      "skillPath": "skills/brand-voice/SKILL.md",
+      "computedHash": "c04b1875dd7c3669834bccc68a0c7523468dd62166d2b3289fc8bc3d6035a656"
+    },
     "brandkit": {
       "source": "Leonxlnx/taste-skill",
       "sourceType": "github",
@@ -60,6 +90,12 @@
       "sourceType": "github",
       "skillPath": "skills/executing-plans/SKILL.md",
       "computedHash": "78a07800ee99a5861ae10be59d79fad085fdca10444e8aaeb2691597e357cff8"
+    },
+    "executive-resume-writer": {
+      "source": "Paramchoudhary/ResumeSkills",
+      "sourceType": "github",
+      "skillPath": "skills/executive-resume-writer/SKILL.md",
+      "computedHash": "4c8c519df4a69f2078ef14c354707754de4e28a73ddb5eb1032c88f2fd2201fe"
     },
     "find-animation-opportunities": {
       "source": "emilkowalski/skills",
@@ -127,6 +163,12 @@
       "skillPath": "skills/brutalist-skill/SKILL.md",
       "computedHash": "8fc355c4aadb7d29c53ca28bc41be3cd6eea765d121e3737c4dc2d0f90a8effa"
     },
+    "job-description-analyzer": {
+      "source": "Paramchoudhary/ResumeSkills",
+      "sourceType": "github",
+      "skillPath": "skills/job-description-analyzer/SKILL.md",
+      "computedHash": "f6b48144029ceef1e18e9ea9d8d7f3036965615608d82f91d3adb1321d3f4bbe"
+    },
     "minimalist-ui": {
       "source": "Leonxlnx/taste-skill",
       "sourceType": "github",
@@ -144,6 +186,12 @@
       "sourceType": "github",
       "skillPath": "skills/pick-ui-library/SKILL.md",
       "computedHash": "f8d4d2cf4677bf54b14f35f62a741add93541bfcb67863315a40164365161b49"
+    },
+    "portfolio-case-study-writer": {
+      "source": "Paramchoudhary/ResumeSkills",
+      "sourceType": "github",
+      "skillPath": "skills/portfolio-case-study-writer/SKILL.md",
+      "computedHash": "06712b3c7b6699797d15009ae31eca1e5b582290695f759a25a0bd9759312375"
     },
     "prototype": {
       "source": "emilkowalski/skills",
@@ -169,6 +217,12 @@
       "skillPath": "skills/requesting-code-review/SKILL.md",
       "computedHash": "2304d2073c62eab163e04de40fe775e3d87c69c0df40cd4dc953fdb8e3205b81"
     },
+    "resume-quantifier": {
+      "source": "Paramchoudhary/ResumeSkills",
+      "sourceType": "github",
+      "skillPath": "skills/resume-quantifier/SKILL.md",
+      "computedHash": "d251f6c2f23684fe5bd270397a4cdb33e71575686dd3e44036536ddba645ad2c"
+    },
     "review-animations": {
       "source": "emilkowalski/skills",
       "sourceType": "github",
@@ -186,6 +240,12 @@
       "sourceType": "github",
       "skillPath": "skills/systematic-debugging/SKILL.md",
       "computedHash": "a2750dfbaed1690da73b120254892c4f926b4576cb82eb16fc877783941fe39b"
+    },
+    "tech-resume-optimizer": {
+      "source": "Paramchoudhary/ResumeSkills",
+      "sourceType": "github",
+      "skillPath": "skills/tech-resume-optimizer/SKILL.md",
+      "computedHash": "2e29bf63c6532e5fb233aef21a7f7418a472fc52883995cd0d70544f1ba9b2ed"
     },
     "test-driven-development": {
       "source": "obra/superpowers",

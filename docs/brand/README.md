@@ -1,58 +1,58 @@
-# Brand — logo and wordmark candidates
+# Wordmark and mark
 
-## Where to put your files
+**Recommendation, 2026-08-09: do not design a logo. You already have both. Formalise them.**
 
-```
-docs/brand/candidates/rohit/
-```
+## Why not a logo
 
-Drop all five or six in there. Any format you have — SVG, PNG, PDF, Figma export, even a photo
-of a sketch. Original vector is most useful if you have it; a flat export is fine if you don't.
+A personal site rarely needs one. **The name is the brand.** An abstract mark next to "Rohit
+Agrawal" would be decoration with no job to do — it says nothing the name does not already say,
+and it is one more thing to keep consistent across a CV, a LinkedIn banner and an OG image.
 
-Name them however you like. If two are variants of one idea, a shared prefix helps
-(`mark-a-1.svg`, `mark-a-2.svg`).
+What a personal site does need is a **wordmark** (the name, set consistently) and a **small mark**
+that survives at 16px in a browser tab. Both already exist here. Neither was written down, which
+is why this file exists.
 
-## Process, and why it runs in this order
+## The wordmark — as shipped
 
-You asked me to produce options before seeing yours, so that what you get is a genuinely wider
-field rather than a reaction to your work. That only holds if I don't peek. So:
+    ROHIT AGRAWAL   stackclimb
+    ^^^^^^^^^^^^^   ^^^^^^^^^^
+    Bodoni Moda     Archivo
+    weight 560      weight 500
+    1rem            0.72rem
+    tracking .14em  tracking .22em
+    uppercase       lowercase, 55% opacity
 
-1. **You add yours** to `candidates/rohit/`. I do not open them.
-2. **I produce mine** in `candidates/claude/`, working only from the site's needs.
-3. **Both are reviewed together**, against the same criteria, at the same time.
+Source of truth: `src/styles/global.css`, `.site-nav .brand` and `.site-nav .brand em`.
 
-Step 2 waits on the visual direction being settled. A wordmark is downstream of the world it
-lives in — it has to survive at nav size, as a favicon, and on the OG card, and those
-constraints aren't fixed yet.
+**Open defect:** `.site-nav .brand em` is `display: none` below 900px, so **on a phone the site
+has no domain identity at all**. Raised in the design critique, still unfixed.
 
-## What a mark for this site has to survive
+## The mark — `public/favicon.svg`
 
-Whatever wins has to work in all of these. Most candidates die on one of them, usually the
-first two.
+An `RA` monogram inside the plate's own double rule: bone outer, ochre inner, on the plate
+ground.
 
-| Constraint | Why it kills marks |
+**Why this one is right.** It is not a new invention — it is the site's own signature reduced to
+64px. Every plate on the site is a ruled frame on a painted ground with a label in the corner.
+The mark is that, with initials. A visitor who has seen the site recognises it; a visitor who has
+not still reads a considered object rather than clip-art.
+
+**Changed 2026-08-09:** ground moved from `#1B2440` to `#0e1322`. The old value predated the
+value ladder, so the tab icon was painted in a colour the site no longer uses anywhere.
+
+## Still open
+
+| Item | Note |
 |---|---|
-| Nav bar, ~0.76rem | Detail vanishes. Anything with fine linework or a lockup becomes mush. |
-| Favicon, 16×16 | Roughly nine legible pixels. Wordmarks are unusable here; you need a separate mark or a single letterform. |
-| OG card, 1200×630 | The opposite problem — it must hold up large without looking thin or under-designed. |
-| Both themes | It sits on light **and** dark grounds. A mark that needs a white box around it has failed. |
-| Monochrome | It must read with colour removed entirely. If it depends on a gradient, it isn't a logo yet. |
-| Beside "Rohit Agrawal" | The site carries a personal name and a domain name. The mark has to coexist with the name, not compete with it. |
+| `og.png` | 1200×630, and **not regenerated since the value ladder**. It shows the old palette and, almost certainly, the deleted mannequin. Anyone sharing a link gets a preview of a site that no longer exists |
+| Mobile wordmark | `stackclimb` is hidden below 900px |
+| Owner's own candidates | Not yet supplied. Protocol below still applies |
 
-## Criteria for the review
+## Protocol — unchanged
 
-Scored the same way for every candidate, mine included:
+Claude produces its own wordmark options **before** opening the owner's folder, or the second
+opinion is only a reaction to the first. Candidates go in `assets/inbox/brand/`, which is **not
+tracked** — brand files have carried personal contact details as pixels before, and every
+text-based secret scanner missed them.
 
-1. **Legibility** at all three sizes above.
-2. **Distinctiveness** — does it avoid the generic tech-mark cluster (abstract swoosh, gradient
-   hexagon, node-and-edge graph, isometric cube)?
-3. **Fit to the thesis** — "AI that shows its work" is about provenance, gates, and refusal. Does
-   the mark mean something adjacent, or is it decoration?
-4. **"Stackclimb"** — the name is literal and spatial. Does the mark earn that, or ignore it?
-5. **Reproducibility** — can it be drawn in SVG small enough to inline, and does it hold at 1×?
-
-## Status
-
-- `candidates/rohit/` — awaiting your files
-- `candidates/claude/` — blocked on the visual direction being settled
-- Chosen mark — not yet
+The chosen mark is added deliberately, as a single file, after review.

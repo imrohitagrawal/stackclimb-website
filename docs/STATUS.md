@@ -15,7 +15,7 @@ Last updated: 2026-08-08
 |---|---|
 | Repo | `github.com/imrohitagrawal/stackclimb-website` · **private, awaiting the owner's command to go public** |
 | Branch | `main` — run `git rev-list --count HEAD` for the count; do not hard-code it here |
-| Site | Home page built — 7 plates, authored SVG figures, ruled caption strips |
+| Site | Home page built — 7 plates, five record cards each quoting a named file at a named commit, ruled caption strips |
 | Deployed | **Yes, 08-08.** `stackclimb.com` and `www` both serve HTTP 200 from Cloudflare Pages project `stackclimb`, production branch `main`, cert CN=stackclimb.com valid to 24 Oct 2026. Two CNAMEs added by the owner; the three Fly subdomains were verified unchanged before and after |
 | Tests | `npx playwright test` on `fix/qa-review-findings`: **18 pass, 0 fail** (08-08). The contrast gate is green for the first time. `tests/boundary-check.mjs` measures plate seams; run it with `--legacy` to watch it go red |
 | CI | **None.** Every rule in `AGENTS.md` is influence, not enforcement |

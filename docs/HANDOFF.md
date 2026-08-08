@@ -59,6 +59,12 @@ ORDER OF WORK
   Phase 2   motion. Gate: Lighthouse mobile NO WORSE THAN 98. It measures 98 today
   Phase 3   the Approach page, the experience band, the lifecycle diagram
   Phase 4   the thirteen remaining critique findings
+  Phase 4c  fourteen ledger defects that were in no phase until 09 Aug. TWO ARE URGENT
+            AND MUST LAND BEFORE PHASE 3, because new pages inherit both faults:
+              DEF-9  canonical and og:url are hard-coded to the home page, so /approach
+                     and /cv would each tell Google they are the home page
+              DEF-10 ROUTES = ['/'] in dod.spec.js:11 is hand-typed, so a new page gets
+                     zero test coverage and nothing says so
   Phase 5   the standing deployment debt
 
 COPY THAT IS LIVE AND WRONG — DEF-36, do this in Phase 0

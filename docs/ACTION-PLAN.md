@@ -130,6 +130,27 @@ and unskippable smooth scroll over 6,638px (H3).
 
 ---
 
+## Phase 4c — open defects that were in the ledger and in no phase
+
+Found 09 Aug by auditing every `DEF-` row against this file. Fourteen were unscheduled. Two are
+urgent **because new pages are coming** — build them first or every new URL inherits the fault.
+
+| # | Defect | Why it matters now |
+|---|---|---|
+| 4c.1 | **DEF-9 — canonical and `og:url` are hard-coded to the home page** (`Layout.astro`) | The Approach page and `/cv` would both tell Google they are the home page. **Fix before Phase 3** |
+| 4c.2 | **DEF-10 — `ROUTES = ['/']` in `dod.spec.js:11` is hand-typed** | Add a page and it gets zero test coverage, silently. **Fix before Phase 3** |
+| 4c.3 | DEF-8 — six of seven plates **print blank**, bone text on white paper | The `/cv` page is meant to be printed. Same root cause |
+| 4c.4 | DEF-21 — `scroll-behavior: smooth` makes every fragment link a ~3s ride | Interacts with Phase 2. Decide together |
+| 4c.5 | DEF-20 — `npm audit` high is **astro itself**, 8 XSS advisories, fix is 5.18.2 → 7.2.0 (two majors) | Unreachable in a static build, but it is the only audit finding |
+| 4c.6 | DEF-23 — `paint-grain.png` is greyscale stored as 24-bit RGB; greyscale PNG saves 32% pixel-identically | Pairs with the P3 asset work |
+| 4c.7 | DEF-24 — `paint-grain.png`, `og.png`, `favicon.svg` ship unhashed from `/public` | A favicon change never propagates behind a long cache — and it changed today |
+| 4c.8 | DEF-34 — nav label and anchor disagree; `Systems` → `#work`, which is CiteVyn's plate | Fixed by D28's nav rework. Rename the plate to `#citevyn` |
+| 4c.9 | DEF-35 — `og.png` still shows the old palette and the deleted mannequin | Anyone sharing a link previews a site that no longer exists |
+| 4c.10 | DEF-29 — `Base` / `Based` state Bengaluru verbatim twice | Same class as the relocation duplicate |
+| 4c.11 | DEF-4 — no visual regression baselines; 29 images captured, none compared | Alignment drift passes silently |
+
+---
+
 ## Phase 6 — deferred, with reasons, so they do not come back
 
 | Item | Decision |
@@ -145,7 +166,7 @@ deployment work, and it has not been said.
 
 | Exit condition for approach C | Status |
 |---|---|
-| The 7 tests that cannot fail are repaired (DEF-11 … DEF-17) | **open** |
+| The 7 tests that cannot fail are repaired — DEF-11, DEF-12, DEF-13, DEF-14, DEF-15, DEF-16, DEF-17 | **open** |
 | The suite builds before it tests (DEF-11) | **open** |
 | Contrast passes on all 7 plates, both viewports | **done 08-08** |
 | CI workflow exists and has been green at least once | **open** |

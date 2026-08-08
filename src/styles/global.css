@@ -240,6 +240,12 @@ html[data-theme='light'] .site-nav { color: var(--ink); }
 
 .plate-figure { display: grid; gap: 0; min-width: 0; }
 
+/* The plate tag is absolutely positioned in the top-right corner, so it sits
+   over whatever is in the right column. That was harmless when the figures
+   were SVGs with empty margins; the record cards are opaque and reach the top
+   of the column, so the tag landed on the card. Clear it. */
+.plate:has(.plate-state) .plate-figure { padding-top: 3.4rem; }
+
 .figure { width: 100%; height: auto; display: block; }
 
 .figure [data-anchor] {

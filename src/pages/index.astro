@@ -3,11 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Plate from '../components/Plate.astro';
 import CapStrip from '../components/CapStrip.astro';
 import Ledger from '../components/Ledger.astro';
-import RefusalCard from '../components/figures/RefusalCard.astro';
-import CiteVynFigure from '../components/figures/CiteVynFigure.astro';
-import QuorumFigure from '../components/figures/QuorumFigure.astro';
-import SaafSaansFigure from '../components/figures/SaafSaansFigure.astro';
-import NarraTwinFigure from '../components/figures/NarraTwinFigure.astro';
+import Artefact from '../components/figures/Artefact.astro';
 import PrivateFigure from '../components/figures/PrivateFigure.astro';
 ---
 
@@ -54,7 +50,19 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
         />
       </div>
       <div class="plate-figure">
-        <RefusalCard />
+        <Artefact
+          kind="CiteVyn, golden case claude_api_006"
+          verdict="Refused"
+          tone="fail"
+          line="“What is the capital of France?”"
+          fields={[
+            { k: 'citations', v: '0' },
+            { k: 'domain', v: 'unsupported' },
+            { k: 'confidence', v: 'none' },
+            { k: 'answered', v: 'No — by policy' },
+          ]}
+          source="It plainly knows the answer and refuses anyway, because no indexed source supports it. Verbatim from citevyn/backend/artifacts/golden_report.json, recorded 17 July 2026."
+        />
       </div>
     </div>
   </Plate>
@@ -86,15 +94,27 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
         </div>
       </div>
       <figure class="plate-figure">
-        <CiteVynFigure />
+        <Artefact
+          kind="Golden regression run"
+          verdict="52 / 52 passed"
+          tone="pass"
+          line="A red case blocks the index from reaching production."
+          fields={[
+            { k: 'cases', v: '52' },
+            { k: 'failed', v: '0' },
+            { k: 'run', v: '17 Jul 2026' },
+            { k: 'gate', v: 'Blocks promotion' },
+          ]}
+          source="citevyn/backend/artifacts/golden_report.json at df8cfc3. Read from the recorded run, not restated."
+        />
         <CapStrip
           label="CiteVyn, captioned"
           items={[
-            { t: 'Answers', d: 'Quoted verbatim', target: 'cite-quote' },
-            { t: 'Citations', d: 'Every claim', target: 'cite-tabs' },
-            { t: 'Refusal', d: 'A feature', target: 'cite-refusal' },
-            { t: 'Release gate', d: '50/50 golden', target: 'cite-gate' },
-            { t: 'Tests', d: '361 passing' },
+            { t: 'Answers', d: 'Quoted verbatim' },
+            { t: 'Citations', d: 'Every claim' },
+            { t: 'Refusal', d: 'A feature' },
+            { t: 'Release gate', d: '52 golden cases' },
+            { t: 'Tests', d: '1,036 defined' },
             { t: 'Stack', d: 'FastAPI · pgvector' },
           ]}
         />
@@ -130,14 +150,26 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
         </div>
       </div>
       <figure class="plate-figure">
-        <QuorumFigure />
+        <Artefact
+          kind="Production readiness review"
+          verdict="Go"
+          tone="pass"
+          line="The review before it said No-Go. That one is kept too."
+          fields={[
+            { k: 'decision', v: 'Go — single instance' },
+            { k: 'dated', v: '21 Jun 2026' },
+            { k: 'scope', v: 'MVP, small user base' },
+            { k: 'superseded', v: 'No-Go of 16 Jun' },
+          ]}
+          source="quorum-ai/docs/95-production-readiness-review.md at 8ca6a98. Both decisions are in the file; neither was removed."
+        />
         <CapStrip
           label="Quorum-AI, captioned"
           items={[
-            { t: 'Models', d: '4 in parallel', target: 'q-models' },
-            { t: 'Debate', d: '2 critique rounds', target: 'q-debate' },
-            { t: 'Verdict', d: '5 fields', target: 'q-synth' },
-            { t: 'Cost', d: 'Approved first', target: 'q-cost' },
+            { t: 'Models', d: '4 in parallel' },
+            { t: 'Debate', d: '2 critique rounds' },
+            { t: 'Verdict', d: '5 fields' },
+            { t: 'Cost', d: 'Approved first' },
             { t: 'Memory', d: 'None — ephemeral' },
           ]}
         />
@@ -183,14 +215,26 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
         </div>
       </div>
       <figure class="plate-figure">
-        <SaafSaansFigure />
+        <Artefact
+          kind="Measured at head, today"
+          verdict="Counted, not claimed"
+          tone="neutral"
+          line="Every number here has a command that checks it."
+          fields={[
+            { k: 'test functions', v: '628' },
+            { k: 'test files', v: '32' },
+            { k: 'seeded advisories', v: '43' },
+            { k: 'commits', v: '161' },
+          ]}
+          source="saaf-saans at 5e5037a, counted on 8 Aug 2026. Its own case study lists 25 files and 117 commits — true at an older commit, and stale now. That is why these were re-counted rather than copied."
+        />
         <CapStrip
           label="SaafSaans, captioned"
           items={[
-            { t: 'Risk', d: 'Per person', target: 's-person' },
-            { t: 'Scale', d: 'CPCB bands', target: 's-bands' },
-            { t: 'Timing', d: 'Best window', target: 's-window' },
-            { t: 'Coverage', d: '21 stations', target: 's-stations' },
+            { t: 'Risk', d: 'Per person' },
+            { t: 'Scale', d: 'CPCB bands' },
+            { t: 'Timing', d: 'Best window' },
+            { t: 'Coverage', d: '21 stations' },
             { t: 'Hindi', d: 'Gated — unreviewed' },
           ]}
         />
@@ -225,12 +269,24 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
         </div>
       </div>
       <figure class="plate-figure">
-        <NarraTwinFigure />
+        <Artefact
+          kind="Release readiness review"
+          verdict="No-Go"
+          tone="fail"
+          line="No-Go for production release. No release tag has been created."
+          fields={[
+            { k: 'dated', v: '1 Jul 2026' },
+            { k: 'release tags', v: '0' },
+            { k: 'blocked', v: 'Paid providers, video export' },
+            { k: 'allowed', v: 'Local mock demo' },
+          ]}
+          source="narratwin docs/RELEASE_READINESS_REVIEW.md at 2ce5731. The repo has two tags; both mark stages, neither is a release."
+        />
         <CapStrip
           label="NarraTwin, captioned"
           items={[
-            { t: 'Gates', d: 'Claim · consent · release', target: 'n-latches' },
-            { t: 'Deployment', d: 'None — local only', target: 'n-frame' },
+            { t: 'Gates', d: 'Claim · consent · release' },
+            { t: 'Deployment', d: 'None — local only' },
             { t: 'Distribution', d: 'Withheld by design' },
           ]}
         />

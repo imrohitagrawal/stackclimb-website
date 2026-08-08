@@ -1,0 +1,45 @@
+---
+/* This file's EXISTENCE is the fix, not its contents.
+ *
+ * Cloudflare Pages treats a build with no top-level 404.html as a single-page
+ * app and serves index.html with HTTP 200 for every unmatched path. That is
+ * why, before this, `curl https://stackclimb.com/anything-at-all` returned
+ * 25,984 bytes of home page and a 200. There was no _redirects file and no
+ * catch-all rule — the fault was one missing file.
+ *
+ * The cost of leaving it: a broken link could never announce itself. A
+ * recruiter following a stale URL would land on the home page and conclude
+ * they had been redirected on purpose. Search engines would index every typo
+ * as a duplicate of the home page. And it gets worse the moment /approach and
+ * /cv exist, which is why this lands before them.
+ *
+ * Verify after deploy — this is the one that bites, because it is green today
+ * for the wrong reason:
+ *   curl -sS -o /dev/null -w "%{http_code}\n" https://stackclimb.com/nope   # 404
+ *   curl -sS -o /dev/null -w "%{http_code}\n" https://stackclimb.com/       # 200
+ */
+import Layout from '../layouts/Layout.astro';
+import Plate from '../components/Plate.astro';
+---
+
+<Layout
+  title="Not found — Rohit Agrawal"
+  description="That page does not exist on stackclimb.com."
+  noindex
+>
+  <Plate id="notfound" num="—" name="Not Found" state="No such page">
+    <div class="plate-grid">
+      <div class="plate-copy">
+        <h1 class="plate-title">Not found</h1>
+        <p>
+          There is no page at this address. It may have been renamed, or the link
+          that sent you here may be out of date.
+        </p>
+        <div class="ctas">
+          <a class="btn primary" href="/">The record</a>
+          <a class="btn ghost" href="/#contact">Contact</a>
+        </div>
+      </div>
+    </div>
+  </Plate>
+</Layout>

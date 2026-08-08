@@ -10,12 +10,41 @@ import '../styles/touch.css';
 interface Props {
   title?: string;
   description?: string;
+  /* Set on pages that are not a destination. A 404 must not declare itself
+     canonical — that tells a crawler the error page is a real resource worth
+     indexing, and it is the reason a site ends up with "Page not found" in
+     search results. Only 404.astro sets it today. */
+  noindex?: boolean;
 }
 
 const {
   title = 'Rohit Agrawal — AI systems that show their work',
   description = 'Independent, inspectable AI systems built on citation, disclosed uncertainty, honest refusal, and release gates — by a principal-level engineer with 14+ years of production reliability. Live on stackclimb.com.',
+  noindex = false,
 } = Astro.props;
+
+/* DEF-9. The canonical and og:url used to be the string
+   "https://stackclimb.com/", hard-coded. With one page that was invisible.
+   With /approach and /cv arriving it would tell Google that every page on the
+   site IS the home page — the textbook way to make your own pages vanish from
+   an index.
+
+   Derived from Astro.url against the `site` in astro.config.mjs, so a new page
+   cannot forget to set it and cannot set it wrong. Astro.site is guaranteed
+   present because astro.config.mjs sets `site`; the fallback keeps `astro dev`
+   working if it is ever removed.
+
+   The `.html` strip is not cosmetic. Under build.format:'file' the build-time
+   Astro.url.pathname is "/approach.html", but the URL that actually serves —
+   and the one @astrojs/sitemap emits — is "/approach". Left alone, the
+   canonical and the sitemap would name two different URLs for one page, which
+   is the duplicate-content problem DEF-9 exists to prevent, reintroduced by
+   the fix for it. Caught by diffing the two on a throwaway page before
+   shipping, not by reading. */
+const canonical = new URL(
+  Astro.url.pathname.replace(/index\.html$/, '').replace(/\.html$/, ''),
+  Astro.site ?? 'https://stackclimb.com',
+).href;
 ---
 
 <!doctype html>
@@ -43,11 +72,11 @@ const {
     <meta name="description" content={description} />
     <meta name="author" content="Rohit Agrawal" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="canonical" href="https://stackclimb.com/" />
+    {noindex ? <meta name="robots" content="noindex, follow" /> : <link rel="canonical" href={canonical} />}
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content="https://stackclimb.com/" />
+    {!noindex && <meta property="og:url" content={canonical} />}
     <meta property="og:image" content="https://stackclimb.com/og.png" />
     <meta name="twitter:card" content="summary_large_image" />
   </head>

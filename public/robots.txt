@@ -1,0 +1,10 @@
+# stackclimb.com
+#
+# Everything here is meant to be found — the whole point of the site is that a
+# recruiter reaches it cold and can check every claim on it. Nothing is
+# disallowed.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://stackclimb.com/sitemap-index.xml

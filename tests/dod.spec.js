@@ -1,20 +1,67 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { readdirSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
 
 // Mechanizes the Definition of Done in AGENTS.md. Every check states its
 // DENOMINATOR and fails when that denominator is empty — a gate that measures
 // nothing must not report pass.
 //
-// Routes are enumerated from the built sitemap-shaped reality of the site.
-// When pages are added, add them here; the coverage test below fails if this
-// list is empty.
-const ROUTES = ['/'];
+// DEF-10. This used to read `const ROUTES = ['/']` with a comment asking the
+// next person to remember to add to it. They would not have, and nothing would
+// have said so: a new page would get zero coverage while every gate reported
+// green. "Add it here when you add a page" is not a gate, it is a hope.
+//
+// Now derived from what the build actually emitted. Add src/pages/approach.astro,
+// run the build, and it is under test — with no edit to this file.
+//
+// WHICH CHANGE TURNS THIS RED: delete dist/ and run the suite. It throws rather
+// than quietly testing nothing. Add a page and skip the build, and the route is
+// absent — which is DEF-11's stale-dist problem, and CI builds before it tests
+// for exactly that reason.
+//
+// 404.html is excluded deliberately: it is reached by status code, not by URL,
+// and `astro preview` serves it at /404.html where a real visitor never lands.
+// It still gets its accessibility scan through the DoD suite's own route list
+// below if it is ever served at a real path.
+function builtRoutes(dir = 'dist') {
+  if (!existsSync(dir)) {
+    throw new Error(
+      `${dir}/ does not exist — run "npm run build" first. Refusing to test zero routes.`,
+    );
+  }
+  const out = [];
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (entry.isDirectory()) {
+      if (entry.name === '_astro') continue;
+      // build.format:'file' means nested routes are still directories.
+      for (const sub of readdirSync(join(dir, entry.name))) {
+        if (sub.endsWith('.html')) {
+          out.push(`/${entry.name}/${sub.replace(/index\.html$/, '').replace(/\.html$/, '')}`);
+        }
+      }
+      continue;
+    }
+    if (!entry.name.endsWith('.html')) continue;
+    if (entry.name === '404.html') continue;
+    out.push(entry.name === 'index.html' ? '/' : `/${entry.name.replace(/\.html$/, '')}`);
+  }
+  return [...new Set(out)].sort();
+}
+
+const ROUTES = builtRoutes();
 
 test.describe('Definition of Done', () => {
-  test('routes under test is non-empty', async () => {
-    // RED WHEN: ROUTES is emptied. Without this, every test below would
-    // vacuously pass over zero pages and CI would go green having checked nothing.
+  test('routes under test is non-empty and includes the home page', async () => {
+    // RED WHEN: the build emits nothing, or the derivation above breaks.
+    // Without this, every test below would vacuously pass over zero pages and
+    // CI would go green having checked nothing.
     expect(ROUTES.length, 'no routes enumerated — every gate below would measure nothing').toBeGreaterThan(0);
+    // A second, sharper denominator: the derivation could "succeed" and return
+    // a list that has lost the one page we know must exist. An empty-ish check
+    // that counts something is not the same as counting the right thing.
+    expect(ROUTES, 'the home page is missing from the derived route list').toContain('/');
+    console.log(`routes under test (derived from dist/): ${ROUTES.join(', ')}`);
   });
 
   for (const route of ROUTES) {
@@ -130,6 +177,66 @@ test.describe('Definition of Done', () => {
       expect(lang, '<html> has no lang attribute').toBeTruthy();
     });
   }
+});
+
+test.describe('Routing', () => {
+  // Every URL on the domain used to return the home page with HTTP 200 — no
+  // 404, no robots.txt, no sitemap. The cause was one missing file: Cloudflare
+  // Pages treats a build with no top-level 404.html as a single-page app and
+  // serves index.html for everything.
+  //
+  // Proved causally against Cloudflare's own asset router (wrangler pages dev):
+  // with 404.html, /this-page-does-not-exist returns 404; remove it and the
+  // same path returns 200 with the identical byte count as /.
+  //
+  // This test asserts the BUILD OUTPUT, because asserting the live behaviour
+  // needs the Pages router and that is a post-deploy check, not a unit one.
+  // Both matter and neither replaces the other — the post-deploy curl is in
+  // the PR description and belongs in a deploy gate.
+  //
+  // RED WHEN: src/pages/404.astro is deleted or renamed, robots.txt is removed
+  // from public/, or the sitemap integration is dropped from astro.config.mjs.
+  test('the build emits a 404, a robots.txt, and a sitemap', async () => {
+    const missing = ['404.html', 'robots.txt', 'sitemap-index.xml'].filter(
+      (f) => !existsSync(join('dist', f)),
+    );
+    expect(missing, 'dist/ is missing files that routing and indexing depend on').toEqual([]);
+  });
+
+  test('the 404 page refuses to be indexed, and no other page does', async ({ page }) => {
+    // A 404 that declares itself canonical tells a crawler the error page is a
+    // real resource. That is how "Page not found" ends up in search results.
+    await page.goto('/404.html', { waitUntil: 'networkidle' });
+    await expect(page.locator('meta[name="robots"][content*="noindex"]')).toHaveCount(1);
+    await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
+
+    // DENOMINATOR: the assertions above would also pass if `noindex` were
+    // applied to the whole site by mistake. Prove a real page is still
+    // indexable and still declares exactly one canonical.
+    await page.goto('/', { waitUntil: 'networkidle' });
+    await expect(page.locator('meta[name="robots"][content*="noindex"]')).toHaveCount(0);
+    await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
+  });
+
+  test('every page declares its own canonical, not the home page', async ({ page }) => {
+    // DEF-9. The canonical was the hard-coded string "https://stackclimb.com/",
+    // so /approach and /cv would each have told Google they were the home page.
+    //
+    // RED WHEN: the canonical in Layout.astro goes back to a literal, or the
+    // .html strip is removed — under build.format:'file' that would emit
+    // "/approach.html" while the sitemap emits "/approach", naming two URLs
+    // for one page.
+    const seen = [];
+    for (const route of ROUTES) {
+      await page.goto(route, { waitUntil: 'networkidle' });
+      const href = await page.locator('link[rel="canonical"]').getAttribute('href');
+      expect(href, `${route} has no canonical`).toBeTruthy();
+      expect(href, `${route} canonical still carries .html`).not.toMatch(/\.html$/);
+      seen.push(href);
+    }
+    expect(seen.length, 'no routes checked — this test measured nothing').toBeGreaterThan(0);
+    expect(new Set(seen).size, `two routes share a canonical: ${seen.join(' ')}`).toBe(seen.length);
+  });
 });
 
 test.describe('Evidence capture', () => {

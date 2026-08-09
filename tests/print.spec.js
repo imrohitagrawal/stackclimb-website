@@ -19,7 +19,7 @@
 
 import { test, expect } from '@playwright/test';
 
-const PLATES = ['citevyn', 'quorum', 'saafsaans', 'narratwin', 'private', 'contact'];
+const PLATES = ['overview', 'citevyn', 'quorum', 'saafsaans', 'narratwin', 'private', 'contact'];
 
 async function settle(page) {
   await page.waitForTimeout(3200); // past the ~3s smooth-scroll (DEF-21)

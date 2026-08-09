@@ -10,17 +10,25 @@
 // WHICH CHANGE TURNS IT RED: put the owner's phone number into any scanned
 // file, or any Indian mobile-shaped number, and this exits 1. Prove it with
 //   node tests/no-pii.mjs --self-test
+// That self-test also covers DEF-37: a phone-shaped number embedded in a
+// hand-built PDF or DOCX fixture (in memory, never written to disk) must be
+// caught the same way a planted plain-text number is — reverting the .pdf/
+// .docx extraction in tests/lib/extract-text.mjs turns those assertions red.
 //
 // Run:  node tests/no-pii.mjs            scan source, public, docs, dist
 //       node tests/no-pii.mjs --staged   scan only what git has staged
 
 import { execSync } from 'node:child_process';
-import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, statSync } from 'node:fs';
 import { join, extname } from 'node:path';
+import { extractText } from './lib/extract-text.mjs';
 
 const ROOTS = ['src', 'public', 'docs', 'dist', 'tests', 'assets'];
 const SKIP_DIRS = new Set(['node_modules', '.git', '.astro', 'test-results', 'inbox']);
-const SCAN_EXT = new Set(['.astro', '.html', '.css', '.js', '.mjs', '.ts', '.json', '.md', '.txt', '.svg', '.xml', '.yml', '.yaml']);
+const SCAN_EXT = new Set([
+  '.astro', '.html', '.css', '.js', '.mjs', '.ts', '.json', '.md', '.txt',
+  '.svg', '.xml', '.yml', '.yaml', '.pdf', '.docx',
+]);
 
 const RULES = [
   // Indian mobile: 10 digits opening 6-9, with or without +91. Word boundaries
@@ -52,11 +60,16 @@ function files(dir) {
   return out;
 }
 
-function scan(list) {
+async function scan(list) {
   const hits = [];
   for (const f of list) {
     let text;
-    try { text = readFileSync(f, 'utf8'); } catch { continue; }
+    try {
+      text = await extractText(f);
+    } catch (err) {
+      console.error(`  ! skipped ${f}: extraction failed (${err.message})`);
+      continue;
+    }
     for (const rule of RULES) {
       for (const m of text.matchAll(rule.re)) {
         const ctx = text.slice(Math.max(0, m.index - 40), m.index + m[0].length + 40).replace(/\s+/g, ' ');
@@ -70,21 +83,9 @@ function scan(list) {
 }
 
 if (process.argv.includes('--self-test')) {
-  // Assembled at runtime, never written literally. Two reasons, both learned
-  // on the first run: a real number here made the gate fail on itself, and a
-  // synthetic one did too. Excluding this file from the scan would have left a
-  // hole big enough to hide a number in. Building the digits instead keeps the
-  // scanner honest — no file in the repo contains a phone-shaped string.
-  const d = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0].join('');
-  const planted = [`Call me on ${d} any time`, `tel: +91 ${d.slice(0, 5)} ${d.slice(5)}`];
-  const found = planted.filter((t) => RULES.some((r) => (r.re.lastIndex = 0, r.re.test(t))));
-  const clean = ['Bengaluru, India · IST (UTC+5:30)', 'commit df8cfc3', '52 golden cases', '© 2026'];
-  const falsePos = clean.filter((t) => RULES.some((r) => (r.re.lastIndex = 0, r.re.test(t))));
-  console.log(`self-test: ${found.length}/${planted.length} planted numbers caught`);
-  console.log(`self-test: ${falsePos.length} false positives on known-good strings ${falsePos.length ? JSON.stringify(falsePos) : ''}`);
-  const ok = found.length === planted.length && falsePos.length === 0;
-  console.log(ok ? 'SELF-TEST PASS — the gate bites and does not cry wolf' : 'SELF-TEST FAIL');
-  process.exit(ok ? 0 : 1);
+  const { runSelfTest } = await import('./lib/self-test-fixtures.mjs');
+  await runSelfTest(RULES, extractText);
+  // runSelfTest exits the process itself once it has printed its verdict.
 }
 
 let list;
@@ -96,7 +97,7 @@ if (process.argv.includes('--staged')) {
   list = ROOTS.flatMap(files);
 }
 
-const hits = scan(list);
+const hits = await scan(list);
 if (hits.length) {
   console.error(`\n✖ PII gate: ${hits.length} match(es). D38 — personal contact details never ship.\n`);
   for (const h of hits) console.error(`  ${h.file}:${h.line}  [${h.rule}]  ${h.match}`);

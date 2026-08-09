@@ -147,7 +147,7 @@ export const projects = [
   },
   {
     name: 'SaafSaans',
-    what: 'A Delhi-NCR air-quality companion scoring personal rather than city risk across 21 stations, with cited health guidance.',
+    what: 'A Delhi-NCR air-quality companion scoring personal rather than city risk across a repo-stated 21 stations, with cited health guidance.',
     gate: 'Every reading is labelled live, deterministic fallback, or sample. The Hindi translation ships behind a banner stating no Hindi speaker has reviewed it.',
     state: 'Deployed — sleeps when idle',
     href: 'https://github.com/imrohitagrawal/saaf-saans',

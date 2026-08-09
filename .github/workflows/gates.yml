@@ -115,7 +115,13 @@ jobs:
         run: node tests/no-pii.mjs
 
       - run: npx playwright install --with-deps chromium
-      - run: npx playwright test
+
+      # Skipped only on the manual baseline-generation run below: with no
+      # baselines committed yet, this step would fail on "snapshot doesn't
+      # exist" before it ever got a chance to create them.
+      - name: run the test suite
+        if: "!(github.event_name == 'workflow_dispatch' && inputs.update_visual_baselines)"
+        run: npx playwright test
 
       - name: plate seams stay above AA
         run: |

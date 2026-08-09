@@ -43,7 +43,15 @@
   --nav-ground: #0e1322;
 }
 
-#work {
+/* DEF-48. This selector read `#work` from 08-08 to 09-08 — but DEF-34 renamed
+   the plate id to `citevyn` and the palette was never told. The rule matched
+   zero elements, the plate fell back to the :root navy, and FOUR of eight
+   plates painted the identical ground — the exact flattening this file's
+   header says it exists to prevent. Every gate stayed green: contrast gates
+   assert a floor, and a plate on the wrong ground still clears the floor.
+   Found by a mutation audit, not by any gate; tests/palette-ladder.spec.js
+   now asserts adjacent plates do not share a ground. */
+#citevyn {
   --ground: #230d13;
   --surface: #3f1a25;
 }

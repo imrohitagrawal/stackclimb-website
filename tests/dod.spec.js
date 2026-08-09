@@ -124,49 +124,19 @@ test.describe('Definition of Done', () => {
         if (overflow > 0) overflowing.push(`${width}px overflows by ${overflow}px`);
       }
 
-      // DENOMINATOR: prove the loop ran over every intended width.
-      expect(widths.length, 'no viewports checked').toBe(3);
+      // DENOMINATOR: prove the loop ran over every intended width. A floor,
+      // not an equality — the old `.toBe(3)` went red when a FOURTH viewport
+      // was added, failing "no viewports checked" while four were checked.
+      // DEF-15: never write a check that goes red when coverage improves.
+      expect(widths.length, 'fewer than three viewports checked').toBeGreaterThanOrEqual(3);
       expect(overflowing, 'page scrolls horizontally').toEqual([]);
     });
 
-    test(`${route} — every interactive element has a visible focus indicator`, async ({ page }) => {
-      // RED WHEN: a rule such as `:focus { outline: none }` lands without a
-      // replacement indicator, or a new control ships with no focus style.
-      await page.goto(route, { waitUntil: 'networkidle' });
-
-      const focusable = page.locator(
-        'a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])',
-      );
-      const count = await focusable.count();
-
-      // DENOMINATOR: a page with zero focusable elements would pass this test
-      // trivially. The site has navigation and links, so zero means the check broke.
-      expect(count, 'no focusable elements found — this check measured nothing').toBeGreaterThan(0);
-
-      const noIndicator = [];
-      for (let i = 0; i < count; i++) {
-        const el = focusable.nth(i);
-        if (!(await el.isVisible())) continue;
-        await el.focus();
-        const style = await el.evaluate((node) => {
-          const s = getComputedStyle(node);
-          return {
-            outlineWidth: s.outlineWidth,
-            outlineStyle: s.outlineStyle,
-            boxShadow: s.boxShadow,
-            borderBottomColor: s.borderBottomColor,
-            textDecorationLine: s.textDecorationLine,
-          };
-        });
-        const hasOutline = style.outlineStyle !== 'none' && parseFloat(style.outlineWidth) > 0;
-        const hasShadow = style.boxShadow !== 'none';
-        const hasUnderline = style.textDecorationLine.includes('underline');
-        if (!hasOutline && !hasShadow && !hasUnderline) {
-          noIndicator.push(await el.evaluate((n) => n.outerHTML.slice(0, 90)));
-        }
-      }
-      expect(noIndicator, 'focusable elements with no visible focus indicator').toEqual([]);
-    });
+    /* The focus test moved to tests/focus-visible.spec.js (DEF-13). The
+       version that lived here read outlineStyle/boxShadow/textDecorationLine —
+       none of which is VISIBILITY — so `outline: 2px solid transparent`
+       passed it, proven by mutation on 2026-08-09. The replacement compares
+       rendered pixels, focused against unfocused. */
 
     test(`${route} — page has a title and a language`, async ({ page }) => {
       // RED WHEN: the layout drops <title> or the lang attribute. Both are

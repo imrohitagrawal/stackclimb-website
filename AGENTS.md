@@ -39,10 +39,10 @@ nothing sits merged-but-undeployed without something saying so.
 
 | Must be true before switching to C | Status |
 |---|---|
-| The 7 tests that cannot fail are repaired (DEF-11 … DEF-17) | open |
-| The suite builds before it tests (DEF-11) | open |
-| Contrast passes on all 7 plates, both viewports (DEF-5, DEF-18) | open |
-| CI workflow exists and has been green at least once | open |
+| The 7 tests that cannot fail are repaired (DEF-11 … DEF-17) | **done 08-09** — DEF-12 refuted, five fixed by mutation-proved gates, DEF-17 pinned |
+| The suite builds before it tests (DEF-11) | **done 08-09** — CI since gates.yml:94; local via playwright.config webServer |
+| Contrast passes on all 7 plates, both viewports (DEF-5, DEF-18) | **done** — DEF-5 fixed 08-08 (18/18 both viewports), DEF-18 moot; enforced since DEF-44 made the seam gate exit non-zero |
+| CI workflow exists and has been green at least once | **done 08-09** — push run `31276450288` green, and the PR path fixed after DEF-39 |
 | Branch protection requires that check | open |
 
 **Say this out loud at the start of any deployment-related work**, until every row above reads

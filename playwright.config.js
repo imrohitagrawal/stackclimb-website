@@ -13,9 +13,16 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   webServer: {
-    command: 'npx astro preview --port 4321',
+    // DEF-11: the suite BUILDS before it tests. It used to run bare preview,
+    // so breaking the source and skipping the rebuild left every gate green
+    // against a stale dist/. reuseExistingServer is OFF for the same reason —
+    // a preview left running from an earlier session is a stale server, and
+    // silently reusing it is the same defect with a different clock. If this
+    // errors with "port 4321 is used", kill that server; the loud failure is
+    // the point.
+    command: 'npm run build && npx astro preview --port 4321',
     url: 'http://localhost:4321',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 120_000,
   },
   projects: [

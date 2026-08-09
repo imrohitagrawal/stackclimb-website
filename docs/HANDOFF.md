@@ -1,10 +1,12 @@
 # Handoff — for the next session
 
-Written 2026-08-09 after a long autonomous session. Paste the fenced block into
-a fresh Claude Code session in `/Users/rohitagrawal/Projects/designing-website`.
+Written 2026-08-09, end of the second autonomous session. Paste the fenced block
+into a fresh Claude Code session in `/Users/rohitagrawal/Projects/designing-website`.
 
-**13 PRs merged and deployed.** Tests 18 → 42. Pages 1 → 3. Gates that can
-actually fail: 2 → 5.
+**3 PRs merged and deployed (#15 mobile nav + budget gate, #16 Phase 5 repairs,
+#17 assets).** Tests 42 → 64. The seven tests that cannot fail: closed as a class.
+Page weight roughly halved. Production verified by hash, route table, and both
+pixel gates run twice.
 
 ---
 
@@ -20,157 +22,159 @@ and flag that one item — never invent content to unblock yourself.
 READ FIRST, IN THIS ORDER
   docs/HANDOFF.md                this file
   AGENTS.md                      the rules. They override your defaults
-  docs/STATUS.md                 the ledger: D1-D45, DEF-1 to DEF-46, corrections
-  docs/ACTION-PLAN.md            the phases. Phase 0, 1 and most of 4b/4c are DONE
-  docs/positioning-decisions.md  SECTION 8 IS A SKILL-TO-TASK MAPPING. USE IT.
+  docs/STATUS.md                 the ledger: D1-D47, DEF-1 to DEF-48, corrections
+  docs/ACTION-PLAN.md            the phases. 0, 1, 5 and most of 4b/4c are DONE
+  docs/positioning-decisions.md  SECTION 8 IS A SKILL-TO-TASK MAPPING. USE IT
   docs/positioning-phase0.md     the tested copy, and two corrections about method
 
 PROVE THE STATE BEFORE TRUSTING ANY OF IT
   git log --oneline -3
   git rev-list --count origin/main..main            # must be 0
-  npm run build && npx playwright test              # expect 42 pass, 0 fail
-  npx astro preview --port 4321 &
-  node tests/boundary-check.mjs http://localhost:4321   # exits 1 below AA
-  node tests/nav-contrast.mjs  http://localhost:4321    # ~50s, resting+hover+focus
+  npx playwright test                # 64 pass, 0 fail, 2 by-design skips.
+                                     # The suite BUILDS FIRST and refuses a
+                                     # stale server: if port 4321 is busy it
+                                     # errors loudly. Kill the server; that is
+                                     # the DEF-11 fix working, not a bug.
+  node tests/file-budget.mjs --self-test   # D8 budget, population derived
   node tests/no-pii.mjs --self-test
+  # standalone pixel gates want their own server on a spare port:
+  npm run build && (npx astro preview --port 4322 &) && sleep 3
+  node tests/boundary-check.mjs http://localhost:4322   # exit 1 below AA
+  node tests/nav-contrast.mjs  http://localhost:4322    # ~60s; sweeps the OPEN
+                                                        # menu panel too now
+  kill %1
 
   # production is a SEPARATE question — NOTHING deploys on push
   npx wrangler pages deployment list --project-name stackclimb | head -5
-  curl -sS -o /dev/null -w "%{http_code}\n" https://stackclimb.com/nope   # must be 404
+  curl -sS https://stackclimb.com/ | grep -o '_astro/cv[^"]*css'  # compare dist/
 
 THE ACCEPTANCE TEST, unchanged: within 30-60 seconds a recruiter should feel
 "I should call this person." Not a heuristic score.
 
-*** USE THE SKILLS. THIS IS THE BIGGEST PROCESS FAILURE OF THE LAST SESSION. ***
-docs/positioning-decisions.md:164 maps skills to phases and I used ZERO of them
-until the owner asked. All of these are ALREADY INSTALLED and active:
-  plan a surface      /impeccable shape
-  build UI            emil-design-eng · design-taste-frontend · high-end-visual-design
-  evaluate            /impeccable critique  (MUST be dual-agent — it is a hard
-                      invariant of the command AND D7: the builder is never the
-                      auditor) + codex
-  motion              improve-animations · review-animations · animation-vocabulary
-  CV work             tech-resume-optimizer · resume-quantifier ·
-                      executive-resume-writer · portfolio-case-study-writer
-  copy                brand-voice · brand-messaging · grilling
-  debugging           systematic-debugging   (its Phase 4.5 saved DEF-46)
-  before done         verification-before-completion
-Installing a skill is not using it. Check the mapping at the START of a task.
+USE THE SKILLS. docs/positioning-decisions.md:164 maps skills to phases.
+Check the mapping at the START of a task. This session used emil-design-eng
+before building the menu and systematic-debugging's discipline throughout;
+the failure mode last time was using zero until asked.
 
-CODEX WORKS. The trick is a SHORT, BOUNDED prompt:
+CODEX WORKS, and it out-found same-context review again. SHORT BOUNDED prompt:
   codex exec --sandbox read-only "<read these files. find the TOP 5 ways X.
   one line each. ranked. no preamble.>"
-Two earlier attempts hung for hours because the prompt was long with ten
-enumerated categories at reasoning effort high. Bounded prompts return in
-minutes. It found 5 real holes that same-context subagents missed entirely (D44).
+This session it found 3 real holes in new tests (D47). The same-context round
+then found a CI-blocking regression Codex did not. Run BOTH, always, and run
+EVERY gate the surface touches before calling a branch done — the regression
+was in the one gate I had not re-run.
 
 WHAT IS LEFT, in priority order
 
-1. DEF-42 (HIGH) — ON A PHONE THE NAV REACHES NOTHING.
-   global.css:490 hides every link but the email chip below 900px. Home is
-   ~12,000px = 14 phone screens; from screen 2 onward there is no navigation at
-   all. Mitigated by hero and contact CV buttons, NOT fixed. Needs a real menu.
-   Highest-value open item.
-
-2. PHASE 2 — MOTION. Untouched. document.getAnimations() returns 0.
+1. PHASE 2 — MOTION. Untouched. document.getAnimations() returns 0.
    Owner wants animation ON by default with a footer toggle persisted in
-   localStorage. GATE: Lighthouse mobile no worse than 100 — MEASURED 09 Aug,
-   Performance 100 / Accessibility 100. The plan used to say 98 and called it
-   measured; it was inherited. Do not regress it.
-   NOTE: plates.js no longer has an IntersectionObserver — the old one was dead
-   code (it read data-hue, which exists on zero elements) and was deleted.
-   Phase 2 brings its own, with a purpose. Use improve-animations.
+   localStorage. GATE: Lighthouse mobile no worse than 100 (measured 09 Aug,
+   Performance 100 / Accessibility 100). Use improve-animations. plates.js
+   has no IntersectionObserver any more; Phase 2 brings its own.
+   The menu already carries the one new animation (160ms ease-out enter,
+   instant exit) — match its restraint.
 
-3. PHASE 5 — THE SEVEN TESTS THAT CANNOT FAIL (DEF-11..17), untouched.
-   DEF-44 found an EIGHTH last session and fixed it, so the class is not
-   exhausted. START BY RE-CHECKING the other seven are still real: two of four
-   HIGH defects investigated last session turned out refuted or stale.
+2. PHASE 3 — THE APPROACH PAGE. Lifecycle SVGs exist at
+   imrohitagrawal/assets/engineering-lifecycle-*.svg and render correctly.
+   PRODUCT.md's claim they are "responsive and theme-aware" is HALF WRONG —
+   check before designing around it. Routing, canonicals, per-page coverage
+   all ready. D28's nav rework (WORK · APPROACH · CONTACT) unblocks when the
+   page exists — the NAV array in Layout.astro is the single place to edit.
 
-4. ASSETS. og.png is 337,549 bytes — the LARGEST file in the build, twice
-   paint-grain, and DEF-35 says it still shows the pre-redesign palette and a
-   deleted mannequin. paint-grain.png is 166,280 bytes, ~53% of page weight,
-   with ~125KB recoverable (DEF-23/24). Both are cheap wins.
+3. PHASE 4 — the critique's remaining findings. DERIVE the live list from
+   docs/plan/* against the ledger; two recorded items were already fixed last
+   time anyone counted. Known live: O-HERO (the refusal card does not state
+   its own conclusion — owner's challenge, two candidate fixes recorded),
+   micro-type share, no active-plate marker.
 
-5. PHASE 3 — THE APPROACH PAGE. The lifecycle SVGs EXIST at
-   imrohitagrawal/assets/engineering-lifecycle-*.svg and render correctly
-   (screenshotted). PRODUCT.md's claim that they are "responsive and
-   theme-aware" is HALF WRONG — check before designing around it. Routing,
-   canonicals and per-page test coverage are all ready for a new page.
+4. DEF-8 — six of seven plates still print blank (fixed for /cv only).
+   DEF-2 — ?at= deep links are JS-only. DEF-29 — location stated twice.
+   All three are recorded, none started.
 
-6. PHASE 4 — 24 of the critique's 42 findings still open. Phase 4's own list of
-   13 is wrong: two are already fixed, so Phase 4 proper has 9 live items and
-   the rest live in other phases. DERIVE the list, do not inherit the count.
-
-7. DEF-43 — the overview plate is 1149px in a 900px viewport. The rows are only
-   699px; the overflow is block padding. Cheap fix, no content lost.
-
-8. A COARSE-POINTER TAP-TARGET GATE. touch.css is a hand-maintained selector
-   allowlist and BOTH surfaces built last session silently opted out. Third
-   instance of that shape after DEF-10 and DEF-44. Written up, not built.
+5. RESIDUALS FROM D47, written down not hidden: focus-ring CONTRAST (vs
+   pixel-change) is asserted only on the nav; the tap gate's inline-display
+   carve-out is dodgeable by styling a control display:inline.
 
 WHAT NOT TO REDO
-  - DEF-6 is REFUTED. .js-ground gated zero CSS rules. RCA-002 is superseded and
-    its one-line fix is a literal no-op.
-  - DEF-19 is LATENT, not HIGH. No CSP exists anywhere.
-  - "MTTD -35%" is NOT in the authoritative CV. It says root-cause-analysis time
-    -35% and release VALIDATION time -25%. Do not restate metrics.
-  - Do NOT add to src/styles/global.css. It is at 498 of a grandfathered 500.
-    Extract to a new file. Do not trim comments to make room.
-  - The brand marks were compared (docs/brand/comparison-2026-08-09.md).
-    Nothing adopted; that is the owner's call, not a task.
+  - DEF-12 is REFUTED (MIN_PLATES already held; floor now 8). DEF-13..17 are
+    FIXED with mutation-proved gates. Do not re-investigate; re-run the
+    mutations if you doubt them — each ledger row names its mutation.
+  - DEF-48 (palette #work) is fixed and gated. DEF-43 fits 900px exactly.
+  - DEF-23/35 are done: grain is WebP 37,650B, og.png is a real-hero
+    screenshot at 71,977B. DEF-24 narrowed to og.png + favicon.svg.
+  - The brand marks comparison stands; adoption is the owner's call.
+  - global.css is 433 of 500. The budget is a GATE now (file-budget.mjs in
+    CI). New files: 250 lines / 32,000 bytes / 120 chars. Exceptions are
+    shrink-only, in the gate file itself.
 
-TRAPS, ALL PAID FOR ALREADY
-  - A FIXED element has no fixed backdrop, so no DOM-reading tool can score it.
-  - DO NOT locate a backdrop by GEOMETRY. Four attempts, four false positives.
-    tests/lib/rendered-contrast.mjs renders three times instead. Reuse it for
-    ANY new contrast gate.
-  - A gate that PRINTS a failure is not a gate that FAILS. Check the exit code.
-    boundary-check.mjs exited 0 for weeks while printing "below AA".
-  - Hand-maintained lists silently narrow gates: DEF-10 (routes), DEF-44 (plate
-    ids), touch.css (selectors). Derive, never type.
-  - count() proves existence, href proves intent, NEITHER proves behaviour.
-    Activate the thing.
-  - Verifying straight after a deploy measures a half-propagated CDN. Three
-    spurious reds in one session. Settle, measure, measure again.
-  - The PII gate does not scan .pdf or .docx (DEF-37). The phone number is in
-    both resume PDFs, NOT in the .md the ledger used to name.
+TRAPS, ALL PAID FOR ALREADY (new ones first)
+  - A closed <details>' absolutely-positioned children KEEP THEIR LAYOUT BOX
+    in Chromium. Playwright calls them visible; pixel gates score them as
+    "no glyph". Display-gate closed panels: .menu:not([open]) > nav.
+  - isVisible() reads boxes, not paint or pointer-events. opacity:0 and
+    pointer-events:none both pass it. Paint questions go to
+    tests/lib/rendered-contrast.mjs; hit questions to elementFromPoint
+    (tests/lib/read-links.mjs).
+  - A derived gate population SHRINKS WITH THE MUTILATION it should catch.
+    Pin the must-exist members as partner literals (/cv, /#contact) and keep
+    the rest derived. Same class: deriving an expected COUNT from the same
+    artifact a mutation edits (palette-ladder's first version).
+  - element.focus() does not trigger :focus-visible. A real Tab press does.
+  - Contrast floors REWARD flattening — the seam gate got GREENER when five
+    grounds went black. Distinctness assertions catch what floors cannot.
+  - `git checkout <file>` to restore a mutation also reverts YOUR uncommitted
+    work in that file. Back up to /tmp and cp back, never checkout.
+  - The suite refuses a busy port 4321 by design (DEF-11). Standalone gates
+    get their own server on 4322.
+  - A FIXED element has no fixed backdrop; render, never geometry (DEF-46).
+  - A gate that PRINTS a failure is not a gate that FAILS. Check exit codes;
+    in zsh a pipeline's exit is the LAST command's — use pipestatus.
+  - Verifying straight after a deploy measures a half-propagated CDN.
+    Settle, measure, measure again. This session: poll for the new asset
+    hash first, then run gates twice.
+  - The PII gate does not scan .pdf or .docx (DEF-37 — still true). The
+    phone number is in both resume PDFs in the untracked inbox.
   - Cloudflare Pages has NO git integration. Nothing deploys on push.
-  - No backticks inside a JS template literal. Cost two syntax breaks.
+  - Known cosmetic: /paint-grain.png still returns 200 from CDN cache after
+    deletion. Nothing references it; it ages out. Do not chase it.
 
 DEPLOY, and it is manual
   npm run build
   npx wrangler pages deploy dist --project-name stackclimb --branch main --commit-dirty=true
-  Then WAIT ~25s and verify by asset hash and route table, never by a 200.
+  Poll until the new CSS hash serves, then verify by route table and by
+  running both pixel gates against https://stackclimb.com — twice.
 
-BLOCKED ON THE OWNER — one item
-  SaafSaans is down. The Fly app has ZERO machines (suspended, deployed:false),
-  so auto_start has nothing to wake. Not a cold start, not DNS, not billing,
-  not the custom domain — each ruled out with a command. It crash-looped eight
-  times in 15s on 21 July on the SAME image that had run fine for 70 minutes.
-  Crash cause UNVERIFIED, log retention expired. Leads: memory 256mb where both
-  working apps are 512mb, and all three secrets are staged-never-deployed.
-  Reviving it is a production change to a DIFFERENT repo whose tree is 35
-  commits ahead of origin. His call. The site discloses the outage honestly.
+APPROACH C (deploy through CI) — the exit table in AGENTS.md now reads:
+  tests repaired DONE · build-before-test DONE · contrast DONE · CI green DONE
+  · branch protection OPEN (needs the repo public or Pro — owner's call, O2).
+  When the owner flips visibility, wire branch protection and move the deploy
+  into gates.yml. Remember the post-deploy gate needs a settle wait and an
+  N-of-M rule stated up front, never a bare retry.
+
+BLOCKED ON THE OWNER — three items, none new
+  - O2: repo visibility. Everything else for approach C is done.
+  - SaafSaans: Fly app has ZERO machines. Crash cause unverified, logs
+    expired. Reviving is a production change to another repo. His call.
+  - Brand mark adoption (docs/brand/comparison-2026-08-09.md).
 ```
 
 ---
 
-## What changed last session, in one table
+## What changed this session, in one table
 
 | | |
 |---|---|
-| Nav was invisible on 46% of the page, live, with every gate green | Fixed, RCA-003, pixel gate |
-| Site does not auto-deploy and never has — `AGENTS.md` said it did in 3 places | Corrected; prod had drifted 6 commits |
-| Two gates could not fail (seam gate exited 0; CI never ran on a PR) | Both fixed, DEF-39/DEF-44 |
-| Every URL returned the home page with 200 | Fixed, DEF-40 |
-| `/cv` built from the authoritative CV, prints cleanly, no phone number | Shipped |
-| The contact-sheet plate — D1, decided 07 Aug, never built | Shipped |
-| D23's headline never shipped; contact plate never got the owner's sentence | Both shipped |
-| H-1B stated as work authorisation, never as intent, always after "worldwide" | D42 |
-| Codex found 5 real holes in gates I called strong | 5 of 5 closed, D44 |
-| DEF-46 fixed by changing approach after 4 failed geometry patches | D45 |
+| On a phone the nav reached nothing (DEF-42, HIGH, open since launch) | Fixed: native `<details>` menu, works without JS, RCA-004, held by a gate that ACTIVATES every destination |
+| The seven tests that cannot fail (DEF-11..17) | Closed as a class: 1 refuted, 6 fixed, every fix mutation-proved. An audit re-verified each BEFORE fixing |
+| CiteVyn plate silently on the wrong ground since DEF-34's rename (DEF-48) | Found by the audit, fixed, held by the palette-ladder gate |
+| `global.css` at 505 over its 500 ceiling; handoff said 498 (DEF-47) | Nav extracted (433); the D8 budget is now a CI gate nothing can opt out of |
+| touch.css allowlist silently narrowing (third instance of the shape) | tap-targets gate measures every element at a coarse pointer |
+| Overview plate 1152px in a 900px viewport (DEF-43) | Exactly 900px; chrome cuts only |
+| paint-grain 166KB, og.png 337KB showing a deleted design (DEF-23/35) | 38KB WebP (0-pixel render diff) and a 72KB real-hero screenshot |
+| Focus visibility asserted from styles | Asserted from PIXELS, focused vs blurred, via real Tab presses |
+| Two-round adversarial review of the new gates (D47) | 8 real holes closed incl. a CI blocker; residuals recorded, cap honoured |
 
-**Two process failures worth carrying forward:** `positioning-phase0.md` twice
-asserted its own execution and was wrong (the `grilling` provenance line, and
-"everything else is applied"). And the skill-to-task mapping in the repo went
-unused until the owner asked. Both are recorded in the ledger's Corrections.
+**Process notes carried forward:** the review round that found the CI blocker
+found it because it RAN the gates — the builder had run the seam gate and not
+the nav gate. Run every gate the surface touches. And the mutation-restore
+`git checkout` erased uncommitted work once; back up files, never checkout.

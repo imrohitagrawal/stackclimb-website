@@ -255,7 +255,7 @@ import Overview from '../components/Overview.astro';
     id="saafsaans"
     num="04"
     name="SaafSaans"
-    state="Deployed — not answering"
+    state="Deployed — sleeps when idle"
   >
     <div class="plate-grid">
       <div class="plate-copy">
@@ -271,14 +271,13 @@ import Overview from '../components/Overview.astro';
         <p>
           Entered at <em>Build with AI</em> (Elastic × GDG Cloud New Delhi, 18 July 2026) as a
           four-tab Streamlit app that already existed, then rebuilt over the next three days
-          into what runs today. It lives on one small machine that scales to zero when idle.
-          <strong>Right now that machine is not answering</strong> — the address resolves and
-          the server accepts the connection, then closes it without sending anything. The fault
-          is being investigated. This page says so rather than leaving you to find out by
-          clicking.
+          into what runs today. It lives on one small machine that suspends when idle and wakes
+          on request, so the first visit after a quiet spell takes a moment. It went down on
+          21 July and was redeployed on 9 August; while it was down, this page said so rather
+          than leaving you to find out by clicking.
         </p>
         <div class="links">
-          <a href="https://saafsaans.stackclimb.com" target="_blank" rel="noopener">Deployment (down)</a>
+          <a href="https://saafsaans.stackclimb.com" target="_blank" rel="noopener">Open the app</a>
           <a href="https://github.com/imrohitagrawal/saaf-saans" target="_blank" rel="noopener">Source</a>
           <a
             href="https://github.com/imrohitagrawal/saaf-saans/blob/3bac09012cc1a5e36d24505e54d6155ff0664aa3/docs/CASE-STUDY.md"

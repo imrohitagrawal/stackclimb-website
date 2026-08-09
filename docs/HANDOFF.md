@@ -151,11 +151,12 @@ APPROACH C (deploy through CI) — the exit table in AGENTS.md now reads:
   into gates.yml. Remember the post-deploy gate needs a settle wait and an
   N-of-M rule stated up front, never a bare retry.
 
-BLOCKED ON THE OWNER — three items, none new
+BLOCKED ON THE OWNER — one item
   - O2: repo visibility. Everything else for approach C is done.
-  - SaafSaans: Fly app has ZERO machines. Crash cause unverified, logs
-    expired. Reviving is a production change to another repo. His call.
-  - Brand mark adoption (docs/brand/comparison-2026-08-09.md).
+  RESOLVED since this handoff was written: SaafSaans was redeployed by the
+  owner 09 Aug (machine v9, checks passing, scale-to-zero restored) and the
+  site's outage copy replaced; the brand mark was adopted the same day (D48,
+  amended by critique). The ledger has both.
 ```
 
 ---

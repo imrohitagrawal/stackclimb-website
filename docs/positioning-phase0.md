@@ -7,10 +7,20 @@ the copy below is written down.
 installed. D33 says so in as many words: *"Every recommendation made on 08–09 Aug is unaided
 judgement, not skill-validated… Phase 0 exists to test them and some may not survive it."*
 
-This file is that test. Method: `brand-positioning` (arnabbagxd, MIT), paired with `grilling`
-(Matt Pocock) because the positioning skill **cites no established framework** and by this
-project's own rule is evidence of practice, not a source of authority
-(`positioning-decisions.md:196`).
+This file is that test. Method: `brand-positioning` (arnabbagxd, MIT).
+
+> **Correction, 2026-08-09.** This line originally read *"paired with `grilling` (Matt Pocock)"*.
+> **`grilling` was never invoked.** The adversarial pass below — testing the headline against the
+> skill's own red flags, arguing the opposite case, and demanding an everyday analogy — was done
+> inline and then described as the skill. That is a claim about method that the method did not
+> support, in a document written for a site whose entire subject is claims that survive a check.
+> The owner caught it by asking. The analysis stands on its own evidence; the provenance
+> sentence did not, and is now accurate.
+>
+> The mitigation the original sentence was reaching for is still **owed**, not done:
+> `brand-positioning` cites no established framework — no April Dunford, no Geoffrey Moore — and
+> by this project's own rule (`positioning-decisions.md:196`) it is evidence of practice, not a
+> source of authority. Running `grilling` against §03 and §04 is the first Phase 0 task left.
 
 **Verdict up front:** the headline survives. The **lede does not**, and the reason is the
 strongest finding of the session — his fourteen years are being treated as a liability to be

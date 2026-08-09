@@ -24,7 +24,14 @@ export const identity = {
   // synthesis is that they are the same skill.
   title: 'Principal engineer — AI platform, evaluation and release governance',
   base: 'Bengaluru, India · IST (UTC+5:30)',
-  relocation: 'Open to global relocation and international travel',
+  relocation: 'Open to relocation worldwide, and to international travel',
+  /* D42. Stated as AUTHORISATION, not as intent, and always after relocation.
+     "H-1B approved" alone reads as "targeting the US"; a list of places where
+     the paperwork question is already settled does not. The owner is open
+     worldwide and the copy must not narrow that.
+     Checked against tech-resume-optimizer's contact-section guidance: state
+     only what can be discussed, keep it factual, no photo, city is enough. */
+  authorisation: 'India · United States — H-1B approved',
   email: 'rohit.ra.agrawal@gmail.com',
   linkedin: 'https://www.linkedin.com/in/rohitagrawal14',
   github: 'https://github.com/imrohitagrawal',

@@ -416,14 +416,31 @@ import Overview from '../components/Overview.astro';
           <a class="btn ghost" href="https://github.com/imrohitagrawal" target="_blank" rel="noopener">GitHub</a>
         </div>
         {/* The three destinations above are already labelled links. Repeating them
-            here as plain text was a duplicate a visitor could not click. These two
+            here as plain text was a duplicate a visitor could not click. These
             rows carry facts the paragraph was burying instead. Terms stay sentence
-            case — global.css applies text-transform: uppercase. */}
+            case — global.css applies text-transform: uppercase.
+
+            D42 — the H-1B. The owner's instruction: state it, but do not let the
+            page read as though he is only looking at the United States.
+
+            The fix is FRAMING, not wording. "H-1B approved" on its own reads as a
+            destination. `Work authorisation` reads as paperwork — a list of
+            places where the question is already settled. So relocation worldwide
+            is stated FIRST and stays the headline fact; the authorisation row
+            follows it and names two countries rather than one. A US recruiter
+            gets the answer to "will I have to sponsor and wait" without any
+            other reader being told the search is American.
+
+            It also fits the voice rule exactly. This is not his urgency and it
+            is not a pitch — it is the removal of an objection the READER has,
+            which is the distinction the owner drew on 08 Aug and which
+            AGENTS.md now records. */}
         <Ledger
           label="Where"
           rows={[
             { t: 'Based', d: 'Bengaluru, India · IST (UTC+5:30)' },
-            { t: 'Open to', d: 'Global relocation · international travel' },
+            { t: 'Open to', d: 'Relocation worldwide · international travel' },
+            { t: 'Work authorisation', d: 'India · United States — H-1B approved' },
           ]}
         />
       </div>

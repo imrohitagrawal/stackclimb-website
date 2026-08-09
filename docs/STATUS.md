@@ -5,7 +5,9 @@ The ledger. What is decided, what is open, and what was rejected so it does not 
 Updated in the same change that alters any of it. If this file and the chat disagree, this file
 is wrong and must be fixed — chat is not a record.
 
-Last updated: 2026-08-09 (autonomous overnight session)
+Last updated: 2026-08-10 (autonomous defect-sweep: PR #2 voice-copy and PR #4 test-hygiene
+merged; PR #1 PII-PDF-scan, PR #3 no-JS-resilience, PR #5 Astro major bump left open,
+needs-human)
 
 ---
 

@@ -96,7 +96,10 @@
   grid-area: gate;
   font-size: 0.84rem;           /* ledger-value */
   line-height: 1.5;
-  opacity: 0.85;
+  /* Was opacity: 0.85 on the whole line — which also dimmed the ochre GATE
+     key inside it to 4.16:1 on the umber surface (axe, after the DEF-48-class
+     ground change). The text dims itself; the key keeps full ochre, 5.13:1. */
+  color: color-mix(in srgb, currentColor 85%, transparent);
   margin-top: 0.05rem;
 }
 
@@ -153,7 +156,9 @@
 }
 
 .tone-neutral .ov-state {
-  color: color-mix(in srgb, var(--bone) 52%, transparent);
+  /* 52% measured 4.19:1 on the umber surface — under AA. 62% clears at
+     5.26:1 while staying visibly the quietest step of the tone ladder. */
+  color: color-mix(in srgb, var(--bone) 62%, transparent);
   font-weight: 500;
 }
 
@@ -161,7 +166,7 @@
    an equal number for a system that is not running. */
 .tone-warn .ov-figure,
 .tone-fail .ov-figure { color: color-mix(in srgb, var(--bone) 76%, transparent); }
-.tone-neutral .ov-figure { color: color-mix(in srgb, var(--bone) 52%, transparent); }
+.tone-neutral .ov-figure { color: color-mix(in srgb, var(--bone) 62%, transparent); }
 
 @media (max-width: 780px) {
   .ov-row {

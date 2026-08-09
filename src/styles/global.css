@@ -201,8 +201,13 @@ body::before {
 /* The plate tag is absolutely positioned in the top-right corner, so it sits
    over whatever is in the right column. That was harmless when the figures
    were SVGs with empty margins; the record cards are opaque and reach the top
-   of the column, so the tag landed on the card. Clear it. */
-.plate:has(.plate-state) .plate-figure { padding-top: 3.4rem; }
+   of the column, so the tag landed on the card. Clear it — on WIDE viewports
+   only: below 900px the tag is position:static at the plate top, so this
+   clearance was 54px of dead ground mid-plate, six times per scroll
+   (critique finding 6, measured as most of the 94px visual gap). */
+@media (min-width: 901px) {
+  .plate:has(.plate-state) .plate-figure { padding-top: 3.4rem; }
+}
 
 .figure { width: 100%; height: auto; display: block; }
 
@@ -402,7 +407,9 @@ body::before {
 
 @media (max-width: 900px) {
   .plate-grid, .hero .plate-grid { grid-template-columns: 1fr; }
-  .plate-figure { order: 2; margin-top: 2rem; }
+  /* margin-top was 2rem, stacking on the grid gap for ~64px of empty ground
+     mid-plate — six times over an 11,800px page (critique finding 6). */
+  .plate-figure { order: 2; margin-top: 0.5rem; }
   .plate-copy { order: 1; max-width: none; }
   /* Phone reading order on the hero: claim, then the proof, then the CV.
      The artefact used to sit below a five-row ledger, so a scanner never

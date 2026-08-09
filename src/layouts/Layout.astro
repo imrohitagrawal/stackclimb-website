@@ -98,14 +98,26 @@ const canonical = new URL(
     FORM: Sapeur portrait plate — user-chosen challenger over assigned grounded #7; seed b720fd1a.
     FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
     -->
-    <a class="skip" href="#work">Skip to the systems</a>
+    <a class="skip" href="/#work">Skip to the systems</a>
 
+    {/* Every destination is root-relative, not a bare fragment.
+        These used to read href="#work". With one page that worked. The moment
+        /cv existed, "Systems" and "Contact" pointed at fragments that do not
+        exist on that page, so they silently did nothing — no navigation, no
+        error, and no test would have caught it because the links are present
+        and focusable. Found by opening /cv and reading the nav, not by a gate.
+
+        CV is added here because O-30SEC records that a CV link was absent from
+        the entire site and that a recruiter looks for one first. The full nav
+        rework — WORK · APPROACH · CONTACT (D28) — waits for /approach to exist,
+        so that this menu never advertises a page that would 404. It would
+        genuinely 404 now: see DEF-40. */}
     <header class="site-nav">
       <a class="brand" href="/">Rohit Agrawal<em>stackclimb</em></a>
       <nav aria-label="Site">
-        <a href="#work">Systems</a>
-        <a href="#private">Private</a>
-        <a href="#contact">Contact</a>
+        <a href="/#work">Systems</a>
+        <a href="/cv">CV</a>
+        <a href="/#contact">Contact</a>
         <a class="chip" href="mailto:rohit.ra.agrawal@gmail.com">Email me</a>
       </nav>
     </header>

@@ -1,0 +1,132 @@
+---
+/* D31 — the CV is a page that prints cleanly, not a PDF upload.
+ *
+ * Why a page. A PDF goes stale silently and nobody notices; a page is
+ * indexable, always current, and a recruiter can still print it to PDF and
+ * forward it. That was the owner's call, approach B.
+ *
+ * D38 — the phone number is not here, and no clever workaround stands in for
+ * it. Reveal-on-click JS (scrapers execute JS), the number as an image (OCR
+ * reads it, screen readers cannot) and @media-print-only (the number stays in
+ * the HTML source, so every scraper gets it and every human does not) are all
+ * banned by name. Contact is email and LinkedIn, which is the normal shape of
+ * a published CV.
+ *
+ * DEF-8 — six of seven plates print blank, bone on white paper. This page is
+ * the one meant to be printed, so it carries the print rules itself rather
+ * than waiting for the site-wide fix.
+ *
+ * Content lives in src/data/cv.js so this file stays presentation only and
+ * both stay under the 250-line budget.
+ */
+import Layout from '../layouts/Layout.astro';
+import '../styles/cv.css';
+import {
+  identity, summary, experience, projects, education, certifications, awards, skills,
+} from '../data/cv.js';
+---
+
+<Layout
+  title={`${identity.name} — CV`}
+  description={`Curriculum vitae of ${identity.name}: fourteen years of quality engineering and release governance across Oracle, Amazon, LimeRoad, Mobileum, Snapdeal and Subex, and independent AI systems built around evaluation gates.`}
+>
+  <article class="cv plate" id="cv">
+    <header class="cv-head">
+      <h1>{identity.name}</h1>
+      <p class="cv-title">{identity.title}</p>
+      <ul class="cv-contact">
+        <li><a href={`mailto:${identity.email}`}>{identity.email}</a></li>
+        <li><a href={identity.linkedin} rel="noopener">LinkedIn</a></li>
+        <li><a href={identity.github} rel="noopener">GitHub</a></li>
+        <li class="plain">{identity.base}</li>
+        <li class="plain">{identity.relocation}</li>
+      </ul>
+    </header>
+
+    <section class="cv-section" aria-labelledby="s-summary">
+      <h2 id="s-summary">In short</h2>
+      {summary.map((p) => <p>{p}</p>)}
+    </section>
+
+    <section class="cv-section" aria-labelledby="s-exp">
+      <h2 id="s-exp">Experience</h2>
+      {/* Stated once here rather than repeated on every line. The site's voice
+          rule is to label what is not proven, and a figure from inside a
+          company cannot be checked from outside it. */}
+      <p class="cv-note">
+        Every figure in this section is <strong>self-reported</strong>. These are internal
+        measures from the employers concerned and cannot be verified from outside them.
+      </p>
+      {experience.map((job) => (
+        <div class="cv-job">
+          <div class="cv-job-head">
+            <h3>{job.role} · <span class="org">{job.org}</span></h3>
+            <span class="cv-dates">{job.from} — {job.to}</span>
+          </div>
+          <p class="cv-scope">{job.scope}</p>
+          {job.points.length > 0 && (
+            <ul>{job.points.map((pt) => <li>{pt}</li>)}</ul>
+          )}
+        </div>
+      ))}
+    </section>
+
+    <section class="cv-section" aria-labelledby="s-proj">
+      <h2 id="s-proj">Independent systems</h2>
+      <p class="cv-note">
+        Built since April 2026. Each row states the gate the system runs against itself —
+        that is the through-line, and it is the same discipline as the fourteen years above.
+      </p>
+      {projects.map((p) => (
+        <div class="cv-proj">
+          <div class="cv-job-head">
+            <h3>
+              {p.href ? <a href={p.href} rel="noopener">{p.name}</a> : p.name}
+            </h3>
+            <span class="cv-state">{p.state}</span>
+          </div>
+          <p>{p.what}</p>
+          <p class="cv-gate"><span class="cv-gate-k">Gate</span> {p.gate}</p>
+        </div>
+      ))}
+    </section>
+
+    <section class="cv-section cv-cols" aria-labelledby="s-skills">
+      <h2 id="s-skills">Technical</h2>
+      <dl>
+        {skills.map((s) => (
+          <div class="cv-row"><dt>{s.group}</dt><dd>{s.items}</dd></div>
+        ))}
+      </dl>
+    </section>
+
+    <section class="cv-section cv-cols" aria-labelledby="s-edu">
+      <h2 id="s-edu">Education and certification</h2>
+      <dl>
+        <div class="cv-row">
+          <dt>{education.year}</dt>
+          <dd>{education.degree} — {education.school}</dd>
+        </div>
+        {certifications.map((c) => (
+          <div class="cv-row">
+            <dt>{c.year}</dt>
+            <dd>{c.name} — {c.issuer}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+
+    <section class="cv-section" aria-labelledby="s-awards">
+      <h2 id="s-awards">Recognition</h2>
+      <ul>{awards.map((a) => <li>{a}</li>)}</ul>
+    </section>
+
+    <footer class="cv-foot">
+      <a class="btn primary" href={`mailto:${identity.email}`}>Email me</a>
+      <a class="btn ghost" href="/">The systems</a>
+      <p class="cv-print-note">
+        This page is the current version. Printing it produces a PDF you can forward.
+      </p>
+    </footer>
+  </article>
+</Layout>

@@ -1,0 +1,228 @@
+/* The CV page.
+   ---------------------------------------------------------------------------
+   Two jobs, and the second one is the reason this file exists separately.
+
+   On screen it is a plate like any other — same ground, same bone, same ochre,
+   so it does not read as a different site.
+
+   On PAPER it has to invert completely. DEF-8: six of seven plates print blank,
+   because bone text on a near-black ground becomes bone text on white paper and
+   browsers drop background colours by default. Every other page can live with
+   that. This one cannot — D31 chose a printable page over a PDF precisely so a
+   recruiter could print it and forward it, and a CV that prints blank fails at
+   the only job it has.
+   --------------------------------------------------------------------------- */
+
+/* Full-bleed ground with a centred measure. The obvious version — max-width
+   plus margin-inline: auto — puts the plate's dark ground on a 52rem column
+   and leaves the lighter html background either side, so the page reads as a
+   narrow strip with two hard vertical seams. Looked at the render and it was
+   the first thing wrong with it. Padding the inline sides to whatever is left
+   over keeps one continuous ground and still holds the line length. */
+.cv {
+  padding-block: clamp(5rem, 9vw, 7rem) 4rem;
+  padding-inline: max(clamp(1.25rem, 4vw, 2.5rem), calc((100% - 52rem) / 2));
+  color: var(--bone);
+}
+
+/* Every link on this page needs this rule and none of the site's existing ones
+   reach it — they are scoped to .plate-copy .links and .site-nav. Without it a
+   link falls back to the user-agent default #0000ee, which measures 1.96:1 on
+   the ground. axe caught seven of them the moment /cv came under test, which is
+   DEF-10's fix doing exactly what it was written to do: the page was covered
+   automatically, on its first build, with nobody remembering to add it.
+   Ochre measures 6.4-7.25:1 on the grounds (see palette.css). */
+.cv a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+}
+
+.cv a:hover { color: var(--bone); }
+
+.cv-head h1 {
+  font-family: var(--serif);
+  font-size: clamp(2.6rem, 5.4vw, 5.1rem); /* DESIGN.md headline */
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+}
+
+.cv-title {
+  font-size: clamp(1rem, 1.6vw, 1.14rem); /* lede-max */
+  color: var(--accent);
+  margin-top: 0.5rem;
+}
+
+.cv-contact {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+  margin-top: 1.1rem;
+  font-size: 0.84rem; /* ledger-value */
+}
+
+/* The rows that are facts rather than destinations. DEF-28's lesson: a contact
+   detail printed as text is a thing a visitor cannot click, so anything that
+   IS reachable stays a real link and only the non-clickable facts are plain. */
+.cv-contact .plain { opacity: 0.72; }
+
+.cv-section { margin-top: 2.6rem; }
+
+.cv-section h2 {
+  font-family: var(--sans);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--bone) 24%, transparent);
+}
+
+.cv-section > p { margin-top: 0.85rem; line-height: 1.62; }
+
+.cv-note {
+  font-size: 0.92rem; /* private-note */
+  opacity: 0.82;
+  border-left: 2px solid var(--accent);
+  padding-left: 0.8rem;
+}
+
+.cv-job, .cv-proj { margin-top: 1.6rem; }
+
+.cv-job-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.3rem 1rem;
+}
+
+.cv-job-head h3 {
+  font-family: var(--serif);
+  font-size: clamp(1.1rem, 1.8vw, 1.4rem); /* DESIGN.md title */
+  font-weight: 560;
+}
+
+.cv-job-head .org { color: var(--accent); }
+
+.cv-dates, .cv-state {
+  font-size: 0.76rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.78;
+  white-space: nowrap;
+}
+
+.cv-state { color: var(--accent); opacity: 1; }
+
+/* 0.92rem is the documented private-note step. */
+.cv-scope { margin-top: 0.35rem; font-size: 0.92rem; opacity: 0.86; line-height: 1.55; }
+
+.cv-job ul, .cv-section > ul { margin-top: 0.6rem; padding-left: 1.1rem; }
+.cv-job li, .cv-section > ul li { margin-top: 0.38rem; line-height: 1.55; }
+
+.cv-proj p { margin-top: 0.4rem; line-height: 1.58; }
+
+.cv-gate { font-size: 0.92rem; }
+
+.cv-gate-k {
+  font-size: 0.72rem; /* brand-em */
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-right: 0.45rem;
+}
+
+.cv-cols dl { margin-top: 0.9rem; }
+
+.cv-row {
+  display: grid;
+  grid-template-columns: minmax(8rem, 12rem) 1fr;
+  gap: 0.4rem 1.2rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--bone) 12%, transparent);
+}
+
+.cv-row dt {
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.cv-row dd { font-size: 0.92rem; line-height: 1.5; }
+
+.cv-foot {
+  margin-top: 3rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.cv-print-note { flex-basis: 100%; font-size: 0.8rem; opacity: 0.7; }
+
+@media (max-width: 640px) {
+  .cv-row { grid-template-columns: 1fr; gap: 0.15rem; }
+  .cv-job-head { flex-direction: column; }
+}
+
+/* ---------- paper ----------
+   DEF-8. Ink on white, links resolved to their targets, and the site furniture
+   dropped. `print-color-adjust` is deliberately NOT used to force the dark
+   ground onto paper: that would burn a page of toner and read worse than ink
+   on white. The page inverts instead. */
+@media print {
+  /* Every colour here is a design-system token, not a literal.
+     `--ink` (#16213c) is the site's own near-black navy and is what the light
+     #private plate already prints its text in, so a printed CV matches the
+     site rather than inventing a second black. The paper is left to the
+     browser's own white — setting a background would only fight it, and
+     `print-color-adjust` is deliberately NOT used to force the dark ground
+     onto paper: it would burn a page of toner and read worse than ink. */
+  html, body { background: transparent !important; }
+
+  /* global.css:34 paints a fixed, blended paint-grain layer over the whole
+     viewport. On screen it is the point of the design; on paper it printed as
+     grey mottling across every page of the CV — visible in the first print
+     proof and only found by looking at one. A `position: fixed` layer also
+     repeats on every printed sheet. */
+  body::before { display: none !important; }
+
+  .site-nav, .colophon, .skip, .cv-foot .btn { display: none !important; }
+
+  .cv, .cv * {
+    color: var(--ink) !important;
+    background: transparent !important;
+  }
+
+  .cv {
+    max-width: none;
+    padding: 0;
+    font-size: 10.5pt;
+  }
+
+  .cv-title, .cv-section h2, .cv-state, .cv-gate-k, .cv-job-head .org {
+    color: var(--ink) !important;
+  }
+
+  .cv-section h2 { border-bottom: 1pt solid var(--ink); }
+  .cv-row { border-bottom: 0.5pt solid color-mix(in srgb, var(--ink) 45%, transparent); }
+  .cv-note { border-left: 2pt solid var(--ink); }
+
+  .cv-contact a::after,
+  .cv-proj a::after {
+    /* On paper a link is a dead end unless it says where it goes. */
+    content: ' (' attr(href) ')';
+    font-size: 8.5pt;
+    word-break: break-all;
+  }
+  .cv-contact a[href^='mailto:']::after { content: ''; }
+
+  /* Keep a job and its first lines together rather than orphaning a heading. */
+  .cv-job, .cv-proj, .cv-row { break-inside: avoid; }
+  .cv-section h2 { break-after: avoid; }
+}

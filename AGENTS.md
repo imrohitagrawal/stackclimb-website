@@ -11,11 +11,29 @@ Cloudflare Pages. Application subdomains stay on Fly.io.
 
 ## ⚠ STANDING DEBT — deployment is running in a degraded mode
 
-**Current: approach A.** Cloudflare Pages auto-deploys every push to `main`. **There is no gate
-between a push and production.**
+**Current: approach A′ — corrected 2026-08-09.** This paragraph used to read *"Cloudflare Pages
+auto-deploys every push to `main`. There is no gate between a push and production."* **That was
+wrong, and it was wrong in the safer direction.**
 
-This was chosen deliberately, to ship. It is temporary. **Target: approach C** — deployment runs
-*through* CI, so nothing reaches production without passing the gates.
+`npx wrangler pages project list` reports **`Git Provider: No`**. The Pages project is not
+connected to this repository and never has been. Nothing deploys on push. **Every deploy is a
+manual `wrangler pages deploy` run by a person or an agent.**
+
+Two consequences, and they point opposite ways:
+
+- **The risk was overstated.** There *is* a gate between a push and production: somebody has to
+  run the command. A bad merge does not reach visitors on its own.
+- **The drift was understated, and nobody was watching for it.** Because nothing deploys
+  automatically, `main` and production silently diverge. Found by measurement, not by the
+  ledger: the live site was serving commit `7ec8c24` while `main` stood six commits ahead of it.
+  A ledger that says the site auto-deploys is a ledger nobody thinks to check against.
+
+**Approach C is therefore closer than this notice implied.** There is no auto-deploy to remove —
+only a deploy step to add to CI, plus a check that fails when production is behind `main`.
+
+Manual deploy was chosen deliberately, to ship. It is temporary. **Target: approach C** —
+deployment runs *through* CI, so nothing reaches production without passing the gates, and
+nothing sits merged-but-undeployed without something saying so.
 
 **The exit condition, written here so it cannot be lost:**
 

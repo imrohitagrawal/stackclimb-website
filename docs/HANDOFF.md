@@ -3,10 +3,17 @@
 Written 2026-08-09, end of the second autonomous session. Paste the fenced block
 into a fresh Claude Code session in `/Users/rohitagrawal/Projects/designing-website`.
 
-**3 PRs merged and deployed (#15 mobile nav + budget gate, #16 Phase 5 repairs,
-#17 assets).** Tests 42 → 64. The seven tests that cannot fail: closed as a class.
-Page weight roughly halved. Production verified by hash, route table, and both
-pixel gates run twice.
+**13 PRs merged and deployed (#15–#27), all verified in production.** Tests 42 → 64.
+The seven tests that cannot fail: closed as a class. Page weight roughly halved.
+After #18: the owner's brand mark adopted with a pre-merge dual-agent critique (D48,
+#19); all six page-level critique findings fixed same-day (#20–#23, D51); the two
+doc-vs-pixel drifts canonized (D49/D50, #24); a font-swap CLS regression found by
+/impeccable optimize and fixed with a metric-tuned fallback face, plus immutable
+caching for hashed assets (DEF-49, #25); the dead leader-line machinery deleted —
+total site JS is now 594 inlined bytes (D52, #26); and SaafSaans came back — the
+owner redeployed it, verified by command, outage copy became dated history (DEF-7,
+#27). Blocked on the owner: O2 repo visibility only. The ledger (docs/STATUS.md)
+is the authority; this header is just the trailhead.
 
 ---
 

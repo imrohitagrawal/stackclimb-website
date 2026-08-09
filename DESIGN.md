@@ -110,6 +110,16 @@ components:
 
 **Creative North Star: "The Sapeur's Portrait Plate"**
 
+**Amended 2026-08-09 (D49).** The signature of the shipped site is the **artefact
+panel** — the one lit surface per plate quoting real recorded system output, dated,
+with a file path and commit hash (the Lit-Surface Rule below). Six of seven plates
+ship no drawn figure; the panel quietly replaced it, and the dual-agent critique
+judged the replacement stronger: *"a quoted refusal beats an illustrated one."* The
+drawn-figure-plus-leader-line machinery below remains valid where a figure exists
+(the private plate) and for caption strips, but it is no longer the north star —
+the artefact is. This paragraph is the record of that supersession; the original
+text follows unchanged so its vocabulary still resolves.
+
 Every surface is a numbered plate in a portrait series: a flat painted ground, a
 double-ruled frame, a figure at center, and every garment named in a ruled caption.
 The figures are the projects, not people — each system is drawn as flat
@@ -122,7 +132,9 @@ system: state what is proven, label what is not, invent nothing (system states l
 never as decorative badges).
 
 The world explicitly refuses the two portfolio defaults: no dark-terminal aesthetic,
-no white-grid card gallery. Instead the backdrop itself repaints as each plate takes
+no white-grid card gallery. *(Correction 2026-08-09: the repaint described next was
+removed by DEF-30 — every plate paints its own ground, and 94% of scroll positions
+show two plates at once. The sentence is kept for the record.)* Instead the backdrop itself repaints as each plate takes
 the easel — the page background cross-fades (0.8s) to that plate's ground hue as it
 crosses the middle of the viewport — and a single fixed paint-grain raster
 (overlay-blended, opacity 0.5) gives every ground the matte mottle of gouache.
@@ -152,14 +164,22 @@ A costume palette: six painted grounds, one paper, one ink, one thread.
 - **Viridian** (#1e4f46): Plate 02.
 - **Dusk blue** (#2e5877): Plate 03.
 - **Greyed mauve** (#4a4653): Plate 04.
-- **Linen** (#b5ac9c): the one light ground (Plate 05, `theme="light"`) — the unpainted backdrop; flips text to ink.
+- **Paper** (#e8e2d4): the one light ground (the private plate, `theme="light"`) — flips text to ink. *Was linen #b5ac9c; upgraded by the value ladder (D18) — the old value was the only ground above L60 at 15% saturation and read as mud.*
 
 ### Named Rules
 **The Three-Color Livery Rule.** Every plate declares exactly three coordinated colors — Ground, Cloth, Thread — and prints them as its swatch tag. Cloth is bone and Thread is ochre on every plate; only the Ground changes.
 
 **The One Thread Rule.** Ochre is the only accent color in the system. If an element needs emphasis, it gets ochre or it gets nothing; no second accent may be introduced.
 
-**The Painted Ground Rule.** Grounds are flat hues, never gradients, never photos. Texture comes only from the single shared grain layer (`/paint-grain.png`, 480px tile, `mix-blend-mode: overlay`, opacity 0.5, fixed) so each plate's hue tints its own paint.
+**Amendment, 2026-08-09 (D50).** On **lit surfaces only**, verdict chips may use
+plate grounds as *semantic ink*: bordeaux (`#5e2233`) for stop states (REFUSED,
+NO-GO), viridian (`#1e4f46`) for go states (GO, 52/52 PASSED). The shipped pixels
+had already made this move and the critique judged it — palette-internal, works,
+and needed: colour-blind-safe because every chip also carries its word. The rule
+it amends stays intact everywhere else: on grounds and chrome, ochre or nothing.
+A rule the pixels quietly break is drift; this writes it down.
+
+**The Painted Ground Rule.** Grounds are flat hues, never gradients, never photos. Texture comes only from the single shared grain layer (`/paint-grain.webp`, 480px tile, `mix-blend-mode: overlay`, opacity 0.5, fixed) so each plate's hue tints its own paint.
 
 ## Typography
 

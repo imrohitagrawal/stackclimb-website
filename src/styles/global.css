@@ -2,11 +2,26 @@
    World: sapeur portrait plates. Flat painted backdrop per plate,
    figure centered, every garment named in a ruled caption. */
 
+/* The serif fallback is METRIC-TUNED, not a taste list. The old stack fell
+   back to local Didot on macOS, which runs 4.2% wider than Bodoni Moda — at
+   Lighthouse's 1350px desktop the unstyled h1 wrapped to five lines and the
+   loaded font to four, a 54px reflow of the whole hero measured as a stable
+   CLS of 0.123 (found by /impeccable optimize, 08-09; exposed when PR #21
+   removed the <br> that had pinned identical break points). Times New Roman
+   at size-adjust 102.7% matches Bodoni Moda's advance widths to 0.1%, so the
+   swap changes glyphs, not geometry. Line heights are explicit everywhere,
+   which is why no vertical overrides are needed. */
+@font-face {
+  font-family: 'Bodoni Fallback';
+  src: local('Times New Roman');
+  size-adjust: 102.7%;
+}
+
 :root {
   --bone: #f2ebdd;
   --ink: #16213c;
   --ochre: #c99b3f;
-  --serif: 'Bodoni Moda Variable', 'Bodoni MT', Didot, 'Playfair Display', serif;
+  --serif: 'Bodoni Moda Variable', 'Bodoni Fallback', serif;
   --sans: 'Archivo Variable', 'Helvetica Neue', Arial, sans-serif;
 }
 
@@ -206,7 +221,9 @@ body::before {
    clearance was 54px of dead ground mid-plate, six times per scroll
    (critique finding 6, measured as most of the 94px visual gap). */
 @media (min-width: 901px) {
-  .plate:has(.plate-state) .plate-figure { padding-top: 3.4rem; }
+  /* .with-state is set by Plate.astro at build time — see the component for
+     why this must never be a :has() selector (the hero CLS flicker). */
+  .plate.with-state .plate-figure { padding-top: 3.4rem; }
 }
 
 .figure { width: 100%; height: auto; display: block; }

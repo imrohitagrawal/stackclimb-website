@@ -16,7 +16,14 @@ interface Props {
 const { id, num, name, state, theme = 'dark', class: className } = Astro.props;
 ---
 
-<section class:list={['plate', className]} id={id} data-plate-theme={theme}>
+{/* `with-state` is decided HERE, at build time. It used to be a runtime
+    `.plate:has(.plate-state)` selector, and during streaming parse Chromium
+    applied the tag-clearance padding to the state-less hero for one layout
+    and removed it on the next — a 54px flicker measured as the whole of a
+    stable desktop CLS of 0.123 (found by /impeccable optimize, 08-09). A
+    fact the template already knows must not be re-derived by the browser
+    mid-parse. */}
+<section class:list={['plate', className, { 'with-state': !!state }]} id={id} data-plate-theme={theme}>
   <div class="plate-frame">
     <div class="plate-tag">
       <span class="plate-no" aria-hidden="true">Plate Nº {num} — {name}</span>

@@ -1,0 +1,10 @@
+# Content-hashed assets are immutable by construction: a change mints a new
+# URL, so the old one can be cached forever. Cloudflare Pages' default was
+# max-age=14400 must-revalidate, which re-validates every asset every four
+# hours for zero benefit (/impeccable optimize, 2026-08-09).
+#
+# ONLY /_astro/* gets this. og.png, favicon.svg and paint-grain.webp ship
+# UNHASHED from /public — DEF-24 records exactly why immutable on those would
+# pin a stale asset to every repeat visitor.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable

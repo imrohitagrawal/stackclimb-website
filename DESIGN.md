@@ -183,7 +183,14 @@ A rule the pixels quietly break is drift; this writes it down.
 
 ## Typography
 
-**Display Font:** Bodoni Moda Variable (with Bodoni MT, Didot, Playfair Display fallbacks) — self-hosted via @fontsource-variable
+**Display Font:** Bodoni Moda Variable — self-hosted via @fontsource-variable. Its fallback
+is **`Bodoni Fallback`**, a metric-tuned face (`local('Times New Roman')` at
+`size-adjust: 102.7%`) that matches Bodoni Moda's advance widths to 0.1%, so the font swap
+changes glyphs without moving a single line break. *This replaced the old taste-ordered
+fallback list (Bodoni MT, Didot, Playfair Display) on 2026-08-09: local Didot ran 4.2%
+wider and rewrapped the hero h1 on swap — a 54px reflow measured as desktop CLS 0.123
+(DEF-49). A fallback's job here is geometry, not resemblance; the swap frame lasts
+milliseconds and the layout it leaves behind lasts the whole visit.*
 **Body Font:** Archivo Variable (with Helvetica Neue, Arial fallbacks) — self-hosted
 **Label Font:** Archivo Variable, tracked uppercase
 

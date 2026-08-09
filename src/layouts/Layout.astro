@@ -10,6 +10,7 @@ import '../styles/touch.css';
    against a grandfathered ceiling of 500 it may not exceed. */
 import '../styles/avatar.css';
 import '../styles/overview.css';
+import '../styles/contact.css';
 
 interface Props {
   title?: string;
@@ -102,7 +103,19 @@ const canonical = new URL(
     FORM: Sapeur portrait plate — user-chosen challenger over assigned grounded #7; seed b720fd1a.
     FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
     -->
-    <a class="skip" href="/#overview">Skip to the systems</a>
+    {/* Targets THIS page's main region, never a named plate.
+        It read href="/#overview" for a few hours, which was worse than the
+        bare "#work" it replaced: on /cv the id does not exist, so the control
+        stopped being a bypass mechanism and became a link that navigates the
+        reader off the page. Lighthouse scored skip-link 0 on /cv and it was
+        the whole 2-point accessibility gap.
+
+        Neither axe nor tests/links.spec.js caught it. axe has no skip-link
+        rule; my own gate resolves "/#overview" by loading / and finding
+        #overview there, which it does. The rule a skip link must obey is
+        "targets the CURRENT page", and the gate did not encode it. Now it
+        does, and #main exists on every page by construction. */}
+    <a class="skip" href="#main">Skip to content</a>
 
     {/* Every destination is root-relative, not a bare fragment.
         These used to read href="#work". With one page that worked. The moment
@@ -126,7 +139,7 @@ const canonical = new URL(
       </nav>
     </header>
 
-    <main>
+    <main id="main">
       <slot />
     </main>
 

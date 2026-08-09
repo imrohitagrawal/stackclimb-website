@@ -31,6 +31,7 @@ const systems = [
     does: 'Citation-grounded Q&A over official AI docs. Refuses when no source supports an answer.',
     gate: '52-case golden run blocks index promotion',
     figure: '52 / 52',
+    figureLabel: '52 of 52 golden regression cases passing',
     state: 'Live',
     tone: 'pass',
   },
@@ -40,6 +41,7 @@ const systems = [
     does: 'One question against four models, two rounds of mutual critique, then a synthesis.',
     gate: 'Cost approved before anything runs; fallbacks disclosed',
     figure: '4 models',
+    figureLabel: 'four models queried in parallel',
     state: 'Live',
     tone: 'pass',
   },
@@ -49,6 +51,7 @@ const systems = [
     does: 'Delhi-NCR air quality scored for you, not for the city average.',
     gate: 'Every reading labelled live, fallback, or sample',
     figure: 'Hindi gated',
+    figureLabel: 'the Hindi translation is gated behind a review banner',
     state: 'Deployed — not answering',
     tone: 'warn',
   },
@@ -58,6 +61,7 @@ const systems = [
     does: 'Grounded walkthroughs with citations, claim evaluation and consent checks.',
     gate: 'Its own readiness review says No-Go, so it is not deployed',
     figure: '0 releases',
+    figureLabel: 'zero release tags — the gate is holding',
     state: 'Phase 1 — No-Go',
     tone: 'fail',
   },
@@ -66,7 +70,7 @@ const systems = [
     href: null,
     does: 'Evaluates LLM, RAG and agent changes against committed baselines.',
     gate: 'Fails the CI build when quality regresses. That is the product',
-    figure: '—',
+    figure: null,
     state: 'In progress — closed',
     tone: 'neutral',
   },
@@ -75,7 +79,7 @@ const systems = [
     href: null,
     does: 'Contract-shaped guarantees between AI systems.',
     gate: 'Too early to state one',
-    figure: '—',
+    figure: null,
     state: 'In progress — closed',
     tone: 'neutral',
   },
@@ -97,7 +101,17 @@ const systems = [
         </div>
         <p class="ov-does">{s.does}</p>
         <p class="ov-gate"><span class="ov-k">Gate</span>{s.gate}</p>
-        <span class="ov-figure" aria-hidden={s.figure === '—' ? 'true' : undefined}>{s.figure}</span>
+        {/* A figure with no accessible name announces "52 slash 52" and
+            leaves a screen-reader user with no idea what 52 counts. Each row
+            now carries its own sentence.
+
+            Where a system has no countable figure yet, the cell is EMPTY
+            rather than an em dash. The dash rendered at 2.29:1 and read as a
+            broken cell; on a page arguing against dressing things up as
+            measurement, an em dash in a scoreboard column is exactly that. */}
+        {s.figure && (
+          <span class="ov-figure"><span class="sr-only">{s.figureLabel}</span><span aria-hidden="true">{s.figure}</span></span>
+        )}
       </li>
     ))}
   </ul>

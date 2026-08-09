@@ -16,6 +16,22 @@
    same sentence, so a screen reader announcing "photo of Rohit Agrawal" before
    the words "Rohit Agrawal" would repeat itself. The image carries no
    information the adjacent text does not.
+
+   THE CROP, and how the first one was wrong. It was generated with sharp's
+   `attention` saliency strategy and I checked it by looking at the SQUARE.
+   The element is a CIRCLE at 68px. A circle clips the corners and the small
+   size hides what a 384px square shows plainly, so the top of the hair was
+   cut and I did not see it. The owner did.
+
+   Replaced with a deterministic crop measured off the source (896x1096):
+   hair top y=67, chin y=603, head centre x=457, so extract 760x760 at
+   (77, 20) — 6.2% headroom above the hair, head filling 71% of the frame,
+   face centred at 41%. Verified by rendering all three candidates INSIDE the
+   circular mask at 68px and at 150px before choosing, and then by screenshotting
+   the real lede in the built page.
+
+   The rule this cost: check the shape you actually ship, at the size you
+   actually ship it. A square proof for a circular element proves nothing.
    --------------------------------------------------------------------------- */
 
 .avatar {
@@ -49,3 +65,10 @@
   font-weight: 620;
   letter-spacing: 0.005em;
 }
+
+/* The hero copy column, widened for D23's full headline.
+   `.plate-copy` is 34rem everywhere, which is right for prose. The hero's h1
+   is not prose — it is a 53-character display line, and 34rem forced it to
+   wrap every three words. Widening the column is what lets the type step stay
+   large; narrowing the type alone would have made it quiet instead of short. */
+.hero .plate-copy { max-width: 42rem; }

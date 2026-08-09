@@ -237,4 +237,19 @@ strongest signals available to a US recruiter — it removes the objection that 
 conversation. **It is not on the site, and I have not put it there.** Visa status is personal
 information and publishing it is his call to make, not mine. Flagged, not decided.
 
-Everything else in this file is applied.
+**Correction, 2026-08-09 — this file said "everything else in this file is applied" and two of
+its four Changed rows were not.** `/impeccable critique` found both:
+
+- **The headline.** The row reads *"Unchanged — it survived the test"*, which was written to mean
+  *keep D23's decision*. D23 decided the headline **becomes** the full line; the live `<h1>` was
+  still `AI that shows its work`, the truncation D23 rejected in as many words. So the site shipped
+  the half this very document identified as the weak one — *"shows its work" partially fails the
+  table-stake red flag*, while *"refuse to fake it" is the half nobody else claims*. Now shipped.
+- **The contact plate.** The owner's demo-vs-release sentence was recorded here as settled for that
+  plate and never put on the page, and the five-title problem "fixed" in the hero ledger had simply
+  relocated to it. Both fixed.
+
+That is the **second** claim-of-method-or-application in this file that did not survive a check,
+after the `grilling` provenance line. The pattern is the same both times: a planning document
+asserting its own execution, with nothing checking. The gate that would catch it does not exist —
+noted as open work, not as a resolved item.

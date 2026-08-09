@@ -1,5 +1,13 @@
 # Wordmark and mark
 
+> **The owner's candidate marks were compared on 2026-08-09.** Result:
+> [`comparison-2026-08-09.md`](comparison-2026-08-09.md). Short version — keep the existing
+> wordmark and the RA plate favicon; his logo loses at 16px, both PNGs carry a baked-in
+> background rather than transparency, and the mark's orange `#f05020` is a second accent
+> against the palette's ochre `#c99b3f`. One lockup is worth pursuing: his logo beside the
+> existing Bodoni name, redrawn as SVG in the palette.
+
+
 **Recommendation, 2026-08-09: do not design a logo. You already have both. Formalise them.**
 
 ## Why not a logo

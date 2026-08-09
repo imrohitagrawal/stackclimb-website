@@ -83,5 +83,43 @@ test.describe('Internal links', () => {
       expect(internalChecked, `${route}: no internal links checked`).toBeGreaterThan(0);
       expect(broken, `internal links that do not arrive:\n${broken.join('\n')}`).toEqual([]);
     });
+
+    test(`${route} — the skip link bypasses to THIS page`, async ({ page }) => {
+      // The hole this closes, found by /impeccable critique and not by the test
+      // above. The skip link read href="/#overview". That RESOLVES — `/` exists
+      // and `#overview` is on it — so "every internal link resolves" passed
+      // while the control was broken: on /cv it navigated the reader off the
+      // page instead of bypassing the nav. Lighthouse scored skip-link 0 and it
+      // was the whole 2-point accessibility gap on /cv. axe has no skip-link rule.
+      //
+      // A skip link is not just a link that works. It must land on the CURRENT
+      // page, or it is not a bypass mechanism at all. That is the rule the
+      // resolve test could not express, because it is about WHICH page.
+      //
+      // RED WHEN: the skip link points at another page, or at an id that is not
+      // in this document.
+      await page.goto(route, { waitUntil: 'networkidle' });
+
+      const skip = page.locator('a.skip').first();
+      await expect(skip, 'no skip link on this page').toHaveCount(1);
+
+      const href = await skip.getAttribute('href');
+      expect(href, 'skip link has no href').toBeTruthy();
+      expect(href, `skip link "${href}" leaves this page — it must target an id on ${route}`)
+        .toMatch(/^#/);
+
+      const targetId = href.slice(1);
+      await expect(
+        page.locator(`[id="${targetId}"]`),
+        `skip link targets #${targetId}, which is not on ${route}`,
+      ).toHaveCount(1);
+
+      // And it must actually be reachable: first Tab should land on it.
+      await page.keyboard.press('Tab');
+      const focusedIsSkip = await page.evaluate(
+        () => document.activeElement?.classList.contains('skip') ?? false,
+      );
+      expect(focusedIsSkip, 'the skip link is not the first focusable element').toBe(true);
+    });
   }
 });

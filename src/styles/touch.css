@@ -15,10 +15,38 @@
    one, and it is worth saying which is which.
    --------------------------------------------------------------------------- */
 
+/* THE STRUCTURAL FAULT, recorded 2026-08-09.
+   The list below is hand-maintained, so every new component silently opts out
+   of it. Both surfaces built on 09 Aug did exactly that: the overview's
+   `.ov-name a` measured 29px and the CV's contact links measured 15px, because
+   neither used one of the three class names named here. That is the same shape
+   as DEF-10 (hand-typed ROUTES) and DEF-44 (hand-typed plate ids) — the third
+   time a hand-maintained list in this repo has quietly narrowed a gate.
+
+   The new selectors are added below, which fixes today. It does NOT fix the
+   class: the fourth new surface will opt out too. A blanket `main a` rule is
+   not the answer either — it would turn inline prose links into 44px blocks
+   and break the text flow. The real fix is a GATE that measures every
+   interactive element at a coarse pointer and fails, so a new component cannot
+   opt out silently. That is written up as the next task, not half-built here.
+
+   Measured before this file existed, on the built page:
+
+     .site-nav a     22px tall     16 targets under 44px at 1440
+     .links a        23px tall     13 targets under 44px at 390
+     .btn            36px tall
+
+   44px is the Apple HIG figure. WCAG 2.5.8 AA only asks for 24px, which every
+   one of these already cleared — so this is a usability fix, not a conformance
+   one, and it is worth saying which is which. */
 @media (pointer: coarse) {
   .site-nav a,
   .links a,
-  .cap {
+  .cap,
+  /* Added 09 Aug — the two surfaces that had opted out. */
+  .ov-name a,
+  .cv-contact a,
+  .cv-proj h3 a {
     min-height: 44px;
     display: flex;
     align-items: center;

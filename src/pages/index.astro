@@ -18,7 +18,22 @@ import Overview from '../components/Overview.astro';
   >
     <div class="plate-grid">
       <div class="plate-copy">
-        <h1>AI that <span class="accent">shows</span> its work</h1>
+        {/* D23, finally shipped. This read "AI that shows its work" — the
+            truncation D23 decided against on 08 Aug in as many words: "the
+            current headline truncates it and claims half."
+
+            Worse, D40 then TESTED it, kept it, and wrote down exactly why the
+            shipped half is the weak one: "shows its work" partially fails the
+            table-stake red flag because every RAG product claims citations
+            now, while "refuse to fake it" is the half nobody else claims.
+            The site was shipping the failing half and accenting SHOWS, its
+            weakest word.
+
+            Two recorded decisions, unshipped, and a planning document that
+            said it had applied them. Caught by /impeccable critique, not by me.
+
+            The accent moves to `refuse`, which is the differentiator. */}
+        <h1>AI systems that show their work<br />and <span class="accent">refuse</span> to fake it</h1>
         {/* Phase 0 applied — docs/positioning-phase0.md.
             The lede used to read "…fourteen years across distributed systems and
             production reliability, NOW building independent AI systems". Read
@@ -406,12 +421,32 @@ import Overview from '../components/Overview.astro';
     <div class="plate-grid">
       <div class="plate-copy">
         <h2 class="plate-title">One message away</h2>
-        <p>
-          Open to senior and principal roles in Forward-Deployed AI, AI Platform Engineering,
-          and LLMOps / AI Reliability — and closely aligned AI quality and platform work.
+        {/* 0.4, finally shipped. This plate used to open with a five-title job
+            list — the same "does not know what he wants" problem D40 fixed in
+            the hero ledger, which had simply RELOCATED here rather than gone.
+
+            The opening line is the owner's own sentence. positioning-phase0.md
+            §04 identifies it as the sharpest asset on record and D40 recorded
+            it as settled for this exact plate; it was never put on the page.
+            It is the amended voice rule (D24) working as intended: not his
+            urgency, the reader's problem.
+
+            The roles line stays underneath, plain and unpitched, so a recruiter
+            still gets the literal answer to "is this my req". */}
+        <p class="contact-hook">
+          If your AI features work in the demo and not in the release, we should talk.
         </p>
+        <p>
+          Open to senior and principal roles in AI platform engineering, LLMOps and
+          forward-deployed AI — and to the evaluation and release-governance work that sits
+          underneath all three.
+        </p>
+        {/* CV was absent here. A recruiter reaching this plate has already
+            decided to act, and on a phone the nav shows nothing (DEF-42), so
+            this was the end of the funnel with no route to the CV at all. */}
         <div class="ctas">
           <a class="btn primary" href="mailto:rohit.ra.agrawal@gmail.com">Email me</a>
+          <a class="btn ghost" href="/cv">CV</a>
           <a class="btn ghost" href="https://www.linkedin.com/in/rohitagrawal14" target="_blank" rel="noopener">LinkedIn</a>
           <a class="btn ghost" href="https://github.com/imrohitagrawal" target="_blank" rel="noopener">GitHub</a>
         </div>

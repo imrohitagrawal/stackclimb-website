@@ -328,8 +328,12 @@ body::before {
 .hero h1 {
   font-family: var(--serif);
   font-weight: 640;
-  font-size: clamp(3rem, 6.8vw, 6rem);
-  line-height: 0.94;
+  /* Was clamp(3rem, 6.8vw, 6rem). D23's full line is 53 uppercase characters
+     against the old headline's 20, and at 96px in a 34rem column it ran to
+     EIGHT lines and pushed the hero to 1720px. A display step is sized for a
+     string, not for a page. */
+  font-size: clamp(2.3rem, 4.2vw, 3.9rem);
+  line-height: 0.98;
   letter-spacing: 0.002em;
   text-transform: uppercase;
   text-wrap: balance;

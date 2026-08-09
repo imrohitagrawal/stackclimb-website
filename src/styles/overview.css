@@ -110,12 +110,47 @@
   white-space: nowrap;
 }
 
-/* A system with nothing countable yet gets an em dash. It is hidden from the
-   accessibility tree rather than announced as "em dash" on its own — the row's
-   state already says "in progress, closed", which is the real answer. */
-.ov-figure[aria-hidden='true'] { opacity: 0.45; }
+/* The state ladder.
+   Overview.astro emitted tone-pass / tone-warn / tone-fail / tone-neutral and
+   THREE OF THEM HAD NO CSS AT ALL. The fourth set `color: var(--accent)` on
+   two elements that were already that colour. So all six states rendered
+   identical ochre: LIVE, DEPLOYED — NOT ANSWERING and PHASE 1 — NO-GO were
+   indistinguishable, and the one column a recruiter scans first — which of
+   these actually run? — had to be read word by word. Dead markup that names a
+   semantic is worse than no markup.
 
-.tone-fail .ov-state, .tone-fail .ov-figure { color: var(--accent); }
+   Encoded with VALUE AND WEIGHT, not hue. DESIGN.md's One Thread Rule forbids a
+   second accent, so red/amber/green is not available — and it would be the
+   wrong instrument anyway, since colour alone fails WCAG 1.4.1. This gives a
+   three-step ladder inside the existing palette that survives greyscale. */
+.tone-pass .ov-state { color: var(--accent); font-weight: 640; }
+
+.tone-warn .ov-state,
+.tone-fail .ov-state {
+  color: color-mix(in srgb, var(--bone) 72%, transparent);
+  font-weight: 560;
+}
+
+/* A rule under the label, so the two systems that are NOT running are marked
+   by something other than colour. This is the non-colour encoding WCAG 1.4.1
+   asks for, and it reads in greyscale and in a screenshot. */
+.tone-warn .ov-state,
+.tone-fail .ov-state {
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
+  padding-bottom: 0.15rem;
+  display: inline-block;
+}
+
+.tone-neutral .ov-state {
+  color: color-mix(in srgb, var(--bone) 52%, transparent);
+  font-weight: 500;
+}
+
+/* The figure follows the same ladder, so the scoreboard column does not shout
+   an equal number for a system that is not running. */
+.tone-warn .ov-figure,
+.tone-fail .ov-figure { color: color-mix(in srgb, var(--bone) 76%, transparent); }
+.tone-neutral .ov-figure { color: color-mix(in srgb, var(--bone) 52%, transparent); }
 
 @media (max-width: 780px) {
   .ov-row {
@@ -127,4 +162,21 @@
     gap: 0.3rem 1rem;
   }
   .ov-figure { align-self: start; }
+}
+
+/* Screen-reader-only text. There was no such utility in this project, which is
+   part of why the figure column shipped with no accessible name at all — there
+   was nothing to reach for. The clip-path form is the current standard; the
+   old `height:1px;overflow:hidden` version drops spaces between words in some
+   screen readers. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }

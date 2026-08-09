@@ -65,7 +65,7 @@ Use `improve-animations` (emilkowalski — author of Sonner and Vaul). **One bui
 parallel writers share one working tree.
 
 **Gate:** every animation interruptible, `prefers-reduced-motion` honoured, no CLS regression,
-and **Lighthouse mobile no worse than 98** — the current measured value. An earlier draft of this
+and **Lighthouse mobile no worse than 100** — MEASURED 09 Aug by `/impeccable critique`'s Assessment B, Lighthouse 13.4.1: home mobile Performance **100**, Accessibility **100**, LCP 1.7s, CLS 0.003, TBT 0ms. The plan previously said 98 and called it "the current measured value"; it was not measured, it was inherited. A gate set at 98 would have silently authorised a two-point regression. An earlier draft of this
 plan set the gate at 94, which would have silently authorised a four-point regression on the
 site's strongest measured property. Caught in adversarial review, not by me.
 

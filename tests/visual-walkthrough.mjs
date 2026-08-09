@@ -11,7 +11,23 @@ import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 const PORT = 4399;
 const BASE = `http://localhost:${PORT}`;
 const OUT = new URL('./shots/', import.meta.url).pathname;
-const PLATES = ['top', 'work', 'quorum', 'saafsaans', 'narratwin', 'private', 'contact'];
+// DEF-10 (second file). This used to be a hand-typed
+//   const PLATES = ['top', 'work', 'quorum', 'saafsaans', 'narratwin', 'private', 'contact'];
+// — the exact defect dod.spec.js:9-21 already fixed once, in a sibling file
+// the 08-09 fix never touched. It was already wrong when read: 'overview'
+// does not appear (zero coverage, no error), and 'work' does not exist as a
+// plate id (renamed to 'citevyn' — see boundary-check.mjs:58-59) so every
+// `?at=work` screenshot silently showed whatever the query string fell back
+// to instead of the plate it claimed to capture.
+//
+// Now derived from the DOM the same way dod.spec.js scans plates per route
+// (`page.$$eval('.plate[id]', ...)`) and boundary-check.mjs derives its seam
+// ids — filled in below, after the browser launches and the server is up.
+//
+// WHICH CHANGE TURNS THIS RED: `if (PLATES.length === 0)` below fires if the
+// selector ever matches nothing — add a plate/section without the `.plate`
+// class or an id, and this throws rather than quietly walking zero plates.
+let PLATES = [];
 const DESKTOP = { width: 1440, height: 900 };
 const MOBILE = { width: 390, height: 844 };
 
@@ -49,6 +65,20 @@ try {
       if (r.ok) break;
     } catch {}
     await new Promise((r) => setTimeout(r, 500));
+  }
+
+  // Derive the plate list from the DOM, not from a hand-typed array (DEF-10).
+  {
+    const ctx = await browser.newContext({ viewport: DESKTOP });
+    const page = await ctx.newPage();
+    await page.goto(BASE);
+    PLATES = await page.$$eval('.plate[id]', (els) => els.map((e) => e.id));
+    await ctx.close();
+  }
+  // DENOMINATOR: zero plates means the selector broke and every plate step
+  // below would silently walk nothing.
+  if (PLATES.length === 0) {
+    throw new Error('no plates found on the home page — the .plate[id] selector matched nothing');
   }
 
   // 1 — first paint, before any scrolling

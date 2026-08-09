@@ -228,29 +228,15 @@ body::before {
 
 .figure { width: 100%; height: auto; display: block; }
 
-.figure [data-anchor] {
-  transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.28s ease;
-}
-.figure [data-anchor].lit {
-  transform: translateY(-4px);
-  filter: drop-shadow(0 10px 18px rgb(0 0 0 / 0.35));
-}
+/* The leader-line and anchor-lift rules that lived here were deleted
+   2026-08-09 by the polish pass: `data-anchor` and `data-target` appear on
+   ZERO elements in the built site (the artefact panels replaced the drawn
+   figures, D49), so the wired-caption interaction — the world's original
+   signature — had no consumers at all. plates.js lost its half the same day.
+   On a site whose subject is claims that survive a check, machinery that
+   claims an interaction which cannot occur is the fault it argues against. */
 
 /* Billing strip: LABEL · VALUE cells ruled like the reference sheet */
-
-/* Leader-line overlay */
-.leads {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  pointer-events: none; z-index: 5;
-  overflow: visible;
-}
-.leads path {
-  fill: none;
-  stroke: var(--ochre);
-  stroke-width: 1.5;
-}
-.leads circle { fill: var(--ochre); }
 
 /* ---------- Hero plate ---------- */
 
@@ -456,6 +442,4 @@ html.no-anim * {
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; transition: none; }
-  .figure [data-anchor] { transition: none; }
-  .leads path { transition: none; animation: none !important; }
 }

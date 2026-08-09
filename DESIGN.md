@@ -115,9 +115,11 @@ panel** — the one lit surface per plate quoting real recorded system output, d
 with a file path and commit hash (the Lit-Surface Rule below). Six of seven plates
 ship no drawn figure; the panel quietly replaced it, and the dual-agent critique
 judged the replacement stronger: *"a quoted refusal beats an illustrated one."* The
-drawn-figure-plus-leader-line machinery below remains valid where a figure exists
-(the private plate) and for caption strips, but it is no longer the north star —
-the artefact is. This paragraph is the record of that supersession; the original
+drawn-figure-plus-leader-line machinery is retired outright — the polish pass of the
+same day measured `data-anchor`/`data-target` on ZERO built elements (even the private
+plate's figure carries none), so the wired-caption interaction had no consumers and its
+code was deleted. Caption strips remain as static billing cells. The implementation
+lives in git history if a future figure earns it back. This paragraph is the record of that supersession; the original
 text follows unchanged so its vocabulary still resolves.
 
 Every surface is a numbered plate in a portrait series: a flat painted ground, a

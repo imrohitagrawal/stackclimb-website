@@ -1,191 +1,171 @@
-# Handoff — autonomous overnight session, 9 August 2026
+# Handoff — after the autonomous overnight session, 9 August 2026
+
+Supersedes the previous handoff, which is now spent: everything in its "blocked on the owner"
+table except repo visibility has been delivered or answered.
 
 Paste the block below into a fresh Claude Code session in
-`/Users/rohitagrawal/Projects/designing-website`. It is written to be self-contained: it points at
-files rather than restating them, and carries the commands that prove state rather than claims
-about it.
+`/Users/rohitagrawal/Projects/designing-website`.
 
 ---
+
+## What happened overnight, in numbers
+
+**Six work packages, six pull requests, all merged, all deployed and verified live.**
+
+| | Before | After |
+|---|---|---|
+| Tests | 18 | **38** |
+| Pages | 1 | **3** (`/`, `/cv`, `404`) |
+| Gates that can actually fail | 2 of 3 | **4 of 4** |
+| Defects closed | — | **11** |
+| Defects newly found and filed | — | **8** |
+| Corrections to the ledger | — | **5** |
+
+Full detail is in `docs/STATUS.md`. The three things worth knowing before anything else:
+
+1. **The navigation was invisible on 46% of the page, live, and every gate was green.**
+   Fixed and held by a new pixel-sampling gate. `docs/rca/RCA-003-nav-has-no-ground.md`.
+2. **The site does not auto-deploy and never has.** `AGENTS.md` said it did, in three places.
+   Production had drifted six commits behind `main`.
+3. **Two gates could not fail.** The plate-seam gate exited 0 no matter what it measured
+   (DEF-44), and the CI secrets job had never once run on a pull request (DEF-39).
+
+---
+
+## PROVE THE STATE BEFORE YOU TRUST ANY OF IT
+
+```bash
+git log --oneline -3
+git rev-list --count origin/main..main                  # must be 0
+npm run build && npx playwright test                    # expect 38 pass, 0 fail
+npx astro preview --port 4321 &
+node tests/boundary-check.mjs http://localhost:4321     # worst >= 4.5, exits 1 if not
+node tests/nav-contrast.mjs  http://localhost:4321      # 0 failing positions
+node tests/no-pii.mjs --self-test                       # 2/2 caught, 0 false positives
+
+# production is a SEPARATE question — nothing deploys on push
+npx wrangler pages deployment list --project-name stackclimb | head -5
+curl -sS -o /dev/null -w "%{http_code}\n" https://stackclimb.com/nope   # must be 404
+```
+
+**Wait a minute after any deploy before verifying.** Measured twice last night: immediately
+after a deploy the CDN served a half-propagated site — `/cv` returned 404 for one request and
+the seam gate reported a failure that did not reproduce in three subsequent runs.
+
+---
+
+## The one thing genuinely blocked on the owner
+
+**SaafSaans is down, and reviving it is his call.** The cause is now known and is not what the
+ledger assumed.
+
+The Fly app has **zero machines** — `status: suspended, deployed: false, machine_count: 0`, so
+`auto_start_machines` has nothing to wake. Not a cold start, not DNS, not billing, not the custom
+domain; each ruled out with a command. It crash-looped eight times in fifteen seconds on 21 July
+and the machine was destroyed. **Not a bad build** — the failed release and the working one
+before it carry the *same* image ref.
+
+**Crash cause UNVERIFIED**: Fly log retention has expired. Two leads, neither confirmed — memory
+is `256mb` where both working apps are `512mb`, and all three secrets are staged, never deployed.
+
+Why it was left: a redeploy is a production change to a **different repository** whose working
+tree is 35 commits ahead of its origin, and reviving it blind risks a second crash-loop. The site
+already discloses the outage honestly, so nothing is dishonest while it waits.
+
+**Also his to decide, not blocking:** `FINAL-Rohit_Master_Resume` states an approved US **H-1B**;
+`Rohit_V3` does not mention it. For someone stating "open to relocation worldwide" that removes
+the objection that usually ends a US conversation. **It is not on the site and I did not put it
+there** — visa status is personal information.
+
+---
+
+## Paste this into the next session
 
 ```
 ultracode
 
-You are continuing work on stackclimb.com, the owner's personal site. He is asleep. Work
-autonomously through the night and do not wait for approval on anything below. Where something
-genuinely cannot proceed without him, do every other part in full and leave that one item
-clearly flagged — never invent content to unblock yourself.
+You are continuing work on stackclimb.com. Read these first, in this order:
+  docs/HANDOFF.md          this file — what changed overnight and what is still open
+  AGENTS.md                the rules. They override your defaults
+  docs/STATUS.md           the ledger: decisions D1-D41, defects DEF-1 to DEF-44, corrections
+  docs/ACTION-PLAN.md      the phases. NOTE: Phase 0, 1 and most of 4b/4c are now done
+  docs/positioning-phase0.md  the tested copy. The headline survived; the lede did not
 
-READ FIRST, IN THIS ORDER
-  AGENTS.md                      the rules. They override your defaults
-  docs/ACTION-PLAN.md            the six phases. This is your work queue
-  docs/STATUS.md                 the ledger: decisions D1-D33, open items, defects, corrections
-  docs/positioning-decisions.md  headline, contact framing, photo, the skill search
-  .impeccable/critique/*.md      the scored design review (21/32)
+PROVE THE STATE with the commands in the section above before trusting any of it.
 
-PROVE THE STATE BEFORE YOU TRUST ANY OF IT
-  git log --oneline -5
-  git rev-list --count origin/main..main          # must be 0
-  npm run build && npx playwright test            # expect 18 pass, 0 fail
-  node tests/boundary-check.mjs http://localhost:4321   # worst seam must be >= 4.5
-  curl -sS -o /dev/null -w "%{http_code}\n" --max-time 20 https://saafsaans.stackclimb.com/
+THE ACCEPTANCE TEST, unchanged: within 30-60 seconds a recruiter should feel
+"I should call this person." Not a heuristic score.
 
-THE ACCEPTANCE TEST FOR EVERYTHING
-Within 30-60 seconds a recruiter should feel "I should call this person." Not a heuristic score.
-If a change does not serve that, it is Phase 4 or later.
+WHAT IS LEFT, in priority order:
 
-ORDER OF WORK
-  Phase 0   install the positioning skills, END THE SESSION so they load, then run them
-            arnabbagxd/Brand-building-skills -> brand-positioning, brand-messaging,
-              brand-story, brand-voice   (MIT). DO NOT take brand-guidelines: it collides
-              with borghei's skill of the same name and one would overwrite the other.
-            borghei/Claude-Skills -> marketing/brand-strategist ONLY. Its licence is
-              Commons Clause + MIT, which restricts SELLING; internal use is fine, but do
-              not describe it as MIT and do not redistribute it.
-            wonjyou/portfolio-review-skill -> READ IT, DO NOT INSTALL. It is the closest
-              match to the 30-second test (reviews a portfolio URL as a hiring manager at a
-              stated seniority) but it has 5 stars and NO LICENCE, so it cannot be vendored
-              into a repo being prepared to go public. Use its checklist, credit it.
-            Paramchoudhary/ResumeSkills (1,477 stars, MIT) -> executive-resume-writer,
-              tech-resume-optimizer, resume-quantifier, portfolio-case-study-writer,
-              job-description-analyzer. This is the CV work (D31, approach B).
-              SKIP career-changer-translator: its worked examples are Teacher->Corporate
-              and Military->Corporate. His is a specialisation shift inside tech, and the
-              skill would over-apply.
-            Verified 09 Aug by set comparison, not assumed: zero collisions between any of
-              these repos and the 38 already installed. The ONLY clash is brand-guidelines,
-              which exists in both arnabbagxd and borghei -- take it from neither.
-  Phase 4b  FIRST among build work — four HIGH defects, one of them live and wrong now
-  Phase 1   the 30-second page: overview plate, nav rework, avatar, name at display size
-  Phase 2   motion. Gate: Lighthouse mobile NO WORSE THAN 98. It measures 98 today
-  Phase 3   the Approach page, the experience band, the lifecycle diagram
-  Phase 4   the thirteen remaining critique findings
-  Phase 4c  fourteen ledger defects that were in no phase until 09 Aug. TWO ARE URGENT
-            AND MUST LAND BEFORE PHASE 3, because new pages inherit both faults:
-              DEF-9  canonical and og:url are hard-coded to the home page, so /approach
-                     and /cv would each tell Google they are the home page
-              DEF-10 ROUTES = ['/'] in dod.spec.js:11 is hand-typed, so a new page gets
-                     zero test coverage and nothing says so
-  Phase 5   the standing deployment debt. TWO ROWS MOVED on 09 Aug:
-              CI workflow exists  -> DONE, .github/workflows/gates.yml
-              CI has been green   -> STILL OPEN. It has never run. Push and watch it.
-                                     A workflow that has never been green proves nothing.
+1. DEF-42 — ON A PHONE THE NAV REACHES NOTHING. global.css:479 hides every link
+   but the email chip below 900px. A mobile recruiter cannot reach /cv from the
+   nav. Mitigated by the hero's CV button, not fixed. Needs a real menu.
+   This is the highest-value open item: mobile is 10,000+px of scroll with no
+   navigation at all.
 
-COPY THAT IS LIVE AND WRONG — DEF-36, do this in Phase 0
-  Layout.astro:77 reads "Built as a work sample - static Astro, self-hosted type, no trackers,
-  no invented claims". Every clause is the site describing itself instead of him. "Built as a
-  work sample" is the worst of it: it reframes the whole page as a demo rather than a record.
-  Use brand-voice. A colophon may be a colophon -- copyright and location are enough.
+2. Phase 2 — MOTION. Nothing was done here. document.getAnimations() returns 0.
+   Owner wants animation ON by default with a footer toggle persisted in
+   localStorage. GATE: Lighthouse mobile NO WORSE THAN 98 — and note that
+   number is now UNVERIFIED, because DEF-22's investigation could not
+   re-measure it. Measure it BEFORE you start or you have no baseline.
+   NOTE: plates.js no longer has an IntersectionObserver — the old one was dead
+   code and was deleted. Phase 2 brings its own, with a purpose.
 
-SCOPED REVIEWS TO RUN, NOT OPINIONS TO INVENT
-  - Colour: run /impeccable colorize against https://stackclimb.com. The value ladder is
-    measured and green (bone 13.8-15.6:1, ochre 6.4-7.25:1), so do NOT change hues on taste.
-    One concrete lead to test: NarraTwin's ground #17161a is 8% saturation and reads as dark
-    grey while every other plate has a clear hue. Confirm or refute by measurement.
-  - Positioning: run brand-positioning + brand-strategist + grilling BEFORE writing any hero
-    copy. Every copy recommendation on record from 08-09 Aug is unaided judgement (D33) and
-    is there to be tested, not implemented on trust.
-  - Motion: owner wants animation ON by default with a user toggle to stop it. The mechanism
-    already exists -- plates.js sets html.no-anim which forces transition/animation to none.
-    Persist it in localStorage. Control goes in the FOOTER, not the nav. prefers-reduced-motion
-    is layer one and already works; the toggle is for people who never set the OS preference.
+3. Phase 5 — THE SEVEN TESTS THAT CANNOT FAIL (DEF-11 to DEF-17), untouched.
+   DEF-44 found an EIGHTH last night and fixed it, which is evidence the class
+   is not exhausted. Start by re-checking that the other seven are still real —
+   two of the four HIGH defects investigated last night turned out to be
+   refuted or stale.
 
-EVERYTHING THE OWNER OWED IS NOW SUPPLIED — assets/inbox/, delivered 09 Aug 01:20-01:29
-Read assets/inbox/README.md first. THE WHOLE INBOX IS UNTRACKED, on purpose.
+4. Phase 3 — THE APPROACH PAGE. The lifecycle SVGs EXIST at
+   imrohitagrawal/assets/engineering-lifecycle-*.svg and render correctly —
+   verified by screenshot. But PRODUCT.md's claim that they are "responsive and
+   theme-aware" is HALF WRONG; check what the investigation found before
+   designing around it. Routing, canonicals and per-page test coverage are all
+   ready for a new page now.
 
-  1. CV -- five files. PRECEDENCE, owner's exact instruction:
-       "First preference should be given to the data present in Rohit_V3. If there is any
-        conflicting information in FINAL-Rohit_Master_Resume when compared to Rohit_V3, then
-        Rohit_V3 should have been considered correct."
-     Rohit_V3.pdf / .docx is AUTHORITATIVE and wins every conflict.
-     FINAL-Rohit_Master_Resume.md is the easy one to parse. Convenience is not authority --
-     use it only to fill gaps Rohit_V3 does not cover, and where the two disagree, record
-     both values in docs/STATUS.md so this is not rediscovered.
+5. Phase 4 — 24 of the critique's 42 findings are still open. Phase 4's own
+   list of 13 is wrong: two of its items are already fixed, so Phase 4 proper
+   has 9 live items and the rest live in other phases. Derive the list, do not
+   inherit the count.
 
-     *** FINAL-Rohit_Master_Resume.md CONTAINS A PHONE NUMBER. D38 GOVERNS IT. ***
-     It does not go on the /cv page, in the HTML, in a commit, or in a build artefact.
-     Verified 09 Aug: the number is NOT public anywhere today, so shipping it would be a
-     new and irreversible exposure, not a re-exposure. Contact stays email + LinkedIn.
+WHAT NOT TO REDO:
+  - Do NOT re-fix DEF-6. It is REFUTED. .js-ground gated zero CSS rules.
+  - Do NOT implement RCA-002's fix. It is a literal no-op. RCA-002 is superseded.
+  - Do NOT treat DEF-19 as HIGH. No CSP exists anywhere; it is LATENT.
+  - Do NOT trust "MTTD -35%" — the authoritative CV never says MTTD.
+  - Do NOT add to src/styles/global.css. It is at 494 of a grandfathered 500.
+    Extract to a new file. Do not trim comments to make room.
 
-     DO NOT build any of these three -- all are theatre, and D38 bans them by name:
-       reveal-on-click JavaScript  scrapers execute JS
-       the number as an image      OCR reads it, screen readers cannot
-       @media print only           the number stays in the HTML source, so every
-                                   scraper gets it and every human does not
+TRAPS, INCLUDING THREE NEW ONES:
+  - A FIXED element has no fixed backdrop, so no DOM-reading tool can score it.
+    axe, and this repo's own gates, all read computed styles. Measure in pixels.
+  - A gate that prints a failure is not a gate that FAILS. Check the exit code.
+  - Verifying straight after a deploy measures a half-propagated CDN.
+  - The PII gate does not scan .pdf or .docx (DEF-37). If a CV PDF ever goes in
+    public/, the gate reads zero bytes of it and reports green.
+  - Cloudflare Pages has NO git integration. Nothing deploys on push. Compare
+    the live asset hash against dist/ before claiming anything is live.
 
-     THIS IS NOW ENFORCED, not advisory (D39). You do not need to remember it:
-       .githooks/pre-commit    blocks the commit locally
-       .github/workflows/gates.yml   blocks the push in CI
-     Enable the hook once per clone:  git config core.hooksPath .githooks
-     Check the gate yourself:         node tests/no-pii.mjs --self-test
-     If it fires on something genuinely safe, add the CONTEXT to ALLOW in
-     tests/no-pii.mjs and say why in the commit message. Never delete a rule.
-     This is the third time source material has carried personal contact details into this
-     repo. Visiting cards on 08-07, a CV now. Assume the next upload does too.
-
-  2. Photo -- assets/inbox/photo/github_profile_photo.jpeg. Verified by eye: professional
-     headshot, plain grey background, no card, no QR. PORTRAIT orientation, so the hero
-     avatar needs a SQUARE CENTRE CROP around the face. Optimise it: paint-grain.png at
-     166KB is already 63% of page weight.
-
-  3. Brand -- wordmark-light/dark.png, logo-light/dark.png. The protocol is satisfied:
-     Claude's own recommendation was written in docs/brand/README.md on 09 Aug BEFORE these
-     were opened, so a comparison now is a second opinion, not a reaction. COMPARE, do not
-     install: put his marks beside the existing wordmark and the RA plate monogram at 16px
-     favicon, at nav height, and on an OG card, and judge what survives each. They are PNG;
-     whatever wins needs an SVG before it ships.
-
-NOTHING IS BLOCKED ON HIM ANY MORE. If you find yourself wanting to invent content, you have
-misread the inbox -- go back and read it.
-
-HARD RULES, FROM AGENTS.md
-  - One work package, one branch, one PR, merged before the next starts. Six packages went onto
-    one branch on 08 Aug with zero PRs. Do not repeat it.
-  - Builds are SERIAL. Reviews fan out. Subagents share one working tree and parallel writers
-    corrupt each other. Tell every reviewer IN CAPITALS that it is read-only.
-  - Review capped at TWO rounds, then ship with the residue written down. At least one reviewer
-    from a different model family: codex exec --sandbox read-only "<prompt>" is installed and works.
-  - Circuit breaker: stop if a new class of blocking finding appears in a second consecutive
-    round, or if two fixes in a row each introduce a defect.
-  - New files: 250 lines. Pre-existing oversized files are grandfathered at 500 and may NOT grow.
-    src/styles/global.css has hit that ceiling twice already; extract, do not trim comments.
-  - RCA before the fix, not after. Investigating is not working.
-  - Update docs/STATUS.md in the SAME change that alters any decision, defect or open item.
-  - Every claim on the site traces to a named file at a named commit, or it does not ship.
-  - Screenshot desktop AND mobile and LOOK at the images before reporting anything as done.
-    A successful build is not a correct page.
-
-TRAPS THIS PROJECT HAS ALREADY FALLEN INTO
-  - A contrast check that read color(srgb 0.949 0.922 0.867 / 0.88) as 0-255 invented two
-    failures that did not exist. Parse both colour syntaxes and composite alpha.
-  - Splitting a CSS file silently changed the cascade twice. The later file wins; move the media
-    queries with the rules they modify.
-  - The ledger has carried a row marked FIXED that had regressed. Re-verify FIXED rows against
-    the live site before building on them. DEF-27 already failed that check.
-  - quorum-ai/_handoff-s4-golden-draft/golden-cases.json looks like real system output and its
-    own metadata says "HAND-AUTHORED... NOT captured production runs". Read metadata before
-    quoting anything as real.
-  - Every URL on the domain returns the home page with HTTP 200. Fix routing BEFORE adding any
-    new URL, or a broken link will never 404.
-
-DEPLOY
-  npm run build && npx wrangler pages deploy dist --project-name stackclimb --branch main --commit-dirty=true
-  Cloudflare auth is already in ~/Library/Preferences/.wrangler. Production is the `main` branch
-  of Pages project `stackclimb`. Verify by fetching the live page and comparing the built CSS
-  filename, and by rendering it with Playwright — not by a 200.
-
-MORNING REPORT
-  What shipped, what is live, what is blocked on him and why, what you could not verify, and
-  the exact commands that prove each claim. Faithful, not flattering: if something failed, say
-  so with the output.
+THE CROSS-MODEL REVIEW DID NOT HAPPEN. AGENTS.md requires a reviewer from a
+different model family on any test change, and five test files changed last
+night. `codex exec --sandbox read-only` was launched against tests/nav-contrast.mjs,
+produced no output in two and a half hours, and was killed (exit 144). Every new
+gate was instead proved by watched mutation, which is stronger evidence than a
+review but is NOT the independent lens the rule asks for. Run it first.
 ```
 
 ---
 
-## What is blocked on the owner, in one place
+## Session-close checklist, per `AGENTS.md`
 
-| # | Item | What is needed |
-|---|---|---|
-| 1 | CV content | Title, years, one line of scope for Amazon, LimeRoad, Mobileum, Snapdeal, Subex |
-| 2 | The photograph | One image file. Not a visiting card — those carry a phone number and QR code and have already been swept into a commit once |
-| 3 | Wordmark candidates | Only after Claude has produced its own options first |
-| 4 | Repo public | His command. Branch protection is blocked until then, or on GitHub Pro |
+| | |
+|---|---|
+| Merged and synced | `main` level with `origin/main`, verified by `git rev-list --count` = 0 |
+| Branches deleted | All six, both sides. `git branch -r` shows only `origin/main` |
+| Open PRs | None |
+| Processes cleaned | No stray `astro preview`, `wrangler pages dev` or `codex` processes |
+| Temp files | None in the repo. Working files went to the session scratchpad |
+| Dependencies added | One: `@astrojs/sitemap` (dev), used by `astro.config.mjs` |
+| Deployed | Yes, and verified by asset hash and route table, not by a 200 |

@@ -1,7 +1,7 @@
 // Measures text-vs-painted-ground contrast at every plate boundary.
 //   node boundary-check.mjs http://localhost:4321 [--legacy]
-// --legacy re-injects the old `.js-ground .plate { background: transparent }`
-// rule so the pre-fix state can be measured without editing any file.
+// --legacy strips every plate's own ground so the pre-DEF-30 state can be
+// measured without editing a file.
 //
 // Parses BOTH rgb()/rgba() and color(srgb r g b / a). The srgb form uses 0-1
 // channels; reading those as 0-255 turns bone into near-black and invents
@@ -10,7 +10,6 @@ import { chromium } from 'playwright';
 
 const URL = process.argv[2] || 'http://localhost:4321';
 const LEGACY = process.argv.includes('--legacy');
-const IDS = ['top', 'work', 'quorum', 'saafsaans', 'narratwin', 'private', 'contact'];
 
 function parse(s) {
   if (!s) return null;
@@ -44,8 +43,32 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 await page.goto(URL, { waitUntil: 'networkidle' });
 if (LEGACY) {
-  await page.addStyleTag({ content: '.js-ground .plate{background:transparent !important}' });
+  // Was `.js-ground .plate{...}`. That class was deleted with DEF-6, so the
+  // selector matched nothing and --legacy silently measured the FIXED page
+  // while reporting it as the legacy one — a flag that proved the opposite of
+  // what it claimed. Targets .plate directly now.
+  await page.addStyleTag({ content: '.plate{background:transparent !important}' });
   await page.waitForTimeout(300);
+}
+
+// Derived from the DOM, not hand-typed. It used to be
+//   const IDS = ['top','work','quorum','saafsaans','narratwin','private','contact'];
+// and renaming ONE plate (`work` -> `citevyn`, DEF-34) made getElementById
+// return null, which reached getComputedStyle as `null` and crashed the gate
+// with "parameter 1 is not of type 'Element'". CI caught it; a local run that
+// skipped this gate did not. Same defect class as DEF-10, in a third file.
+//
+// A crash is the lucky outcome. Had the id merely been REMOVED rather than
+// renamed, this would have measured six boundaries instead of seven and
+// reported AA ok — a silently narrower gate.
+const IDS = await page.$$eval('.plate[id]', (els) => els.map((e) => e.id));
+
+// DENOMINATOR: zero plates means the selector broke and every boundary below
+// would pass over nothing.
+if (IDS.length < 2) {
+  console.error(`✖ boundary check: found ${IDS.length} plate(s) — need at least 2 to have a seam`);
+  await browser.close();
+  process.exit(1);
 }
 
 const tops = await page.evaluate(
@@ -97,5 +120,35 @@ for (let i = 1; i < tops.length; i++) {
 await browser.close();
 console.log(LEGACY ? '--- BEFORE (old transparent-plate rule) ---' : '--- AFTER (each plate paints itself) ---');
 console.table(rows);
+
+// DENOMINATOR: plates with no sampled text produce no rows, and Math.min of an
+// empty array is Infinity — which would have printed "AA ok" over nothing.
+if (!rows.length) {
+  console.error('✖ boundary check: no boundaries measured — the probe found no text');
+  process.exit(1);
+}
+
 const worst = Math.min(...rows.map((r) => Number(r.ratio)));
 console.log(`WORST: ${worst.toFixed(2)}:1  ${worst < 4.5 ? '*** below AA ***' : 'AA ok'}`);
+
+// DEF-44. This script used to END here. It printed "*** below AA ***" and
+// exited 0, so `.github/workflows/gates.yml`'s "plate seams stay above AA" step
+// could never fail for the thing it measures. It failed today only because the
+// script CRASHED on a renamed plate id — the worst combination: red for the
+// wrong reason, green for the wrong reason.
+//
+// The standing debt in AGENTS.md cites "Contrast passes on all 7 plates" as
+// DONE on the strength of this gate. It was true when measured by hand; it was
+// never enforced.
+//
+// --legacy is exempt because its whole job is to demonstrate the pre-DEF-30
+// failure. It says so rather than exiting quietly.
+if (LEGACY) {
+  console.log('(--legacy: demonstrating the pre-fix state, so a failure here is the point)');
+  process.exit(0);
+}
+if (worst < 4.5) {
+  console.error(`\n✖ plate seam contrast is below WCAG AA. Worst ${worst.toFixed(2)}:1 at "${rows.find((r) => Number(r.ratio) === worst).boundary}".`);
+  process.exit(1);
+}
+console.log('✓ every plate seam is at or above AA');

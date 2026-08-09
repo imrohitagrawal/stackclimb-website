@@ -1,0 +1,130 @@
+/* The contact sheet — O-OVERVIEW / D1.
+   ---------------------------------------------------------------------------
+   Separate from global.css because that file is at 494 of a grandfathered 500
+   it may not exceed. Extract, do not trim comments.
+
+   Six rows on one plate, so it has to stay dense without becoming a spreadsheet.
+   The layout is a grid rather than a <table> because the content is not tabular
+   — each row is a system with a name, a description, a gate and a state, and a
+   table would promise column comparisons the data does not support.
+
+   Every size below is a documented step from DESIGN.md's ramp.
+   --------------------------------------------------------------------------- */
+
+.plate-grid.one-col { grid-template-columns: 1fr; }
+.plate-copy.wide { max-width: none; }
+
+.overview-lede {
+  max-width: 44rem;
+  font-size: 1rem;              /* plate-prose */
+  line-height: 1.6;
+  margin-top: 0.4rem;
+}
+
+.overview-lede strong { color: var(--accent); font-weight: 640; }
+
+.ov-list {
+  list-style: none;
+  margin-top: 1.4rem;
+  display: grid;
+  gap: 0;
+}
+
+.ov-row {
+  display: grid;
+  grid-template-columns: minmax(9rem, 13rem) 1fr auto;
+  grid-template-areas:
+    'name does figure'
+    'name gate figure';
+  gap: 0.15rem 1.4rem;
+  align-items: start;
+  padding: 0.85rem 0;
+  border-top: 1px solid color-mix(in srgb, var(--bone) 15%, transparent);
+}
+
+.ov-row:last-child {
+  border-bottom: 1px solid color-mix(in srgb, var(--bone) 15%, transparent);
+}
+
+.ov-name { grid-area: name; }
+
+/* `.ov-name a, .ov-name span` was the obvious way to write this and it was
+   wrong: .ov-state is ALSO a span inside .ov-name, and `.ov-name span`
+   (0,0,1,1) outranks `.ov-state` (0,0,1,0), so every state label rendered at
+   22px serif — "DEPLOYED — NOT ANSWERING" ran to three lines and read as the
+   system's title. Caught by looking at the render, not by any gate; the HTML
+   was valid and the tests were green. Named classes, not element selectors. */
+.ov-name a, .ov-name .ov-title {
+  font-family: var(--serif);
+  font-size: clamp(1.1rem, 1.8vw, 1.4rem);   /* DESIGN.md title step */
+  font-weight: 560;
+  color: var(--bone);
+  text-decoration: none;
+  display: block;
+}
+
+.ov-name a { border-bottom: 1px solid transparent; }
+.ov-name a:hover { border-bottom-color: var(--accent); color: var(--accent); }
+
+.ov-state {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.74rem;           /* caption-value */
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.ov-does {
+  grid-area: does;
+  font-size: 0.92rem;           /* private-note */
+  line-height: 1.5;
+}
+
+.ov-gate {
+  grid-area: gate;
+  font-size: 0.84rem;           /* ledger-value */
+  line-height: 1.5;
+  opacity: 0.85;
+  margin-top: 0.2rem;
+}
+
+/* The gate is the column that carries the argument — docs/positioning-phase0.md
+   found four of the six systems ARE gates, and that this is the unclaimed
+   territory. A list of projects says he is busy; a list of refusals says he is
+   trustworthy. So the key is set in the accent, not in the body colour. */
+.ov-k {
+  color: var(--accent);
+  font-size: 0.72rem;           /* brand-em */
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-right: 0.5rem;
+}
+
+.ov-figure {
+  grid-area: figure;
+  align-self: center;
+  font-family: var(--serif);
+  font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* A system with nothing countable yet gets an em dash. It is hidden from the
+   accessibility tree rather than announced as "em dash" on its own — the row's
+   state already says "in progress, closed", which is the real answer. */
+.ov-figure[aria-hidden='true'] { opacity: 0.45; }
+
+.tone-fail .ov-state, .tone-fail .ov-figure { color: var(--accent); }
+
+@media (max-width: 780px) {
+  .ov-row {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'name figure'
+      'does does'
+      'gate gate';
+    gap: 0.3rem 1rem;
+  }
+  .ov-figure { align-self: start; }
+}

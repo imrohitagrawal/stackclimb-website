@@ -1,0 +1,51 @@
+/* The hero avatar — D27.
+   ---------------------------------------------------------------------------
+   Why this is a separate file rather than four rules appended to global.css:
+   that file stands at 494 lines against a grandfathered ceiling of 500 which it
+   may not exceed, and the handoff is explicit — "extract, do not trim comments".
+   Trimming the comments to make room would delete the reasoning that stops a
+   defect being reintroduced, to make space for four declarations.
+
+   The owner's decision, 09 Aug: "even if it's not a portrait, it is fine, it
+   can read as an avatar." So it is sized as an avatar and set INTO the lede
+   rather than above the headline — the hero plate already measured 1091px in a
+   900px viewport, 191px over DESIGN.md:199's one-plate-one-viewport rule, and
+   this is the only placement that fits without dropping the proof card.
+
+   alt="" is deliberate and correct: the name sits immediately beside it in the
+   same sentence, so a screen reader announcing "photo of Rohit Agrawal" before
+   the words "Rohit Agrawal" would repeat itself. The image carries no
+   information the adjacent text does not.
+   --------------------------------------------------------------------------- */
+
+.avatar {
+  float: left;
+  width: 4.25rem;
+  height: 4.25rem;
+  margin: 0.2rem 0.9rem 0.35rem 0;
+  border-radius: 50%;
+  object-fit: cover;
+  /* A hairline in the plate's own accent, so the photograph reads as part of
+     the printed plate rather than pasted onto it. */
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  shape-outside: circle();
+}
+
+@media (max-width: 640px) {
+  .avatar { width: 3.4rem; height: 3.4rem; margin-right: 0.7rem; }
+}
+
+/* The name is the thing a recruiter looks for first and it rendered at 18.24px
+   against a 96px headline — O-30SEC named this as one of three things working
+   against the thirty-second test. It is now the largest thing in the lede
+   without competing with the display headline above it. */
+/* Both endpoints are documented steps in DESIGN.md's ramp — lede-max (1.14rem)
+   and private-title-max (2rem) — rather than a literal picked by eye. At 1440px
+   that resolves to about 32px against the old 18.24px; on the narrowest screens
+   it floors at the size it already was, so nothing gets worse. */
+.lede-name {
+  font-family: var(--serif);
+  font-size: clamp(1.14rem, 2.2vw, 2rem);
+  font-weight: 620;
+  letter-spacing: 0.005em;
+}

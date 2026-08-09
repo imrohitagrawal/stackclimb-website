@@ -5,6 +5,7 @@ import CapStrip from '../components/CapStrip.astro';
 import Ledger from '../components/Ledger.astro';
 import Artefact from '../components/figures/Artefact.astro';
 import PrivateFigure from '../components/figures/PrivateFigure.astro';
+import Overview from '../components/Overview.astro';
 ---
 
 <Layout>
@@ -18,14 +19,34 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
     <div class="plate-grid">
       <div class="plate-copy">
         <h1>AI that <span class="accent">shows</span> its work</h1>
+        {/* Phase 0 applied — docs/positioning-phase0.md.
+            The lede used to read "…fourteen years across distributed systems and
+            production reliability, NOW building independent AI systems". Read
+            cold that says career changer, eight months in — the weakest reading
+            of his strongest fact. The fourteen years are now the setup for the
+            punchline rather than the thing before it. Same facts, no new claim.
+
+            D27 — the avatar sits beside the name, not above the headline. The
+            hero plate was already 191px over a 900px viewport, and this is the
+            only placement that fits without dropping the proof card. */}
         <p class="lede">
-          <strong>Rohit Agrawal</strong> — principal-level engineer, fourteen years across
-          distributed systems and production reliability, now building independent AI systems
-          that cite their sources, disclose their uncertainty, refuse what they cannot
-          support, and gate their own releases.
+          <img
+            class="avatar"
+            src="/rohit-agrawal.webp"
+            width="176"
+            height="176"
+            alt=""
+            loading="eager"
+            decoding="async"
+          />
+          <strong class="lede-name">Rohit Agrawal</strong> — principal engineer, fourteen years
+          deciding whether software was safe to release, now building AI systems that make that
+          decision about themselves. Citation, disclosed uncertainty, honest refusal, and
+          evaluation gates that can block a release.
         </p>
         <div class="ctas">
-          <a class="btn primary" href="#work">View the systems</a>
+          <a class="btn primary" href="#overview">What he built</a>
+          <a class="btn ghost" href="/cv">CV</a>
           <a class="btn ghost" href="mailto:rohit.ra.agrawal@gmail.com">Email me</a>
         </div>
       </div>
@@ -33,6 +54,22 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
           the artefact can sit between the buttons and the career facts. The
           proof of the headline should be seen before the CV detail, and it
           used to be twelve screens down. */}
+      {/* Phase 0, item 0.5. `Seeking` listed FIVE job titles, which reads as
+          "does not know what he wants" in a thirty-second skim. One slot a
+          recruiter recognises, with the specialism attached — a title too narrow
+          to search reads as "not my req", which is the opposite failure and just
+          as expensive.
+
+          DEF-29 closed here too. `Base — Bengaluru, India · IST (UTC+5:30)` was
+          stated verbatim in this ledger AND in the contact ledger. Same defect
+          class as DEF-27, same resolution: the row carrying strictly more
+          survives, and the contact ledger also states international travel. The
+          `Relocation` row goes with it — DEF-27's fix had REGRESSED, and both
+          ledgers were stating relocation again.
+
+          `Led` is new. D32 measured that "led and mentored 11+ engineers"
+          appeared ZERO times on the live site, and for senior and principal
+          roles scope of responsibility is often the first filter. */}
       <div class="hero-ledger">
         <Ledger
           label="The record"
@@ -40,12 +77,11 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
             { t: 'Experience', d: '14+ yrs — Oracle, Amazon, LimeRoad, Mobileum, Snapdeal, Subex' },
             { t: 'Most recent', d: 'Oracle Principal MTS · 2019–2026' },
             { t: 'Since April 2026', d: 'Building independent AI systems, full time' },
+            { t: 'Led', d: '11+ quality engineers and SDETs, globally' },
             {
               t: 'Seeking',
-              d: 'Senior / Principal — AI Platform · LLMOps · Forward-Deployed AI · AI Quality Engineering Architect · AI Test Automation & Agentic AI Leader',
+              d: 'Senior / Principal — AI Platform Engineering, with evaluation and release governance',
             },
-            { t: 'Base', d: 'Bengaluru, India · IST (UTC+5:30)' },
-            { t: 'Relocation', d: 'Open worldwide' },
           ]}
         />
       </div>
@@ -67,10 +103,32 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
     </div>
   </Plate>
 
-  <!-- Plate Nº 01 — CiteVyn -->
+  {/* Plate Nº 01 — the contact sheet. O-OVERVIEW / D1, decided 07 Aug and
+      unexecuted until now. It is the answer to the measured problem that the
+      first viewport said nothing about what any system does. */}
   <Plate
-    id="work"
+    id="overview"
     num="01"
+    name="The Contact Sheet"
+    state="Six systems"
+  >
+    <div class="plate-grid one-col">
+      <div class="plate-copy wide">
+        <h2 class="plate-title">What he built</h2>
+        <Overview />
+      </div>
+    </div>
+  </Plate>
+
+  {/* DEF-34. This plate's id was `work`, while the nav label said `Systems` and
+      the skip link said "Skip to the systems" — a plural label landing the
+      visitor on ONE system. `work` was also the odd id out: every other plate is
+      named for its project. Renamed to `citevyn`; the nav's "Systems" link and
+      the skip link now point at `#overview` above, which is what a plural label
+      should actually reach. */}
+  <Plate
+    id="citevyn"
+    num="02"
     name="CiteVyn"
     state="Live — cold-starts"
   >
@@ -122,10 +180,10 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
     </div>
   </Plate>
 
-  <!-- Plate Nº 02 — Quorum-AI -->
+  <!-- Plate Nº 03 — Quorum-AI -->
   <Plate
     id="quorum"
-    num="02"
+    num="03"
     name="Quorum-AI"
     state="Live"
   >
@@ -177,10 +235,10 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
     </div>
   </Plate>
 
-  <!-- Plate Nº 03 — SaafSaans -->
+  <!-- Plate Nº 04 — SaafSaans -->
   <Plate
     id="saafsaans"
-    num="03"
+    num="04"
     name="SaafSaans"
     state="Deployed — not answering"
   >
@@ -242,10 +300,10 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
     </div>
   </Plate>
 
-  <!-- Plate Nº 04 — NarraTwin -->
+  <!-- Plate Nº 05 — NarraTwin -->
   <Plate
     id="narratwin"
-    num="04"
+    num="05"
     name="NarraTwin"
     state="Phase 1 — No-Go"
   >
@@ -294,10 +352,10 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
     </div>
   </Plate>
 
-  <!-- Plate Nº 05 — the private work, on unpainted linen -->
+  <!-- Plate Nº 06 — the private work, on unpainted linen -->
   <Plate
     id="private"
-    num="05"
+    num="06"
     name="Kept Close"
     state="In progress — closed"
     theme="light"
@@ -338,10 +396,10 @@ import PrivateFigure from '../components/figures/PrivateFigure.astro';
     </div>
   </Plate>
 
-  <!-- Plate Nº 06 — contact -->
+  <!-- Plate Nº 07 — contact -->
   <Plate
     id="contact"
-    num="06"
+    num="07"
     name="The Sitting"
     class="contact"
   >

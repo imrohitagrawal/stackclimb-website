@@ -6,6 +6,10 @@ import '../styles/global.css';
 import '../styles/palette.css';
 import '../styles/caps.css';
 import '../styles/touch.css';
+/* Phase 1 surfaces. Separate files because global.css stands at 494 lines
+   against a grandfathered ceiling of 500 it may not exceed. */
+import '../styles/avatar.css';
+import '../styles/overview.css';
 
 interface Props {
   title?: string;
@@ -98,7 +102,7 @@ const canonical = new URL(
     FORM: Sapeur portrait plate — user-chosen challenger over assigned grounded #7; seed b720fd1a.
     FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
     -->
-    <a class="skip" href="/#work">Skip to the systems</a>
+    <a class="skip" href="/#overview">Skip to the systems</a>
 
     {/* Every destination is root-relative, not a bare fragment.
         These used to read href="#work". With one page that worked. The moment
@@ -115,7 +119,7 @@ const canonical = new URL(
     <header class="site-nav">
       <a class="brand" href="/">Rohit Agrawal<em>stackclimb</em></a>
       <nav aria-label="Site">
-        <a href="/#work">Systems</a>
+        <a href="/#overview">Systems</a>
         <a href="/cv">CV</a>
         <a href="/#contact">Contact</a>
         <a class="chip" href="mailto:rohit.ra.agrawal@gmail.com">Email me</a>

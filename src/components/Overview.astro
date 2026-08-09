@@ -1,0 +1,104 @@
+---
+/* The contact sheet — O-OVERVIEW, and D1 from 07 Aug, unexecuted until now.
+ *
+ * The problem it solves, measured: the first 900px of this page contained the
+ * headline, the name, two buttons, a ledger and one refusal card, and NOT ONE
+ * SENTENCE saying what any of the systems do. A recruiter had to scroll through
+ * seven full-viewport plates to find out. The critique found every symptom of
+ * this — "nothing in the first viewport says what the systems do", "nav exposes
+ * 3 of 7 plates", "progressive disclosure: FAIL" — and mentions the words
+ * "overview" and "summary" zero times, so it never prescribed the cure.
+ *
+ * One row per system: what it does, the gate it runs against itself, its state,
+ * and one hard number. The gate column is the point — docs/positioning-phase0.md
+ * found that four of the six systems ARE gates, and that this is the unclaimed
+ * territory. A list of projects says he is busy; a list of refusals says he is
+ * trustworthy.
+ *
+ * D28: the private work is a row here with `closed` as its state, rather than a
+ * menu item reading PRIVATE that invites a visitor to wonder what confidential
+ * thing is on show.
+ *
+ * Every number is either counted at a named commit or is the system's own
+ * stated figure, and DEF-32 is respected: SaafSaans' "21 stations" is repo-
+ * stated and could not be independently counted, so it is not given here as a
+ * measured fact — the row carries its state instead.
+ */
+const systems = [
+  {
+    name: 'CiteVyn',
+    href: '#citevyn',
+    does: 'Citation-grounded Q&A over official AI docs. Refuses when no source supports an answer.',
+    gate: '52-case golden run blocks index promotion',
+    figure: '52 / 52',
+    state: 'Live',
+    tone: 'pass',
+  },
+  {
+    name: 'Quorum-AI',
+    href: '#quorum',
+    does: 'One question against four models, two rounds of mutual critique, then a synthesis.',
+    gate: 'Cost approved before anything runs; fallbacks disclosed',
+    figure: '4 models',
+    state: 'Live',
+    tone: 'pass',
+  },
+  {
+    name: 'SaafSaans',
+    href: '#saafsaans',
+    does: 'Delhi-NCR air quality scored for you, not for the city average.',
+    gate: 'Every reading labelled live, fallback, or sample',
+    figure: 'Hindi gated',
+    state: 'Deployed — not answering',
+    tone: 'warn',
+  },
+  {
+    name: 'NarraTwin AI',
+    href: '#narratwin',
+    does: 'Grounded walkthroughs with citations, claim evaluation and consent checks.',
+    gate: 'Its own readiness review says No-Go, so it is not deployed',
+    figure: '0 releases',
+    state: 'Phase 1 — No-Go',
+    tone: 'fail',
+  },
+  {
+    name: 'EvalAxis',
+    href: null,
+    does: 'Evaluates LLM, RAG and agent changes against committed baselines.',
+    gate: 'Fails the CI build when quality regresses. That is the product',
+    figure: '—',
+    state: 'In progress — closed',
+    tone: 'neutral',
+  },
+  {
+    name: 'Aegis Contracts',
+    href: null,
+    does: 'Contract-shaped guarantees between AI systems.',
+    gate: 'Too early to state one',
+    figure: '—',
+    state: 'In progress — closed',
+    tone: 'neutral',
+  },
+];
+---
+
+<div class="overview">
+  <p class="overview-lede">
+    Six systems. Four of them are <strong>gates</strong> — they exist to stop something shipping.
+    Two are still closed, and are named rather than hidden.
+  </p>
+
+  <ul class="ov-list">
+    {systems.map((s) => (
+      <li class={`ov-row tone-${s.tone}`}>
+        <div class="ov-name">
+          {s.href ? <a href={s.href}>{s.name}</a> : <span class="ov-title">{s.name}</span>}
+          <span class="ov-state">{s.state}</span>
+        </div>
+        <p class="ov-does">{s.does}</p>
+        <p class="ov-gate"><span class="ov-k">Gate</span>{s.gate}</p>
+        <span class="ov-figure" aria-hidden={s.figure === '—' ? 'true' : undefined}>{s.figure}</span>
+      </li>
+    ))}
+  </ul>
+</div>

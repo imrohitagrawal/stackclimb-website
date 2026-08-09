@@ -12,6 +12,15 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+    inputs:
+      update_visual_baselines:
+        description: >
+          DEF-4. Regenerate tests/visual-baselines.spec.js-snapshots/ on this
+          runner's image and upload them as an artifact. Never hand-generate
+          baselines on a laptop — a different OS renders different pixels, so
+          a locally-made baseline would fail on every real CI run.
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -122,3 +131,21 @@ jobs:
       # below AA at 1.00:1 while all three others were green.
       - name: the fixed nav stays readable over every plate
         run: node tests/nav-contrast.mjs http://localhost:4321
+
+      # DEF-4. Manual-only: run with the "update_visual_baselines" input to
+      # regenerate tests/visual-baselines.spec.js-snapshots/ on this exact
+      # image, then download the artifact below and commit only those files.
+      # Never generate them on a laptop — a different OS renders different
+      # pixels, and toHaveScreenshot names the file with process.platform, so
+      # a laptop-made baseline would not even be the file CI looks for.
+      - name: regenerate visual baselines (manual only)
+        if: github.event_name == 'workflow_dispatch' && inputs.update_visual_baselines
+        run: npx playwright test tests/visual-baselines.spec.js --update-snapshots
+
+      - name: upload regenerated visual baselines
+        if: github.event_name == 'workflow_dispatch' && inputs.update_visual_baselines
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-baselines
+          path: tests/visual-baselines.spec.js-snapshots/
+          retention-days: 14

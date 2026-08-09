@@ -241,15 +241,19 @@ body::before {
     align-items: start;
   }
   .hero .plate-copy { grid-column: 1; grid-row: 1; }
-  .hero .hero-ledger { grid-column: 1; grid-row: 2; margin-top: 1.1rem; }
+  .hero .hero-ledger { grid-column: 1; grid-row: 2; margin-top: 0; }
   .hero .plate-figure {
     grid-column: 2; grid-row: 1 / span 2;
     align-self: center;
   }
 }
 
-.hero .plate-frame { padding-block: clamp(1.5rem, 2.6vw, 2.6rem); }
-.hero { padding-block: clamp(4.5rem, 8.5vh, 6rem) clamp(2.5rem, 5vh, 4rem); }
+.hero .plate-frame { padding-block: clamp(1.1rem, 1.6vw, 1.5rem); }
+.hero { padding-block: clamp(4.4rem, 8vh, 5rem) clamp(1.5rem, 3vh, 1.75rem); }
+/* The 72px grid gap is column sizing; as a ROW gap on the hero it pushed the
+   credential ledger below the fold (critique finding 2 — the plate measured
+   1,107px in 900 and the recruiter's key block was cut mid-row). */
+.hero .plate-grid { row-gap: 1.1rem; }
 .hero .plate-figure .figure { max-height: 62vh; }
 
 .hero h1 {
@@ -271,19 +275,19 @@ body::before {
   letter-spacing: 0.002em;
   text-transform: uppercase;
   text-wrap: balance;
-  margin-bottom: 1rem;
+  margin-bottom: 0.7rem;
 }
 .hero h1 .accent { color: var(--ochre); }
 
 .hero .lede {
   font-size: clamp(1rem, 1.5vw, 1.14rem);
-  line-height: 1.65;
-  max-width: 46ch;
+  line-height: 1.6;
+  max-width: 52ch;
   color: color-mix(in srgb, currentColor 90%, transparent);
 }
 .hero .lede strong { font-weight: 640; color: var(--bone); }
 
-.ctas { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1.4rem; }
+.ctas { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1.1rem; }
 .btn {
   display: inline-block;
   font-size: 0.78rem; font-weight: 640;
@@ -301,7 +305,7 @@ body::before {
 
 /* The record — ledger of career fact */
 .ledger {
-  margin-top: 1.6rem;
+  margin-top: 1.1rem;
   max-width: 33rem;
   border-top: 1px solid color-mix(in srgb, currentColor 50%, transparent);
 }
@@ -310,7 +314,7 @@ body::before {
   grid-template-columns: minmax(9.5rem, max-content) 1fr;
   gap: 1.2rem;
   align-items: baseline;
-  padding: 0.38rem 0.15rem 0.32rem;
+  padding: 0.24rem 0.15rem 0.2rem;
   border-bottom: 1px dotted color-mix(in srgb, currentColor 38%, transparent);
 }
 .ledger dt {
@@ -319,7 +323,7 @@ body::before {
   opacity: 0.62;
 }
 .ledger dd {
-  font-size: 0.84rem; font-weight: 520;
+  font-size: 0.84rem; font-weight: 520; line-height: 1.4;
   letter-spacing: 0.03em;
   text-align: right;
 }

@@ -29,7 +29,9 @@
 /* First cell of each ROW, else later rows open with a stray rule. */
 .cap:nth-child(3n + 1) { border-left: none; }
 .cap .t {
-  font-size: 0.6rem; font-weight: 560;
+  /* 0.6rem (9.6px) was the smallest text on the site — the floor rises to
+     10.56px per the 2026-08-09 critique (A2, finding 5). */
+  font-size: 0.66rem; font-weight: 560;
   letter-spacing: 0.2em; text-transform: uppercase;
   opacity: 0.62;
 }

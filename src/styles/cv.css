@@ -25,6 +25,15 @@
   color: var(--bone);
 }
 
+/* The measure. The container's own padding-inline trick above loses the
+   cascade to .plate's padding shorthand, so the column rendered 1,312px —
+   ~150 characters per line at 17px, double a readable measure, on the page a
+   recruiter reads longest (critique 2026-08-09, finding 1, measured). The cap
+   moves to the CONTENT, which also preserves the full-bleed ground that the
+   comment above chose the padding trick for: the ground stays edge to edge,
+   only the text narrows. 44rem ≈ 78ch at the body size. */
+.cv-head, .cv-section { max-width: 44rem; margin-inline: auto; }
+
 /* Every link on this page needs this rule and none of the site's existing ones
    reach it — they are scoped to .plate-copy .links and .site-nav. Without it a
    link falls back to the user-agent default #0000ee, which measures 1.96:1 on

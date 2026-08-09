@@ -56,7 +56,10 @@ const { kind, verdict, tone = 'neutral', line, fields, source } = Astro.props;
   .card { padding: clamp(1.4rem, 2.6vw, 2.1rem); display: grid; gap: 0.85rem; }
 
   .kind {
-    font-size: 0.62rem;
+    /* Was 0.62rem (9.92px). The critique measured this line — the file path,
+       hash and date that persuade an engineer — as the least legible text on
+       the page. The provenance has earned 11px (A2, finding 5). */
+    font-size: 0.7rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     opacity: 0.68;
@@ -101,7 +104,7 @@ const { kind, verdict, tone = 'neutral', line, fields, source } = Astro.props;
     border-top: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
   }
   .fields dt {
-    font-size: 0.62rem;
+    font-size: 0.66rem;
     letter-spacing: 0.16em;
     text-transform: uppercase;
     opacity: 0.68;

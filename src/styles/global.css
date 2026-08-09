@@ -331,8 +331,15 @@ body::before {
   /* Was clamp(3rem, 6.8vw, 6rem). D23's full line is 53 uppercase characters
      against the old headline's 20, and at 96px in a 34rem column it ran to
      EIGHT lines and pushed the hero to 1720px. A display step is sized for a
-     string, not for a page. */
-  font-size: clamp(2.3rem, 4.2vw, 3.9rem);
+     string, not for a page.
+
+     These are not invented values. DESIGN.md's ramp already defines
+     headline-tight-min 2.2rem and headline-tight-max 3.8rem, and documents the
+     `.tight` variant as the one "for long names". D23's line is the long-string
+     case, so it uses the step that already exists for it. My first attempt used
+     2.3/3.9 — off the ramp by a rounding, which is how a design system erodes:
+     not by one bold departure but by a series of values nearly on it. */
+  font-size: clamp(2.2rem, 4.1vw, 3.8rem);
   line-height: 0.98;
   letter-spacing: 0.002em;
   text-transform: uppercase;

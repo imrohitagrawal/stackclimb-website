@@ -36,7 +36,7 @@ body::before {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background-image: url('/paint-grain.png');
+  background-image: url('/paint-grain.webp');
   background-size: 480px;
   mix-blend-mode: overlay;
   opacity: 0.5;

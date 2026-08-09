@@ -47,6 +47,12 @@ const ALLOW = [
   /\+91[\s]?\(0\)/,             // never used, kept explicit
 ];
 
+// Extension check is case-insensitive: resume.PDF must scan the same as
+// resume.pdf. extname() itself is case-preserving, so callers normalise here.
+function extOf(p) {
+  return extname(p).toLowerCase();
+}
+
 function files(dir) {
   if (!existsSync(dir)) return [];
   const out = [];
@@ -55,7 +61,7 @@ function files(dir) {
     const p = join(dir, name);
     const st = statSync(p);
     if (st.isDirectory()) out.push(...files(p));
-    else if (SCAN_EXT.has(extname(p))) out.push(p);
+    else if (SCAN_EXT.has(extOf(p))) out.push(p);
   }
   return out;
 }
@@ -63,12 +69,25 @@ function files(dir) {
 async function scan(list) {
   const hits = [];
   for (const f of list) {
-    let text;
+    let result;
     try {
-      text = await extractText(f);
+      result = await extractText(f);
     } catch (err) {
       console.error(`  ! skipped ${f}: extraction failed (${err.message})`);
       continue;
+    }
+    const { text, hasImages } = result;
+    // A PDF/DOCX with an embedded image cannot be text-scanned for PII —
+    // contact info rendered as pixels (a scanned card, a screenshot) has no
+    // text to extract. Fail closed: flag it for a human instead of passing
+    // it silently, which is what let the two real DEF-37 DOCX files through.
+    if (hasImages) {
+      hits.push({
+        file: f,
+        line: 0,
+        rule: 'embedded-image',
+        match: 'contains an embedded image — cannot be text-scanned; needs manual review',
+      });
     }
     for (const rule of RULES) {
       for (const m of text.matchAll(rule.re)) {
@@ -91,7 +110,7 @@ if (process.argv.includes('--self-test')) {
 let list;
 if (process.argv.includes('--staged')) {
   const staged = execSync('git diff --cached --name-only --diff-filter=ACM', { encoding: 'utf8' })
-    .split('\n').filter(Boolean).filter((f) => SCAN_EXT.has(extname(f)) && existsSync(f));
+    .split('\n').filter(Boolean).filter((f) => SCAN_EXT.has(extOf(f)) && existsSync(f));
   list = staged;
 } else {
   list = ROOTS.flatMap(files);

@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { readdirSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
 
 // Every internal link must actually go somewhere.
 //
@@ -21,12 +22,23 @@ import { readdirSync, existsSync } from 'node:fs';
 // build, or at a #fragment whose id is not on the destination page. Revert the
 // nav to bare "#work" and the fragment check fails on /cv.
 
-function builtRoutes(dir = 'dist') {
+// Recurses. It used to read only the top level, so a nested page such as
+// /projects/foo would never be tested and nothing would say so — the same
+// silent-narrowing defect as DEF-10 and DEF-44, in a gate written to catch
+// that class. Found by a cross-model review (Codex).
+function builtRoutes(dir = 'dist', prefix = '') {
   if (!existsSync(dir)) throw new Error('dist/ missing — run "npm run build" first');
-  return readdirSync(dir)
-    .filter((f) => f.endsWith('.html') && f !== '404.html')
-    .map((f) => (f === 'index.html' ? '/' : `/${f.replace(/\.html$/, '')}`))
-    .sort();
+  const out = [];
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (entry.isDirectory()) {
+      if (entry.name === '_astro') continue;
+      out.push(...builtRoutes(join(dir, entry.name), `${prefix}/${entry.name}`));
+      continue;
+    }
+    if (!entry.name.endsWith('.html') || entry.name === '404.html') continue;
+    out.push(entry.name === 'index.html' ? `${prefix}/` : `${prefix}/${entry.name.replace(/\.html$/, '')}`);
+  }
+  return [...new Set(out.map((r) => (r === '' ? '/' : r)))].sort();
 }
 
 const ROUTES = builtRoutes();
@@ -50,6 +62,16 @@ test.describe('Internal links', () => {
         if (!href) continue;
         if (/^(mailto:|tel:|https?:)/.test(href)) continue; // external, not ours to guarantee
         internalChecked++;
+
+        // A bare "#" or "#" with nothing after it is a placeholder, not a
+        // destination. It used to slip through both checks: path is '' so the
+        // fetch is skipped, and frag is '' which is falsy so the id lookup is
+        // skipped too. A link that goes nowhere passed a test called "every
+        // internal link resolves". Found by a cross-model review (Codex).
+        if (href === '#' || href === '') {
+          broken.push(`${route}: "${text}" → "${href}" is a placeholder, not a destination`);
+          continue;
+        }
 
         // Split "/path#frag" into the page to load and the id to find on it.
         const [path, frag] = href.split('#');
@@ -120,6 +142,49 @@ test.describe('Internal links', () => {
         () => document.activeElement?.classList.contains('skip') ?? false,
       );
       expect(focusedIsSkip, 'the skip link is not the first focusable element').toBe(true);
+
+      // ACTIVATE IT. Everything above proves the link EXISTS, is focusable, and
+      // points somewhere real — and a preventDefault() on its click handler
+      // would satisfy all of it while the control did nothing. That is DEF-28's
+      // lesson one level deeper: count() proves existence, never reachability,
+      // and href proves intent, never behaviour. Found by a cross-model review.
+      //
+      // RED WHEN: something calls preventDefault() on the skip link, or the
+      // target stops being scrollable/focusable.
+      await page.keyboard.press('Enter');
+      await page.waitForTimeout(300);
+
+      const landed = await page.evaluate((id) => {
+        const el = document.getElementById(id);
+        if (!el) return { ok: false, hash: location.hash, focused: false };
+        const active = document.activeElement;
+        return {
+          hash: location.hash,
+          focused: active === el || el.contains(active),
+          focusable: el.hasAttribute('tabindex'),
+        };
+      }, targetId);
+
+      // MY FIRST VERSION OF THIS CHECK WAS VACUOUS and the mutation caught it:
+      // it accepted "the page scrolled to the target", and #main sits at the
+      // TOP of the document, so at scroll 0 that is trivially true whether or
+      // not the link did anything. preventDefault() still passed.
+      //
+      // The hash is the signal that the DEFAULT ACTION actually ran, and it is
+      // exactly what preventDefault() suppresses. Focus is the signal that the
+      // link did its real job — and it only works because <main> carries
+      // tabindex="-1"; a skip link pointing at a non-focusable target moves the
+      // sequential focus origin but not activeElement, which is why so many
+      // skip links are decorative.
+      expect(
+        landed.hash,
+        `pressing Enter on the skip link did not navigate — the default action was suppressed`,
+      ).toBe(`#${targetId}`);
+
+      expect(
+        landed.focused,
+        `focus did not land in #${targetId}. The target needs tabindex="-1" or the skip link moves nothing for a screen reader`,
+      ).toBe(true);
     });
   }
 });

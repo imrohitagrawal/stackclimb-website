@@ -1,0 +1,191 @@
+/* stackclimb.com — the fixed nav, one concern, one file
+   ---------------------------------------------------------------------------
+   Moved out of global.css 2026-08-09 (DEF-47): that file stood at 505 lines
+   against a grandfathered ceiling of 500 it may never exceed (D8). The nav is
+   one concern and was about to grow a mobile menu, so it left rather than
+   trimming comments to squeeze under the limit — which AGENTS.md forbids.
+
+   RCA-003 (kept with the rule it explains). This bar used to be a hairline
+   with NO background at all, floating over whatever plate scrolled beneath it.
+   Survivable while every plate was dark; the value ladder (D18) added the
+   near-white #private paper plate and nobody re-checked the nav — bone text
+   started landing on bone ground. Measured in rendered pixels before the fix:
+   22 of 48 desktop scroll positions and 26 of 78 mobile below 4.5:1, worst
+   1.00:1. No DOM-reading gate could see it: a fixed element has no fixed
+   backdrop, so it has to be measured in pixels. tests/nav-contrast.mjs does.
+
+   So the bar carries its own ground — var(--nav-ground), palette.css — and
+   never reacts to what is behind it. The theme-reactive colour rule that used
+   to sit here is deliberately gone; see RCA-003 for why retiming cannot fix it.
+   --------------------------------------------------------------------------- */
+
+.site-nav {
+  position: fixed; inset-inline: 0; top: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem clamp(1.25rem, 4vw, 2.5rem);
+  background: var(--nav-ground);
+  color: var(--bone);
+}
+
+.site-nav .brand {
+  font-family: var(--serif);
+  font-weight: 560;
+  font-size: 1rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: currentColor; text-decoration: none;
+  white-space: nowrap;
+}
+.site-nav .brand em {
+  font-style: normal; opacity: 0.55;
+  font-family: var(--sans); font-weight: 500;
+  font-size: 0.72rem; letter-spacing: 0.22em;
+  margin-left: 0.6rem;
+}
+
+.site-nav nav {
+  display: flex; align-items: center; gap: clamp(0.9rem, 2.5vw, 1.8rem);
+}
+.site-nav nav a {
+  color: currentColor; text-decoration: none;
+  font-size: 0.76rem; font-weight: 560;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 2px;
+}
+
+.site-nav .chip {
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 0.5rem 1.05rem 0.44rem;
+  white-space: nowrap;
+}
+
+/* Hover is a pointer concept. On touch, a tap fires it and it sticks. */
+@media (hover: hover) and (pointer: fine) {
+  .site-nav nav a:hover { border-bottom-color: var(--ochre); }
+  .site-nav .chip:hover {
+    background: var(--ochre); border-color: var(--ochre);
+    color: var(--ink);
+  }
+}
+
+/* ---------- The mobile menu (DEF-42, RCA-004) ----------
+   Below 900px the row of links used to be display:none with nothing in its
+   place — fourteen phone screens of page, and from screen 2 onward no route
+   to the CV or the contact plate at all.
+
+   A native <details>, not a button-plus-script: it opens, navigates and
+   closes-by-reload with JavaScript disabled, which is the bar every control
+   on this site has to clear since DEF-1. src/scripts/nav.js adds close-on-
+   navigate, Escape and click-outside; all three are enhancement only.
+
+   Both the desktop row and this panel render the SAME array from
+   Layout.astro — nothing here is a second hand-typed list (DEF-10, DEF-44,
+   touch.css all fell to that shape). display:none removes whichever copy is
+   inactive from the accessibility tree, so a screen reader is offered one
+   menu, never two. */
+
+.site-nav .menu { display: none; }
+
+@media (max-width: 900px) {
+  .site-nav > nav { display: none; }
+  .site-nav .brand em { display: none; }
+
+  .site-nav .menu {
+    display: block;
+    /* static: the PANEL positions against .site-nav (the fixed bar is its
+       containing block), so it can span the full bar width edge to edge. */
+    position: static;
+  }
+
+  .site-nav .menu > summary {
+    list-style: none;
+    cursor: pointer;
+    font-size: 0.76rem; font-weight: 560;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    padding: 0.5rem 1.05rem 0.44rem;
+    /* 44px target (Apple HIG); the pill stays visually 36px, the tap area
+       does not. Same trick touch.css uses on the bar links. */
+    min-height: 44px;
+    display: flex; align-items: center;
+  }
+  .site-nav .menu > summary::-webkit-details-marker { display: none; }
+  .site-nav .menu > summary::after {
+    content: '';
+    display: inline-block;
+    width: 0.45em; height: 0.45em;
+    margin-left: 0.55em; margin-bottom: 0.15em;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform 180ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .site-nav .menu[open] > summary::after {
+    transform: rotate(-135deg);
+    margin-bottom: -0.1em;
+  }
+  .site-nav .menu[open] > summary {
+    background: var(--ochre); border-color: var(--ochre);
+    color: var(--ink);
+  }
+
+  /* A closed <details> hides its content by the UA's internal mechanism —
+     but in Chromium an absolutely-positioned child KEEPS ITS LAYOUT BOX, so
+     the closed panel's links reported 111×44 while painting nothing. The
+     pixel gate then scored 4 links × 92 scroll positions as "visible but no
+     glyph rendered" — a CI-blocking false state found by the adversarial
+     review, not by me running the gate (I ran the seam gate and not this
+     one; the lesson is run ALL the gates the surface touches). Explicit
+     display gating makes closed mean boxless for every measuring tool. */
+  .site-nav .menu:not([open]) > nav { display: none; }
+
+  .site-nav .menu > nav {
+    /* Positioned against the fixed bar itself, so the sheet runs edge to
+       edge below it regardless of the bar's padding. Same ground as the bar:
+       the pair bone-on-#0e1322 measures 15.6:1 (tests/nav-contrast.mjs). */
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.75rem clamp(1.25rem, 4vw, 2.5rem) 1.25rem;
+    background: var(--nav-ground);
+    border-bottom: 1px solid color-mix(in srgb, var(--bone) 18%, transparent);
+  }
+  .site-nav .menu > nav a {
+    /* Full-row 44px+ targets; no touch.css opt-in needed, the size is the
+       component's own. */
+    min-height: 44px;
+    display: flex; align-items: center;
+    border-bottom: none; padding-bottom: 0;
+  }
+  .site-nav .menu > nav .chip {
+    justify-self: start;
+    padding: 0.5rem 1.05rem 0.44rem;
+    margin-bottom: 0.35rem;
+  }
+
+  /* Enter only. Menus are opened tens of times a day: entrance is 160ms
+     ease-out (fast start reads as response), exit is instant — a dismissed
+     menu should be gone, not leaving. Opacity+transform only, off the layout
+     path. */
+  @starting-style {
+    .site-nav .menu[open] > nav {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+  .site-nav .menu[open] > nav {
+    transition:
+      opacity 160ms cubic-bezier(0.23, 1, 0.32, 1),
+      transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-nav .menu > summary::after { transition: none; }
+  .site-nav .menu[open] > nav { transition: opacity 160ms ease; transform: none; }
+}

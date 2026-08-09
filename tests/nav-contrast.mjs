@@ -136,6 +136,36 @@ for (const vp of VIEWPORTS) {
     }
   }
 
+  // ---- the open menu panel (DEF-42 / D46) ----
+  // The panel exists only below 900px and only while open, so neither sweep
+  // above ever sees it. Playwright's isVisible() cannot either: it reads boxes
+  // and display, not paint, so `opacity: 0` on the whole menu certified as
+  // "reachable" in the adversarial review. Pixels or nothing.
+  const summaryEl = page.locator('.site-nav .menu > summary');
+  if (await summaryEl.isVisible()) {
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    await summaryEl.click();
+    await page.waitForTimeout(250);
+    const panelClip = { x: 0, y: 0, width: vp.width, height: 420 };
+    const rows = await measureMany(page, '.site-nav .menu > nav a, .site-nav .menu > summary', panelClip);
+    const open = rows.filter((r) => r.visible);
+    // DENOMINATOR: an open menu must expose the summary plus at least three
+    // destinations; fewer means the panel did not open or lost its links.
+    if (open.length < 4) {
+      console.error(`✖ nav contrast: open menu exposed ${open.length} elements at ${vp.name} — panel missing or empty`);
+      exitCode = 1;
+    }
+    for (const r of open) {
+      samples++;
+      if (r.ratio === null) {
+        failures.push({ y: 'menu-open', text: r.text, ratio: 0, note: 'visible but no glyph rendered' });
+        continue;
+      }
+      if (r.ratio < worst) { worst = r.ratio; worstAt = `menu-open "${r.text}" fg=rgb(${r.fg}) bg=rgb(${r.bg})`; }
+      if (r.ratio < AA) failures.push({ y: 'menu-open', text: r.text, ratio: +r.ratio.toFixed(2), bg: `rgb(${r.bg})` });
+    }
+  }
+
   await browser.close();
 
   // DENOMINATOR: prove the sweep actually walked the page. A zero-height

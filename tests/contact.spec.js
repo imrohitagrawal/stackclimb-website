@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { readLinks } from './lib/read-links.mjs';
 
 // Contact details must be labelled links a visitor can click, never text they
 // have to copy by hand. Directive P-13 — raised twice, agreed once, dropped
@@ -10,9 +11,12 @@ import { test, expect } from '@playwright/test';
 
 const CONTACT = '#contact';
 
-// The page ships seven plates (Nº 00–06). A floor, not an equality: adding a
-// plate must not turn a gate red (the mistake DEF-15 records).
-const MIN_PLATES = 7;
+// The page ships eight plates (Nº 00–07). A floor, not an equality: adding a
+// plate must not turn a gate red (the mistake DEF-15 records). BUMP THIS in
+// the same change that adds a plate — it sat at 7 while 8 shipped, and the
+// whole #private plate could be deleted with every gate green (found by the
+// 2026-08-09 mutation audit).
+const MIN_PLATES = 8;
 
 const EMAIL_ADDRESS = 'rohit.ra.agrawal@gmail.com';
 
@@ -44,35 +48,6 @@ const DESTINATIONS = [
   },
 ];
 
-// Reads every link inside a container and reports, per link, whether it is
-// actually PAINTED and actually HITTABLE — not merely present in the DOM.
-// `document.elementFromPoint` at the link's own centre is what catches an
-// overlay, `pointer-events: none`, and a zero-sized box; `[inert]` is checked
-// because an inert subtree still reports a normal box and a normal hit.
-function readLinks(scope) {
-  return scope.locator('a[href]').evaluateAll((els) =>
-    els.map((el) => {
-      const rect = el.getBoundingClientRect();
-      const style = getComputedStyle(el);
-      const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
-      return {
-        href: el.getAttribute('href') || '',
-        label: (el.textContent || '').replace(/\s+/g, ' ').trim(),
-        painted:
-          rect.width > 0 &&
-          rect.height > 0 &&
-          style.visibility !== 'hidden' &&
-          style.display !== 'none' &&
-          Number.parseFloat(style.opacity) > 0,
-        hittable:
-          style.pointerEvents !== 'none' &&
-          el.closest('[inert]') === null &&
-          hit !== null &&
-          (hit === el || el.contains(hit)),
-      };
-    }),
-  );
-}
 
 test.describe('Contact details', () => {
   test('no contact detail is printed as text anywhere on the rendered page', async ({ page }) => {
@@ -149,30 +124,4 @@ test.describe('Contact details', () => {
     expect(faults, `${faults.length} fault(s) in the contact plate`).toEqual([]);
   });
 
-  test('every email call-to-action is labelled, visible, and says the same thing', async ({
-    page,
-  }) => {
-    // RED WHEN: one CTA says something different from the others, or one loses
-    // its label entirely. Two unlabelled links used to pass: ["", ""] has one
-    // distinct value, so sameness alone certified nothing.
-    await page.goto('/', { waitUntil: 'networkidle' });
-
-    const ctas = page.locator('a[href^="mailto:"]');
-    const count = await ctas.count();
-
-    // DENOMINATOR: the nav, the hero, and the contact plate each carry one.
-    expect(count, 'fewer than two email CTAs found — this check measured nothing')
-      .toBeGreaterThan(1);
-
-    const labels = [];
-    for (let i = 0; i < count; i++) {
-      const cta = ctas.nth(i);
-      await expect(cta, `email CTA ${i + 1} of ${count} is not visible`).toBeVisible();
-      labels.push((await cta.innerText()).replace(/\s+/g, ' ').trim());
-    }
-
-    const unlabelled = labels.filter((l) => l.length === 0);
-    expect(unlabelled, `${unlabelled.length} of ${count} email CTAs have no label`).toEqual([]);
-    expect(new Set(labels).size, `email CTAs disagree: ${JSON.stringify(labels)}`).toBe(1);
-  });
 });

@@ -3,6 +3,7 @@ import '@fontsource-variable/bodoni-moda';
 import '@fontsource-variable/bodoni-moda/wght-italic.css';
 import '@fontsource-variable/archivo';
 import '../styles/global.css';
+import '../styles/nav.css';
 import '../styles/palette.css';
 import '../styles/caps.css';
 import '../styles/touch.css';
@@ -50,6 +51,19 @@ const canonical = new URL(
   Astro.url.pathname.replace(/index\.html$/, '').replace(/\.html$/, ''),
   Astro.site ?? 'https://stackclimb.com',
 ).href;
+
+/* DEF-42. The one list of destinations, rendered twice below — a flat row for
+   wide viewports and a <details> panel for narrow ones. Two surfaces, ONE
+   source: a hand-typed second copy would be the fourth hand-maintained list
+   to silently narrow a surface or a gate (DEF-10 routes, DEF-44 plate ids,
+   touch.css selectors). Add a destination here and both menus carry it;
+   tests/nav-reach.spec.js then proves it is reachable at every viewport. */
+const NAV = [
+  { href: '/#overview', label: 'Systems' },
+  { href: '/cv', label: 'CV' },
+  { href: '/#contact', label: 'Contact' },
+];
+const EMAIL = 'mailto:rohit.ra.agrawal@gmail.com';
 ---
 
 <!doctype html>
@@ -117,26 +131,34 @@ const canonical = new URL(
         does, and #main exists on every page by construction. */}
     <a class="skip" href="#main">Skip to content</a>
 
-    {/* Every destination is root-relative, not a bare fragment.
-        These used to read href="#work". With one page that worked. The moment
-        /cv existed, "Systems" and "Contact" pointed at fragments that do not
-        exist on that page, so they silently did nothing — no navigation, no
-        error, and no test would have caught it because the links are present
-        and focusable. Found by opening /cv and reading the nav, not by a gate.
+    {/* Every destination is root-relative, not a bare fragment (DEF-41).
+        The full nav rework — WORK · APPROACH · CONTACT (D28) — waits for
+        /approach to exist, so this menu never advertises a page that would
+        404 (DEF-40).
 
-        CV is added here because O-30SEC records that a CV link was absent from
-        the entire site and that a recruiter looks for one first. The full nav
-        rework — WORK · APPROACH · CONTACT (D28) — waits for /approach to exist,
-        so that this menu never advertises a page that would 404. It would
-        genuinely 404 now: see DEF-40. */}
+        Two menus, one array (NAV above). CSS shows exactly one: the flat row
+        at ≥901px, the <details> panel at ≤900px. The inactive copy is
+        display:none, which also removes it from the accessibility tree, so
+        assistive tech is offered a single menu. The <details> needs no
+        JavaScript to open or navigate — nav.js only adds close-on-navigate,
+        Escape, and click-outside, all enhancement (RCA-004). */}
     <header class="site-nav">
       <a class="brand" href="/">Rohit Agrawal<em>stackclimb</em></a>
       <nav aria-label="Site">
-        <a href="/#overview">Systems</a>
-        <a href="/cv">CV</a>
-        <a href="/#contact">Contact</a>
-        <a class="chip" href="mailto:rohit.ra.agrawal@gmail.com">Email me</a>
+        {NAV.map((l) => <a href={l.href}>{l.label}</a>)}
+        <a class="chip" href={EMAIL}>Email me</a>
       </nav>
+      <details class="menu">
+        <summary>Menu</summary>
+        {/* Email leads the panel: at 390px the bar fits brand + one control,
+            and the chip lost the coin toss to the menu button — 65.8px free
+            at 390px, 35.8px at 360px, and the chip is 111px wide. It is
+            first here, at a larger target than it had in the bar. */}
+        <nav aria-label="Site">
+          <a class="chip" href={EMAIL}>Email me</a>
+          {NAV.map((l) => <a href={l.href}>{l.label}</a>)}
+        </nav>
+      </details>
     </header>
 
     <main id="main" tabindex="-1">
@@ -155,6 +177,7 @@ const canonical = new URL(
 
     <script>
       import '../scripts/plates.js';
+      import '../scripts/nav.js';
     </script>
   </body>
 </html>

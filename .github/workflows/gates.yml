@@ -71,6 +71,15 @@ jobs:
           node tests/no-pii.mjs --self-test
           node tests/no-pii.mjs
 
+      # DEF-47: the D8 file budget held only in prose, and global.css grew to
+      # 505 against its recorded ceiling of 500 with nobody noticing. AGENTS.md's
+      # own rule — if it must ALWAYS hold, it lives in CI, not in a doc.
+      # Needs no build and no browser, so it belongs with the cheap checks.
+      - name: file budget (D8)
+        run: |
+          node tests/file-budget.mjs --self-test
+          node tests/file-budget.mjs
+
       - name: gitleaks
         uses: gitleaks/gitleaks-action@v2
         env:

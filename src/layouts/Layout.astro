@@ -1,4 +1,10 @@
 ---
+/* D48: the owner's chevron mark, adopted by his decision 2026-08-09 over the
+   comparison's recommendation. Ships with the baked #1a2338 background
+   stripped to true transparency (approved) — shape and colours otherwise
+   exactly his files. Imported so the asset is content-hashed, unlike /public
+   (the DEF-24 trap). */
+import brandMark from '../assets/brand-mark-nav.png';
 import '@fontsource-variable/bodoni-moda';
 import '@fontsource-variable/bodoni-moda/wght-italic.css';
 import '@fontsource-variable/archivo';
@@ -143,7 +149,15 @@ const EMAIL = 'mailto:rohit.ra.agrawal@gmail.com';
         JavaScript to open or navigate — nav.js only adds close-on-navigate,
         Escape, and click-outside, all enhancement (RCA-004). */}
     <header class="site-nav">
-      <a class="brand" href="/">Rohit Agrawal<em>stackclimb</em></a>
+      {/* The lockup the comparison found workable: the mark reads as a
+          monogram at nav height, the Bodoni name carries the identity. The
+          img is decorative (alt="") — the link's accessible name is the name
+          beside it. On phones this is the first visible mark the site has
+          had: the tracked wordmark has always been hidden below 900px. */}
+      <a class="brand" href="/">
+        <img class="brand-mark" src={brandMark.src} alt="" width="70" height="84" />
+        Rohit Agrawal<em>stackclimb</em>
+      </a>
       <nav aria-label="Site">
         {NAV.map((l) => <a href={l.href}>{l.label}</a>)}
         <a class="chip" href={EMAIL}>Email me</a>

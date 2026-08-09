@@ -29,6 +29,7 @@
 }
 
 .site-nav .brand {
+  display: flex; align-items: center; gap: 0.6rem;
   font-family: var(--serif);
   font-weight: 560;
   font-size: 1rem;
@@ -37,6 +38,10 @@
   color: currentColor; text-decoration: none;
   white-space: nowrap;
 }
+/* D48 — the owner's mark, at the size where it reads as a monogram.
+   translateY(-1px): measured optically 0.9px low against the cap-height
+   centre of the Bodoni name (critique 2026-08-09, Assessment A). */
+.site-nav .brand-mark { height: 28px; width: auto; display: block; transform: translateY(-1px); }
 .site-nav .brand em {
   font-style: normal; opacity: 0.55;
   font-family: var(--sans); font-weight: 500;

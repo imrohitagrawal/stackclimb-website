@@ -33,8 +33,37 @@ const SCAN_EXT = new Set([
 const RULES = [
   // Indian mobile: 10 digits opening 6-9, with or without +91. Word boundaries
   // keep it out of hex hashes; unix seconds currently open with 1, ms with 17.
+  // Unchanged since before round 6: a human-formatted number carries AT MOST
+  // one separator, at the natural 5+5 grouping point (space, dot, or dash).
   { id: 'phone-in', re: /(?<![\w.])(?:\+?91[\s.-]?)?[6-9]\d{4}[\s.-]?\d{5}(?![\w.])/g },
+  // Round 6: a DOCX footnote with a phone number split across separate XML
+  // runs turns tag-stripping's tag-to-space replacement into a RUN OF
+  // SEVERAL spaces at each seam (one space per stripped tag; a run boundary
+  // is at least 2 tags, so at least 2 spaces) — the digit groups land spread
+  // apart by multiple spaces each. The rule above requires contiguous digit
+  // groups and misses it. (Fixture spelled out digit-by-digit in
+  // tests/lib/self-test-round6.mjs, not here — that exact shape would
+  // itself match the rule this comment is describing.)
+  //
+  // This second rule catches that shape WITHOUT reopening the "any digits
+  // near any whitespace" hole: a gap is only accepted here if it is 2-4
+  // whitespace/separator characters — never a single bare space. A single
+  // space is deliberately left unmatched by this rule (the first rule above
+  // already owns that one legitimate case, at the fixed 5+5 point), which is
+  // exactly what keeps this rule from firing on ordinary single-space-
+  // separated numbers — SVG/CSS coordinate lists ("76 102 54 130"),
+  // pagination, dates. Measured directly: with a 1-char gap allowed, this
+  // rule matched real coordinate strings in PrivateFigure.astro and
+  // QuorumFigure.astro; tightening the floor from {0,4} to {2,4} clears both
+  // while still catching the round-6 footnote fixture, whose stripped-tag
+  // gap is 4 spaces.
+  {
+    id: 'phone-in-split',
+    re: /(?<![\w.])(?:\+?91[\s.-]?)?[6-9](?:(?:[\s.-]{2,4})?\d){9}(?![\w.])/g,
+  },
   // International, loose: a + then 11-15 digits with optional separators.
+  // Already tolerant of whitespace anywhere in the run (round 6: no change
+  // needed here — [\d\s.-] already spans stripped-tag gaps).
   { id: 'phone-intl', re: /(?<![\w.])\+\d[\d\s.-]{9,16}\d(?![\w.])/g },
   { id: 'aadhaar', re: /(?<![\w.])\d{4}[\s-]\d{4}[\s-]\d{4}(?![\w.])/g },
   { id: 'pan', re: /(?<![\w])[A-Z]{5}\d{4}[A-Z](?![\w])/g },

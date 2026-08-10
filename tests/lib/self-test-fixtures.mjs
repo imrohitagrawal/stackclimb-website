@@ -31,6 +31,7 @@ import {
   buildMinimalPdf, buildDocx, corrupt, writeTemp,
 } from './pdf-docx-fixtures.mjs';
 import { runSparseDensityChecks } from './self-test-sparse-density.mjs';
+import { runRound6Checks } from './self-test-round6.mjs';
 
 function matches(rules, text) {
   return rules.some((r) => (r.re.lastIndex = 0, r.re.test(text)));
@@ -199,6 +200,12 @@ export async function runSelfTest(RULES, extractText, scan) {
     // Round 5: per-page/per-part density, not a whole-document average —
     // see self-test-sparse-density.mjs for what this closes and why.
     await runSparseDensityChecks(extractText, scan, record, dirty, clean, tempPaths);
+
+    // Round 6: the 5 specific fixtures the last review reproduced with real
+    // constructed files (off-canvas PDF text, PDF FreeText annotation, DOCX
+    // comments.xml, DOCX split-run footnote, DOCX drawingML text box) — see
+    // self-test-round6.mjs for what each closes and why.
+    await runRound6Checks(RULES, extractText, scan, record, dirty, clean, tempPaths);
   } finally {
     for (const p of tempPaths) unlinkSync(p);
   }

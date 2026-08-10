@@ -60,6 +60,8 @@
 
 import { readFileSync } from 'node:fs';
 import { extname } from 'node:path';
+import { stripXmlTags, scanArchiveXmlParts } from './docx-archive-scan.mjs';
+import { extractPdfRawText } from './pdf-raw-scan.mjs';
 
 // Deliberately low floors, chosen to bite on total degradation (0 chars —
 // what pdf-parse/mammoth actually return when they silently give up, per
@@ -128,11 +130,17 @@ async function extractPdf(input) {
     : (meaningfulChars.length / pageCount) < MIN_CHARS_PER_PDF_PAGE;
   const cannotVerify = hasImages ? false : (hasCompressedObjects || sparseText);
   const reason = hasCompressedObjects ? 'compressed-objects' : (sparseText ? 'sparse-text' : undefined);
-  return { text, hasImages, cannotVerify, reason };
-}
-
-function stripXmlTags(xml) {
-  return xml.replace(/<[^>]+>/g, ' ');
+  // Round 6: pdf-parse's getText() above is RENDERED, page-geometry text —
+  // off-canvas Td-positioned text and /Annot /FreeText /Contents strings are
+  // real content it never surfaces (measured: same content stream, same
+  // page, and pdf-parse silently drops the off-canvas Tj). This raw pass
+  // decompresses every FlateDecode stream directly and scans literal
+  // /Contents strings, independent of page geometry or PDF structure — an
+  // ADDITIONAL pass, appended to the structured text, not a replacement for
+  // it. hasImages/cannotVerify/reason above are computed from the structured
+  // extraction only, unaffected by this.
+  const rawScanText = extractPdfRawText(input);
+  return { text: [text, rawScanText].join('\n'), hasImages, cannotVerify, reason };
 }
 
 async function extractDocx(input) {
@@ -155,7 +163,6 @@ async function extractDocx(input) {
     }
   }
 
-  const text = [bodyResult.value, ...extraParts].join('\n');
   // Same class of gap as the PDF path: a technically-valid DOCX with a
   // stripped or empty <w:body> makes mammoth return "" with zero warning
   // messages — no throw, nothing to catch. Measured directly (round 4).
@@ -167,12 +174,23 @@ async function extractDocx(input) {
   // was masking a degraded footer/header — the only part that might carry
   // the contact line — because the two got summed into one pooled count.
   // Flag if the body OR any present header/footer/footnote/endnote part
-  // falls under the floor on its own.
+  // falls under the floor on its own. Computed from bodyResult.value and
+  // extraParts directly, BEFORE the archive-wide backstop below is folded
+  // in, so that additional text can never mask a genuinely degraded part.
   const bodyChars = bodyResult.value.replace(/\s+/g, '').length;
   const partChars = extraParts.map((p) => p.replace(/\s+/g, '').length);
   const sparseText = bodyChars < MIN_DOCX_CHARS || partChars.some((c) => c < MIN_DOCX_CHARS);
   const cannotVerify = hasImages ? false : sparseText;
   const reason = !hasImages && sparseText ? 'sparse-text' : undefined;
+  // Round 6: stop trusting an allowlist of part NAMES (body + header/footer/
+  // footnote/endnote regex). comments.xml, a drawingML text box inside
+  // document.xml itself, and any future Word feature never needed a new name
+  // added here — they needed the enumeration replaced. This scans EVERY *.xml
+  // part in the archive as an ADDITIONAL backstop, appended after the named
+  // parts above (which stay, since mammoth's body extraction handles complex
+  // body formatting better than tag-stripping would).
+  const archiveText = await scanArchiveXmlParts(zip);
+  const text = [bodyResult.value, ...extraParts, archiveText].join('\n');
   return { text, hasImages, cannotVerify, reason };
 }
 

@@ -22,18 +22,28 @@ is why this file exists.
 
 ## The wordmark — as shipped
 
-    ROHIT AGRAWAL   stackclimb
-    ^^^^^^^^^^^^^   ^^^^^^^^^^
-    Bodoni Moda     Archivo
-    weight 560      weight 500
-    1rem            0.72rem
-    tracking .14em  tracking .22em
-    uppercase       lowercase, 55% opacity
+**Corrected 2026-08-11.** This section used to type the domain name as lowercase `stackclimb` in
+the site's own Archivo font — a confirmed defect against the owner's actual supplied logo, not
+just a plan-draft error. The real wordmark is **"StackClimb"** — capital S, capital C, one word,
+in its own distinct rounded sans-serif with an orange accent stroke on the "C" — and it now ships
+as a real image asset (`src/assets/wordmark-nav.png`), not retyped text.
 
-Source of truth: `src/styles/global.css`, `.site-nav .brand` and `.site-nav .brand em`.
+    ROHIT AGRAWAL   [StackClimb wordmark image]
+    ^^^^^^^^^^^^^   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    Bodoni Moda     the owner's own logo, as supplied — no font
+    weight 560      substitution, no recolouring
+    1rem
+    tracking .14em
+    uppercase
 
-**Open defect:** `.site-nav .brand em` is `display: none` below 900px, so **on a phone the site
-has no domain identity at all**. Raised in the design critique, still unfixed.
+Nav order: chevron mark → StackClimb wordmark → "Rohit Agrawal", left to right — logo and its
+real wordmark pair first as one unit, the personal name follows. Source of truth:
+`src/layouts/Layout.astro` (`.brand` markup) and `src/styles/nav.css` (`.site-nav .brand`,
+`.site-nav .wordmark`).
+
+**Fixed, not still open:** the wordmark used to be `display: none` below 900px, so a phone had no
+domain identity at all. The image wordmark is visible at every width — this is what closes that
+gap, not a separate fix.
 
 ## The mark — `public/favicon.svg`
 
@@ -53,8 +63,6 @@ value ladder, so the tab icon was painted in a colour the site no longer uses an
 | Item | Note |
 |---|---|
 | `og.png` | 1200×630, and **not regenerated since the value ladder**. It shows the old palette and, almost certainly, the deleted mannequin. Anyone sharing a link gets a preview of a site that no longer exists |
-| Mobile wordmark | `stackclimb` is hidden below 900px |
-| Owner's own candidates | Not yet supplied. Protocol below still applies |
 
 ## Protocol — unchanged
 

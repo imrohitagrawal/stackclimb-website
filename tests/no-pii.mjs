@@ -111,6 +111,25 @@ function files(dir) {
 async function scan(list) {
   const hits = [];
   for (const f of list) {
+    // DEF-37 round 8: an unconditional block, independent of content. Seven
+    // rounds of trying to make content-scanning inside PDF/DOCX sufficient
+    // did not converge (round 6/7's own review found a hex-encoded PDF
+    // annotation string and XML numeric character references it still
+    // misses). This check never reads the file — it cannot be evaded by any
+    // encoding trick, because it does not depend on what encoding trick was
+    // used. Any tracked .pdf/.docx in a scanned path fails the gate, full
+    // stop; content scanning below still runs and adds an early, specific
+    // reason where it can, but it is not what makes the guarantee hold. See
+    // docs/STATUS.md DEF-37.
+    if (extOf(f) === '.pdf' || extOf(f) === '.docx') {
+      hits.push({
+        file: f,
+        line: 0,
+        rule: 'pdf-docx-unconditional',
+        match: 'PDF/DOCX files require manual review before being tracked — automated '
+          + 'content scanning has known gaps; see docs/STATUS.md DEF-37',
+      });
+    }
     let result;
     try {
       result = await extractText(f);

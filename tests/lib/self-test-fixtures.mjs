@@ -174,8 +174,17 @@ export async function runSelfTest(RULES, extractText, scan) {
     const emptyDocx = writeTemp('empty.docx', await buildDocx({ emptyBody: true }));
     tempPaths.push(validPdf, validDocx, corruptPdf, corruptDocx, objStmPdf, degradedPdf, emptyDocx);
 
+    // Round 8: the unconditional PDF/DOCX backstop means a clean PDF/DOCX no
+    // longer passes with 0 hits — it always gets exactly the
+    // 'pdf-docx-unconditional' hit, regardless of content. What this proves
+    // instead: content-scanning contributes no FALSE hit on top of that
+    // unconditional one (the backstop doesn't mask a content-scanner
+    // regression — it's checked separately from every other assertion here).
     const validHits = await scan([validPdf, validDocx]);
-    record('valid, readable PDF+DOCX with no PII still pass (0 hits)', validHits.length === 0);
+    record(
+      'valid, readable PDF+DOCX with no PII get only the unconditional hit, no content false positive',
+      validHits.length === 2 && validHits.every((h) => h.rule === 'pdf-docx-unconditional'),
+    );
 
     const corruptPdfHits = await scan([corruptPdf]);
     record(

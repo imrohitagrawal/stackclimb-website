@@ -42,12 +42,18 @@
    translateY(-1px): measured optically 0.9px low against the cap-height
    centre of the Bodoni name (critique 2026-08-09, Assessment A). */
 .site-nav .brand-mark { height: 28px; width: auto; display: block; transform: translateY(-1px); }
-.site-nav .brand em {
-  font-style: normal; opacity: 0.55;
-  font-family: var(--sans); font-weight: 500;
-  font-size: 0.72rem; letter-spacing: 0.22em;
-  margin-left: 0.6rem;
-}
+/* Item 7. Intrinsic 388x72 (3x display, D48's own retina pattern). Sized to
+   the existing nav row height — no growth: the chevron above sets this bar's
+   tallest content at 28px, so the wordmark sits under that. Never hidden
+   below 900px, unlike the `<em>` it replaces — this is the first thing on a
+   phone that states the domain. */
+.site-nav .wordmark { height: 22px; width: auto; display: block; }
+/* Improve-animations plan 003. The one interactive element site-wide with no
+   hover style. 0.25s ease is copied verbatim from .btn (global.css) — the
+   repo's existing duration/curve for this class of interaction, not a new
+   one. */
+.site-nav .brand { transition: opacity 0.25s ease; }
+.site-nav .brand:focus-visible { opacity: 0.82; }
 
 .site-nav nav {
   display: flex; align-items: center; gap: clamp(0.9rem, 2.5vw, 1.8rem);
@@ -74,6 +80,7 @@
     background: var(--ochre); border-color: var(--ochre);
     color: var(--ink);
   }
+  .site-nav .brand:hover { opacity: 0.82; }
 }
 
 /* ---------- The mobile menu (DEF-42, RCA-004) ----------
@@ -96,7 +103,15 @@
 
 @media (max-width: 900px) {
   .site-nav > nav { display: none; }
-  .site-nav .brand em { display: none; }
+  /* Measured: the wordmark image (~119px) plus this text on ONE row
+     overflowed the bar at 390px (menu button right edge landed at 463.6px).
+     tests/nav-contrast.mjs treats every `.site-nav a` as required to render
+     a real glyph — an image-only link is read as "visible but no glyph",
+     the same failure shape DEF-38/DEF-46 exist to catch, so hiding the name
+     outright is not a safe fix. Wrapping it onto its own row keeps it real,
+     visible text (the gate stays honest) without widening the bar. */
+  .site-nav .brand { flex-wrap: wrap; row-gap: 0.15rem; }
+  .site-nav .brand-name { flex-basis: 100%; font-size: 0.72rem; letter-spacing: 0.1em; }
 
   .site-nav .menu {
     display: block;
@@ -193,4 +208,5 @@
 @media (prefers-reduced-motion: reduce) {
   .site-nav .menu > summary::after { transition: none; }
   .site-nav .menu[open] > nav { transition: opacity 160ms ease; transform: none; }
+  .site-nav .brand { transition: none; }
 }

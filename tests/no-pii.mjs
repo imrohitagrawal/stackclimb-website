@@ -73,20 +73,40 @@ async function scan(list) {
     try {
       result = await extractText(f);
     } catch (err) {
-      console.error(`  ! skipped ${f}: extraction failed (${err.message})`);
+      // A corrupted or password-encrypted PDF/DOCX cannot be text-scanned —
+      // same structural gap as an embedded image, so it gets the same
+      // fail-closed treatment: a hit that fails the gate, not a skip that
+      // lets an unreadable file through as if it had been checked. DEF-37
+      // round 3: this used to `continue`, which meant the file that most
+      // needed a human's eyes was the one the gate said nothing about.
+      if (extOf(f) === '.pdf' || extOf(f) === '.docx') {
+        hits.push({
+          file: f,
+          line: 0,
+          rule: 'extraction-failed',
+          match: `could not be read (${err.message}) — cannot be text-scanned; treated as a failure, needs manual review`,
+        });
+      } else {
+        console.error(`  ! skipped ${f}: extraction failed (${err.message})`);
+      }
       continue;
     }
-    const { text, hasImages } = result;
-    // A PDF/DOCX with an embedded image cannot be text-scanned for PII —
-    // contact info rendered as pixels (a scanned card, a screenshot) has no
-    // text to extract. Fail closed: flag it for a human instead of passing
-    // it silently, which is what let the two real DEF-37 DOCX files through.
-    if (hasImages) {
+    const { text, hasImages, cannotVerify } = result;
+    // A PDF/DOCX with an embedded image, OR a PDF whose object streams are
+    // compressed (PDF 1.5+ /ObjStm — an image XObject dictionary can live
+    // inside one, invisible to the raw-byte /Subtype /Image regex), cannot
+    // be text-scanned for PII with confidence. Fail closed: flag it for a
+    // human instead of passing it silently, which is what let the two real
+    // DEF-37 DOCX files through in round 1.
+    if (hasImages || cannotVerify) {
       hits.push({
         file: f,
         line: 0,
-        rule: 'embedded-image',
-        match: 'contains an embedded image — cannot be text-scanned; needs manual review',
+        rule: hasImages ? 'embedded-image' : 'compressed-object-stream',
+        match: hasImages
+          ? 'contains an embedded image — cannot be text-scanned; needs manual review'
+          : 'uses compressed object streams (/ObjStm) — an image could be hidden inside; '
+            + 'cannot be fully verified; needs manual review',
       });
     }
     for (const rule of RULES) {
@@ -101,9 +121,11 @@ async function scan(list) {
   return hits;
 }
 
+export { scan };
+
 if (process.argv.includes('--self-test')) {
   const { runSelfTest } = await import('./lib/self-test-fixtures.mjs');
-  await runSelfTest(RULES, extractText);
+  await runSelfTest(RULES, extractText, scan);
   // runSelfTest exits the process itself once it has printed its verdict.
 }
 

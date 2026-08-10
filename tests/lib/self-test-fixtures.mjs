@@ -1,132 +1,35 @@
 // Self-test fixtures for tests/no-pii.mjs --self-test.
 //
 // Split out of no-pii.mjs so that file stays a scanner, not a fixture
-// factory. Builds these checks, all in memory, nothing written to disk and
-// nothing committed:
+// factory. Byte-level PDF/DOCX builders now live in pdf-docx-fixtures.mjs
+// (DEF-37 round 3 split, to stay under the 250-line module budget); this
+// file is the check runner. Runs these checks, all in memory or in a
+// throwaway temp file, nothing committed:
 //   1. plain-text planted numbers (pre-existing coverage)
 //   2. a phone-shaped number embedded in a hand-built PDF (DEF-37)
 //   3. the same, embedded in a hand-built DOCX (DEF-37)
 //   4. a phone-shaped number in a DOCX header AND footer, clean body
 //   5. a DOCX/PDF carrying an embedded image is flagged for manual review
 //   6. uppercase .PDF/.DOCX extensions dispatch identically to lowercase
+//   7. a PDF using a compressed object stream (/ObjStm), with no raw
+//      /Subtype /Image anywhere in the file, is flagged cannotVerify
+//   8. a corrupted/truncated PDF or DOCX fails scan() closed
+//      (extraction-failed hit, non-zero exit) instead of scanning as clean
 // plus one clean fixture of each kind to prove no false positives.
 //
 // WHICH CHANGE TURNS IT RED: stub tests/lib/extract-text.mjs's .pdf/.docx
 // branches to return '' (or drop them entirely) and the PDF/DOCX assertions
 // below fail while the plain-text ones still pass — proof the coverage is
 // real, not redundant with the text case.
-//
-// The PDF and DOCX fixtures are COMPRESSED (PDF: FlateDecode stream; DOCX:
-// zip DEFLATE) specifically so a naive `buffer.toString('utf8')` passthrough
-// cannot see the planted digits by accident. An earlier version of this file
-// used uncompressed fixtures, which meant reverting extract-text.mjs to raw
-// bytes still passed self-test — the mutation did not bite. Verified: with
-// compression, that same revert now fails at 2/4 caught (review round 2).
 
-// /FlateDecode is zlib-wrapped deflate (RFC 1950), not raw deflate — using
-// deflateRawSync here silently produced a stream pdf-parse could not read at
-// all (extraction returned empty text), which would have made every PDF
-// assertion below vacuously true. deflateSync is the correct one.
-import { deflateSync } from 'node:zlib';
-
-// A minimal single-page PDF with its content stream FlateDecode-compressed,
-// built by hand from the well-known text-object template. No PDF-writing
-// dependency needed for a fixture this small. withImage adds a real
-// /Subtype /Image XObject so the embedded-image detector has something
-// genuine to find — pixel content is irrelevant, only the dictionary shape.
-function buildMinimalPdf(text, { withImage = false } = {}) {
-  const escaped = text.replace(/([()\\])/g, '\\$1');
-  const rawStream = `BT /F1 12 Tf 10 100 Td (${escaped}) Tj ET`;
-  const compressed = deflateSync(Buffer.from(rawStream, 'latin1'));
-
-  const resources = withImage
-    ? '/Resources << /Font << /F1 4 0 R >> /XObject << /Im0 6 0 R >> >>'
-    : '/Resources << /Font << /F1 4 0 R >> >>';
-
-  const objects = [
-    '<< /Type /Catalog /Pages 2 0 R >>',
-    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
-    `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 200] ${resources} /Contents 5 0 R >>`,
-    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
-  ];
-
-  let pdf = '%PDF-1.4\n';
-  const offsets = [];
-  for (const body of objects) {
-    offsets.push(pdf.length);
-    pdf += `${offsets.length} 0 obj\n${body}\nendobj\n`;
-  }
-
-  offsets.push(pdf.length);
-  const streamHeader = `5 0 obj\n<< /Length ${compressed.length} /Filter /FlateDecode >>\nstream\n`;
-  const streamFooter = '\nendstream\nendobj\n';
-  let pdfBuf = Buffer.concat([
-    Buffer.from(pdf, 'latin1'),
-    Buffer.from(streamHeader, 'latin1'),
-    compressed,
-    Buffer.from(streamFooter, 'latin1'),
-  ]);
-
-  if (withImage) {
-    offsets.push(pdfBuf.length);
-    const imgBody = '6 0 obj\n<< /Type /XObject /Subtype /Image /Width 1 /Height 1 '
-      + '/ColorSpace /DeviceGray /BitsPerComponent 8 /Length 1 >>\nstream\n\x00\nendstream\nendobj\n';
-    pdfBuf = Buffer.concat([pdfBuf, Buffer.from(imgBody, 'latin1')]);
-  }
-
-  const xrefStart = pdfBuf.length;
-  let tail = `xref\n0 ${offsets.length + 1}\n0000000000 65535 f \n`;
-  for (const off of offsets) tail += `${String(off).padStart(10, '0')} 00000 n \n`;
-  tail += `trailer\n<< /Size ${offsets.length + 1} /Root 1 0 R >>\nstartxref\n${xrefStart}\n%%EOF`;
-
-  return Buffer.concat([pdfBuf, Buffer.from(tail, 'latin1')]);
-}
-
-// A minimal DOCX (a DEFLATE-compressed zip: word/document.xml, optionally
-// word/header1.xml, word/footer1.xml, word/media/image1.png). JSZip is a
-// devDependency scoped to building this throwaway fixture, nothing else.
-async function buildDocx({ body, header, footer, withImage = false } = {}) {
-  const { default: JSZip } = await import('jszip');
-  const zip = new JSZip();
-  zip.file('[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
-    + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
-    + '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
-    + '<Default Extension="xml" ContentType="application/xml"/>'
-    + '<Override PartName="/word/document.xml" '
-    + 'ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>'
-    + '</Types>');
-  zip.folder('_rels').file('.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
-    + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
-    + '<Relationship Id="rId1" '
-    + 'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" '
-    + 'Target="word/document.xml"/></Relationships>');
-  zip.folder('word').file('document.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
-    + '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
-    + `<w:body><w:p><w:r><w:t>${body}</w:t></w:r></w:p></w:body></w:document>`);
-  if (header) {
-    zip.folder('word').file('header1.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
-      + '<w:hdr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
-      + `<w:p><w:r><w:t>${header}</w:t></w:r></w:p></w:hdr>`);
-  }
-  if (footer) {
-    zip.folder('word').file('footer1.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
-      + '<w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
-      + `<w:p><w:r><w:t>${footer}</w:t></w:r></w:p></w:ftr>`);
-  }
-  if (withImage) {
-    // Content is irrelevant — extract-text.mjs only checks for the presence
-    // of anything under word/media/, matching how a real DOCX embeds a
-    // scanned card or screenshot.
-    zip.folder('word').folder('media').file('image1.png', Buffer.from([0x89, 0x50, 0x4e, 0x47]));
-  }
-  return zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
-}
+import { unlinkSync } from 'node:fs';
+import { buildMinimalPdf, buildDocx, corrupt, writeTemp } from './pdf-docx-fixtures.mjs';
 
 function matches(rules, text) {
   return rules.some((r) => (r.re.lastIndex = 0, r.re.test(text)));
 }
 
-export async function runSelfTest(RULES, extractText) {
+export async function runSelfTest(RULES, extractText, scan) {
   // Assembled at runtime, never written literally. A real number here made
   // the gate fail on itself; a synthetic one did too. Building the digits
   // instead keeps the scanner honest — no file in the repo contains a
@@ -189,6 +92,58 @@ export async function runSelfTest(RULES, extractText) {
   const { text: upperDocxText } = await extractText(await buildDocx({ body: dirty }), '.DOCX');
   record('uppercase .PDF dispatches to PDF extraction', matches(RULES, upperPdfText));
   record('uppercase .DOCX dispatches to DOCX extraction', matches(RULES, upperDocxText));
+
+  // 6. Compressed object stream (/ObjStm) — no raw /Subtype /Image anywhere
+  // in the file, so the old regex-only detector would have read this as
+  // clean. cannotVerify must catch it, and scan() must turn that into a
+  // gate-failing hit — proving the fix bites on both layers (extract-text.mjs
+  // AND no-pii.mjs), not just the flag being computed and then ignored.
+  const { hasImages: objStmHasImages, cannotVerify: objStmCannotVerify } = await extractText(
+    buildMinimalPdf(clean, { withObjStm: true }), '.pdf',
+  );
+  record('ObjStm PDF has no raw image signature (proves the fixture is a fair test)', objStmHasImages === false);
+  record('ObjStm PDF flagged cannotVerify', objStmCannotVerify === true);
+  const { cannotVerify: plainCannotVerify } = await extractText(buildMinimalPdf(clean), '.pdf');
+  record('plain PDF not flagged cannotVerify', plainCannotVerify === false);
+
+  // 7. scan() end-to-end, via real temp files — the layer the two fixes
+  // above actually live in. WHICH CHANGE TURNS EACH RED:
+  //   - reverting no-pii.mjs's catch block to `continue` on extraction
+  //     failure turns the corrupt-PDF/DOCX checks red (scan reports clean).
+  //   - reverting the cannotVerify wiring in scan() turns the ObjStm check
+  //     red (scan reports clean instead of a hit).
+  const tempPaths = [];
+  try {
+    const validPdf = writeTemp('valid.pdf', buildMinimalPdf(clean));
+    const validDocx = writeTemp('valid.docx', await buildDocx({ body: clean }));
+    const corruptPdf = writeTemp('corrupt.pdf', corrupt(buildMinimalPdf(clean)));
+    const corruptDocx = writeTemp('corrupt.docx', corrupt(await buildDocx({ body: clean })));
+    const objStmPdf = writeTemp('objstm.pdf', buildMinimalPdf(clean, { withObjStm: true }));
+    tempPaths.push(validPdf, validDocx, corruptPdf, corruptDocx, objStmPdf);
+
+    const validHits = await scan([validPdf, validDocx]);
+    record('valid, readable PDF+DOCX with no PII still pass (0 hits)', validHits.length === 0);
+
+    const corruptPdfHits = await scan([corruptPdf]);
+    record(
+      'corrupted PDF fails the gate closed (extraction-failed hit)',
+      corruptPdfHits.some((h) => h.rule === 'extraction-failed'),
+    );
+
+    const corruptDocxHits = await scan([corruptDocx]);
+    record(
+      'corrupted DOCX fails the gate closed (extraction-failed hit)',
+      corruptDocxHits.some((h) => h.rule === 'extraction-failed'),
+    );
+
+    const objStmHits = await scan([objStmPdf]);
+    record(
+      'ObjStm PDF fails the gate closed (compressed-object-stream hit)',
+      objStmHits.some((h) => h.rule === 'compressed-object-stream'),
+    );
+  } finally {
+    for (const p of tempPaths) unlinkSync(p);
+  }
 
   console.log(`self-test: ${found}/${planted} planted numbers caught (text, PDF, DOCX)`);
   console.log(`self-test: PDF extraction caught embedded number: ${foundPdf}`);

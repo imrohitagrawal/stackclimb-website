@@ -1,4 +1,9 @@
-// One behaviour: ?at=<plate-id> jumps to a plate without the smooth-scroll ride.
+// Two entry points, one behaviour: jump to a plate without the smooth-scroll
+// ride. `#<plate-id>` is the JS-free path — a real fragment link, resolved by
+// the browser before any script runs (DEF-2). `?at=<plate-id>` stays for
+// JS-enabled visitors who land on it already; both get the same instant jump
+// instead of the ~3s smooth-scroll (DEF-21) because global.css sets
+// scroll-behavior: smooth on the root.
 //
 // REMOVED 2026-08-09 (polish pass) — the leader-line machinery: overlayFor,
 // clearLeads, drawLead, and the .cap[data-target] listener loop, ~80 lines.
@@ -16,10 +21,14 @@
 
 const html = document.documentElement;
 
-const at = new URLSearchParams(location.search).get('at');
-if (at) {
+// ?at= wins if both are present (arriving with a query AND a fragment is not
+// a real case); the browser has already scrolled to the #id target on its
+// own by the time this script runs, so the id needs re-jumping too — not
+// just no-anim — to replace that scroll with the instant one.
+const id = new URLSearchParams(location.search).get('at') || location.hash.slice(1);
+if (id) {
   html.classList.add('no-anim');
-  const target = document.getElementById(at);
+  const target = document.getElementById(id);
   if (target) target.scrollIntoView({ behavior: 'auto', block: 'start' });
   // restore motion once the jumped-to state has painted; a timer (not rAF)
   // so it also fires in throttled or background tabs

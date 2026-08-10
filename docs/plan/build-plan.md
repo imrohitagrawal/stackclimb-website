@@ -59,7 +59,7 @@ Ordered by severity. Each is a separate branch and PR.
 | # | Defect | Action | Gate |
 |---|---|---|---|
 | 2.1 | DEF-5 — contrast fails on 4 plates, 22 nodes | Re-derive the opacity ramp per ground, not globally | Per-plate axe green on all 7 |
-| 2.2 | DEF-2 — `?at=` deep links are JS-only | Server-render the target plate, or make anchors work without JS | No-JS walkthrough lands on the right plate |
+| 2.2 | ~~DEF-2~~ — `?at=` deep links are JS-only | **Fixed 2026-08-10 (pr3-no-js-resilience).** Server-rendering was out of scope (no `functions/` dir, pure `output:'static'`). Every plate already carried a real `id`; `#<plate-id>` resolves natively with no JS. `plates.js` extended to also read `location.hash` so JS-enabled visitors get the same instant jump via `#` that `?at=` gave. AGENTS.md's documented interface corrected from `?at=` to `#id`. | `tests/no-js-nav.spec.js` — `javaScriptEnabled:false`, `/#citevyn` lands the plate, `/?at=citevyn` does not |
 | 2.3 | DEF-3 — zero font preloads | `rel="preload"` for the two Latin faces in the LCP path | Preload present; LCP measured before and after |
 | 2.4 | 496 KB of PNGs = 60% of the build | Re-encode `og.png` and `paint-grain.png`; consider WebP/AVIF | Build under 400 KB, no visible quality loss |
 

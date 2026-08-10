@@ -437,7 +437,12 @@ Playwright, not headless Chrome — plain `chrome --screenshot` does not execute
 captures blank pages. Serve with an explicit `text/html; charset=utf-8`; Python's
 `http.server` omits the charset and renders UTF-8 as mojibake.
 
-The home page supports `?at=<plate-id>` for direct navigation to a plate.
+The home page supports `#<plate-id>` for direct navigation to a plate — a real fragment link,
+resolved by the browser before any script runs, so it works with JavaScript disabled (DEF-2).
+`?at=<plate-id>` remains supported for JS-enabled visitors who land on it already; both get the
+same instant jump instead of the ~3s `scroll-behavior: smooth` ride (DEF-21). `#<plate-id>` is
+the documented, no-JS-safe interface — `?at=` was never public-facing (it appears only in this
+repo's own docs and tooling).
 
 ## Commands
 

@@ -17,31 +17,65 @@
 //      instead of silently passing, any .docx/.pdf carrying an embedded
 //      image is flagged for a human, via `hasImages`. Fail closed, not
 //      silently clean.
-//   3. A PDF that cannot be parsed at all (corrupted, truncated, password-
-//      encrypted) — extractPdf/extractDocx throw and the caller fails the
-//      gate closed rather than skip the file. A PDF whose object graph is
-//      partly compressed (/ObjStm, /Type /XRef) can hide an image dictionary
-//      from the raw-byte scan — flagged via `cannotVerify` instead of trying
-//      to decompress untrusted PDF internals.
+//   3. A PDF/DOCX that cannot be parsed at all (corrupted, truncated,
+//      password-encrypted) — extractPdf/extractDocx throw and the caller
+//      fails the gate closed rather than skip the file. A PDF whose object
+//      graph is partly compressed (/ObjStm, /Type /XRef) can hide an image
+//      dictionary from the raw-byte scan — flagged via `cannotVerify`
+//      instead of trying to decompress untrusted PDF internals.
+//   4. A PDF/DOCX that parses WITHOUT throwing but degrades silently — a
+//      corrupted content stream, or a stripped document body, that pdf-parse
+//      or mammoth reads to completion and hands back near-empty text instead
+//      of raising an error. round 4: measured that a flipped byte inside an
+//      otherwise-valid FlateDecode content stream makes pdf-parse return ""
+//      per page with no exception at all, and a technically-valid DOCX with
+//      an empty <w:body> makes mammoth return "" with no message either. Both
+//      would previously read as hasImages:false, cannotVerify:false, empty
+//      text — reported clean with zero hits, the exact fail-open pattern
+//      case 3 was supposed to close, one layer deeper. Caught the same way:
+//      implausibly little extracted text for the document's size (PDF: chars
+//      per page; DOCX: total chars) sets `cannotVerify` with
+//      `reason: 'sparse-text'`.
 //
 // WHICH CHANGE TURNS IT RED: revert either branch below to the old
 // readFileSync passthrough and `node tests/no-pii.mjs --self-test` fails on
 // the PDF/DOCX assertions — proven in the commit that added this file. The
 // self-test fixtures are compressed (DOCX: DEFLATE; PDF: FlateDecode) so a
 // passthrough that never decodes cannot see the planted digits by accident.
+// Reverting the sparse-text thresholds below to 0 (i.e. removing the check)
+// fails the round-4 self-test assertions specifically: a corrupted-stream
+// PDF and an empty-body DOCX that parse cleanly but return near-nothing.
 //
 // Run:  imported by tests/no-pii.mjs; no standalone CLI.
 
 import { readFileSync } from 'node:fs';
 import { extname } from 'node:path';
 
+// Deliberately low floors, chosen to bite on total degradation (0 chars —
+// what pdf-parse/mammoth actually return when they silently give up, per
+// the round-4 measurement) while staying well clear of the self-test's own
+// short, real fixture text (~25-35 chars). A real resume/CV page carries
+// hundreds of characters; nothing this low should ever false-positive on
+// genuine content, so there is no tension between "catch degradation" and
+// "don't cry wolf" at this threshold. False positives above this floor are
+// cheap (a human looks); false negatives below it are the thing the gate
+// exists to prevent.
+const MIN_CHARS_PER_PDF_PAGE = 15;
+const MIN_DOCX_CHARS = 15;
+
 async function extractPdf(input) {
   const { PDFParse } = await import('pdf-parse');
   const parser = new PDFParse({ data: input });
   let text;
+  let pageCount;
   try {
     const result = await parser.getText();
     text = result.text;
+    // `total` is pdf-parse's page count, present even when every page came
+    // back empty — it comes from the (uncorrupted) page tree, not from the
+    // (possibly corrupted) content streams. Falls back to 1 so a division
+    // below never hits 0/0.
+    pageCount = result.total || 1;
   } finally {
     await parser.destroy();
   }
@@ -60,9 +94,18 @@ async function extractPdf(input) {
   // machinery than a security gate should trust; the conservative fix is to
   // not claim certainty. cannotVerify fails the file closed the same way an
   // embedded image does, rather than risk a false "clean".
-  const cannotVerify = !hasImages
-    && (/\/Type\s*\/ObjStm\b/.test(raw) || /\/Type\s*\/XRef\b/.test(raw));
-  return { text, hasImages, cannotVerify };
+  const hasCompressedObjects = /\/Type\s*\/ObjStm\b/.test(raw) || /\/Type\s*\/XRef\b/.test(raw);
+  // A single flipped byte inside an otherwise well-formed FlateDecode
+  // content stream does not make pdf-parse throw — it makes pdf-parse
+  // return "" for that page and carry on, per-page, silently. Strip
+  // pdf-parse's own "-- N of M --" page separators before counting, so the
+  // library's boilerplate can't pad a genuinely empty page into looking like
+  // content.
+  const meaningfulChars = text.replace(/\n\n--\s*\d+\s*of\s*\d+\s*--\n\n/g, '').replace(/\s+/g, '');
+  const sparseText = (meaningfulChars.length / pageCount) < MIN_CHARS_PER_PDF_PAGE;
+  const cannotVerify = hasImages ? false : (hasCompressedObjects || sparseText);
+  const reason = hasCompressedObjects ? 'compressed-objects' : (sparseText ? 'sparse-text' : undefined);
+  return { text, hasImages, cannotVerify, reason };
 }
 
 function stripXmlTags(xml) {
@@ -90,14 +133,28 @@ async function extractDocx(input) {
   }
 
   const text = [bodyResult.value, ...extraParts].join('\n');
-  return { text, hasImages, cannotVerify: false };
+  // Same class of gap as the PDF path: a technically-valid DOCX with a
+  // stripped or empty <w:body> makes mammoth return "" with zero warning
+  // messages — no throw, nothing to catch. Measured directly (round 4).
+  // Guard against hasImages the same way the PDF branch does: an image-only
+  // DOCX (a scanned card, nothing else) is already caught by hasImages and
+  // does not also need the sparse-text label.
+  const meaningfulChars = text.replace(/\s+/g, '');
+  const sparseText = meaningfulChars.length < MIN_DOCX_CHARS;
+  const cannotVerify = hasImages ? false : sparseText;
+  const reason = !hasImages && sparseText ? 'sparse-text' : undefined;
+  return { text, hasImages, cannotVerify, reason };
 }
 
 // Accepts either a file path (string) or an in-memory Buffer, so the
 // self-test can build fixtures without touching disk. Always returns
-// { text, hasImages, cannotVerify } — both flags false for every
-// non-binary format, since only PDF/DOCX can hide contact details behind
-// pixels or compressed internals.
+// { text, hasImages, cannotVerify, reason } — hasImages/cannotVerify false
+// and reason undefined for every non-binary format, since only PDF/DOCX can
+// hide contact details behind pixels, compressed internals, or a silently
+// degraded parse. `reason` (set only when cannotVerify is true) is one of
+// 'compressed-objects' (PDF /ObjStm or /Type /XRef) or 'sparse-text' (PDF or
+// DOCX extraction returned implausibly little text) — the caller uses it to
+// pick the right failure message.
 //
 // Throws — deliberately, does not catch — when the PDF/DOCX cannot be
 // parsed at all (corrupted, truncated, password-encrypted). The caller

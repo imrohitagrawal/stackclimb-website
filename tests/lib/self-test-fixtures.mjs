@@ -15,6 +15,10 @@
 //      /Subtype /Image anywhere in the file, is flagged cannotVerify
 //   8. a corrupted/truncated PDF or DOCX fails scan() closed
 //      (extraction-failed hit, non-zero exit) instead of scanning as clean
+//   9. round 4: a PDF/DOCX that parses WITHOUT throwing but returns
+//      implausibly little text (a same-length byte-flip inside a valid
+//      FlateDecode stream; a technically-valid, empty <w:body>) fails scan()
+//      closed (sparse-extraction hit) instead of reporting zero PII hits
 // plus one clean fixture of each kind to prove no false positives.
 //
 // WHICH CHANGE TURNS IT RED: stub tests/lib/extract-text.mjs's .pdf/.docx
@@ -106,7 +110,34 @@ export async function runSelfTest(RULES, extractText, scan) {
   const { cannotVerify: plainCannotVerify } = await extractText(buildMinimalPdf(clean), '.pdf');
   record('plain PDF not flagged cannotVerify', plainCannotVerify === false);
 
-  // 7. scan() end-to-end, via real temp files — the layer the two fixes
+  // 7. Silently-degraded extraction, round 4 — the parser reports SUCCESS
+  // (no throw) but hands back near-empty text. This is the gap a
+  // throws-only fail-closed check cannot see: hasImages false, no /ObjStm,
+  // yet the document that "scanned clean" was never actually read.
+  //   - degradeStream flips interior bytes of a valid FlateDecode content
+  //     stream without changing its length; pdf-parse inflates it, gets
+  //     nothing usable, and returns "" per page instead of throwing
+  //     (measured against pdf-parse 2.4.5 — this does NOT throw, unlike
+  //     truncating the stream, which does and is already covered by the
+  //     corrupt()/extraction-failed path below).
+  //   - emptyBody is a well-formed, valid <w:body></w:body>; mammoth returns
+  //     "" with zero warning messages (measured).
+  const { cannotVerify: degradedPdfCannotVerify, reason: degradedPdfReason } = await extractText(
+    buildMinimalPdf(dirty, { degradeStream: true }), '.pdf',
+  );
+  record('degraded-stream PDF flagged cannotVerify (sparse-text)',
+    degradedPdfCannotVerify === true && degradedPdfReason === 'sparse-text');
+  const { cannotVerify: emptyDocxCannotVerify, reason: emptyDocxReason } = await extractText(
+    await buildDocx({ emptyBody: true }), '.docx',
+  );
+  record('empty-body DOCX flagged cannotVerify (sparse-text)',
+    emptyDocxCannotVerify === true && emptyDocxReason === 'sparse-text');
+  const { cannotVerify: realPdfCannotVerify } = await extractText(buildMinimalPdf(dirty), '.pdf');
+  record('real-content PDF NOT flagged sparse (no false positive)', realPdfCannotVerify === false);
+  const { cannotVerify: realDocxCannotVerify } = await extractText(await buildDocx({ body: dirty }), '.docx');
+  record('real-content DOCX NOT flagged sparse (no false positive)', realDocxCannotVerify === false);
+
+  // 8. scan() end-to-end, via real temp files — the layer the two fixes
   // above actually live in. WHICH CHANGE TURNS EACH RED:
   //   - reverting no-pii.mjs's catch block to `continue` on extraction
   //     failure turns the corrupt-PDF/DOCX checks red (scan reports clean).
@@ -119,7 +150,11 @@ export async function runSelfTest(RULES, extractText, scan) {
     const corruptPdf = writeTemp('corrupt.pdf', corrupt(buildMinimalPdf(clean)));
     const corruptDocx = writeTemp('corrupt.docx', corrupt(await buildDocx({ body: clean })));
     const objStmPdf = writeTemp('objstm.pdf', buildMinimalPdf(clean, { withObjStm: true }));
-    tempPaths.push(validPdf, validDocx, corruptPdf, corruptDocx, objStmPdf);
+    const degradedPdf = writeTemp('degraded.pdf', buildMinimalPdf(dirty, { degradeStream: true }));
+    const emptyDocx = writeTemp('empty.docx', await buildDocx({ emptyBody: true }));
+    tempPaths.push(
+      validPdf, validDocx, corruptPdf, corruptDocx, objStmPdf, degradedPdf, emptyDocx,
+    );
 
     const validHits = await scan([validPdf, validDocx]);
     record('valid, readable PDF+DOCX with no PII still pass (0 hits)', validHits.length === 0);
@@ -140,6 +175,24 @@ export async function runSelfTest(RULES, extractText, scan) {
     record(
       'ObjStm PDF fails the gate closed (compressed-object-stream hit)',
       objStmHits.some((h) => h.rule === 'compressed-object-stream'),
+    );
+
+    // Round 4: parses without error, degrades silently — must still fail
+    // closed. WHICH CHANGE TURNS THIS RED: removing the sparse-text check
+    // from extract-text.mjs (or reverting no-pii.mjs's reason branch) makes
+    // this report 0 hits, because the PII text itself was lost to the same
+    // degradation the check exists to catch — a plain regex scan of the
+    // near-empty extracted text finds nothing to flag either.
+    const degradedPdfHits = await scan([degradedPdf]);
+    record(
+      'silently-degraded PDF fails the gate closed (sparse-extraction hit)',
+      degradedPdfHits.some((h) => h.rule === 'sparse-extraction'),
+    );
+
+    const emptyDocxHits = await scan([emptyDocx]);
+    record(
+      'empty-body DOCX fails the gate closed (sparse-extraction hit)',
+      emptyDocxHits.some((h) => h.rule === 'sparse-extraction'),
     );
   } finally {
     for (const p of tempPaths) unlinkSync(p);

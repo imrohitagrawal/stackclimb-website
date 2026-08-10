@@ -30,10 +30,24 @@ import { join } from 'node:path';
 // withObjStm adds a compressed-object-stream marker with NO raw
 // /Subtype /Image text anywhere, so cannotVerify is the only thing that can
 // catch it (DEF-37 round 3).
-export function buildMinimalPdf(text, { withImage = false, withObjStm = false } = {}) {
+export function buildMinimalPdf(text, {
+  withImage = false, withObjStm = false, degradeStream = false,
+} = {}) {
   const escaped = text.replace(/([()\\])/g, '\\$1');
   const rawStream = `BT /F1 12 Tf 10 100 Td (${escaped}) Tj ET`;
-  const compressed = deflateSync(Buffer.from(rawStream, 'latin1'));
+  let compressed = deflateSync(Buffer.from(rawStream, 'latin1'));
+  // Flips interior bytes of an otherwise-valid FlateDecode stream, keeping
+  // its length (and the /Length dictionary entry, computed below from this
+  // same buffer) identical. This is NOT truncation — a shortened stream
+  // makes pdf-parse throw "Bad encoding in flate stream" (measured), which
+  // is already covered by the corrupt()/extraction-failed path below. A
+  // same-length interior flip is what lets zlib's inflate give up and hand
+  // back "" per page while pdf-parse reports success — the silent-degrade
+  // case round 4 exists to close. Measured against pdf-parse 2.4.5.
+  if (degradeStream) {
+    compressed = Buffer.from(compressed);
+    for (let i = 5; i < Math.min(compressed.length, 15); i++) compressed[i] = 0;
+  }
 
   const resources = withImage
     ? '/Resources << /Font << /F1 4 0 R >> /XObject << /Im0 6 0 R >> >>'
@@ -89,7 +103,9 @@ export function buildMinimalPdf(text, { withImage = false, withObjStm = false } 
 // A minimal DOCX (a DEFLATE-compressed zip: word/document.xml, optionally
 // word/header1.xml, word/footer1.xml, word/media/image1.png). JSZip is a
 // devDependency scoped to building this throwaway fixture, nothing else.
-export async function buildDocx({ body, header, footer, withImage = false } = {}) {
+export async function buildDocx({
+  body, header, footer, withImage = false, emptyBody = false,
+} = {}) {
   const { default: JSZip } = await import('jszip');
   const zip = new JSZip();
   zip.file('[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
@@ -104,9 +120,17 @@ export async function buildDocx({ body, header, footer, withImage = false } = {}
     + '<Relationship Id="rId1" '
     + 'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" '
     + 'Target="word/document.xml"/></Relationships>');
+  // emptyBody: a technically-valid, fully well-formed <w:body></w:body> with
+  // no content — what mammoth sees from a DOCX whose text got stripped out
+  // during a botched save or conversion. It does not throw and adds no
+  // warning message (measured); the only signal it left is the empty string
+  // it returned, which is exactly what the sparse-text check is for.
+  const bodyXml = emptyBody
+    ? '<w:body></w:body>'
+    : `<w:body><w:p><w:r><w:t>${body}</w:t></w:r></w:p></w:body>`;
   zip.folder('word').file('document.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
     + '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
-    + `<w:body><w:p><w:r><w:t>${body}</w:t></w:r></w:p></w:body></w:document>`);
+    + `${bodyXml}</w:document>`);
   if (header) {
     zip.folder('word').file('header1.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n'
       + '<w:hdr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'

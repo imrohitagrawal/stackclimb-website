@@ -84,30 +84,41 @@ async function scan(list) {
           file: f,
           line: 0,
           rule: 'extraction-failed',
-          match: `could not be read (${err.message}) — cannot be text-scanned; treated as a failure, needs manual review`,
+          match: `could not be read (${err.message}) — cannot be text-scanned; `
+            + 'treated as a failure, needs manual review',
         });
       } else {
         console.error(`  ! skipped ${f}: extraction failed (${err.message})`);
       }
       continue;
     }
-    const { text, hasImages, cannotVerify } = result;
-    // A PDF/DOCX with an embedded image, OR a PDF whose object streams are
+    const { text, hasImages, cannotVerify, reason } = result;
+    // A PDF/DOCX with an embedded image, OR one whose object streams are
     // compressed (PDF 1.5+ /ObjStm — an image XObject dictionary can live
-    // inside one, invisible to the raw-byte /Subtype /Image regex), cannot
-    // be text-scanned for PII with confidence. Fail closed: flag it for a
-    // human instead of passing it silently, which is what let the two real
-    // DEF-37 DOCX files through in round 1.
+    // inside one, invisible to the raw-byte /Subtype /Image regex), OR one
+    // that parsed without error but handed back implausibly little text (a
+    // corrupted content stream or a stripped document body pdf-parse/mammoth
+    // silently gave up on — round 4), cannot be text-scanned for PII with
+    // confidence. Fail closed: flag it for a human instead of passing it
+    // silently, which is what let the two real DEF-37 DOCX files through in
+    // round 1, and what a silently-degraded parse would have let through
+    // here.
     if (hasImages || cannotVerify) {
-      hits.push({
-        file: f,
-        line: 0,
-        rule: hasImages ? 'embedded-image' : 'compressed-object-stream',
-        match: hasImages
-          ? 'contains an embedded image — cannot be text-scanned; needs manual review'
-          : 'uses compressed object streams (/ObjStm) — an image could be hidden inside; '
-            + 'cannot be fully verified; needs manual review',
-      });
+      let rule;
+      let match;
+      if (hasImages) {
+        rule = 'embedded-image';
+        match = 'contains an embedded image — cannot be text-scanned; needs manual review';
+      } else if (reason === 'sparse-text') {
+        rule = 'sparse-extraction';
+        match = 'extraction returned implausibly little text for this document — the parse may '
+          + 'have silently degraded instead of failing; cannot be verified clean; needs manual review';
+      } else {
+        rule = 'compressed-object-stream';
+        match = 'uses compressed object streams (/ObjStm) — an image could be hidden inside; '
+          + 'cannot be fully verified; needs manual review';
+      }
+      hits.push({ file: f, line: 0, rule, match });
     }
     for (const rule of RULES) {
       for (const m of text.matchAll(rule.re)) {

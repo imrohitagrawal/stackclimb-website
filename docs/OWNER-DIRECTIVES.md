@@ -70,7 +70,7 @@ forgotten and later recovered — kept visible on purpose).
 | P-9 | Interactive résumé | OPEN | Plan phase 4.4 |
 | P-10 | Comments facility, low priority | OPEN | Giscus recommended, not built |
 | P-11 | NarraTwin avatar as the site's representative | OPEN | Plan phase 7.3 |
-| P-12 | Logo — Claude produces options before opening the owner's | OPEN | Plan phase 5 |
+| P-12 | Logo — Claude produces options before opening the owner's | **BYPASSED, not honoured — flagging it here rather than hiding it** | `hero-animations-wordmark` (08-11) processed `assets/inbox/brand/wordmark-dark.png` directly into the nav wordmark without first producing independent candidates. The task instruction that started that session named the exact file to process and said "do not retype the text" — which reads as the owner having already supplied and chosen the asset, the same shape as D48's icon (his decision, taken directly, over the comparison process). But that reading was never checked against this row before starting, which is exactly the failure `AGENTS.md`'s "disagree before you comply" rule exists to prevent — the conflict should have been raised, not silently resolved either way. Recorded as a process miss, not retroactively excused |
 | **P-13** | **Contact details as labelled hyperlinks, never bare text** | **DONE** — fixed on `fix/qa-review-findings`, third ask | `index.astro` contact plate · gate in `tests/contact.spec.js` |
 
 ## Infrastructure

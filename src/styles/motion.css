@@ -1,0 +1,88 @@
+/* stackclimb.com — Phase 2 motion: scroll-linked plate entry + the footer
+   animation toggle (docs/HANDOFF.md item #1, "Untouched" until this file).
+   ---------------------------------------------------------------------------
+   Own file, not global.css: that file is grandfathered at a 500-line ceiling
+   it may not exceed (D8), and this is one concern — same reasoning as
+   avatar.css/overview.css.
+
+   Two DISTINCT mechanisms coexist here on purpose, per the approved plan:
+   - `html.no-anim` — transient, ~400ms, set by src/scripts/plates.js during
+     an anchor-jump so the jump is instant rather than a 3s smooth-scroll.
+   - `[data-motion='off']` — a PERSISTED visitor preference, set by
+     src/scripts/motion-toggle.js and read from localStorage before first
+     paint (Layout.astro's inline head script).
+   They share the same CSS shape (kill all transition/animation) but are
+   never merged into one class — a permanent preference and a transient
+   suppression are different facts and the code should say so.
+   --------------------------------------------------------------------------- */
+
+/* ---------- Scroll-linked plate entry (improve-animations plan 001) ---------- */
+
+:root {
+  /* Already this repo's entrance curve — nav.css:130 uses it for the mobile
+     menu panel's @starting-style entrance. Reused, not reinvented. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* The hero (`.hero`, plate id="top") is deliberately excluded — it is above
+   the fold and visible on first paint; delaying its opacity would cost
+   perceived load speed and is not a scroll entrance. */
+.plate:not(.hero) .plate-grid > * {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 420ms var(--ease-out), transform 420ms var(--ease-out);
+}
+.plate:not(.hero) .plate-grid > *:nth-child(1) { transition-delay: 0ms; }
+.plate:not(.hero) .plate-grid > *:nth-child(2) { transition-delay: 60ms; }
+.plate:not(.hero) .plate-grid > *:nth-child(3) { transition-delay: 120ms; }
+
+.plate.in-view .plate-grid > * {
+  opacity: 1;
+  transform: none;
+}
+
+/* No JS, reduced motion, the footer toggle off, or a transient anchor-jump:
+   every plate is shown fully assembled immediately, never hidden-by-default.
+   `html:not(.motion-ready)` is the DEF-1 shape this repo already applies
+   elsewhere — a control (here, the reveal) that dies with the script must
+   never take content down with it. */
+html:not(.motion-ready) .plate:not(.hero) .plate-grid > *,
+[data-motion='off'] .plate:not(.hero) .plate-grid > *,
+html.no-anim .plate:not(.hero) .plate-grid > * {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plate:not(.hero) .plate-grid > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ---------- Footer animation toggle (item 5) ---------- */
+
+.motion-toggle {
+  font: inherit;
+  font-size: 0.66rem; font-weight: 520;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: currentColor;
+  background: none;
+  border: 1px solid color-mix(in srgb, currentColor 40%, transparent);
+  padding: 0.4rem 0.85rem;
+  margin-top: 0.9rem;
+  cursor: pointer;
+  min-height: 44px;
+  transition: border-color 0.25s ease, color 0.25s ease;
+}
+.motion-toggle:hover,
+.motion-toggle:focus-visible {
+  border-color: var(--ochre);
+  color: var(--ochre);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-toggle { transition: none; }
+}

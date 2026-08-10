@@ -5,6 +5,13 @@
    exactly his files. Imported so the asset is content-hashed, unlike /public
    (the DEF-24 trap). */
 import brandMark from '../assets/brand-mark-nav.png';
+/* Item 7. Real "StackClimb" wordmark, cropped from the owner's supplied
+   dark-background/white variant to text only (the icon ships separately as
+   brandMark, D48's own correction — this does not repeat it). Background
+   stripped to transparency and downscaled the same way D48 did: distance-
+   thresholded against the sampled corner colour, box (area-average) filter
+   so it cannot overshoot. No recolouring — see docs/STATUS.md D55. */
+import wordmark from '../assets/wordmark-nav.png';
 import '@fontsource-variable/bodoni-moda';
 import '@fontsource-variable/bodoni-moda/wght-italic.css';
 import '@fontsource-variable/archivo';
@@ -18,7 +25,8 @@ import '../styles/print.css';
    against a grandfathered ceiling of 500 it may not exceed. */
 import '../styles/avatar.css';
 import '../styles/overview.css';
-import '../styles/contact.css';
+/* Item 4/5. Phase 2 motion — new file, same reason as the three above. */
+import '../styles/motion.css';
 
 interface Props {
   title?: string;
@@ -105,6 +113,19 @@ const EMAIL = 'mailto:rohit.ra.agrawal@gmail.com';
     {!noindex && <meta property="og:url" content={canonical} />}
     <meta property="og:image" content="https://stackclimb.com/og.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    {/* Item 5. Read BEFORE first paint — no flash of the wrong state, same
+        reason `--bg`/`data-theme` are set on <html> above. First real
+        per-visitor preference this site persists. `prefers-reduced-motion`
+        is NOT read here — it always wins at the CSS layer independently
+        (motion.css, Artefact.astro, nav.css), never overridden by this
+        toggle. */}
+    <script is:inline>
+      try {
+        if (localStorage.getItem('motion') === 'off') {
+          document.documentElement.dataset.motion = 'off';
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <!--
@@ -150,14 +171,18 @@ const EMAIL = 'mailto:rohit.ra.agrawal@gmail.com';
         JavaScript to open or navigate — nav.js only adds close-on-navigate,
         Escape, and click-outside, all enhancement (RCA-004). */}
     <header class="site-nav">
-      {/* The lockup the comparison found workable: the mark reads as a
-          monogram at nav height, the Bodoni name carries the identity. The
-          img is decorative (alt="") — the link's accessible name is the name
-          beside it. On phones this is the first visible mark the site has
-          had: the tracked wordmark has always been hidden below 900px. */}
+      {/* Item 7, reordered: chevron, then the real StackClimb wordmark
+          image, then the personal name. Wordmark visible at every width
+          (unlike the old lowercase `<em>` it replaces — docs/brand/README.md
+          had the casing wrong). `.brand-name` hides below 900px in the SAME
+          slot the old `<em>` did: measured, wordmark + name overflowed the
+          bar at 390px (menu button right edge landed past the viewport) —
+          the identity that drops on a phone flips to the wordmark, which
+          still gives the link an accessible name alone. */}
       <a class="brand" href="/">
         <img class="brand-mark" src={brandMark.src} alt="" width="70" height="84" />
-        Rohit Agrawal<em>stackclimb</em>
+        <img class="wordmark" src={wordmark.src} alt="StackClimb" width="388" height="72" />
+        <span class="brand-name">Rohit Agrawal</span>
       </a>
       <nav aria-label="Site">
         {NAV.map((l) => <a href={l.href}>{l.label}</a>)}
@@ -188,11 +213,27 @@ const EMAIL = 'mailto:rohit.ra.agrawal@gmail.com';
           words needs no skill, writing new ones does. Any replacement is Phase 0 work
           with brand-voice. A colophon may simply be a colophon. */}
       <p>© 2026 Rohit Agrawal · Bengaluru</p>
+      {/* Item 5. docs/HANDOFF.md's spec: animation ON by default, a footer
+          toggle, state persisted in localStorage. A real <button> with
+          aria-pressed — no CSS-only mechanism can persist state across a
+          page load, so unlike the mobile menu this is real script
+          (src/scripts/motion-toggle.js), not enhancement over a working
+          native control. */}
+      <button
+        type="button"
+        class="motion-toggle"
+        id="motion-toggle"
+        aria-pressed="false"
+      >
+        Animation: <span data-motion-label>on</span>
+      </button>
     </footer>
 
     <script>
       import '../scripts/plates.js';
       import '../scripts/nav.js';
+      import '../scripts/motion-toggle.js';
+      import '../scripts/reveal.js';
     </script>
   </body>
 </html>

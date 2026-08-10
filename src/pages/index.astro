@@ -9,11 +9,9 @@ import Overview from '../components/Overview.astro';
 ---
 
 <Layout>
-  <!-- Plate Nº 00 — the sitter -->
+  <!-- The hero — the sitter's record -->
   <Plate
     id="top"
-    num="00"
-    name="The Record"
     class="hero"
   >
     <div class="plate-grid">
@@ -54,13 +52,13 @@ import Overview from '../components/Overview.astro';
             loading="eager"
             decoding="async"
           />
-          <strong class="lede-name">Rohit Agrawal</strong> — principal engineer, fourteen years
-          deciding whether software was safe to release, now building AI systems that make that
-          decision about themselves. Citation, disclosed uncertainty, honest refusal, and
-          evaluation gates that can block a release.
+          <strong class="lede-name">Rohit Agrawal</strong> — principal engineer. From
+          understanding the requirement to what's actually running in production — and feeding
+          what I learn back into the next release. Fourteen years deciding whether software was
+          safe to release; now I build AI systems that make that decision about themselves.
         </p>
         <div class="ctas">
-          <a class="btn primary" href="#overview">What he built</a>
+          <a class="btn primary" href="#overview">What I built</a>
           <a class="btn ghost" href="/cv">CV</a>
           <a class="btn ghost" href="mailto:rohit.ra.agrawal@gmail.com">Email me</a>
         </div>
@@ -100,19 +98,24 @@ import Overview from '../components/Overview.astro';
           ]}
         />
       </div>
+      {/* O-HERO resolved. The refusal card that used to lead the hero moved
+          to the CiteVyn plate below (real data, only its position moved) —
+          out of context "REFUSED" reads as broken before a visitor learns
+          it's a deliberate refusal. Replaced with the pull-quote (fills the
+          whitespace freed by the label removal, item 3) and a proof strip
+          of real counted figures — the first thing read is evidence, not
+          a "no." */}
       <div class="plate-figure">
-        <Artefact
-          kind="CiteVyn, golden case claude_api_006"
-          verdict="Refused"
-          tone="fail"
-          line="“What is the capital of France?”"
-          fields={[
-            { k: 'citations', v: '0' },
-            { k: 'domain', v: 'unsupported' },
-            { k: 'confidence', v: 'none' },
-            { k: 'answered', v: 'No — by policy' },
+        <p class="hero-quote">
+          "If your AI features work in the demo and not in the release, we should talk."
+        </p>
+        <CapStrip
+          label="The record, in numbers"
+          items={[
+            { t: 'Systems built', d: '6' },
+            { t: 'Release gates', d: '4 of 6' },
+            { t: 'Golden cases passed', d: '52 / 52' },
           ]}
-          source="It plainly knows the answer and refuses anyway, because no indexed source supports it. Verbatim from citevyn/backend/artifacts/golden_report.json, recorded 17 July 2026."
         />
       </div>
     </div>
@@ -123,13 +126,11 @@ import Overview from '../components/Overview.astro';
       first viewport said nothing about what any system does. */}
   <Plate
     id="overview"
-    num="01"
-    name="The Contact Sheet"
     state="Six systems"
   >
     <div class="plate-grid one-col">
       <div class="plate-copy wide">
-        <h2 class="plate-title tight">What he built</h2>
+        <h2 class="plate-title tight">What I built</h2>
         <Overview />
       </div>
     </div>
@@ -143,8 +144,6 @@ import Overview from '../components/Overview.astro';
       should actually reach. */}
   <Plate
     id="citevyn"
-    num="02"
-    name="CiteVyn"
     state="Live — cold-starts"
   >
     <div class="plate-grid">
@@ -180,6 +179,24 @@ import Overview from '../components/Overview.astro';
           ]}
           source="citevyn/backend/artifacts/golden_report.json at df8cfc3. Read from the recorded run, not restated."
         />
+        {/* O-HERO resolved (8a). Relocated from the hero, not reinvented —
+            same real data, only its position moved; legible here since the
+            plate already states what question CiteVyn answers. `compact`
+            trims padding so two cards fit this column. */}
+        <Artefact
+          compact
+          kind="CiteVyn, golden case claude_api_006"
+          verdict="Refused"
+          tone="fail"
+          line="“What is the capital of France?”"
+          fields={[
+            { k: 'citations', v: '0' },
+            { k: 'domain', v: 'unsupported' },
+            { k: 'confidence', v: 'none' },
+            { k: 'answered', v: 'No — by policy' },
+          ]}
+          source="It plainly knows the answer and refuses anyway, because no indexed source supports it. Verbatim from citevyn/backend/artifacts/golden_report.json, recorded 17 July 2026."
+        />
         <CapStrip
           label="CiteVyn, captioned"
           items={[
@@ -198,8 +215,6 @@ import Overview from '../components/Overview.astro';
   <!-- Plate Nº 03 — Quorum-AI -->
   <Plate
     id="quorum"
-    num="03"
-    name="Quorum-AI"
     state="Live"
   >
     <div class="plate-grid">
@@ -253,8 +268,6 @@ import Overview from '../components/Overview.astro';
   <!-- Plate Nº 04 — SaafSaans -->
   <Plate
     id="saafsaans"
-    num="04"
-    name="SaafSaans"
     state="Deployed — sleeps when idle"
   >
     <div class="plate-grid">
@@ -317,8 +330,6 @@ import Overview from '../components/Overview.astro';
   <!-- Plate Nº 05 — NarraTwin -->
   <Plate
     id="narratwin"
-    num="05"
-    name="NarraTwin"
     state="Phase 1 — No-Go"
   >
     <div class="plate-grid">
@@ -369,8 +380,6 @@ import Overview from '../components/Overview.astro';
   <!-- Plate Nº 06 — the private work, on unpainted linen -->
   <Plate
     id="private"
-    num="06"
-    name="Kept Close"
     state="In progress — closed"
     theme="light"
   >
@@ -413,28 +422,16 @@ import Overview from '../components/Overview.astro';
   <!-- Plate Nº 07 — contact -->
   <Plate
     id="contact"
-    num="07"
-    name="The Sitting"
     class="contact"
   >
     <div class="plate-grid">
       <div class="plate-copy">
         <h2 class="plate-title">One message away</h2>
-        {/* 0.4, finally shipped. This plate used to open with a five-title job
-            list — the same "does not know what he wants" problem D40 fixed in
-            the hero ledger, which had simply RELOCATED here rather than gone.
-
-            The opening line is the owner's own sentence. positioning-phase0.md
-            §04 identifies it as the sharpest asset on record and D40 recorded
-            it as settled for this exact plate; it was never put on the page.
-            It is the amended voice rule (D24) working as intended: not his
-            urgency, the reader's problem.
-
-            The roles line stays underneath, plain and unpitched, so a recruiter
-            still gets the literal answer to "is this my req". */}
-        <p class="contact-hook">
-          If your AI features work in the demo and not in the release, we should talk.
-        </p>
+        {/* The demo/release line — positioning-phase0.md §04's sharpest
+            asset — now opens the HERO (item 1), not this plate; stating it
+            twice is the duplicate-statement pattern DEF-27/DEF-29 already
+            fixed. The roles-sought line, already here, is promoted to open
+            the plate on its own. */}
         <p>
           Open to senior and principal roles in AI platform engineering, LLMOps and
           forward-deployed AI — and to the evaluation and release-governance work that sits

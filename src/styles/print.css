@@ -1,0 +1,66 @@
+/* DEF-8, second half. cv.css already inverts /cv for paper (D31, first half).
+   This file ports the same treatment to every OTHER page — the seven plates
+   on / chiefly — so printing or exporting-to-PDF any page does not lose the
+   text. Site-wide because Layout.astro imports it once; `.plate:not(.cv)`
+   below is the seam that keeps /cv's own, more detailed print block in
+   cv.css as the sole authority for that page, so the two files can never
+   fight over which wins the cascade.
+
+   Root cause, unchanged from cv.css's own comment: browsers drop background
+   colours on paper by default, and every plate paints bone text ON a
+   background colour. Remove the background and the text is bone-on-white —
+   invisible. The fix is the same: ink text, transparent background, no
+   print-color-adjust (that would force the dark ground onto paper and burn
+   toner — cv.css's comment, still true here). */
+
+@media print {
+  html, body { background: transparent !important; }
+
+  /* global.css's fixed paint-grain layer prints as grey mottling and
+     repeats on every sheet — same finding as cv.css's own comment, this
+     time confirmed by looking at a print proof of / rather than /cv. */
+  body::before { display: none !important; }
+
+  .site-nav, .skip, .colophon { display: none !important; }
+
+  /* :not(.cv) leaves /cv to its own, already-verified block in cv.css. */
+  .plate:not(.cv), .plate:not(.cv) * {
+    color: var(--ink) !important;
+    background: transparent !important;
+  }
+
+  /* .links and .ctas are flex ROWS on screen (global.css:188, :298) — fine
+     for short button-style labels, but the hrefs revealed below can run to
+     full GitHub blob URLs with a commit hash. Left as a flex row, one long
+     revealed URL wraps inside its own item and the rest wrap to new flex
+     lines in whatever order the browser resizes them — found by looking at
+     a print proof, not by assuming inline content is always this cheap.
+     Print stacks both instead: one destination per line. */
+  .links, .ctas { display: block !important; }
+  .links a, .ctas a { display: block !important; margin-top: 0.4em; }
+
+  /* A link is a dead end on paper unless it says where it goes — mirrors
+     cv.css's .cv-contact/.cv-proj treatment. mailto: is skipped: a mail
+     address in the margin duplicates ledger text already on the page.
+     Every property here carries !important: .links a[target='_blank']::after
+     (global.css:201) already claims this pseudo-element for the external-
+     link icon, at higher specificity, with a fixed 0.58em box and an SVG
+     mask. Without overriding EVERY property that rule sets — not just
+     content — the href text this rule adds renders but is clipped to a
+     0.58em icon and masked into an invisible sliver: found by looking at a
+     print proof, where the label showed only a tiny arrow glyph. */
+  .plate-copy a::after {
+    content: ' (' attr(href) ')' !important;
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    background: none !important;
+    mask: none !important;
+    -webkit-mask: none !important;
+    font-size: 0.72em;
+    word-break: break-all;
+  }
+  .plate-copy a[href^='mailto:']::after {
+    content: '' !important;
+  }
+}

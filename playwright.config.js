@@ -24,6 +24,17 @@ export default defineConfig({
     url: 'http://localhost:4321',
     reuseExistingServer: false,
     timeout: 120_000,
+    // DEF-20 follow-up: Astro 7's `am-i-vibing` dependency detects an AI
+    // coding agent (CLAUDECODE, CURSOR_TRACE_ID, REPL_ID, etc. — see
+    // node_modules/astro/dist/cli/agent.js) and silently daemonizes `astro
+    // preview`, returning immediately with the server backgrounded. Playwright's
+    // webServer expects the command to stay in the foreground until it's killed;
+    // a daemonized server breaks that contract even though the server itself
+    // comes up fine. `ASTRO_PREVIEW_BACKGROUND` is the flag astro's own preview
+    // command checks (node_modules/astro/dist/cli/preview/index.js:40) to skip
+    // agent detection entirely — set here, not in npm run dev/preview, so only
+    // test runs are affected.
+    env: { ASTRO_PREVIEW_BACKGROUND: '1' },
   },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 900 } } },

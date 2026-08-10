@@ -124,18 +124,6 @@ body::before {
   max-width: 13rem;
   z-index: 6;
 }
-.plate-no {
-  font-size: 0.68rem; font-weight: 600;
-  letter-spacing: 0.24em; text-transform: uppercase;
-  opacity: 0.85;
-}
-.plate-no::after {
-  content: ''; display: block;
-  width: 2.2rem; height: 2px;
-  background: var(--accent);
-  margin: 0.45rem 0 0 auto;
-}
-
 /* The swatch tags are gone. They printed GROUND / CLOTH / THREAD on all seven
    plates — 21 lines of permanent type describing the site's own paint, in the
    highest-value space on the page, and two of the three lines were identical
@@ -263,6 +251,25 @@ body::before {
    1,107px in 900 and the recruiter's key block was cut mid-row). */
 .hero .plate-grid { row-gap: 1.1rem; }
 .hero .plate-figure .figure { max-height: 62vh; }
+
+/* Item 1/8b. The hero's right column no longer holds a record card — the
+   plate-tag label above it is gone (item 3) and the refusal card moved to
+   CiteVyn (item 8a), so this fills what this session measured as ~90-100px
+   of empty ground with a pull-quote, then a proof strip, instead of leaving
+   it as accidental dead space. */
+.hero .plate-figure { gap: 1.4rem; }
+.hero-quote {
+  /* Same title step DESIGN.md's ramp already defines for a quoted line —
+     .q (below) and the retired .contact-hook both used this exact clamp.
+     Reused, not approximated: AGENTS.md's own warning is that a design
+     system erodes through values nearly on the ramp, not one departure. */
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 460;
+  font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+  line-height: 1.4;
+  color: color-mix(in srgb, currentColor 92%, var(--ochre));
+}
 
 .hero h1 {
   font-family: var(--serif);
@@ -424,7 +431,6 @@ body::before {
     margin-bottom: 1.4rem;
     text-align: left; justify-items: start; max-width: none;
   }
-  .plate-no::after { margin-left: 0; }
   .ledger dd { text-align: left; }
   .ledger .row { grid-template-columns: 1fr; gap: 0.1rem; }
   .private-pair { grid-template-columns: 1fr; }

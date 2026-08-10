@@ -1,8 +1,6 @@
 ---
 interface Props {
   id: string;
-  num: string;
-  name: string;
   /* What the system is actually doing, right now. This is the fact the
      audience came for, so it sits in the plate's corner at the top of the
      page rather than inside a 9.6px caption cell four rows down.
@@ -13,7 +11,7 @@ interface Props {
   class?: string;
 }
 
-const { id, num, name, state, theme = 'dark', class: className } = Astro.props;
+const { id, state, theme = 'dark', class: className } = Astro.props;
 ---
 
 {/* `with-state` is decided HERE, at build time. It used to be a runtime
@@ -22,13 +20,23 @@ const { id, num, name, state, theme = 'dark', class: className } = Astro.props;
     and removed it on the next — a 54px flicker measured as the whole of a
     stable desktop CLS of 0.123 (found by /impeccable optimize, 08-09). A
     fact the template already knows must not be re-derived by the browser
-    mid-parse. */}
+    mid-parse.
+
+    The `Plate Nº {num} — {name}` label that used to live in this corner is
+    gone — owner's call: it changed zero substance (pure numbering chrome,
+    not content), kept only through inertia across two redesigns. `num`/
+    `name` props are gone with it (was: `id, num, name, state, theme,
+    class`) — unused props that no longer render anything would mislead the
+    next reader into thinking the label still existed. `.plate-tag` now
+    renders only when a state chip exists, since it would otherwise be an
+    empty positioned div on the hero. */}
 <section class:list={['plate', className, { 'with-state': !!state }]} id={id} data-plate-theme={theme}>
   <div class="plate-frame">
-    <div class="plate-tag">
-      <span class="plate-no" aria-hidden="true">Plate Nº {num} — {name}</span>
-      {state && <span class="plate-state">{state}</span>}
-    </div>
+    {state && (
+      <div class="plate-tag">
+        <span class="plate-state">{state}</span>
+      </div>
+    )}
     <slot />
   </div>
 </section>

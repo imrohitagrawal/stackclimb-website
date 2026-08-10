@@ -5,9 +5,9 @@ invented beyond what that plan already decided.
 
 | # | Title | Severity | Status |
 |---|---|---|---|
-| 001 | Scroll-linked plate entry (60ms stagger) | MEDIUM | TODO |
-| 002 | Artefact card hover/focus light | MEDIUM | TODO |
-| 003 | `.site-nav .brand` hover style | LOW | TODO |
+| 001 | Scroll-linked plate entry (60ms stagger) | MEDIUM | SHIPPED (D55, 08-11) |
+| 002 | Artefact card hover/focus light | MEDIUM | SHIPPED (D55, 08-11) |
+| 003 | `.site-nav .brand` hover style | LOW | SHIPPED (D55, 08-11) |
 
 ## Order
 

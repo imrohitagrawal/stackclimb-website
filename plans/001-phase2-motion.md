@@ -1,6 +1,6 @@
 # 001 — Phase 2 motion: scroll-linked plate entry
 
-- **Status**: TODO
+- **Status**: SHIPPED — `hero-animations-wordmark`, D55 (08-11); covered by `tests/motion.spec.js`
 - **Commit**: 44f85c3
 - **Severity**: MEDIUM
 - **Category**: Missed opportunities / Cohesion

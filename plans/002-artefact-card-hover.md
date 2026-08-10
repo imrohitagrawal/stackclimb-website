@@ -1,6 +1,6 @@
 # 002 — Artefact record cards respond on hover/focus
 
-- **Status**: TODO
+- **Status**: SHIPPED — `hero-animations-wordmark`, D55 (08-11)
 - **Commit**: 44f85c3
 - **Severity**: MEDIUM
 - **Category**: Missed opportunities / Physicality

@@ -1,6 +1,6 @@
 # 003 — `.site-nav .brand` gets a hover style
 
-- **Status**: TODO
+- **Status**: SHIPPED — `hero-animations-wordmark`, D55 (08-11)
 - **Commit**: 44f85c3
 - **Severity**: LOW
 - **Category**: Cohesion & tokens

@@ -18,7 +18,15 @@ import {
 } from './round6-fixtures.mjs';
 
 function matches(rules, text) {
-  return rules.some((r) => (r.re.lastIndex = 0, r.re.test(text)));
+  return rules.some((r) => {
+    r.re.lastIndex = 0;
+    let m;
+    while ((m = r.re.exec(text))) {
+      if (!r.filter || r.filter(m[0])) return true;
+      if (m[0] === '') r.re.lastIndex++; // guard against zero-width infinite loop
+    }
+    return false;
+  });
 }
 
 // A visible/decoy string for the two PDF fixtures below that deliberately

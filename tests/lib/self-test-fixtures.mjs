@@ -34,7 +34,15 @@ import { runSparseDensityChecks } from './self-test-sparse-density.mjs';
 import { runRound6Checks } from './self-test-round6.mjs';
 
 function matches(rules, text) {
-  return rules.some((r) => (r.re.lastIndex = 0, r.re.test(text)));
+  return rules.some((r) => {
+    r.re.lastIndex = 0;
+    let m;
+    while ((m = r.re.exec(text))) {
+      if (!r.filter || r.filter(m[0])) return true;
+      if (m[0] === '') r.re.lastIndex++; // guard against zero-width infinite loop
+    }
+    return false;
+  });
 }
 
 export async function runSelfTest(RULES, extractText, scan) {
@@ -52,7 +60,15 @@ export async function runSelfTest(RULES, extractText, scan) {
   // 1. Plain text — unchanged coverage.
   const plantedText = [dirty, `tel: +91 ${d.slice(0, 5)} ${d.slice(5)}`];
   const foundText = plantedText.filter((t) => matches(RULES, t));
-  const cleanText = [clean, 'commit df8cfc3', '52 golden cases', '© 2026'];
+  // Round 7: a 3-space-aligned table of single-digit columns (scores,
+  // coordinates) that happens to total 10 digits starting 6-9 — the same
+  // {2,4}-width gap the round-6 split-run fix needs, but split down to ONE
+  // digit per gap instead of the multi-digit runs a real split phone number
+  // produces. Must NOT be flagged. WHICH CHANGE TURNS THIS RED: dropping the
+  // phone-in-split gap-count filter (tests/no-pii.mjs) reopens this false
+  // positive.
+  const tableRow = '7   1   2   3   4   5   6   7   8   9';
+  const cleanText = [clean, 'commit df8cfc3', '52 golden cases', '© 2026', tableRow];
   const falsePosText = cleanText.filter((t) => matches(RULES, t));
 
   // 2. PDF / DOCX body — DEF-37, now with compressed fixtures.

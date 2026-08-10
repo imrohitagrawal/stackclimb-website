@@ -57,9 +57,22 @@ const RULES = [
   // QuorumFigure.astro; tightening the floor from {0,4} to {2,4} clears both
   // while still catching the round-6 footnote fixture, whose stripped-tag
   // gap is 4 spaces.
+  //
+  // Round 7: the {2,4} width alone does not distinguish a real split phone
+  // number from a 3-space-aligned table of single-digit columns (scores,
+  // coordinates) that happens to total 10 digits starting 6-9 — both have
+  // gap widths inside the same range. What differs is HOW MANY gaps: the
+  // round-6 footnote fixture splits into 4 multi-digit runs (987, 65, 432,
+  // 10), joined by exactly 3 gaps, because Word/XML run boundaries are
+  // relatively rare. A table split digit-by-digit needs a gap between every
+  // column: 9 gaps for 10 digits. `filter` rejects a match with more than 3
+  // gaps, which keeps the real fixture (measured: 3 gaps) and drops the
+  // digit-by-digit table shape (measured: 9 gaps). See
+  // tests/lib/self-test-fixtures.mjs's `tableRow` fixture.
   {
     id: 'phone-in-split',
     re: /(?<![\w.])(?:\+?91[\s.-]?)?[6-9](?:(?:[\s.-]{2,4})?\d){9}(?![\w.])/g,
+    filter: (m) => (m.match(/[\s.-]{2,4}/g) || []).length <= 3,
   },
   // International, loose: a + then 11-15 digits with optional separators.
   // Already tolerant of whitespace anywhere in the run (round 6: no change
@@ -151,6 +164,7 @@ async function scan(list) {
     }
     for (const rule of RULES) {
       for (const m of text.matchAll(rule.re)) {
+        if (rule.filter && !rule.filter(m[0])) continue;
         const ctx = text.slice(Math.max(0, m.index - 40), m.index + m[0].length + 40).replace(/\s+/g, ' ');
         if (ALLOW.some((a) => a.test(ctx))) continue;
         const line = text.slice(0, m.index).split('\n').length;

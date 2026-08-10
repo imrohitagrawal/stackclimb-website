@@ -32,10 +32,17 @@
 //      an empty <w:body> makes mammoth return "" with no message either. Both
 //      would previously read as hasImages:false, cannotVerify:false, empty
 //      text — reported clean with zero hits, the exact fail-open pattern
-//      case 3 was supposed to close, one layer deeper. Caught the same way:
-//      implausibly little extracted text for the document's size (PDF: chars
-//      per page; DOCX: total chars) sets `cannotVerify` with
-//      `reason: 'sparse-text'`.
+//      case 3 was supposed to close, one layer deeper. Caught by implausibly
+//      little text for the document's size — but round 4 measured that as a
+//      WHOLE-DOCUMENT average (PDF: chars / page count; DOCX: body + every
+//      header/footer part summed), which round 5 found still fails open: a
+//      single degraded page or part hides behind a healthy rest-of-document
+//      that keeps the average above the floor. Fixed per-page for PDF
+//      (pdf-parse's own "-- N of M --" separators split the text back into
+//      pages) and per-part for DOCX (body and each header/footer/footnote/
+//      endnote part checked on its own) — `cannotVerify` with
+//      `reason: 'sparse-text'` now fires if ANY single page or part falls
+//      under the floor, not just the document-wide average.
 //
 // WHICH CHANGE TURNS IT RED: revert either branch below to the old
 // readFileSync passthrough and `node tests/no-pii.mjs --self-test` fails on
@@ -45,6 +52,9 @@
 // Reverting the sparse-text thresholds below to 0 (i.e. removing the check)
 // fails the round-4 self-test assertions specifically: a corrupted-stream
 // PDF and an empty-body DOCX that parse cleanly but return near-nothing.
+// Reverting the per-page/per-part checks back to a whole-document average
+// fails the round-5 assertions specifically: a 2-page PDF with only page 2
+// degraded, and a DOCX with a healthy body but a degraded footer.
 //
 // Run:  imported by tests/no-pii.mjs; no standalone CLI.
 
@@ -59,7 +69,8 @@ import { extname } from 'node:path';
 // genuine content, so there is no tension between "catch degradation" and
 // "don't cry wolf" at this threshold. False positives above this floor are
 // cheap (a human looks); false negatives below it are the thing the gate
-// exists to prevent.
+// exists to prevent. Applied PER PAGE (PDF) / PER PART (DOCX), not as a
+// document-wide average — round 5.
 const MIN_CHARS_PER_PDF_PAGE = 15;
 const MIN_DOCX_CHARS = 15;
 
@@ -97,12 +108,24 @@ async function extractPdf(input) {
   const hasCompressedObjects = /\/Type\s*\/ObjStm\b/.test(raw) || /\/Type\s*\/XRef\b/.test(raw);
   // A single flipped byte inside an otherwise well-formed FlateDecode
   // content stream does not make pdf-parse throw — it makes pdf-parse
-  // return "" for that page and carry on, per-page, silently. Strip
-  // pdf-parse's own "-- N of M --" page separators before counting, so the
-  // library's boilerplate can't pad a genuinely empty page into looking like
-  // content.
-  const meaningfulChars = text.replace(/\n\n--\s*\d+\s*of\s*\d+\s*--\n\n/g, '').replace(/\s+/g, '');
-  const sparseText = (meaningfulChars.length / pageCount) < MIN_CHARS_PER_PDF_PAGE;
+  // return "" for that page and carry on, per-page, silently. pdf-parse
+  // emits one "-- N of M --" separator AFTER each page's text, so splitting
+  // on it yields pageCount real chunks (plus one empty trailing chunk) —
+  // checking EACH chunk against the floor catches a single degraded page
+  // even when the rest of the document is healthy (round 5: a whole-document
+  // average let a healthy page 1 mask an empty page 2). Falls back to the
+  // old whole-document average only if pdf-parse's output doesn't split into
+  // the expected number of chunks, so an unrecognised format still gets some
+  // check rather than none.
+  const PAGE_SEP = /\n\n--\s*\d+\s*of\s*\d+\s*--\n\n/g;
+  const meaningfulChars = text.replace(PAGE_SEP, '').replace(/\s+/g, '');
+  const pageChunks = text.split(PAGE_SEP);
+  const perPageChars = pageChunks.length === pageCount + 1
+    ? pageChunks.slice(0, pageCount).map((p) => p.replace(/\s+/g, '').length)
+    : null;
+  const sparseText = perPageChars
+    ? perPageChars.some((c) => c < MIN_CHARS_PER_PDF_PAGE)
+    : (meaningfulChars.length / pageCount) < MIN_CHARS_PER_PDF_PAGE;
   const cannotVerify = hasImages ? false : (hasCompressedObjects || sparseText);
   const reason = hasCompressedObjects ? 'compressed-objects' : (sparseText ? 'sparse-text' : undefined);
   return { text, hasImages, cannotVerify, reason };
@@ -139,8 +162,15 @@ async function extractDocx(input) {
   // Guard against hasImages the same way the PDF branch does: an image-only
   // DOCX (a scanned card, nothing else) is already caught by hasImages and
   // does not also need the sparse-text label.
-  const meaningfulChars = text.replace(/\s+/g, '');
-  const sparseText = meaningfulChars.length < MIN_DOCX_CHARS;
+  //
+  // Checked PER PART, not as a document-wide sum (round 5): a healthy body
+  // was masking a degraded footer/header — the only part that might carry
+  // the contact line — because the two got summed into one pooled count.
+  // Flag if the body OR any present header/footer/footnote/endnote part
+  // falls under the floor on its own.
+  const bodyChars = bodyResult.value.replace(/\s+/g, '').length;
+  const partChars = extraParts.map((p) => p.replace(/\s+/g, '').length);
+  const sparseText = bodyChars < MIN_DOCX_CHARS || partChars.some((c) => c < MIN_DOCX_CHARS);
   const cannotVerify = hasImages ? false : sparseText;
   const reason = !hasImages && sparseText ? 'sparse-text' : undefined;
   return { text, hasImages, cannotVerify, reason };

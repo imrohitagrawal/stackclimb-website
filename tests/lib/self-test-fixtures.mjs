@@ -27,7 +27,10 @@
 // real, not redundant with the text case.
 
 import { unlinkSync } from 'node:fs';
-import { buildMinimalPdf, buildDocx, corrupt, writeTemp } from './pdf-docx-fixtures.mjs';
+import {
+  buildMinimalPdf, buildDocx, corrupt, writeTemp,
+} from './pdf-docx-fixtures.mjs';
+import { runSparseDensityChecks } from './self-test-sparse-density.mjs';
 
 function matches(rules, text) {
   return rules.some((r) => (r.re.lastIndex = 0, r.re.test(text)));
@@ -152,9 +155,7 @@ export async function runSelfTest(RULES, extractText, scan) {
     const objStmPdf = writeTemp('objstm.pdf', buildMinimalPdf(clean, { withObjStm: true }));
     const degradedPdf = writeTemp('degraded.pdf', buildMinimalPdf(dirty, { degradeStream: true }));
     const emptyDocx = writeTemp('empty.docx', await buildDocx({ emptyBody: true }));
-    tempPaths.push(
-      validPdf, validDocx, corruptPdf, corruptDocx, objStmPdf, degradedPdf, emptyDocx,
-    );
+    tempPaths.push(validPdf, validDocx, corruptPdf, corruptDocx, objStmPdf, degradedPdf, emptyDocx);
 
     const validHits = await scan([validPdf, validDocx]);
     record('valid, readable PDF+DOCX with no PII still pass (0 hits)', validHits.length === 0);
@@ -194,6 +195,10 @@ export async function runSelfTest(RULES, extractText, scan) {
       'empty-body DOCX fails the gate closed (sparse-extraction hit)',
       emptyDocxHits.some((h) => h.rule === 'sparse-extraction'),
     );
+
+    // Round 5: per-page/per-part density, not a whole-document average —
+    // see self-test-sparse-density.mjs for what this closes and why.
+    await runSparseDensityChecks(extractText, scan, record, dirty, clean, tempPaths);
   } finally {
     for (const p of tempPaths) unlinkSync(p);
   }

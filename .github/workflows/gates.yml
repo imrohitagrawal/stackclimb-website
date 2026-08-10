@@ -46,6 +46,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+
+      # DEF-37 review round 2: this job runs `node tests/no-pii.mjs`, and once
+      # extract-text.mjs started importing pdf-parse/mammoth for the PDF/DOCX
+      # scan, that import needs node_modules. Before this PR the PII gate had
+      # zero external dependencies, so no `npm ci` was needed here — that
+      # stopped being true the moment this PR landed, and the job crashed
+      # with ERR_MODULE_NOT_FOUND before it could scan anything. The other
+      # job's `npm ci` does not help; jobs run in separate, unshared runners.
+      - run: npm ci
 
       - name: .env must never be tracked
         run: |

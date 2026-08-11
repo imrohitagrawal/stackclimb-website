@@ -56,8 +56,19 @@ the first check in this repo that looks at production, and Definition-of-Done it
 green after any deploy. It exists because a `wrangler pages deploy` printed `Success` and shipped
 a 404.
 
-**Say this out loud at the start of any deployment-related work**, until the deploy actually runs
-through CI. A temporary state nobody mentions becomes the permanent state.
+**The migration is written.** `gates.yml` now carries a `deploy` job that `needs` both gate jobs
+and runs only on a push to `main` — so a red gate cannot reach production and a PR build never
+touches it. It deploys, waits, then runs `tests/post-deploy.mjs` against the live origin, because
+the deploy is not the check: wrangler printed `Success` on the run that shipped a 404.
+
+**It is blocked on exactly one thing: a `CLOUDFLARE_API_TOKEN` repository secret**, scoped to
+*Cloudflare Pages — Edit*. Until it exists the job **skips loudly** — a `::warning::` and a run-summary
+line saying production was not updated — rather than failing, so the absence is visible instead of
+being mistaken for success. Add it at *Settings → Secrets and variables → Actions*, and approach C
+is live with no further code change.
+
+**Say this out loud at the start of any deployment-related work**, until that secret exists and a
+deploy has actually run through CI. A temporary state nobody mentions becomes the permanent state.
 
 ## Non-negotiable: disagree before you comply
 

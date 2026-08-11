@@ -88,3 +88,7 @@ assets/inbox/**
 
 # Throwaway comparison mockup — deleted once the visual world is chosen
 mockup/
+
+# Visual baselines are CI-generated only (visual-baselines.spec.js header).
+# A laptop run writes -darwin files; they must never be committed.
+tests/visual-baselines.spec.js-snapshots/*-darwin.png

@@ -37,7 +37,7 @@ forgotten and later recovered — kept visible on purpose).
 | W-15 | **Document and RCA a finding before working on it; get approval first** | DONE | `AGENTS.md` — 5-step table + DEF-1 worked example |
 | W-16 | **Do not drop or forget any instruction** | DONE | This file |
 | W-17 | Good practices harvested for reuse on future projects | DONE | `docs/practices/` |
-| W-18 | Planning defects cost more than development defects — research deeply, fan out | **Note corrected 08-11.** This row said *"no standing rule yet"*. `AGENTS.md:341` has carried one: *"Size the fan to the phase"* — full expert fan for planning and architecture, then the T0–T3 blast-radius model for implementation |
+| W-18 | Planning defects cost more than development defects — research deeply, fan out | **Note corrected 08-11.** This row said *"no standing rule yet"*. `AGENTS.md:363` (was cited as `:341`; that line is blank — corrected 08-12) has carried one: *"Size the fan to the phase"* — full expert fan for planning and architecture, then the T0–T3 blast-radius model for implementation |
 | W-19 | Verify by **executing**, not by reading. Agent verdicts need their own reviewer | PARTIAL | Role reviewers now told to execute; synthesizer pending |
 | W-20 | Build a watermark skill — the spec exists, nothing applies it | OPEN | `docs/rca/RCA-001-watermark-skill.md` — awaiting approval |
 | W-21 | Add an everyday analogy when disagreeing | DONE | `AGENTS.md` step 4 |
@@ -61,12 +61,12 @@ forgotten and later recovered — kept visible on purpose).
 |---|---|---|---|
 | P-1 | Recapture PRODUCT.md — full re-interview | PARTIAL | Users/purpose/positioning updated; evidence section stale |
 | P-2 | Keep availability language; hide only the end goal | DONE | `PRODUCT.md`, `AGENTS.md` |
-| P-3 | Add the two extra role titles to Seeking | DONE | `index.astro:48-49` |
+| P-3 | Add the two extra role titles to Seeking | **REVERSED 08-12 — recorded as DONE for a directive the site deliberately does the opposite of** | The site ships **one** title, not three or five. `index.astro:71` records the decision and its reason: a five-title `Seeking` list *"reads as 'does not know what he wants' in a thirty-second skim"*, so it was cut to *"one slot a recruiter recognises, with the specialism attached."* Live: `Seeking → Senior / Principal — AI Platform Engineering, with evaluation and release governance`. The old citation `index.astro:48-49` was stale too — that is the avatar `<img>`. **A reversal recorded as compliance is worse than an open row**, because nobody re-opens it. Needs the owner's call: keep the one-title version (recommended, and what positioning-phase0 argues for) or honour P-3 as written |
 | P-4 | Private work framed to show something is being built, without saying what | DONE | Private plate copy |
 | P-5 | Extend the plate world rather than replacing it | DONE | Decision D1 |
-| P-6 | Per-project facts must differ — not one template | OPEN | Plan phase 3 |
+| P-6 | Per-project facts must differ — not one template | **ALREADY HONOURED — verified 08-12** | Every project's caption strip carries different labels: CiteVyn `Golden suite`/`Tests`, Quorum `Coverage floor`/`Decisions`/`Limits`, SaafSaans `Risk delta`/`Feeds`/`Guard`, NarraTwin `State`/`Languages`/`Surface parity`. `grep -oE 'caps" role="list" aria-label="[^"]*"' dist/index.html`. Per-project pages (phase 3) would deepen it, but the directive as written is met |
 | P-7 | Surface AI-engineering practice: evals, monitoring, observability, roadmap | OPEN | Plan phase 3 |
-| P-8 | Show in-progress and roadmap items, not only finished work | OPEN | Plan phase 3 |
+| P-8 | Show in-progress and roadmap items, not only finished work | **ALREADY HONOURED — verified 08-12** | `In progress — closed` ships on EvalAxis and Aegis in `#overview`; the private plate reads *"Two systems are still being built"*; the hero strip reads `Systems built 4 of 6`. The one word not honoured is *roadmap* — `grep -oic roadmap dist/*.html` → **0** — which is a deliberate absence, not an oversight: an undated roadmap is the kind of claim `AGENTS.md` bans |
 | P-9 | Interactive résumé | OPEN | Plan phase 4.4 |
 | P-10 | Comments facility, low priority | OPEN | Giscus recommended, not built |
 | P-11 | NarraTwin avatar as the site's representative | OPEN | Plan phase 7.3 |

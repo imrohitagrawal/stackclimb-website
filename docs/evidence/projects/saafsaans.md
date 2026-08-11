@@ -20,9 +20,14 @@ rather than the city average, and answers questions with cited health guidance.
 | Test functions | **771** | `grep -rh 'def test_' tests --include='*.py' \| wc -l` |
 | Commits | **236** | `git rev-list HEAD --count` |
 | Seeded advisories | **43**, each with a named source | `len(saafsaans.data.advisories.ADVISORIES)` |
-| WAQI stations | **21** | `len(waqi.FEED_MAP)` |
+| WAQI feed entries | **21**, of which **19 carry a feed** | `len(waqi.FEED_MAP)`; `sum(v is None for v in FEED_MAP.values())` = 2 |
 | CPCB cities | **5** | `len(cpcb.CITY_OF)` |
 | Injection patterns | **39** across English, Devanagari and Hinglish | `len(guard.PATTERNS)` |
+
+**The site says `19 live · 2 known gaps`, not "21 stations".** Two entries — Ashok Vihar and
+Nehru Nagar — map to `None` because WAQI carries no station for them, and one more
+(`Delhi (city)`) is a city-level feed rather than a station. Quoting 21 counts the two
+absences as coverage. Naming the gaps is both more accurate and more on-thesis.
 
 ### Correction — the number currently on the live site is wrong
 

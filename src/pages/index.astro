@@ -3,7 +3,8 @@ import Layout from '../layouts/Layout.astro';
 import Plate from '../components/Plate.astro';
 import CapStrip from '../components/CapStrip.astro';
 import Ledger from '../components/Ledger.astro';
-import Artefact from '../components/figures/Artefact.astro';
+import Shot from '../components/figures/Shot.astro';
+import { projects } from '../data/projects.js';
 import PrivateFigure from '../components/figures/PrivateFigure.astro';
 import Overview from '../components/Overview.astro';
 ---
@@ -155,6 +156,8 @@ import Overview from '../components/Overview.astro';
           verbatim; where no source supports an answer, CiteVyn refuses instead of guessing.
           Index updates reach production only through an evaluation gate.
         </p>
+                <p class="proof" set:html={projects.citevyn.proof}></p>
+        <p class="eng" set:html={projects.citevyn.eng}></p>
         <div class="links">
           <a href="https://citevyn.stackclimb.com" target="_blank" rel="noopener">Use it live</a>
           <a href="https://github.com/imrohitagrawal/citevyn" target="_blank" rel="noopener">Source</a>
@@ -166,47 +169,15 @@ import Overview from '../components/Overview.astro';
         </div>
       </div>
       <figure class="plate-figure">
-        <Artefact
-          kind="Golden regression run"
-          verdict="52 / 52 passed"
-          tone="pass"
-          line="A red case blocks the index from reaching production."
-          fields={[
-            { k: 'cases', v: '52' },
-            { k: 'failed', v: '0' },
-            { k: 'run', v: '17 Jul 2026' },
-            { k: 'gate', v: 'Blocks promotion' },
-          ]}
-          source="citevyn/backend/artifacts/golden_report.json at df8cfc3. Read from the recorded run, not restated."
-        />
-        {/* O-HERO resolved (8a). Relocated from the hero, not reinvented —
-            same real data, only its position moved; legible here since the
-            plate already states what question CiteVyn answers. `compact`
-            trims padding so two cards fit this column. */}
-        <Artefact
-          compact
-          kind="CiteVyn, golden case claude_api_006"
-          verdict="Refused"
-          tone="fail"
-          line="“What is the capital of France?”"
-          fields={[
-            { k: 'citations', v: '0' },
-            { k: 'domain', v: 'unsupported' },
-            { k: 'confidence', v: 'none' },
-            { k: 'answered', v: 'No — by policy' },
-          ]}
-          source="It plainly knows the answer and refuses anyway, because no indexed source supports it. Verbatim from citevyn/backend/artifacts/golden_report.json, recorded 17 July 2026."
+        <Shot
+          shot={projects.citevyn.shot}
+          crop={projects.citevyn.crop}
+          alt={projects.citevyn.alt}
+          prov={projects.citevyn.prov}
         />
         <CapStrip
-          label="CiteVyn, captioned"
-          items={[
-            { t: 'Answers', d: 'Quoted verbatim' },
-            { t: 'Citations', d: 'Every claim' },
-            { t: 'Refusal', d: 'A feature' },
-            { t: 'Release gate', d: '52 golden cases' },
-            { t: 'Tests', d: '1,036 defined' },
-            { t: 'Stack', d: 'FastAPI · pgvector' },
-          ]}
+          label="citevyn, counted"
+          items={[...projects.citevyn.strip, { t: 'Not claimed', d: projects.citevyn.notClaimed }]}
         />
       </figure>
     </div>
@@ -227,6 +198,8 @@ import Overview from '../components/Overview.astro';
           and a recommendation. The cost is approved before anything runs, and any fallback or
           simulation is disclosed, never hidden.
         </p>
+                <p class="proof" set:html={projects.quorum.proof}></p>
+        <p class="eng" set:html={projects.quorum.eng}></p>
         <div class="links">
           <a href="https://quorum.stackclimb.com" target="_blank" rel="noopener">Use it live</a>
           <a href="https://github.com/imrohitagrawal/quorum-ai" target="_blank" rel="noopener">Source</a>
@@ -238,28 +211,15 @@ import Overview from '../components/Overview.astro';
         </div>
       </div>
       <figure class="plate-figure">
-        <Artefact
-          kind="Production readiness review"
-          verdict="Go"
-          tone="pass"
-          line="The review before it said No-Go. That one is kept too."
-          fields={[
-            { k: 'decision', v: 'Go — single instance' },
-            { k: 'dated', v: '21 Jun 2026' },
-            { k: 'scope', v: 'MVP, small user base' },
-            { k: 'superseded', v: 'No-Go of 16 Jun' },
-          ]}
-          source="quorum-ai/docs/95-production-readiness-review.md at 8ca6a98. Both decisions are in the file; neither was removed."
+        <Shot
+          shot={projects.quorum.shot}
+          crop={projects.quorum.crop}
+          alt={projects.quorum.alt}
+          prov={projects.quorum.prov}
         />
         <CapStrip
-          label="Quorum-AI, captioned"
-          items={[
-            { t: 'Models', d: '4 in parallel' },
-            { t: 'Debate', d: '2 critique rounds' },
-            { t: 'Verdict', d: '5 fields' },
-            { t: 'Cost', d: 'Approved first' },
-            { t: 'Memory', d: 'None — ephemeral' },
-          ]}
+          label="quorum, counted"
+          items={[...projects.quorum.strip, { t: 'Not claimed', d: projects.quorum.notClaimed }]}
         />
       </figure>
     </div>
@@ -289,6 +249,8 @@ import Overview from '../components/Overview.astro';
           21 July and was redeployed on 9 August; while it was down, this page said so rather
           than leaving you to find out by clicking.
         </p>
+                <p class="proof" set:html={projects.saafsaans.proof}></p>
+        <p class="eng" set:html={projects.saafsaans.eng}></p>
         <div class="links">
           <a href="https://saafsaans.stackclimb.com" target="_blank" rel="noopener">Open the app</a>
           <a href="https://github.com/imrohitagrawal/saaf-saans" target="_blank" rel="noopener">Source</a>
@@ -300,28 +262,15 @@ import Overview from '../components/Overview.astro';
         </div>
       </div>
       <figure class="plate-figure">
-        <Artefact
-          kind="Measured at head, today"
-          verdict="Counted, not claimed"
-          tone="neutral"
-          line="Every number here has a command that checks it."
-          fields={[
-            { k: 'test functions', v: '771' },
-            { k: 'test files', v: '37' },
-            { k: 'seeded advisories', v: '43' },
-            { k: 'commits', v: '236' },
-          ]}
-          source="saaf-saans at 667397a, re-counted 11 Aug 2026. The figures here before (628/32/161 at 5e5037a) went stale in three days: a count is only true at the commit it was taken on."
+        <Shot
+          shot={projects.saafsaans.shot}
+          crop={projects.saafsaans.crop}
+          alt={projects.saafsaans.alt}
+          prov={projects.saafsaans.prov}
         />
         <CapStrip
-          label="SaafSaans, captioned"
-          items={[
-            { t: 'Risk', d: 'Per person' },
-            { t: 'Scale', d: 'CPCB bands' },
-            { t: 'Timing', d: 'Best window' },
-            { t: 'Coverage', d: '21 stations (repo-stated)' },
-            { t: 'Hindi', d: 'Gated — unreviewed' },
-          ]}
+          label="saafsaans, counted"
+          items={[...projects.saafsaans.strip, { t: 'Not claimed', d: projects.saafsaans.notClaimed }]}
         />
       </figure>
     </div>
@@ -342,6 +291,8 @@ import Overview from '../components/Overview.astro';
           currently reads No-Go — so it is not deployed, and this page says so.
         </p>
         <p>It is shown anyway, because the gate holding is the point.</p>
+                <p class="proof" set:html={projects.narratwin.proof}></p>
+        <p class="eng" set:html={projects.narratwin.eng}></p>
         <div class="links">
           <a href="https://github.com/imrohitagrawal/narratwin-ai" target="_blank" rel="noopener">Source</a>
           <a
@@ -352,26 +303,15 @@ import Overview from '../components/Overview.astro';
         </div>
       </div>
       <figure class="plate-figure">
-        <Artefact
-          kind="Release readiness review"
-          verdict="No-Go"
-          tone="fail"
-          line="No-Go for production release. No release tag has been created."
-          fields={[
-            { k: 'dated', v: '1 Jul 2026' },
-            { k: 'release tags', v: '0' },
-            { k: 'blocked', v: 'Paid providers, video export' },
-            { k: 'allowed', v: 'Local mock demo' },
-          ]}
-          source="narratwin docs/RELEASE_READINESS_REVIEW.md at 2ce5731. The repo has two tags; both mark stages, neither is a release."
+        <Shot
+          shot={projects.narratwin.shot}
+          crop={projects.narratwin.crop}
+          alt={projects.narratwin.alt}
+          prov={projects.narratwin.prov}
         />
         <CapStrip
-          label="NarraTwin, captioned"
-          items={[
-            { t: 'Gates', d: 'Claim · consent · release' },
-            { t: 'Deployment', d: 'None — local only' },
-            { t: 'Distribution', d: 'Withheld by design' },
-          ]}
+          label="narratwin, counted"
+          items={[...projects.narratwin.strip, { t: 'Not claimed', d: projects.narratwin.notClaimed }]}
         />
       </figure>
     </div>

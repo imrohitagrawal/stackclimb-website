@@ -1,0 +1,76 @@
+/* stackclimb.com — the artefact panel that holds a screenshot (D66).
+   ---------------------------------------------------------------------------
+   Own file, not global.css: that file is grandfathered at a 500-line ceiling it
+   may not exceed (D8), and this is one concern — the same reasoning that gave
+   motion.css, nav.css and overview.css their own files.
+
+   The panel is the ONE near-white surface for its system. Everything here is
+   derived from the plate's own tokens via color-mix so it repaints with the
+   plate theme, per DESIGN.md's "derive all rules and borders from currentColor".
+   --------------------------------------------------------------------------- */
+
+.artefact-shot {
+  background: var(--lit, #f4efe4);
+  color: var(--ink, #16213c);
+  padding: 0.7rem 0.7rem 0.55rem;
+  margin-bottom: 1rem;
+}
+
+/* The capture fills the panel; the panel is the frame. No border of its own —
+   three of four captures are near-white on near-white, so a rule here would be
+   the only thing telling a reader where the artefact starts. */
+.artefact-shot img,
+.artefact-shot picture {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Provenance. Small, quiet, and never optional — it is what separates an
+   artefact from a picture. Raised well above AA: measured 6.3:1 on the lit
+   panel, after an earlier value shipped at 4.33:1 and failed. */
+.artefact-shot .prov {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  color: color-mix(in srgb, var(--ink, #16213c) 74%, var(--lit, #f4efe4));
+  margin: 0.6rem 0.4rem 0.15rem;
+}
+
+/* The measured outcome, leading the plate. Ported from the prototype, where it
+   was styled and here initially was not — it rendered byte-identical to body
+   copy and the one accented word came out as plain italic. */
+.plate-copy .proof {
+  font-size: 1.06rem;
+  line-height: 1.55;
+  margin: 0 0 1rem;
+  color: var(--lit, #f4efe4);
+}
+.plate-copy .proof em {
+  font-style: normal;
+  color: var(--accent, #c99b3f);
+}
+
+/* The engineering line under the panel: what the artefact does not show.
+   Dotted rule rather than a solid one, matching the ledger's register. */
+.plate-copy .eng {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0 0 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px dotted color-mix(in srgb, currentColor 26%, transparent);
+  color: color-mix(in srgb, currentColor 88%, transparent);
+}
+.plate-copy .eng b {
+  color: var(--lit, #f4efe4);
+  font-weight: 640;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .artefact-shot img {
+    /* Nothing animates here yet. Declared so a future entrance has a home and
+       does not get bolted onto global.css, which cannot grow. */
+    transition: none;
+  }
+}

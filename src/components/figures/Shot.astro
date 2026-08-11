@@ -1,0 +1,62 @@
+---
+/* The artefact panel, holding a capture of the system's own output.
+ *
+ * DESIGN.md's Lit-Surface Rule: exactly one near-white surface per system being
+ * evidenced, and it must hold a real artefact at a size you can read. D66 added
+ * the narrow carve-out that lets a screenshot BE that artefact — a capture of
+ * the running system is the most literal form of "actual system output", and a
+ * rule admitting it is stronger than one banning it.
+ *
+ * Two obligations the rule attaches, both enforced by this component's shape:
+ *
+ * 1. `prov` is required, not optional. Every capture states where it came from,
+ *    and anything that is not a live capture says so in that caption. Two of the
+ *    four say SAMPLE; the component does not care which, it only insists there
+ *    is a line.
+ * 2. `crop` exists because "at a size you can read" is part of the rule. A
+ *    whole-page capture renders at 15-17% on a 390px phone — measured — which is
+ *    a picture of evidence rather than evidence. Below 700px the crop carrying
+ *    the claim is served instead. A system with no crop (NarraTwin's design)
+ *    passes `crop={null}` and ships one image.
+ */
+import { Image } from 'astro:assets';
+
+interface Props {
+  /* Basename in src/assets/projects, without extension. */
+  shot: string;
+  /* Basename of the mobile crop, or null when the full image is the claim. */
+  crop?: string | null;
+  alt: string;
+  /* Where it came from and how to check it. Never optional. */
+  prov: string;
+}
+
+const { shot, crop = null, alt, prov } = Astro.props;
+
+/* Globbed rather than imported per-name so a new project needs a data entry and
+ * an image, not an edit here. `eager` because Astro must resolve the metadata at
+ * build time to emit the hashed asset. */
+const images = import.meta.glob<{ default: ImageMetadata }>(
+  '../../assets/projects/*.webp',
+  { eager: true },
+);
+const at = (name: string) => images[`../../assets/projects/${name}.webp`]?.default;
+
+const full = at(shot);
+const small = crop ? at(crop) : null;
+
+if (!full) throw new Error(`Shot: no image src/assets/projects/${shot}.webp`);
+if (crop && !small) throw new Error(`Shot: no crop src/assets/projects/${crop}.webp`);
+---
+
+<div class="artefact-shot">
+  {small ? (
+    <picture>
+      <source media="(max-width: 700px)" srcset={small.src} width={small.width} height={small.height} />
+      <img src={full.src} width={full.width} height={full.height} alt={alt} loading="lazy" decoding="async" />
+    </picture>
+  ) : (
+    <Image src={full} alt={alt} loading="lazy" decoding="async" />
+  )}
+  <p class="prov" set:html={prov}></p>
+</div>

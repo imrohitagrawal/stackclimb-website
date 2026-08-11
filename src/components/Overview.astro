@@ -24,12 +24,26 @@
  * stated and could not be independently counted, so it is not given here as a
  * measured fact — the row carries its state instead.
  */
-const systems = [
+/* `gate` and `rule` are mutually exclusive: overview.css:96 puts both in
+   `grid-area: gate`, so a row carrying both would stack them in one cell. No row
+   does today. This throws at BUILD time rather than leaving the next person to
+   discover it as an overlap in a screenshot. */
+function assertOneLabelPerRow(rows) {
+  const both = rows.filter((r) => r.gate && r.rule).map((r) => r.name);
+  if (both.length) {
+    throw new Error(
+      `Overview: ${both.join(', ')} carries both a gate and a rule. They share one grid cell — pick one.`,
+    );
+  }
+  return rows;
+}
+
+const systems = assertOneLabelPerRow([
   {
     name: 'CiteVyn',
     href: '#citevyn',
     does: 'Citation-grounded Q&A over official AI docs. Refuses when no source supports an answer.',
-    gate: '52-case golden run blocks index promotion',
+    gate: '15-case retrieval suite on the candidate index blocks promotion below 0.95',
     figure: '52 / 52',
     figureLabel: '52 of 52 golden regression cases passing',
     state: 'Live',
@@ -82,7 +96,7 @@ const systems = [
     state: 'In progress — closed',
     tone: 'neutral',
   },
-];
+]);
 ---
 
 <div class="overview">

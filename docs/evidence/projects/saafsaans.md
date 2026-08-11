@@ -87,14 +87,21 @@ instructions."*
 
 ## Panel assets — live captures, 2026-08-11
 
-Both taken from the running site, not from stored screenshots.
+Taken from the running site, not from stored screenshots.
 
 | File | Source |
 |---|---|
 | `src/assets/projects/saafsaans-en.webp` | `https://saafsaans.stackclimb.com` |
-| `src/assets/projects/saafsaans-hi.webp` | `https://saafsaans.stackclimb.com/?theme=light&lang=hi` |
+| `src/assets/projects/saafsaans-crop.webp` | mobile crop of the above, served below 700px |
 
-Both show `● LIVE · 5:00 PM` · `AQI 270 · POOR` and the risk delta: **`EXAMPLE PERSONA ·
+**Removed 2026-08-12 (D74):** `saafsaans-hi.webp`, captured from
+`https://saafsaans.stackclimb.com/?theme=light&lang=hi`. It was referenced by nothing — no
+plate, no component, no test — while `Shot.astro`'s eager glob still emitted it into
+`dist/_astro/` on every build. Recorded rather than silently dropped: it was a real live
+capture, and if the Hindi surface is ever given a panel it should be re-taken, not recovered
+from git and passed off as current.
+
+Both captures show `● LIVE · 5:00 PM` · `AQI 270 · POOR` and the risk delta: **`EXAMPLE PERSONA ·
 76/100 · VERY HIGH`** beside **`healthy adult, same plans · 64`**. Same air, different person.
 
 `EXAMPLE PERSONA` is **not** a data disclaimer — the air reading is live. It labels the *default

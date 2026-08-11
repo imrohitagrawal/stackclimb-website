@@ -134,13 +134,17 @@ export const projects = [
   {
     name: 'CiteVyn',
     what: 'Citation-grounded Q&A over official AI documentation. Answers quote their sources verbatim; where no source supports an answer it refuses rather than guessing.',
-    gate: 'A 52-case golden run blocks index promotion. A single red case stops the release.',
+    gate:
+      'A 15-case retrieval suite runs against the candidate index and blocks promotion ' +
+      'below a 0.95 pass rate. The larger 52-case golden suite is deliberately NOT the ' +
+      'gate: it measures a fixture corpus, so passing it would certify an index that was ' +
+      'never tested.',
     state: 'Live',
     href: 'https://citevyn.stackclimb.com',
   },
   {
     name: 'Quorum-AI',
-    what: 'One question against four models in parallel, two rounds of mutual critique, then a synthesis returning consensus, disagreement, source support, uncertainty and a recommendation.',
+    what: 'One question against four models in parallel, critiqued twice by a separate moderator pass — the four never read each other — then a synthesis returning consensus, disagreement, source support, uncertainty and a recommendation.',
     gate: 'Cost is approved before anything runs; any fallback or simulation is disclosed, never hidden.',
     state: 'Live',
     href: 'https://quorum.stackclimb.com',
@@ -148,7 +152,7 @@ export const projects = [
   {
     name: 'SaafSaans',
     what: 'A Delhi-NCR air-quality companion scoring personal rather than city risk across a repo-stated 21 stations, with cited health guidance.',
-    gate: 'Every reading is labelled live, deterministic fallback, or sample. The Hindi translation ships behind a banner stating no Hindi speaker has reviewed it.',
+    rule: 'Every reading is labelled with where it came from: live, cached, or no reading at all. The Hindi translation ships behind a banner stating no Hindi speaker has reviewed it.',
     state: 'Deployed — sleeps when idle',
     href: 'https://github.com/imrohitagrawal/saaf-saans',
   },
@@ -169,7 +173,7 @@ export const projects = [
   {
     name: 'Aegis Contracts',
     what: 'Early-stage work on contract-shaped guarantees between AI systems.',
-    gate: 'Too early to state one.',
+    gate: null,
     state: 'In progress — closed',
     href: null,
   },

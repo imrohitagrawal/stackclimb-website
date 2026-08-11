@@ -205,7 +205,8 @@ async function selfTest() {
   f = await flakyFixture(HTML, '/_astro/one.BBBB2222.webp', 1);
   r = await check({ site: f.url, expectStamp: '/_astro/Layout.AAAA1111.css' });
   say(r.problems.length === 0 && r.flapped.length === 1,
-      `one transient 503 recovers and is reported as flapping, not failure (problems ${r.problems.length}, flapped ${r.flapped.length})`);
+      'one transient 503 recovers and reports as flapping, not failure ' +
+      `(problems ${r.problems.length}, flapped ${r.flapped.length})`);
   f.stop();
 
   f = await flakyFixture(HTML, '/_astro/one.BBBB2222.webp', 99);

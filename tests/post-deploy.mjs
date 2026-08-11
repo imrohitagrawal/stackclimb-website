@@ -44,7 +44,6 @@
 
 import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { createServer } from 'node:http';
 
 const SITE = process.env.SITE_URL ?? 'https://stackclimb.com';
 const DIST = 'dist/index.html';
@@ -137,93 +136,13 @@ export async function check({ site = SITE, expectStamp = null } = {}) {
   return { problems, refs, stamp, results, flapped };
 }
 
-/* ------------------------------ self-test ------------------------------ */
-
-async function fixture(html, { break404 = null } = {}) {
-  const srv = createServer((req, res) => {
-    if (req.url === '/') {
-      res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
-      return res.end(html);
-    }
-    if (break404 && req.url === break404) {
-      res.writeHead(404, { 'content-type': 'text/plain' });
-      return res.end('not found');
-    }
-    res.writeHead(200, { 'content-type': 'application/octet-stream' });
-    res.end('x'.repeat(64));
-  });
-  await new Promise((r) => srv.listen(0, r));
-  return { url: `http://localhost:${srv.address().port}`, stop: () => srv.close() };
-}
-
-async function flakyFixture(html, path, failFirst) {
-  let hits = 0;
-  const srv = createServer((req, res) => {
-    if (req.url === '/') { res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' }); return res.end(html); }
-    if (req.url === path && hits++ < failFirst) { res.writeHead(503); return res.end('flap'); }
-    res.writeHead(200, { 'content-type': 'application/octet-stream' }); res.end('x'.repeat(64));
-  });
-  await new Promise((r) => srv.listen(0, r));
-  return { url: `http://localhost:${srv.address().port}`, stop: () => srv.close() };
-}
-
-async function selfTest() {
-  const HTML =
-    '<link rel="stylesheet" href="/_astro/Layout.AAAA1111.css">' +
-    '<img src="/_astro/one.BBBB2222.webp">' +
-    '<picture><source srcset="/_astro/two.CCCC3333.webp"></picture>';
-  let failed = 0;
-  const say = (ok, what) => { console.log(`  ${ok ? 'ok  ' : 'FAIL'} ${what}`); if (!ok) failed++; };
-
-  // Extraction — the denominator. A checker that finds zero assets passes everything.
-  const refs = assetRefs(HTML);
-  say(refs.length === 3, `extracts all 3 refs (got ${refs.length}) — incl. srcset inside <picture>`);
-  say(buildStamp(HTML) === '/_astro/Layout.AAAA1111.css', 'reads the build stamp');
-
-  // 1. Healthy site: must be silent. Guards against crying wolf.
-  let f = await fixture(HTML);
-  let r = await check({ site: f.url, expectStamp: '/_astro/Layout.AAAA1111.css' });
-  say(r.problems.length === 0, `healthy site reports nothing (got ${r.problems.length})`);
-  say(r.refs.length === 3, 'healthy site still counted 3 assets');
-  f.stop();
-
-  // 2. THE REAL DEFECT: one asset 404s while the page is 200.
-  f = await fixture(HTML, { break404: '/_astro/one.BBBB2222.webp' });
-  r = await check({ site: f.url, expectStamp: '/_astro/Layout.AAAA1111.css' });
-  say(r.problems.some((p) => p.includes('404') && p.includes('one.BBBB2222')),
-      'catches a 404 asset on a 200 page — the 2026-08-11 deploy defect');
-  f.stop();
-
-  // 3. Stale production: page fine, every asset fine, wrong build.
-  f = await fixture(HTML);
-  r = await check({ site: f.url, expectStamp: '/_astro/Layout.ZZZZ9999.css' });
-  say(r.problems.some((p) => p.includes('different build')),
-      'catches production serving an older build than dist/');
-  f.stop();
-
-  // 4. THE N-OF-M RULE. One transient 503 must NOT fail the gate; three must.
-  f = await flakyFixture(HTML, '/_astro/one.BBBB2222.webp', 1);
-  r = await check({ site: f.url, expectStamp: '/_astro/Layout.AAAA1111.css' });
-  say(r.problems.length === 0 && r.flapped.length === 1,
-      'one transient 503 recovers and reports as flapping, not failure ' +
-      `(problems ${r.problems.length}, flapped ${r.flapped.length})`);
-  f.stop();
-
-  f = await flakyFixture(HTML, '/_astro/one.BBBB2222.webp', 99);
-  r = await check({ site: f.url, expectStamp: '/_astro/Layout.AAAA1111.css' });
-  say(r.problems.some((p) => p.includes(`failed all ${ATTEMPTS} attempts`)),
-      'a persistent failure still fails, after all attempts');
-  f.stop();
-
-  console.log(failed ? `\nSELF-TEST FAILED (${failed})` : '\nSELF-TEST PASS — the gate bites and does not cry wolf');
-  return failed;
-}
-
 /* -------------------------------- main -------------------------------- */
 
 const isSelfTest = process.argv.includes('--self-test');
 if (isSelfTest) {
-  process.exit((await selfTest()) ? 1 : 0);
+  // Imported lazily so a production run never loads the fixture server.
+  const { selfTest } = await import('./lib/post-deploy-selftest.mjs');
+  process.exit((await selfTest(check, assetRefs, buildStamp, ATTEMPTS)) ? 1 : 0);
 }
 
 let expectStamp = null;

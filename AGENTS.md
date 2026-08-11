@@ -43,7 +43,7 @@ nothing sits merged-but-undeployed without something saying so.
 | The suite builds before it tests (DEF-11) | **done 08-09** — CI since gates.yml:94; local via playwright.config webServer |
 | Contrast passes on all 7 plates, both viewports (DEF-5, DEF-18) | **done** — DEF-5 fixed 08-08 (18/18 both viewports), DEF-18 moot; enforced since DEF-44 made the seam gate exit non-zero |
 | CI workflow exists and has been green at least once | **done 08-09** — push run `31276450288` green, and the PR path fixed after DEF-39 |
-| Branch protection requires that check | open |
+| Branch protection requires that check | **done 08-11** — both gate jobs required on `main`, `enforce_admins` on, force-pushes and deletions blocked. **Tested, not assumed:** a direct push was accepted while `enforce_admins` was false and rejected with `GH006` once it was on |
 
 **Say this out loud at the start of any deployment-related work**, until every row above reads
 done. A temporary state nobody mentions becomes the permanent state.
@@ -417,6 +417,12 @@ A change is done when all of these hold. "It builds" is not done.
 4. Keyboard focus is visible on anything interactive; contrast meets WCAG 2.1 AA.
 5. Both themes checked where the surface supports them.
 6. No horizontal page scroll at 390 px.
+7. **If it was deployed: `npm run post-deploy` is green.** A deploy that prints
+   `✨ Success!` can still have shipped a hole — on 2026-08-11 one reported success
+   while `citevyn-demo.B8TdRMpf.webp` returned 404 in production, because Cloudflare's
+   dedup claimed to hold a blob it did not and wrangler never reads back what it skips.
+   Every gate in `gates.yml` runs against a local build and could not see it. This is the
+   only check that looks at production.
 
 ## Verification, before assertion
 

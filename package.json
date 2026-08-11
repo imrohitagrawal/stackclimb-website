@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "post-deploy": "node tests/post-deploy.mjs"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.2.0",

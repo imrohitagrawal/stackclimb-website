@@ -25,7 +25,7 @@ forgotten and later recovered — kept visible on purpose).
 | W-3 | Plain English — no jargon, no AI filler, lead with the answer, bullets, examples | DONE | `AGENTS.md` |
 | W-4 | Modularize; no file grows unbounded; segregate concerns | DONE | `AGENTS.md` — 250/32k/120 |
 | W-5 | Store discussions and outcomes in structured files, not chat | DONE | `docs/STATUS.md` |
-| W-6 | Hooks and CI, because a rule that can be evaded is worthless | OPEN | Plan phase 1 |
+| W-6 | Hooks and CI, because a rule that can be evaded is worthless | **Substantially DONE 08-11, one piece open.** `.githooks/pre-commit` is **tracked** and `git config core.hooksPath` points at it — it runs `no-pii.mjs --staged`, blocks `assets/inbox/` and `.env`, and runs gitleaks. CI is `.github/workflows/gates.yml`, two jobs. Branch protection requires both with `enforce_admins` on, and was **proved by evasion** (D71): a direct push was accepted at `false` and rejected `GH006` at `true`. **Open:** the agent-side `Stop` hook is untracked — see M4 |
 | W-7 | Plan fully before implementing | DONE | `docs/plan/build-plan.md` |
 | W-8 | Never write a skill that already exists in public | DONE | `AGENTS.md` |
 | W-9 | Custom skills allowed when a capability is scattered across 3–4 skills | DONE | `AGENTS.md` |
@@ -37,7 +37,7 @@ forgotten and later recovered — kept visible on purpose).
 | W-15 | **Document and RCA a finding before working on it; get approval first** | DONE | `AGENTS.md` — 5-step table + DEF-1 worked example |
 | W-16 | **Do not drop or forget any instruction** | DONE | This file |
 | W-17 | Good practices harvested for reuse on future projects | DONE | `docs/practices/` |
-| W-18 | Planning defects cost more than development defects — research deeply, fan out | PARTIAL | 9 agents run; no standing rule yet |
+| W-18 | Planning defects cost more than development defects — research deeply, fan out | **Note corrected 08-11.** This row said *"no standing rule yet"*. `AGENTS.md:341` has carried one: *"Size the fan to the phase"* — full expert fan for planning and architecture, then the T0–T3 blast-radius model for implementation |
 | W-19 | Verify by **executing**, not by reading. Agent verdicts need their own reviewer | PARTIAL | Role reviewers now told to execute; synthesizer pending |
 | W-20 | Build a watermark skill — the spec exists, nothing applies it | OPEN | `docs/rca/RCA-001-watermark-skill.md` — awaiting approval |
 | W-21 | Add an everyday analogy when disagreeing | DONE | `AGENTS.md` step 4 |
@@ -78,7 +78,7 @@ forgotten and later recovered — kept visible on purpose).
 | # | Directive | Status | Where it lives |
 |---|---|---|---|
 | I-1 | Hosting confirmed: Cloudflare Pages + Fly, spend nothing until needed | DONE | Decision D2, D3 |
-| I-2 | Repo public after removing playbook language | PARTIAL | Rewording pushed; **owner must run the visibility command** |
+| ~~I-2~~ | Repo public after removing playbook language | **CLOSED 08-11 — refuted.** `gh repo view --json visibility` returns `PUBLIC`, and it has been since **08-09** (D53, which also records the history rewrite and the gitleaks sweep that gated it). This row still said the owner must run the command. **`docs/STATUS.md` struck row O2 for this exact staleness on 08-11; this register was not backfilled**, so the same wrong claim survived in a second file for two more days |
 | I-3 | Alignment regression testing — a toggle that drifts must fail | OPEN | Plan phase 1.4 |
 | I-4 | Memory management across projects, using dreaming | OPEN | Plan phase 7.2 |
 | **I-5** | **Deploy via A now, move to C once the gates work — and keep saying so until then** | **OPEN — standing debt** | Standing notice at the top of `AGENTS.md`, exit condition in a table |

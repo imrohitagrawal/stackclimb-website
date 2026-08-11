@@ -45,8 +45,19 @@ nothing sits merged-but-undeployed without something saying so.
 | CI workflow exists and has been green at least once | **done 08-09** — push run `31276450288` green, and the PR path fixed after DEF-39 |
 | Branch protection requires that check | **done 08-11** — both gate jobs required on `main`, `enforce_admins` on, force-pushes and deletions blocked. **Tested, not assumed:** a direct push was accepted while `enforce_admins` was false and rejected with `GH006` once it was on |
 
-**Say this out loud at the start of any deployment-related work**, until every row above reads
-done. A temporary state nobody mentions becomes the permanent state.
+**Every row above now reads done, as of 2026-08-11.** The framing must change with it: approach A′
+is **no longer blocked — it is simply not migrated.** `npx wrangler pages project list` still
+reports `Git Provider: No`, and `grep -rniE 'wrangler|deploy' .github/workflows/` returns **zero
+matches**: no workflow has a deploy step. The exit condition was the hard part and it is met;
+what remains is the work.
+
+One new guard against the drift this notice was written about: `tests/post-deploy.mjs` (D71) is
+the first check in this repo that looks at production, and Definition-of-Done item 7 requires it
+green after any deploy. It exists because a `wrangler pages deploy` printed `Success` and shipped
+a 404.
+
+**Say this out loud at the start of any deployment-related work**, until the deploy actually runs
+through CI. A temporary state nobody mentions becomes the permanent state.
 
 ## Non-negotiable: disagree before you comply
 

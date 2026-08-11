@@ -43,7 +43,7 @@ const systems = assertOneLabelPerRow([
     name: 'CiteVyn',
     href: '#citevyn',
     does: 'Citation-grounded Q&A over official AI docs. Refuses when no source supports an answer.',
-    gate: '15-case retrieval suite on the candidate index blocks promotion below 0.95',
+    gate: 'A 15-case retrieval suite on the candidate index gates promotion; any override is audited',
     figure: '52 / 52',
     figureLabel: '52 of 52 golden regression cases passing',
     state: 'Live',
@@ -52,7 +52,7 @@ const systems = assertOneLabelPerRow([
   {
     name: 'Quorum-AI',
     href: '#quorum',
-    does: 'One question against four models, critiqued twice by a separate moderator, then a synthesis.',
+    does: 'One question against four models, critiqued by a separate moderator, then a synthesis.',
     gate: 'Cost approved before anything runs; fallbacks disclosed',
     figure: '4 models',
     figureLabel: 'four models queried in parallel',

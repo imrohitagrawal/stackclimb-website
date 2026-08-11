@@ -194,8 +194,9 @@ import Overview from '../components/Overview.astro';
         <p class="q">“What happens when four models disagree about your question?”</p>
         <p>
           One question runs against four models in parallel. A separate moderator pass — its
-          own call, with its own configured model — reads all four answers and critiques them,
-          twice. The four never read each other. A synthesis then returns consensus, disagreement, source support,
+          own call, with its own configured model — reads all four answers and critiques them
+          over two rounds; a round dropped for time is recorded as skipped, not hidden. The four
+          never read each other. A synthesis then returns consensus, disagreement, source support,
           uncertainty, and a recommendation. The cost is approved before anything runs, and any
           fallback or simulation is disclosed, never hidden.
         </p>

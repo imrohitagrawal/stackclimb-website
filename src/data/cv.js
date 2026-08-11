@@ -135,16 +135,17 @@ export const projects = [
     name: 'CiteVyn',
     what: 'Citation-grounded Q&A over official AI documentation. Answers quote their sources verbatim; where no source supports an answer it refuses rather than guessing.',
     gate:
-      'A 15-case retrieval suite runs against the candidate index and blocks promotion ' +
-      'below a 0.95 pass rate. The larger 52-case golden suite is deliberately NOT the ' +
-      'gate: it measures a fixture corpus, so passing it would certify an index that was ' +
-      'never tested.',
+      'A 15-case retrieval suite runs against the candidate index and refuses promotion ' +
+      'below a 0.95 pass rate. An operator can still force it, and the override is written ' +
+      'to the audit trail with the measured rate. The larger 52-case golden suite is ' +
+      'deliberately NOT the gate: it measures a fixture corpus, so passing it would ' +
+      'certify an index that was never tested.',
     state: 'Live',
     href: 'https://citevyn.stackclimb.com',
   },
   {
     name: 'Quorum-AI',
-    what: 'One question against four models in parallel, critiqued twice by a separate moderator pass — the four never read each other — then a synthesis returning consensus, disagreement, source support, uncertainty and a recommendation.',
+    what: 'One question against four models in parallel, critiqued by a separate moderator pass — the four never read each other — then a synthesis returning consensus, disagreement, source support, uncertainty and a recommendation.',
     gate: 'Cost is approved before anything runs; any fallback or simulation is disclosed, never hidden.',
     state: 'Live',
     href: 'https://quorum.stackclimb.com',

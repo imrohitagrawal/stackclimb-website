@@ -27,11 +27,11 @@ One concern per file; no file over 200 lines. A parent indexes and links, it nev
 | Path | Covers | State |
 |---|---|---|
 | `practice/` | Cross-cutting practice — skill library, cross-review, CI discipline, failure-driven engineering | 4 files written |
-| `projects/citevyn.md` | CiteVyn | not yet written |
-| `projects/quorum-ai.md` | Quorum-AI — 139 docs unmined | not yet written |
-| `projects/saafsaans.md` | SaafSaans | not yet written |
-| `projects/narratwin.md` | NarraTwin | not yet written |
-| `projects/private.md` | EvalAxis, Aegis Contracts | not yet written |
+| `projects/citevyn.md` | CiteVyn | **written 08-11**, measured at `df8cfc3` |
+| `projects/quorum-ai.md` | Quorum-AI | **written 08-11**, measured at `d3c860c` |
+| `projects/saafsaans.md` | SaafSaans | **written 08-11**, measured at `667397a` |
+| `projects/narratwin.md` | NarraTwin | **written 08-11**, measured at `639aa2c`; two reports unrecoverable |
+| `projects/private.md` | EvalAxis, Aegis Contracts | **written 08-11**; EvalAxis at `c3233de`, Aegis not cloned |
 
 `practice.md` at this level is a superseded pointer stub, kept so old links resolve.
 
@@ -55,3 +55,14 @@ Recorded because the failure mode is instructive, not because it is embarrassing
 - **"NarraTwin uses RAGAS"** — `REFUTED`, and the truth is better. See `narratwin.md`.
 - **"CiteVyn self-hosts Postgres and Redis"** — `REFUTED`. Both are managed free tiers
   (Neon, Upstash). PRODUCT.md still carries the wrong version.
+- **"CiteVyn: retrieval hit-rate 1.0 over 54 cases"** — `REFUTED`. 54 is the *judge* count;
+  hit-rate 1.0 is over **26 answerable** cases. Two scopes in one file, and conflating them
+  more than doubles the claimed scope of a real result.
+- **"NarraTwin: answerRelevancy 0.903, contextRecall 0.75"** — `REFUTED`. The committed
+  `docs/EVAL_REPORT.md` records **1.0** for both. The lower figures came from a research
+  subagent reading a JSON in a worktree that has since been deleted; most likely a different,
+  newer run, and now unrecoverable. **An inherited claim is assumed until re-measured — even
+  when the source is your own agent and even when it cited a path.**
+- **"Aegis Contracts has no repository"** — `REFUTED`. It exists and is private; it is simply
+  not cloned locally. "Not cloned" and "does not exist" are different facts, and only one of
+  them had been checked.

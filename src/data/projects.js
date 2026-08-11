@@ -29,7 +29,12 @@ export const projects = {
     strip: [
       { t: 'Retrieval', d: '1.0 hit-rate · 26 answerable' },
       { t: 'Judge', d: '4.63 / 5 · 54 judged' },
-      { t: 'Release gate', d: '52 / 52 golden cases' },
+      /* Was 'Release gate — 52/52 golden cases'. The golden suite is deliberately
+         NOT the promotion gate: promotion_eval.py's own docstring calls wiring it
+         in "wrong, and deliberately not taken", because it measures a fixture
+         corpus and would certify an index that was never tested. The gate is a
+         separate 15-case retrieval suite on the candidate index. */
+      { t: 'Golden suite', d: '52 / 52 cases' },
       { t: 'Tests', d: '1,036 backend · 125 e2e' },
     ],
     notClaimed: 'Corpus scale · adoption · SLA',
@@ -49,8 +54,9 @@ export const projects = {
       '(e2e/fixtures/golden-run.ts), not a measured run. Live execution is off by default. The ' +
       'revision count is inferred from position movement, and the interface says so.',
     eng:
-      'One question goes to four models; a separate <b>moderator</b> reads all four and critiques ' +
-      'them. They never read each other. The eval judge behind it is a paid call several threads ' +
+      // The mechanism itself now sits in the plate body above (ADR-0032), so this
+      // line starts at the engineering, not by restating it a second time.
+      'The eval judge is a paid call several threads ' +
       'may need at once, so the first thread makes it and the rest wait on that one future. A ' +
       'reader that times out marks itself, so a verdict-less result never gets cached over a run ' +
       'the judge did verify. Its production readiness review records a Go dated 21 June and the ' +

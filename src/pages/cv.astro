@@ -75,8 +75,10 @@ import {
     <section class="cv-section" aria-labelledby="s-proj">
       <h2 id="s-proj">Independent systems</h2>
       <p class="cv-note">
-        Built since April 2026. Each row states the gate the system runs against itself —
-        that is the through-line, and it is the same discipline as the fourteen years above.
+        Built since April 2026. Four of the six run a gate against themselves — that is the
+        through-line, and it is the same discipline as the fourteen years above. Where a system
+        has a disclosure rule instead, or nothing yet, the row says so rather than calling it a
+        gate.
       </p>
       {projects.map((p) => (
         <div class="cv-proj">
@@ -87,7 +89,11 @@ import {
             <span class="cv-state">{p.state}</span>
           </div>
           <p>{p.what}</p>
-          <p class="cv-gate"><span class="cv-gate-k">Gate</span> {p.gate}</p>
+          {/* A row with no gate prints none. Aegis carried "Too early to state
+              one" UNDER a Gate label, which is an absence wearing the label —
+              the same thing #overview's figure column already refused once. */}
+          {p.gate && <p class="cv-gate"><span class="cv-gate-k">Gate</span> {p.gate}</p>}
+          {p.rule && <p class="cv-gate"><span class="cv-gate-k">Rule</span> {p.rule}</p>}
         </div>
       ))}
     </section>

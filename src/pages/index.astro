@@ -113,8 +113,8 @@ import Overview from '../components/Overview.astro';
         <CapStrip
           label="The record, in numbers"
           items={[
-            { t: 'Systems built', d: '6' },
-            { t: 'Release gates', d: '4 of 6' },
+            { t: 'Systems built', d: '4 of 6' },
+            { t: 'Release gates', d: '4' },
             { t: 'Golden cases passed', d: '52 / 52' },
           ]}
         />
@@ -193,10 +193,12 @@ import Overview from '../components/Overview.astro';
         <h2 class="plate-title tight">Quorum‑AI</h2>
         <p class="q">“What happens when four models disagree about your question?”</p>
         <p>
-          One question runs against four models in parallel; they critique one another for two
-          rounds, and a synthesis returns consensus, disagreement, source support, uncertainty,
-          and a recommendation. The cost is approved before anything runs, and any fallback or
-          simulation is disclosed, never hidden.
+          One question runs against four models in parallel. A separate moderator pass — its
+          own call, with its own configured model — reads all four answers and critiques them
+          over two rounds; a round dropped for time is recorded as skipped, not hidden. The four
+          never read each other. A synthesis then returns consensus, disagreement, source support,
+          uncertainty, and a recommendation. The cost is approved before anything runs, and any
+          fallback or simulation is disclosed, never hidden.
         </p>
                 <p class="proof" set:html={projects.quorum.proof}></p>
         <p class="eng" set:html={projects.quorum.eng}></p>
@@ -237,9 +239,10 @@ import Overview from '../components/Overview.astro';
         <p>
           A Delhi-NCR air-quality companion that scores your risk — age, condition, planned
           activity — rather than the city's average, across a repo-stated 21 stations, and answers questions
-          with cited health guidance. Every mode is labelled: live, deterministic fallback, or
-          sample. The Hindi draft ships behind a banner saying no Hindi speaker has reviewed it
-          yet.
+          with cited health guidance. Every reading is labelled with where it came from: live,
+          cached, or no reading at all. There is no sample mode — the hardcoded stand-in
+          figures were deleted rather than dressed up as observations. The Hindi draft ships
+          behind a banner saying no Hindi speaker has reviewed it yet.
         </p>
         <p>
           Entered at <em>Build with AI</em> (Elastic × GDG Cloud New Delhi, 18 July 2026) as a

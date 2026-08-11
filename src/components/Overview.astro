@@ -24,12 +24,26 @@
  * stated and could not be independently counted, so it is not given here as a
  * measured fact — the row carries its state instead.
  */
-const systems = [
+/* `gate` and `rule` are mutually exclusive: overview.css:96 puts both in
+   `grid-area: gate`, so a row carrying both would stack them in one cell. No row
+   does today. This throws at BUILD time rather than leaving the next person to
+   discover it as an overlap in a screenshot. */
+function assertOneLabelPerRow(rows) {
+  const both = rows.filter((r) => r.gate && r.rule).map((r) => r.name);
+  if (both.length) {
+    throw new Error(
+      `Overview: ${both.join(', ')} carries both a gate and a rule. They share one grid cell — pick one.`,
+    );
+  }
+  return rows;
+}
+
+const systems = assertOneLabelPerRow([
   {
     name: 'CiteVyn',
     href: '#citevyn',
     does: 'Citation-grounded Q&A over official AI docs. Refuses when no source supports an answer.',
-    gate: '52-case golden run blocks index promotion',
+    gate: 'A 15-case retrieval suite on the candidate index gates promotion; any override is audited',
     figure: '52 / 52',
     figureLabel: '52 of 52 golden regression cases passing',
     state: 'Live',
@@ -38,7 +52,7 @@ const systems = [
   {
     name: 'Quorum-AI',
     href: '#quorum',
-    does: 'One question against four models, two rounds of mutual critique, then a synthesis.',
+    does: 'One question against four models, critiqued by a separate moderator, then a synthesis.',
     gate: 'Cost approved before anything runs; fallbacks disclosed',
     figure: '4 models',
     figureLabel: 'four models queried in parallel',
@@ -49,7 +63,7 @@ const systems = [
     name: 'SaafSaans',
     href: '#saafsaans',
     does: 'Delhi-NCR air quality scored for you, not for the city average.',
-    gate: 'Every reading labelled live, fallback, or sample',
+    rule: 'Every reading labelled live, cached, or no reading',
     figure: 'Hindi gated',
     figureLabel: 'the Hindi translation is gated behind a review banner',
     state: 'Deployed — sleeps idle',
@@ -78,12 +92,11 @@ const systems = [
     name: 'Aegis Contracts',
     href: null,
     does: 'Contract-shaped guarantees between AI systems.',
-    gate: 'Too early to state one',
     figure: null,
     state: 'In progress — closed',
     tone: 'neutral',
   },
-];
+]);
 ---
 
 <div class="overview">
@@ -100,7 +113,14 @@ const systems = [
           <span class="ov-state">{s.state}</span>
         </div>
         <p class="ov-does">{s.does}</p>
-        <p class="ov-gate"><span class="ov-k">Gate</span>{s.gate}</p>
+        {/* The lede says four of the six are gates. This column printed GATE on
+            all six, so the grid beneath refuted the sentence above it. Four carry
+            a real gate; SaafSaans carries a disclosure RULE, which stops nothing
+            shipping; Aegis carries neither, and prints nothing rather than
+            "too early to state one" — an absence wearing the label is the thing
+            the em-dash note below already refused once. */}
+        {s.gate && <p class="ov-gate"><span class="ov-k">Gate</span>{s.gate}</p>}
+        {s.rule && <p class="ov-gate"><span class="ov-k">Rule</span>{s.rule}</p>}
         {/* A figure with no accessible name announces "52 slash 52" and
             leaves a screen-reader user with no idea what 52 counts. Each row
             now carries its own sentence.

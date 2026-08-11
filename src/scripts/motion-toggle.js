@@ -10,7 +10,7 @@
 // even though both resolve to "kill transitions and animations."
 //
 // prefers-reduced-motion is never read or written here: it always wins at
-// the CSS layer (motion.css, nav.css, Artefact.astro each gate on it
+// the CSS layer (motion.css and nav.css each gate on it
 // independently), so a visitor's OS-level accessibility setting can never be
 // overridden by this site-level toggle.
 

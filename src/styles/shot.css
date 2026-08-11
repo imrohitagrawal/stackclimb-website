@@ -44,7 +44,13 @@
 .plate-copy .proof {
   font-size: 1.06rem;
   line-height: 1.55;
-  margin: 0 0 1rem;
+  /* Top margin is 1.2rem, not 0. The shorthand's implicit `margin-top: 0` beat
+     `.plate-copy p + p`'s 0.8rem on specificity, so the proof line butted
+     straight onto the paragraph above it and read as its last sentence — on
+     Quorum and SaafSaans both. Slightly more than the paragraph rhythm because
+     this line is a register change, not another paragraph. Found by looking at
+     the render; no gate asserts vertical rhythm. */
+  margin: 1.2rem 0 1rem;
   color: var(--lit, #f4efe4);
 }
 .plate-copy .proof em {

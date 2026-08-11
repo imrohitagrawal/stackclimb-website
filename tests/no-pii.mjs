@@ -87,6 +87,15 @@ const ALLOW = [
   /IST \(UTC\+5:30\)/,          // the site states its timezone
   /UTC\+\d/,
   /\+91[\s]?\(0\)/,             // never used, kept explicit
+  // Vendored skill documentation ships schema.org JSON-LD examples with a
+  // placeholder number in the 555 range NANP reserves for fiction —
+  // addyosmani/web-quality-skills `seo` does, beside https://example.com and
+  // linkedin.com/company/example. Deliberately narrow: it needs BOTH the
+  // JSON-LD key AND the 555 prefix, so a real number in a `telephone` field is
+  // still caught, and a 555 number outside such a field is too. (Both proved by
+  // planting each shape and watching the gate go red — and it went red on this
+  // very comment when the proof first spelled a realistic number out here.)
+  /"telephone":\s*"\+1-555-/,
 ];
 
 // Extension check is case-insensitive: resume.PDF must scan the same as

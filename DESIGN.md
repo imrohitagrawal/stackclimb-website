@@ -250,10 +250,20 @@ has a value ladder; this one had a single step.
     ochre on ground   was 2.97:1     now 6.4–7.25:1     (fixes the focus ring)
     lit on ground     did not exist  now 14.3–16.1:1    (the light source)
 
-**The Lit-Surface Rule.** Exactly one near-white surface per plate, and it must hold
-a **real artefact** — actual system output at a size you can read. Never a grey
-placeholder bar. A page that promises "AI that shows its work" cannot show a
-wireframe where the work belongs.
+**The Lit-Surface Rule.** Exactly one near-white surface **per system being
+evidenced**, and it must hold a **real artefact** — actual system output at a size
+you can read. Never a grey placeholder bar. A page that promises "AI that shows its
+work" cannot show a wireframe where the work belongs. **A system with no artefact
+yet gets no panel — never a placeholder in its place.**
+
+*Amended 2026-08-11 (D61).* This read "exactly one near-white surface **per plate**",
+written when a plate was a full-viewport section holding one system. The home page
+restructure (D57) puts six systems in one section, and read literally the old wording
+capped the whole section at one panel — which would have left five systems described in
+prose about their evidence rather than showing it. **Owner's ruling: a project card
+counts as a plate.** The unit the rule protects is the *system*, not the section, so
+the wording now says so. The ban it exists to enforce — no placeholder where the work
+belongs — is unchanged and now stated explicitly for the empty case.
 
 **The Darkest-Surface Rule.** An accent is measured against the *darkest* surface it
 can land on, not the ground. The light plate's accent cleared 4.92:1 on its ground

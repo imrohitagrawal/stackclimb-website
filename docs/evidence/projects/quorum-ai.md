@@ -27,8 +27,27 @@ Captured 2026-08-09, macOS arm64, 10 cores, Python 3.12.13. Provenance is stampe
 
 | | n | p50 | p95 | max |
 |---|---|---|---|---|
-| Sequential | 40 | **25.1 ms** | **26.2 ms** | 29.6 |
-| Concurrent | 20 | 85.4 ms | **93.5 ms** | 95.3 |
+| Sequential | 40 | 25.1 ms | 26.2 ms | 29.6 |
+| Concurrent | 20 | 85.4 ms | 93.5 ms | 95.3 |
+
+**REFUTED as a site claim, 2026-08-11, by a cross-model review.** That file is stamped
+`run_id: "local"`, `sha: "local"` — **one run on a laptop.** The repository carries a better
+measurement it disagrees with: `tests/perf/test_workflow_latency_percentiles.py:28-40` records
+**ten** runs of the same sequential n=40 and reports **p50 40.3–44.1 ms, p95 42.2–82.3 ms**,
+noting the machine was deliberately not idle (load average 2.4–3.3) *"because it is part of the
+measurement, not noise to be wished away."*
+
+So `26.2 ms` is the best number from the least representative sample, and the honest figure is
+roughly two to three times worse. **No latency figure goes on the site.** The strip cell was
+replaced with source-verified facts needing no artifact, and *latency* was added to that panel's
+`Not claimed` list.
+
+**Mutation 88.7% also removed from the site, for a weaker reason.** A cross-model review flagged
+it as fixture data because `tests/unit/test_mutation_gate_blocking.py:311` writes the figure into
+a temp artifact — but that test is exercising a platform guard, not inventing the score, so the
+finding is a partial false positive. What it does surface is real: the same test shows CI
+**declines to compare** that number off-platform, because it is hardware-bound. A figure CI will
+not compare is not a figure the site should quote.
 
 ### Mutation score — `docs/metrics/mutation-baseline.md`
 
@@ -42,7 +61,8 @@ in CI**, not blocking — issue #130's promotion to blocking *"was built, measur
 
 ### Captured live run — `docs/validation/live-run-2026-07-14.json`
 
-Real run against OpenRouter. `status: completed`, `query_run_id d7785cd8-…`.
+Real run against OpenRouter. **This file is the real one.** Not to be confused with the
+acceptance fixture below. `status: completed`, `query_run_id d7785cd8-…`.
 
 | | |
 |---|---|
@@ -110,13 +130,26 @@ into local simulation so it spends $0.**
 `e2e/review-screenshots/acceptance/result-light-1440.png`, **cropped to 1440×980** to stop above
 the sources block.
 
-Shows: `Completed in 41.2s` · `actual $0.188 (approved $0.19)` · the panel verdict **"4 of 4
-models aligned · 3 revised their position"** · its own caveat *"Only 13% of material claims
-carried citations — treat this as provisional"* · and three metric tiles.
+**REFUTED, 2026-08-11 — this is not a run.** An adversarial review traced every figure in that
+screenshot to hardcoded values in `e2e/fixtures/golden-run.ts`: `actual_cost_usd: "0.188"` at
+`:390`, `cost_estimate("0.190", …), elapsed_time_ms: 41200` at `:381`, `correlation_id:
+"corr-golden-0001"` at `:359`. The file's own header says its purpose is offline testing *"with
+no paid run."* Confirmed independently: `src/product_app/config.py:81` sets
+`openrouter_live_execution_enabled: bool = False`, and `git ls-files` shows the PNG is **not
+tracked at `d3c860c`** — so naming that commit implied provenance it does not carry.
 
-**Why cropped:** the run is `corr-golden-0001`, a golden acceptance run whose cited sources are
-`example.com` fixtures. The cost, timing and consensus above that block are independently true,
-so the crop removes fixture URLs without changing the meaning of anything left in frame (D63).
+**This row previously described it as an "acceptance run" and quoted `$0.188 actual` as a
+measured cost. That was wrong and it shipped in commit `1ba1249`.** The screenshot may be used
+only as what it is: an end-to-end fixture render showing what the interface communicates —
+captioned `SAMPLE`, with the fixture path named. No cost, timing or run figure from it may
+appear as a measurement. The screenshot's own footer says the same thing and was cropped above
+it: *"treat the cost figure as an estimate, not a bill — verify against a real run."*
+
+**Also refuted in the same review:** the revision count is **inferred**, not measured — the
+interface states *"Revision counts are inferred from the panel's position movements, not
+quoted."* And the latency figures quote the `sequential` arm (n=40) while the file also carries
+`concurrent` at p50 85.4 / p95 93.5 (n=20); the arm must be named or the scope is inflated,
+which is the same error as CiteVyn's 26-vs-54.
 
 ---
 

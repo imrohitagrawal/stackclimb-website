@@ -256,6 +256,17 @@ you can read. Never a grey placeholder bar. A page that promises "AI that shows 
 work" cannot show a wireframe where the work belongs. **A system with no artefact
 yet gets no panel — never a placeholder in its place.**
 
+*Amended 2026-08-11 (D67), by the owner, over my objection — recorded because a rule the pixels
+quietly break is drift.* **One exception: a system may show an interface design in its panel
+when no capture of the built system exists, provided the panel is captioned `SAMPLE` and says
+in words that it is a design and not a running capture.** I argued the rule should hold, since
+the site's whole argument is that its evidence is inspectable and a design is not evidence. The
+owner's position, which stands: a labelled design communicates what the product does without
+claiming it runs, and NarraTwin's design carries its own disclosures — `SIMULATED HOST CONTEXT`,
+`Local mock · no external provider calls, real media, or cloned identity`, `Verified sources ·
+pending`. The exception is narrow and does not travel: it covers an interface **the owner built**
+for **that system**, never stock art, never a competitor's UI, never an unlabelled mock.
+
 *Amended 2026-08-11 (D61).* This read "exactly one near-white surface **per plate**",
 written when a plate was a full-viewport section holding one system. The home page
 restructure (D57) puts six systems in one section, and read literally the old wording
@@ -331,7 +342,15 @@ lines; the NarraTwin-style honest-absence device in figures is a dashed stroke.
 - **Do** keep the copy register: state what is proven, label what is not, invent nothing.
 
 ### Don't:
-- **Don't** introduce a second accent, a gradient, or a photographic texture; the grain layer is the only material.
+- **Don't** introduce a second accent, a gradient, or a photographic texture; the grain layer is
+  the only material. **One carve-out, added 2026-08-11 (D66): a screenshot of a system's own
+  output, inside an artefact panel.** The Lit-Surface Rule already demands *"actual system
+  output at a size you can read"* — a capture of the running system is the most literal form
+  of that, and a rule admitting it is stronger than one banning it. The carve-out is narrow and
+  does not generalise: **only inside an artefact panel, only that system's own output, never
+  decoration, never a background, never stock photography or a person.** Every such image
+  carries a provenance caption naming its source; anything that is not a live capture says so
+  in that caption.
 - **Don't** use pills or badges for status; state belongs in the caption strip.
 - **Don't** round corners on UI surfaces (nav chip excepted) or add resting shadows.
 - **Don't** revert to the refused defaults: no dark-terminal styling, no white-grid card gallery, no kickers or eyebrow labels.

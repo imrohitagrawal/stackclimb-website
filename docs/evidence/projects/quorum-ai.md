@@ -1,0 +1,161 @@
+# Quorum-AI
+
+One question, four models in parallel, a separate moderator model critiquing across two rounds,
+then a synthesis returning consensus, disagreement, source support, uncertainty and a
+recommendation. Cost is approved before anything runs.
+
+**Measured 2026-08-11 at `d3c860c`** (committed 2026-08-11). Live at `quorum.stackclimb.com` —
+answered HTTP 200 in **1.1s**; the UI is at `/ui`.
+
+---
+
+## VERIFIED — counted directly
+
+| Claim | Value | Command / source |
+|---|---|---|
+| Python test functions | **2,095** | `grep -rh '^def test_\|^async def test_\|^    def test_' tests --include='*.py' \| wc -l` |
+| Playwright e2e tests | **358** | `grep -rh 'test(' e2e --include='*.spec.ts' \| wc -l` |
+| Application Python | **22,506 lines** | `find src -name '*.py' \| xargs wc -l` |
+| ADRs | **32** | `ls docs/adr \| wc -l` |
+| Coverage floor | **88%**, enforced in config not just CI | `pyproject.toml` → `--cov-fail-under=88` |
+| Concurrent runs | **16** | `src/product_app/query_runs.py` → `_MAX_CONCURRENT_RUNS = 16` |
+| Run deadline | **180s**, validator-bounded ≤ 3600s | `config.py:157` |
+
+### Latency — `build/gates/perf-percentiles.json`
+
+Captured 2026-08-09, macOS arm64, 10 cores, Python 3.12.13. Provenance is stamped into the file.
+
+| | n | p50 | p95 | max |
+|---|---|---|---|---|
+| Sequential | 40 | 25.1 ms | 26.2 ms | 29.6 |
+| Concurrent | 20 | 85.4 ms | 93.5 ms | 95.3 |
+
+**REFUTED as a site claim, 2026-08-11, by a cross-model review.** That file is stamped
+`run_id: "local"`, `sha: "local"` — **one run on a laptop.** The repository carries a better
+measurement it disagrees with: `tests/perf/test_workflow_latency_percentiles.py:28-40` records
+**ten** runs of the same sequential n=40 and reports **p50 40.3–44.1 ms, p95 42.2–82.3 ms**,
+noting the machine was deliberately not idle (load average 2.4–3.3) *"because it is part of the
+measurement, not noise to be wished away."*
+
+So `26.2 ms` is the best number from the least representative sample, and the honest figure is
+roughly two to three times worse. **No latency figure goes on the site.** The strip cell was
+replaced with source-verified facts needing no artifact, and *latency* was added to that panel's
+`Not claimed` list.
+
+**Mutation 88.7% also removed from the site, for a weaker reason.** A cross-model review flagged
+it as fixture data because `tests/unit/test_mutation_gate_blocking.py:311` writes the figure into
+a temp artifact — but that test is exercising a platform guard, not inventing the score, so the
+finding is a partial false positive. What it does surface is real: the same test shows CI
+**declines to compare** that number off-platform, because it is hardware-bound. A figure CI will
+not compare is not a figure the site should quote.
+
+### Mutation score — `docs/metrics/mutation-baseline.md`
+
+**88.7%** at the **changed-function scope** — the scope the gate actually runs. 504 mutants,
+336 killed, 43 survived, R0a/R1/R3 all 2026-07-19.
+
+**The scope must travel with the number.** An earlier 96.4–96.5% figure is recorded in the same
+file as *"no longer reproduces and is superseded"*, and a 97.0% figure is a different, narrower
+scope. Quoting either without its scope would be an overclaim. The mutation gate is **advisory
+in CI**, not blocking — issue #130's promotion to blocking *"was built, measured, and reversed."*
+
+### Captured live run — `docs/validation/live-run-2026-07-14.json`
+
+Real run against OpenRouter. **This file is the real one.** Not to be confused with the
+acceptance fixture below. `status: completed`, `query_run_id d7785cd8-…`.
+
+| | |
+|---|---|
+| Model slots | **4** — `openai/gpt-4o-mini`, `anthropic/claude-3-haiku`, `google/gemini-2.5-flash-lite`, `deepseek/deepseek-chat-v3.1` |
+| Estimated cost | **$0.0016** |
+| Elapsed | **44,172 ms** |
+| Failed steps | **0** |
+| Missing steps | **0** |
+
+---
+
+## Must not be claimed
+
+- **The README says 198 tests. It is stale by an order of magnitude.** Real count is 2,095 +
+  358. Use the grep, never the README.
+- **The four answer models do not critique each other.** A separate *moderator* model reads all
+  four. The README says so plainly; ADR-0032 is titled *"the copy describes the moderator, the
+  requirement keeps peer critique."* Say **"moderated critique"**. Never "the models debate
+  each other."
+- **Consensus classification is lexical, not semantic** — 4-gram overlap, keyword negation,
+  polar-split heuristics in `synthesis_consensus.py`. The UI captions it honestly as *"inferred,
+  not a tallied vote."* Do not describe it as semantic agreement scoring.
+- **The accuracy pilot is n=10 and says so**: *"a pilot — not a population estimate, do not
+  extrapolate."* The hallucination measurement in the quality ledger is **unmeasured**. No
+  hallucination-reduction number exists.
+- **Live execution is currently off.** `/ui` states it: *"Every model answer and the synthesis
+  will come from Quorum's local simulation helpers. They look like real output but are not
+  generated by a real AI model provider."*
+
+---
+
+## The hard engineering — for the panel's supporting line
+
+**Single-flight memoised paid judge**, `src/product_app/query_runs.py:2744`
+(`_MemoisedRunJudge`).
+
+The eval judge is a paid call, and several threads — the request path and the terminal-persist
+path — can want one run's verdict simultaneously. A lock-guarded bounded LRU memo plus an
+in-flight `Future` map: the first thread in becomes owner and makes the one paid call; every
+other waits on that `Future` for 30s. **Never a second call, never a fabricated verdict.**
+
+The subtle part is the timeout branch. A reader that times out re-checks the memo once, then
+serves a *suppressed, verdict-less* result and marks `served_without_verdict = True`.
+`_evaluate_terminal_run` reads that flag and **declines to memoise** — because, in the code's
+own words, *"whichever thread stored LAST won a key that never changes again for a terminal run,
+so a timed-out reader could freeze `band='unverified', score=None` over a run the judge really
+verified, for the entry's whole life."*
+
+**Runner-up, and the better story about judgement: ADR-0016**, which supersedes ADR-0004 and is
+a measured self-indictment — *"Three different numbers governed one run, and the one the user
+was shown governed least."* It records that the approved figure and the authorised figure
+differed by **2.23×–2.44×**; that six runs booked **$0.1758** against a **$0.20** cap while
+their true bounds summed to **$0.4458**; and that the check raced the charge across a whole
+request. The fix: show the binding number, meter actuals through a three-event append-only
+ledger (`accepted` → `reconciled` → `voided`), and run check-and-insert under one lock hold with
+the charge moved ahead of `Thread.start()` — *"because the worker is what spends."* On an
+untrustworthy ledger it chooses neither fail-open nor fail-closed but **degrade: force the run
+into local simulation so it spends $0.**
+
+---
+
+## Panel asset
+
+`src/assets/projects/quorum-run.webp` — from
+`e2e/review-screenshots/acceptance/result-light-1440.png`, **cropped to 1440×980** to stop above
+the sources block.
+
+**REFUTED, 2026-08-11 — this is not a run.** An adversarial review traced every figure in that
+screenshot to hardcoded values in `e2e/fixtures/golden-run.ts`: `actual_cost_usd: "0.188"` at
+`:390`, `cost_estimate("0.190", …), elapsed_time_ms: 41200` at `:381`, `correlation_id:
+"corr-golden-0001"` at `:359`. The file's own header says its purpose is offline testing *"with
+no paid run."* Confirmed independently: `src/product_app/config.py:81` sets
+`openrouter_live_execution_enabled: bool = False`, and `git ls-files` shows the PNG is **not
+tracked at `d3c860c`** — so naming that commit implied provenance it does not carry.
+
+**This row previously described it as an "acceptance run" and quoted `$0.188 actual` as a
+measured cost. That was wrong and it shipped in commit `1ba1249`.** The screenshot may be used
+only as what it is: an end-to-end fixture render showing what the interface communicates —
+captioned `SAMPLE`, with the fixture path named. No cost, timing or run figure from it may
+appear as a measurement. The screenshot's own footer says the same thing and was cropped above
+it: *"treat the cost figure as an estimate, not a bill — verify against a real run."*
+
+**Also refuted in the same review:** the revision count is **inferred**, not measured — the
+interface states *"Revision counts are inferred from the panel's position movements, not
+quoted."* And the latency figures quote the `sequential` arm (n=40) while the file also carries
+`concurrent` at p50 85.4 / p95 93.5 (n=20); the arm must be named or the scope is inflated,
+which is the same error as CiteVyn's 26-vs-54.
+
+---
+
+## Flagged, not fixed here
+
+**Repo-root hygiene is a presentation liability.** Roughly 60 `*-ULTRACODE-PROMPT.md` /
+`HANDOFF-*.md` files at the root, stray `.coverage 2`…`.coverage 7`, `.DS_Store`, and a
+committed `.env`. A hiring manager who clones this meets process exhaust before `src/`. The code
+is excellent; the front door is not. Owner cleaning separately.

@@ -85,3 +85,6 @@ assets/inbox/**
 
 # Local wrangler state — miniflare caches and trace stores, machine-local
 .wrangler/
+
+# Throwaway comparison mockup — deleted once the visual world is chosen
+mockup/

@@ -1,19 +1,18 @@
 # Handoff — for the next session
 
-Written 2026-08-09, end of the second autonomous session. Paste the fenced block
-into a fresh Claude Code session in `/Users/rohitagrawal/Projects/designing-website`.
+Written 2026-08-12. Paste the fenced block into a fresh Claude Code session in
+`/Users/rohitagrawal/Projects/designing-website`.
 
-**13 PRs merged and deployed (#15–#27), all verified in production.** Tests 42 → 64.
-The seven tests that cannot fail: closed as a class. Page weight roughly halved.
-After #18: the owner's brand mark adopted with a pre-merge dual-agent critique (D48,
-#19); all six page-level critique findings fixed same-day (#20–#23, D51); the two
-doc-vs-pixel drifts canonized (D49/D50, #24); a font-swap CLS regression found by
-/impeccable optimize and fixed with a metric-tuned fallback face, plus immutable
-caching for hashed assets (DEF-49, #25); the dead leader-line machinery deleted —
-total site JS is now 594 inlined bytes (D52, #26); and SaafSaans came back — the
-owner redeployed it, verified by command, outage copy became dated history (DEF-7,
-#27). Blocked on the owner: O2 repo visibility only. The ledger (docs/STATUS.md)
-is the authority; this header is just the trailhead.
+**This session shipped two PRs and deployed.** Seven false claims came off the live site
+(#11, D74) and a four-agent execution audit recorded what is actually true (#12, D75).
+`docs/STATUS.md` is the authority; this file is only the trailhead.
+
+**Two things the next session must not repeat.** First: everything was verified against
+`dist/`, `dist/` was clean, and **production was serving the opposite** — one build behind,
+with every claim the merge existed to delete. Only `post-deploy.mjs` could see it, because
+`playwright.config.js:12` points every other gate at `localhost:4321`. Second: a grep for the
+exact phrase on one page missed the same claim, differently worded, on `/cv`. **Grep the
+claim, not the phrase. Verify production, not the build.**
 
 ---
 
@@ -22,167 +21,271 @@ is the authority; this header is just the trailhead.
 ```
 ultracode
 
-You are continuing work on stackclimb.com, the owner's personal site. Work
-autonomously. Where something genuinely needs him, do everything else in full
-and flag that one item — never invent content to unblock yourself.
+You are continuing work on stackclimb.com, the owner's personal site, in
+/Users/rohitagrawal/Projects/designing-website. Astro 7, static, Cloudflare
+Pages, manual deploy.
 
-READ FIRST, IN THIS ORDER
-  docs/HANDOFF.md                this file
-  AGENTS.md                      the rules. They override your defaults
-  docs/STATUS.md                 the ledger: D1-D47, DEF-1 to DEF-48, corrections
-  docs/ACTION-PLAN.md            the phases. 0, 1, 5 and most of 4b/4c are DONE
-  docs/positioning-decisions.md  SECTION 8 IS A SKILL-TO-TASK MAPPING. USE IT
-  docs/positioning-phase0.md     the tested copy, and two corrections about method
+READ FIRST, IN THIS ORDER: AGENTS.md (the rules; CLAUDE.md just imports it),
+docs/STATUS.md (decisions D1-D75, defects, open items), docs/OWNER-DIRECTIVES.md.
+Then STOP TRUSTING THEM. Every one of those files has been wrong in both
+directions, and a four-agent audit on 08-12 found nine ledger rows and four
+directive rows wrong. Verify by running a command before you act on any row.
 
-PROVE THE STATE BEFORE TRUSTING ANY OF IT
-  git log --oneline -3
-  git rev-list --count origin/main..main            # must be 0
-  npx playwright test                # 64 pass, 0 fail, 2 by-design skips.
-                                     # The suite BUILDS FIRST and refuses a
-                                     # stale server: if port 4321 is busy it
-                                     # errors loudly. Kill the server; that is
-                                     # the DEF-11 fix working, not a bug.
-  node tests/file-budget.mjs --self-test   # D8 budget, population derived
-  node tests/no-pii.mjs --self-test
-  # standalone pixel gates want their own server on a spare port:
-  npm run build && (npx astro preview --port 4322 &) && sleep 3
-  node tests/boundary-check.mjs http://localhost:4322   # exit 1 below AA
-  node tests/nav-contrast.mjs  http://localhost:4322    # ~60s; sweeps the OPEN
-                                                        # menu panel too now
-  kill %1
+SAY THIS OUT LOUD at the start of any deployment work, per AGENTS.md: deployment
+is approach A-prime. `npx wrangler pages project list` reports Git Provider: No.
+Nothing deploys on push. Every deploy is a manual `npx wrangler pages deploy dist
+--project-name=stackclimb --branch=main` followed by `npm run post-deploy`.
 
-  # production is a SEPARATE question — NOTHING deploys on push
-  npx wrangler pages deployment list --project-name stackclimb | head -5
-  curl -sS https://stackclimb.com/ | grep -o '_astro/cv[^"]*css'  # compare dist/
+== HOW TO WORK: you are an ORCHESTRATOR ==
 
-THE ACCEPTANCE TEST, unchanged: within 30-60 seconds a recruiter should feel
-"I should call this person." Not a heuristic score.
+Do not implement anything yourself in the main thread. For each work package
+below, in order, spawn ONE package-orchestrator subagent. That orchestrator runs
+the phases below and reports back. You review its report, then move to the next
+package. One package, one PR, merged before the next starts (AGENTS.md).
 
-USE THE SKILLS. docs/positioning-decisions.md:164 maps skills to phases.
-Check the mapping at the START of a task. This session used emil-design-eng
-before building the menu and systematic-debugging's discipline throughout;
-the failure mode last time was using zero until asked.
+Each package-orchestrator runs these phases:
 
-CODEX WORKS, and it out-found same-context review again. SHORT BOUNDED prompt:
-  codex exec --sandbox read-only "<read these files. find the TOP 5 ways X.
-  one line each. ranked. no preamble.>"
-This session it found 3 real holes in new tests (D47). The same-context round
-then found a CI-blocking regression Codex did not. Run BOTH, always, and run
-EVERY gate the surface touches before calling a branch done — the regression
-was in the one gate I had not re-run.
+  1. PLAN      - fan out 2-3 read-only agents. Diverse lenses. They must READ
+                 the real code, not the ledger. Converge on one plan.
+  2. RCA/DOC   - if the package fixes a defect, write the RCA BEFORE any code,
+                 per AGENTS.md's document-before-changing rule. Investigating is
+                 not working; the moment the cause is known, the doc comes first.
+  3. BUILD     - ONE WRITER. NEVER fan out this phase. Subagents share one
+                 working tree and parallel writers corrupt each other. If two
+                 files are genuinely disjoint you may use isolation: "worktree";
+                 otherwise serialize. Packages 3, 4 and 5 all edit index.astro,
+                 so they are serial no matter what.
+  4. TEST      - every behavioural change ships a test, and the test must BITE.
+                 Prove it: revert the change and watch it go red, or mutate the
+                 assertion. An assertion that passes when the feature is absent
+                 is worthless - on 08-12 a self-test compared file BYTES instead
+                 of PIXELS and certified a watermarker that drew nothing.
+  5. REVIEW    - size the fan to blast radius (AGENTS.md T0-T3), do not use a
+                 fixed fan. Docs -> self-verify. One component -> one matched
+                 reviewer. Multi-file -> a fan. Two lenses are MANDATORY on any
+                 non-trivial package and they are the two that actually paid:
+                   (a) one lens must RUN the thing and report real output. A
+                       reviewer that only reads source is an opinion.
+                   (b) one lens must be a DIFFERENT MODEL FAMILY:
+                       codex exec --sandbox read-only "<prompt>"
+                       A subagent is context isolation, not model-weight
+                       decorrelation. On 08-12 Codex caught a false claim that
+                       two same-family agents missed.
+                 Add a security lens ONLY on package 6 (headers/CSP) and a
+                 performance lens ONLY on package 5 (animations). Elsewhere they
+                 find nothing on a static site with no server, no auth and no
+                 user input - and this repo measured a five-lens fan raising 32
+                 findings of which 23 were refuted.
+                 REFUTE FINDINGS BEFORE FIXING THEM. Check the case the reviewer
+                 did not mention.
+  6. ITERATE   - maximum TWO review rounds. Then ship with the residuals written
+                 into docs/STATUS.md. More rounds is not convergence.
+                 STOP ENTIRELY and escalate to the owner if any circuit breaker
+                 fires: a new class of blocking finding in a second round; the
+                 same defect class in two components; two consecutive fixes each
+                 adding a defect; three or more amended heads after review starts.
+                 Then diagnose WHICH upstream miss it was - requirements,
+                 planning, understanding, or coding. Patching cannot fix the
+                 first three, and continuing to patch hides which one it was.
+  7. PR        - branch protection is on and tested. Both gate jobs required,
+                 enforce_admins true, force-push and deletion blocked. Open a PR;
+                 you cannot push to main.
+  8. PR REVIEW - the two mandatory lenses again, on the diff.
+  9. MERGE     - squash, delete the branch, sync main.
+ 10. LEDGER    - update docs/STATUS.md IN THE SAME PR, never after. Record
+                 rejected options with their reason. Corrections stay.
 
-WHAT IS LEFT, in priority order
+VISUAL BASELINES: if a package changes any rendered pixel, CI goes red until you
+regenerate them. Nothing is automatic - gates.yml:147 gates it on a manual run:
+  gh workflow run gates.yml --ref <branch> -f update_visual_baselines=true
+then download the artifact and commit the 54 -linux files unchanged. Never
+generate them on a laptop; toHaveScreenshot names files by process.platform, so
+a darwin baseline is not even the file CI looks for. Expected signature: plate
+baselines move, nav baselines do NOT. A changed nav baseline means a regression.
 
-1. PHASE 2 — MOTION. Untouched. document.getAnimations() returns 0.
-   Owner wants animation ON by default with a footer toggle persisted in
-   localStorage. GATE: Lighthouse mobile no worse than 100 (measured 09 Aug,
-   Performance 100 / Accessibility 100). Use improve-animations. plates.js
-   has no IntersectionObserver any more; Phase 2 brings its own.
-   The menu already carries the one new animation (160ms ease-out enter,
-   instant exit) — match its restraint.
+DEFINITION OF DONE (AGENTS.md, all seven): build clean; SEEN RENDERING at 1440
+and 390 - actually look at the screenshot, this session caught a card in the
+wrong section, a duplicate, and a misaligned cap strip by looking and none by a
+gate; every claim traced to docs/evidence at VERIFIED or labelled REPORTED;
+focus visible and WCAG AA; both themes; no horizontal scroll at 390; and
+`npm run post-deploy` green after any deploy.
 
-2. PHASE 3 — THE APPROACH PAGE. Lifecycle SVGs exist at
-   imrohitagrawal/assets/engineering-lifecycle-*.svg and render correctly.
-   PRODUCT.md's claim they are "responsive and theme-aware" is HALF WRONG —
-   check before designing around it. Routing, canonicals, per-page coverage
-   all ready. D28's nav rework (WORK · APPROACH · CONTACT) unblocks when the
-   page exists — the NAV array in Layout.astro is the single place to edit.
+== THE WORK, IN ORDER ==
 
-3. PHASE 4 — the critique's remaining findings. DERIVE the live list from
-   docs/plan/* against the ledger; two recorded items were already fixed last
-   time anyone counted. Known live: O-HERO (the refusal card does not state
-   its own conclusion — owner's challenge, two candidate fixes recorded),
-   micro-type share, no active-plate marker.
+Packages 1 and 2 are DONE and merged (D74, D75). Start at 3.
 
-4. DEF-8 — six of seven plates still print blank (fixed for /cv only).
-   DEF-2 — ?at= deep links are JS-only. DEF-29 — location stated twice.
-   All three are recorded, none started.
+3. PROJECT DEPTH - do this first, so index.astro is edited once not three times.
+   Create src/pages/projects/[slug].astro driven by the EXISTING
+   src/data/projects.js. Each page carries that system's artefact panel via the
+   EXISTING Shot.astro. Home plates shrink to compact cards that link out.
+   REUSE, DO NOT REBUILD: Shot.astro, projects.js, shot.css, the 8 images, the
+   5 evidence files. Only the wiring in index.astro changes.
+   Verified now: /projects/<slug> 404s; only 3 pages exist; home is 7,648px at
+   1440 and 11,893px at 390, with 7 of 8 plates over one viewport. Target ~4,000px.
+   D62 says panel on the home band, screenshot on the project page. That was
+   decided in a world without project pages. RESOLVE IT HERE, do not inherit it.
 
-5. RESIDUALS FROM D47, written down not hidden: focus-ring CONTRAST (vs
-   pixel-change) is asserted only on the nav; the tap gate's inline-display
-   carve-out is dodgeable by styling a control display:inline.
+4. THE TWO-LEDGER ACT - the highest-value content. "Two ledgers, deliberately
+   kept apart": employer outcomes beside independent-system evidence. Use the
+   CORRECTED wording - root-cause analysis -35%, release validation -25%.
+   NEVER MTTD, NEVER cycle time. Add the StackClimb definition (D60/D62) where a
+   cold reader first meets the word, and in the footer. Verified: zero
+   occurrences of "two ledgers" or the definition anywhere in the output today.
 
-WHAT NOT TO REDO
-  - DEF-12 is REFUTED (MIN_PLATES already held; floor now 8). DEF-13..17 are
-    FIXED with mutation-proved gates. Do not re-investigate; re-run the
-    mutations if you doubt them — each ledger row names its mutation.
-  - DEF-48 (palette #work) is fixed and gated. DEF-43 fits 900px exactly.
-  - DEF-23/35 are done: grain is WebP 37,650B, og.png is a real-hero
-    screenshot at 71,977B. DEF-24 narrowed to og.png + favicon.svg.
-  - The brand marks comparison stands; adoption is the owner's call.
-  - global.css is 433 of 500. The budget is a GATE now (file-budget.mjs in
-    CI). New files: 250 lines / 32,000 bytes / 120 chars. Exceptions are
-    shrink-only, in the gate file itself.
+5. /experience THEN /how-i-build - both 404 today. /experience: the career arc
+   with the CV as a download. /how-i-build: the lifecycle, the practice band
+   (closes P-7), and the published-skills band. Nav and CTAs update ONLY once
+   both exist - a nav must not name a destination that 404s.
+   Published AI skills live in a /how-i-build band, not a nav slot. Promotion
+   threshold on record: at THREE public skill repos it earns its own act. Two
+   exist today (project-doc-skills, .github).
 
-TRAPS, ALL PAID FOR ALREADY (new ones first)
-  - A closed <details>' absolutely-positioned children KEEP THEIR LAYOUT BOX
-    in Chromium. Playwright calls them visible; pixel gates score them as
-    "no glyph". Display-gate closed panels: .menu:not([open]) > nav.
-  - isVisible() reads boxes, not paint or pointer-events. opacity:0 and
-    pointer-events:none both pass it. Paint questions go to
-    tests/lib/rendered-contrast.mjs; hit questions to elementFromPoint
-    (tests/lib/read-links.mjs).
-  - A derived gate population SHRINKS WITH THE MUTILATION it should catch.
-    Pin the must-exist members as partner literals (/cv, /#contact) and keep
-    the rest derived. Same class: deriving an expected COUNT from the same
-    artifact a mutation edits (palette-ladder's first version).
-  - element.focus() does not trigger :focus-visible. A real Tab press does.
-  - Contrast floors REWARD flattening — the seam gate got GREENER when five
-    grounds went black. Distinctness assertions catch what floors cannot.
-  - `git checkout <file>` to restore a mutation also reverts YOUR uncommitted
-    work in that file. Back up to /tmp and cp back, never checkout.
-  - The suite refuses a busy port 4321 by design (DEF-11). Standalone gates
-    get their own server on 4322.
-  - A FIXED element has no fixed backdrop; render, never geometry (DEF-46).
-  - A gate that PRINTS a failure is not a gate that FAILS. Check exit codes;
-    in zsh a pipeline's exit is the LAST command's — use pipestatus.
-  - Verifying straight after a deploy measures a half-propagated CDN.
-    Settle, measure, measure again. This session: poll for the new asset
-    hash first, then run gates twice.
-  - The PII gate does not scan .pdf or .docx (DEF-37 — still true). The
-    phone number is in both resume PDFs in the untracked inbox.
-  - Cloudflare Pages has NO git integration. Nothing deploys on push.
-  - Known cosmetic: /paint-grain.png still returns 200 from CDN cache after
-    deletion. Nothing references it; it ages out. Do not chase it.
+6. ANIMATIONS + the two live defects. reveal.js:26 is still threshold 0.15 on a
+   full-viewport element, so the 420ms fade completes off-screen. #top never
+   receives in-view and the hero has no motion. There are ZERO @keyframes in any
+   CSS on the site. Every reveal stays a progressive enhancement -
+   html:not(.motion-ready) shows content fully, and tests/motion.spec.js already
+   asserts that shape. THIS is the package that gets a performance lens.
+   Fold in DEF-51 here (it is a workflow change, small): the deploy job concludes
+   "success" while deploying nothing. It emits its ::warning:: but the job is
+   green, so the rollup, the PR badge and branch protection all read pass. Make
+   it fail, or make the skip unmistakable in the rollup. This is a defect in D73.
+   Also add the security lens here for public/_headers - it exists and carries no
+   CSP (DEF-19, latent).
 
-DEPLOY, and it is manual
-  npm run build
-  npx wrangler pages deploy dist --project-name stackclimb --branch main --commit-dirty=true
-  Poll until the new CSS hash serves, then verify by route table and by
-  running both pixel gates against https://stackclimb.com — twice.
+7. COLORIZE - live work, never dropped. Plan A made it conditional on the mockup
+   choosing a non-editorial world; World A won (D58), so the condition did not
+   fire and this is still owed.
+   THE PLAN'S STATED DEFECT IS REFUTED - do not go looking for it. Measured on
+   the served build 08-12: NO adjacent plate pair is at distance 0.0. Tightest
+   adjacent pair is saafsaans->narratwin at 9.9; citevyn->quorum is 33.3. The
+   REAL residual is smaller: #top and #contact are the only two plates that do
+   not declare their own ground - both inherit the base #0e1322 - so the one true
+   0.0 is between them, and they are not adjacent. Decide whether bookending the
+   page is deliberate (defensible) or a Three-Color-Livery violation.
+   Run it properly: node .claude/skills/impeccable/scripts/context.mjs --target
+   src/pages/index.astro, then reference/colorize.md, then reference/craft-floor.md
+   immediately before editing.
+   Constraints the skill will NOT infer: the One Thread Rule (ochre only - D48
+   records orange #f05020 as a second accent BY OWNER DECISION, and colorize will
+   reopen that; it is his call to re-make); the Painted Ground Rule (flat hues,
+   never gradients); and #private is the paper plate where ochre measures 1.97:1
+   and fails 1.4.11, so --accent: #6b4e14 MUST survive.
+   Four gates stay green: boundary-check.mjs, nav-contrast.mjs, and above all
+   palette-ladder.spec.js - DEF-16 proved that FLATTENING grounds made every
+   contrast gate GREENER, so only a distinctness count can hold this.
 
-APPROACH C (deploy through CI) — the exit table in AGENTS.md now reads:
-  tests repaired DONE · build-before-test DONE · contrast DONE · CI green DONE
-  · branch protection OPEN (needs the repo public or Pro — owner's call, O2).
-  When the owner flips visibility, wire branch protection and move the deploy
-  into gates.yml. Remember the post-deploy gate needs a settle wait and an
-  N-of-M rule stated up front, never a bare retry.
+8. RESIDUALS, each small:
+   - M4's tracked Stop hook. It lives only in gitignored settings.local.json.
+   - .gitignore:25 asserts ".claude/settings.json is tracked and carries the
+     shared gates". That file DOES NOT EXIST. The shared-gate story is fiction,
+     not drift. Fix the line or create the file.
+   - The MTTD retraction reached PRODUCT.md only. docs/ACTION-PLAN.md:86 and
+     docs/positioning-decisions.md:64 still carry the overclaim. Neither reaches
+     the site, so this is doc rot, not a live overclaim - but it is the fourth
+     appearance, and the owner's declined CI gate has "revisit on a fourth" as
+     its stated condition. Raise it with him.
+   - Quorum's strip carries NO COMMIT STAMP, unlike NarraTwin's, and two figures
+     have drifted since measurement: "2,095 python" is now 2,102 and "32 ADRs" is
+     now 34. Add the stamp, then correct or re-measure.
+   - DEF-19's evidence line is stale: it says no _headers file exists on disk or
+     in history. public/_headers DOES exist (M7 added it) and simply carries no
+     CSP. The defect holds; its evidence does not.
+   - /cv has never been run through the five installed ResumeSkills.
 
-BLOCKED ON THE OWNER — one item
-  - O2: repo visibility. Everything else for approach C is done.
-  RESOLVED since this handoff was written: SaafSaans was redeployed by the
-  owner 09 Aug (machine v9, checks passing, scale-to-zero restored) and the
-  site's outage copy replaced; the brand mark was adopted the same day (D48,
-  amended by critique). The ledger has both.
+== PENDING ON THE OWNER - ask once, early, do not block on it ==
+
+  - DEF-50, HIGH, LIVE NOW: Cloudflare Email Obfuscation is on for the zone. It
+    rewrites all five mailto: links to /cdn-cgi/l/email-protection#... which 404s
+    on its own, and /cv renders the literal placeholder instead of the address.
+    With JS on it works; with JS off the only contact route on the site is dead.
+    This is DEF-2's principle and P-13 reopened BY THE CDN, AFTER the build, on a
+    site that promises near-zero JavaScript. NO DEPLOY FIXES IT - it is a zone
+    setting. Dashboard: Scrape Shield -> Email Obfuscation -> off. wrangler's
+    OAuth token has no zone scope (403), so an agent cannot do it.
+    Once he turns it off, ADD A GATE: nothing in this repo checks production for
+    link reachability, only for build identity and asset 200s.
+  - P-3 is recorded DONE for a directive the site DELIBERATELY REVERSED. It asked
+    for extra Seeking titles; index.astro:71 records cutting to one because five
+    "reads as does not know what he wants". A reversal recorded as compliance is
+    worse than an open row, because nobody re-opens it. He must choose: keep the
+    one-title version (recommended, and what positioning-phase0 argues for) or
+    honour P-3 as written.
+  - CLOUDFLARE_API_TOKEN. He declined it, and that decision stands. Do not
+    re-propose it; just do not mistake the skipped deploy job for a real one.
+  - NarraTwin's CI artifacts for 639aa2cf EXPIRE 2026-08-18 - eval-smoke-report
+    and stage8-performance-lighthouse-reports are both still live, confirmed
+    08-12. Retrieve before they go, or the strongest numbers stay unverifiable.
+  - project-doc-skills PR #22 (the watermark skill) is IN DRAFT, not merged. Four
+    lenses said do not merge and the repo's own release gates are red on the
+    branch while main is green (run-golden 209/218 vs 218/218; 8 of those 9
+    failures are gates that STOPPED BITING). The mark is hardcoded white where
+    the contract says slate, so on a light export it changes ZERO pixels while
+    reporting success. Codex's deeper verdict: nothing invokes it, so it is still
+    the passenger the RCA said it was fixing. The next step is a design decision -
+    does it belong inside publish-mirror? - not a fix commit.
+
+== CLAIMS THAT MUST NEVER SHIP ==
+
+Read the consolidated list in docs/STATUS.md and docs/evidence/README.md before
+writing any copy. The ones that keep coming back:
+  - CiteVyn: never quote eval_report.json (the STUB run); only eval_report_pg.json.
+    Never claim corpus scale. Never "zero refusal leaks" unqualified - retrieval
+    leaks 5 of 19; only the answer layer is clean. And the 52-case golden suite is
+    NOT the promotion gate: promotion_eval.py:17 calls wiring it in "wrong, and
+    deliberately not taken". The gate is a 15-case retrieval suite on the CANDIDATE
+    index at a 0.95 default, and an operator can force past it with an audit entry.
+  - Quorum: the four models DO NOT critique each other. ADR-0032 exists to kill
+    that claim. Say "a separate moderator pass"; never "a fifth model" - the
+    moderator's default id IS answer slot 2's. Round 2 is skipped on budget, so
+    "twice" is the happy path, not an invariant. No latency figure, no mutation
+    score, and "198 tests" is stale by an order of magnitude.
+  - SaafSaans: never "live" unqualified - deployed, sleeps when idle. There is NO
+    sample mode; the states are LIVE / CACHED / NO READING.
+  - NarraTwin: no Lighthouse score, no throughput claim. Phase 1 - No-Go is
+    stated, not hidden.
+  - Employer numbers: root-cause analysis -35%, release validation -25%. Never
+    MTTD, never cycle time.
+
+== HOW TO WRITE TO THE OWNER ==
+
+Plain English. Lead with the answer; if it is no, the first word is no. Short
+sentences. No jargon, no invented shorthand, no AI filler (the banned list is in
+AGENTS.md). Bullets over paragraphs. Give a concrete example. Never re-explain
+what he has already acted on. And disagree out loud BEFORE complying when the
+evidence contradicts an instruction - state the conflict, show the file and the
+command output, say which you think is right, and give an everyday analogy. That
+rule has already paid twice in his favour and once in the reviewers'.
+
+== CLOSE THE SESSION PROPERLY ==
+
+docs/practices/session-close.md, never skipped: say what happened in plain
+English with numbers; merge and sync main, verified by command; delete branches
+both sides; clean up orphaned preview servers, temp files and stray dependencies
+(this session found an orphan astro preview from an earlier one holding a port,
+and a reviewer's __pycache__ making a clean repo look red); and rewrite this
+handoff for the next session.
 ```
 
 ---
 
-## What changed this session, in one table
+## Verified state, 2026-08-12
 
-| | |
-|---|---|
-| On a phone the nav reached nothing (DEF-42, HIGH, open since launch) | Fixed: native `<details>` menu, works without JS, RCA-004, held by a gate that ACTIVATES every destination |
-| The seven tests that cannot fail (DEF-11..17) | Closed as a class: 1 refuted, 6 fixed, every fix mutation-proved. An audit re-verified each BEFORE fixing |
-| CiteVyn plate silently on the wrong ground since DEF-34's rename (DEF-48) | Found by the audit, fixed, held by the palette-ladder gate |
-| `global.css` at 505 over its 500 ceiling; handoff said 498 (DEF-47) | Nav extracted (433); the D8 budget is now a CI gate nothing can opt out of |
-| touch.css allowlist silently narrowing (third instance of the shape) | tap-targets gate measures every element at a coarse pointer |
-| Overview plate 1152px in a 900px viewport (DEF-43) | Exactly 900px; chrome cuts only |
-| paint-grain 166KB, og.png 337KB showing a deleted design (DEF-23/35) | 38KB WebP (0-pixel render diff) and a 72KB real-hero screenshot |
-| Focus visibility asserted from styles | Asserted from PIXELS, focused vs blurred, via real Tab presses |
-| Two-round adversarial review of the new gates (D47) | 8 real holes closed incl. a CI blocker; residuals recorded, cap honoured |
+Every line below was produced by running the command, not by reading a document.
 
-**Process notes carried forward:** the review round that found the CI blocker
-found it because it RAN the gates — the builder had run the seam gate and not
-the nav gate. Run every gate the surface touches. And the mutation-restore
-`git checkout` erased uncommitted work once; back up files, never checkout.
+| Check | Command | Result |
+|---|---|---|
+| Production serves `main` | `npm run post-deploy` | ✓ 11 assets 200, stamp matches |
+| Suite | `npx playwright test --ignore-snapshots` | 130 passed, 0 failed, 2 skipped |
+| Snapshots | `npx playwright test` | 6 fail — gitignored local `-darwin` only; CI uses `-linux` |
+| Budget | `node tests/file-budget.mjs` | ✓ 60 files |
+| PII | `node tests/no-pii.mjs` | ✓ 113 files |
+| Seams | `node tests/boundary-check.mjs` | ✓ worst 7.56:1 AA |
+| Nav | `node tests/nav-contrast.mjs` | ✓ worst 6.26:1 |
+| Post-deploy bites | `node tests/post-deploy.mjs --self-test` | ✓ 8 assertions |
+| Branch protection | `gh api repos/:owner/:repo/branches/main/protection` | both checks required, `enforce_admins` on |
+| Deploy secret | `gh secret list` | empty — deploy job skips, and wrongly reports success |
+
+**Packages 3–7 are NOT STARTED, confirmed by execution:** `/projects/<slug>`,
+`/experience`, `/how-i-build` all 404. Zero `@keyframes` in any CSS. `reveal.js:26`
+still `threshold: 0.15`, and `#top` never receives `in-view`.

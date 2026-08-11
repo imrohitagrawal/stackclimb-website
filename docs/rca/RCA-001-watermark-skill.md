@@ -1,6 +1,6 @@
 # RCA-001 — Watermarking is specified but has no skill that applies it
 
-**Status:** AWAITING APPROVAL. No work starts until the owner approves.
+**Status:** **APPROVED 2026-08-12** by the owner. Build proceeds.
 **Raised:** 2026-08-07 · **Directive:** owner, "we need to make that skill"
 
 ---
@@ -88,4 +88,45 @@ pieces are scattered across `render-contract.md`, `licensing-and-credits.md`, an
 
 ## Decision
 
-**Not approved yet.** Nothing built.
+**APPROVED 2026-08-12.** The owner's answers to the three open questions:
+
+1. **Scope — images AND HTML pages.** The HTML case therefore also enforces the © footer, which
+   the spec demands three times.
+2. **The site's own images — yes.** Narrowed by measurement: **only two files actually leave
+   this site.** `dist/og.png` (72KB, the social share card) and `dist/favicon.svg` (704 bytes).
+   The in-page figures are now a single inline `<svg>` — `PrivateFigure` — which is markup inside
+   the HTML, not a downloadable file, and cannot travel. It gets nothing. **`og.png` is the whole
+   real case**, and it ships uncredited today.
+3. **Where it lives — `project-doc-skills`, as a ninth skill** in `skills/`, peer to the existing
+   eight and built into `dist/watermark.skill` by `build-skills.sh`. Not a standalone repo, and
+   not left in `shared/`: the contract already lives in `shared/`, and a skill separated from its
+   contract drifts — this project watched that happen twice in one day (M6 vs DEF-3, and the
+   `.github` gate's header vs its own steps).
+
+## The public-skill search, re-run 2026-08-12
+
+`AGENTS.md` requires searching GitHub before authoring, and this RCA's original claim was two
+weeks old. **Re-run, and the tool was validated first** — an empty result from a broken query is
+not evidence of absence, which is the `arize`/`summarize` lesson. A control query (`playwright`)
+returned 94k★ microsoft/playwright, so the search works; the first over-specific queries simply
+matched nothing.
+
+**Result: 30+ watermark repos exist, and the ecosystem is inverted.** Ranked by stars, the field
+is about *removing* watermarks and about *steganography*, not about applying an attribution mark
+under a contract:
+
+| Repo | What it does |
+|---|---|
+| `guofei9987/blind_watermark` 14.5k★ | **Invisible** / blind watermarking — steganography, different purpose |
+| `GargantuaX/gemini-watermark-remover` 5.2k★ | **Removes** watermarks |
+| `zuruoke/watermark-removal` 5.1k★ | **Removes** watermarks |
+| `wiltodelta/remove-ai-watermarks` 4.5k★ | **Removes** watermarks |
+| `ShieldMnt/invisible-watermark` 1.9k★ | **Invisible**, steganographic |
+| `D-Ogi/WatermarkRemover-AI` 1.6k★ | **Removes** watermarks |
+| `dxcweb/watermark` 888★ | Canvas overlay for ID documents — privacy protection, not attribution |
+| `AryamanSi17/claude-skill-watermark-remover` | The one Claude *skill* hit — also a **remover** |
+
+**Nothing applies a visible attribution watermark while enforcing that a separate © footer is
+also present.** That contract — watermark is decorative, footer is mandatory, both are checked —
+is what makes this case 1 under `AGENTS.md`, and the reason is sharper than "nothing exists":
+the public work points the opposite way.

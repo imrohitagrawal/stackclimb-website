@@ -49,8 +49,9 @@ export const projects = {
       '(e2e/fixtures/golden-run.ts), not a measured run. Live execution is off by default. The ' +
       'revision count is inferred from position movement, and the interface says so.',
     eng:
-      'One question goes to four models; a separate <b>moderator</b> reads all four and critiques ' +
-      'them. They never read each other. The eval judge behind it is a paid call several threads ' +
+      // The mechanism itself now sits in the plate body above (ADR-0032), so this
+      // line starts at the engineering, not by restating it a second time.
+      'The eval judge behind the <b>moderator</b> is a paid call several threads ' +
       'may need at once, so the first thread makes it and the rest wait on that one future. A ' +
       'reader that times out marks itself, so a verdict-less result never gets cached over a run ' +
       'the judge did verify. Its production readiness review records a Go dated 21 June and the ' +

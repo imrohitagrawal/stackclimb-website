@@ -87,6 +87,15 @@
   grid-column: 1;
 }
 
+/* `notClaimed` is one string written for a caption cell, which uppercased it in
+   CSS — so its parts are cased for that context: "Corpus scale · adoption · SLA".
+   Split into a list they render mixed. Capitalising the first letter here keeps
+   the ONE source of truth in projects.js instead of restating the list in
+   sentence case somewhere else, which is how two versions of a claim start. */
+.rec-refused li::first-letter {
+  text-transform: uppercase;
+}
+
 .proj-note .src {
   font-family: var(--mono, ui-monospace, 'SF Mono', Menlo, monospace);
   font-size: 0.72rem;

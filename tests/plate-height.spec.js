@@ -45,13 +45,16 @@ const EXEMPT = new Set(['top']);
  * It is written here as an explicit number with its reason rather than by quietly
  * scoping the gate to `/`, which is how the rule went unmeasured for a month.
  *
- * The project ceilings are NOT set to today's measurements plus a margin — that is
- * the fudge this file exists to prevent. They are set where a plate stops being
- * composed and starts being a scroll, and today's worst sits inside them: 1.43 at
- * desktop against 1.50, and 1.97 at mobile against 2.00.
+ * The desktop project ceiling was 1.50 and a reviewer was right that it caught
+ * nothing — 38% above the worst real plate. The fix was not a smaller number but a
+ * better layout: the record was three equal columns for 5 / 5 / 2-3 items, so the
+ * short column stretched and the note sat in a band beside 647px of nothing. Two
+ * columns with the two short elements paired in row 2 took the worst record plate
+ * from 983px to 911px. The ceiling is now 1.10 against a measured worst of 1.05 —
+ * a 5% margin, matching the 3-7% the other three carry.
  */
 const LIMITS = [
-  { name: 'desktop', width: 1440, height: 900, max: 1.0, deep: 1.5 },
+  { name: 'desktop', width: 1440, height: 900, max: 1.0, deep: 1.1 },
   { name: 'mobile', width: 390, height: 844, max: 1.75, deep: 2.0 },
 ];
 
@@ -83,10 +86,20 @@ for (const { name, width, height, max: homeMax, deep } of LIMITS) {
     const floor = route === '/' ? 4 : 1;
     expect(plates.length, 'no plates found — this test would be measuring nothing').toBeGreaterThan(floor);
 
+    /* Counting NODES is not counting PLATES. `.plate { display: none }` leaves every
+       node in the DOM at 0px, so a height ceiling passes while the page renders
+       nothing — the same shape as the `body { display: none }` hole a cross-model
+       review found in contact.spec.js. Assert the plates were actually painted. */
+    const unpainted = plates.filter((p) => p.h < 200).map((p) => `#${p.id} is ${p.h}px`);
+    expect(unpainted, `plates present in the DOM but not rendered:\n${unpainted.join('\n')}`).toEqual([]);
+
+    /* Compare the RAW ratio, then round only for the message. Rounding first let a
+       904px plate pass a 900px ceiling as "1.00" — a reviewer's finding, and the
+       kind of hole that makes a gate decorative. */
     const over = plates
       .filter((p) => !EXEMPT.has(p.id))
-      .map((p) => ({ ...p, vh: +(p.h / height).toFixed(2) }))
-      .filter((p) => p.vh > max);
+      .map((p) => ({ ...p, raw: p.h / height, vh: +(p.h / height).toFixed(2) }))
+      .filter((p) => p.raw > max);
 
     expect(
       over,

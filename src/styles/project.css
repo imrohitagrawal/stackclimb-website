@@ -26,12 +26,16 @@
   max-width: none;
 }
 
-/* The record plate reads across, not down, so its copy column is not capped at the
-   34rem measure .plate-copy uses for a two-column plate. */
+/* Two columns. Row 1 is the two parallel five-item lists; row 2 pairs the two
+   short elements — what the system refuses, and how it works. See Record.astro
+   for the measurements that produced this shape rather than three columns.
+   `align-items: start` matters: without it the short cells stretch to their
+   neighbours' height and reintroduce the dead space this layout removed. */
 .record {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.2rem 2rem;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  gap: 0.9rem 2rem;
   margin: 0.4rem 0 0;
 }
 
@@ -65,17 +69,22 @@
   font-size: 0.85em;
 }
 
-/* The sourced note. A 1px hairline, never 2px: D58 measured a 2px left border on
-   both mockup worlds and named it the `side-tab` AI-tell; the shipped build uses a
-   hairline or an indent instead. */
+/* The sourced note, in row 2 beside `Not claimed`. A 1px hairline, never 2px:
+   D58 measured a 2px left border on both mockup worlds and named it the
+   `side-tab` AI-tell; the shipped build uses a hairline or an indent instead. */
 .proj-note {
+  grid-column: 2;
   font-size: 0.92rem;
   line-height: 1.6;
-  margin: 1.5rem 0 0;
+  margin: 0;
   padding-left: 0.95rem;
   border-left: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
-  max-width: 80ch;
   color: color-mix(in srgb, var(--bone) 90%, transparent);
+}
+
+/* Row 2, column 1 — under `Works now`, beside the note. */
+.rec-refused {
+  grid-column: 1;
 }
 
 .proj-note .src {
@@ -98,5 +107,10 @@
   .record {
     grid-template-columns: 1fr;
     gap: 1.1rem;
+  }
+  /* One column, so the explicit row-2 placements would strand cells. */
+  .proj-note,
+  .rec-refused {
+    grid-column: auto;
   }
 }

@@ -47,11 +47,18 @@ if (!page) {
 
 /* Derived, never restated — so the page and the caption strip cannot disagree. */
 const notClaimed = p.notClaimed.split('·').map((s) => s.trim()).filter(Boolean);
+
+/* The meta description was `p.alt` — the IMAGE alt text. On Quorum that is a
+   description of a SAMPLE fixture panel, so the page and every social card
+   published "4 of 4 models aligned · 3 revised their position" and "13%" as
+   plain fact, stripped of the caption that labels them canned data. The first
+   body paragraph is the system's own description and carries no figures. */
+const desc = page.body[0].replace(/<[^>]+>/g, '').slice(0, 300);
 ---
 
 <Layout
   title={`${p.name} — Rohit Agrawal`}
-  description={p.alt}
+  description={desc}
 >
   <Plate
     id={slug}
@@ -92,14 +99,10 @@ const notClaimed = p.notClaimed.split('·').map((s) => s.trim()).filter(Boolean)
           now={page.record.now}
           gaps={page.record.gaps}
           notClaimed={notClaimed}
+          note={p.eng}
         />
-        {/* The engineering paragraph sits UNDER the record, not in plate 1.
-            It is the mechanism behind the columns above it, so it reads as their
-            footnote rather than as a fifth paragraph of description — and plate 1
-            measured 1,090px with it, 1.21 viewports, which the rule forbids. */}
-        <p class="proj-note" set:html={p.eng}></p>
         <div class="ctas proj-back">
-          <a class="btn ghost" href="/#top">All systems</a>
+          <a class="btn ghost" href="/#systems">All systems</a>
           <a class="btn primary" href="mailto:rohit.ra.agrawal@gmail.com">Email me</a>
         </div>
       </div>

@@ -31,7 +31,6 @@ export const pages = {
     record: {
       now: [
         'Refuses when no source supports the answer, rather than guessing',
-        'Each index is stamped with the model that built it; a stamp that disagrees drops the vector arm to zero',
         'A 15-case retrieval suite runs against the <em>candidate</em> index and refuses promotion ' +
           'below a 0.95 pass rate',
         'Every promotion writes an audit entry — on the clean path and the forced one alike',
@@ -40,7 +39,6 @@ export const pages = {
       gaps: [
         'Retrieval surfaces in-domain chunks on 5 of 19 near-miss refusal cases. The answer layer refused every one',
         '53 golden case files exist on disk; 52 ran in the recorded report',
-        'An unstamped legacy index is let through on purpose',
         'An operator can force promotion past a failing rate — the override is written to the audit trail ' +
           'with the measured rate',
         'Cost controls layer 4 is in-process only; <code>make budget</code> is planned, not implemented',
@@ -66,15 +64,14 @@ export const pages = {
         'The four never read each other — there is no code path on which they could',
         'Cost is approved before anything runs',
         'Any fallback or simulation is disclosed on screen, never hidden',
-        'A reader that times out marks itself, so a verdict-less result is never cached over a verified one',
       ],
       gaps: [
         'Round 2 is skipped when the per-run debate budget runs out, and recorded as skipped',
         'Live execution is off by default — the interface says the output is local simulation',
         'Consensus is lexical: 4-gram overlap and negation heuristics, captioned ' +
           '<em>“inferred, not a tallied vote”</em>',
-        'The moderator’s default model id is the same as answer slot 2’s. It is a fifth call in a separate ' +
-          'role, not a fifth model',
+        'The moderator’s default model id is the same as answer slot 2’s — a separate call in a separate ' +
+          'role, using the same model by default',
         'The mutation gate is advisory in CI. Promotion to blocking was built, measured, and reversed',
       ],
     },
@@ -101,15 +98,13 @@ export const pages = {
     ],
     record: {
       now: [
-        'Scores your risk — age, condition, planned activity — not the city average',
         'Every reading is labelled with where it came from: <b>LIVE</b>, <b>CACHED</b>, or <b>NO READING</b>',
         'Picks one whole reading and never blends two feeds, so a figure never wears one station’s name ' +
           'and another’s timestamp',
         'An AQI ladder and a persona ladder both run, and the stricter verdict wins',
-        'A test fails the build if any risk weight carries neither a source nor a disclaimer',
       ],
       gaps: [
-        'Two of 21 stations map to no feed — Ashok Vihar and Nehru Nagar',
+        'Two stations map to no feed at all — Ashok Vihar and Nehru Nagar. 19 are live',
         'The Hindi draft ships behind a bilingual banner: no Hindi speaker has reviewed it',
         'The prompt guard names the bypass it does not stop — one Cyrillic letter passes every pattern',
         'The time-window strip recommends late morning at 5:00 PM. A defect, under repair, and stated',
@@ -129,15 +124,10 @@ export const pages = {
       now: [
         'Twenty-five languages proved to agree across five surfaces against a pinned fixture',
         'Consent is checked, and external web is disabled by policy, before any presenter is generated',
-        'In the Google path, budget is reserved <b>before</b> anything leaves the machine, and replays ' +
-          'are fingerprinted',
-        'A failure landing where bytes may already have gone becomes <b>BILLABLE_UNKNOWN</b> — refused on ' +
-          'retry rather than billed twice',
         'The Google TTS path re-verifies the peer address before the TLS wrap, closing a DNS-rebinding window',
       ],
       gaps: [
         'Its own release-readiness review reads <b>No-Go</b>, so it is not deployed',
-        'The ElevenLabs path in the same file does not do this yet — it retries a timeout straight through',
         'The evaluation report carries no tested commit SHA and predates current HEAD, so it does not ' +
           'establish that today’s HEAD passes',
         'The eval-smoke result has never been committed; only the harness that produces it is in the repo',

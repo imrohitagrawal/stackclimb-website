@@ -222,7 +222,11 @@ test.describe('Project pages', () => {
     await page.goto('/', { waitUntil: 'networkidle' });
     const problems = [];
     for (const slug of slugs) {
-      const link = page.locator(`a[href="/projects/${slug}"]`);
+      /* Scoped to the plate, not the document. A document-wide locator cannot tell
+         CiteVyn's link from Quorum's: swap the two hrefs and every assertion here
+         stays green while a reader clicking under CITEVYN lands on QUORUM-AI.
+         Found by a reviewer who applied that exact mutation. */
+      const link = page.locator(`#${slug} a[href="/projects/${slug}"]`);
       if ((await link.count()) === 0) {
         problems.push(`no link on / points at /projects/${slug}`);
         continue;

@@ -1,0 +1,111 @@
+---
+/* /projects/<slug> — one page per system that carries an artefact.
+ *
+ * Four routes, generated from src/data/projects.js. A new system needs a data entry
+ * and an image, not an edit here — the same rule Shot.astro follows for its glob.
+ *
+ * TWO PLATES, deliberately. DESIGN.md:228: "content that cannot fit becomes another
+ * plate, not a taller one." Plate 1 is the claim and the artefact; plate 2 is the
+ * record. Putting both in one plate measured 1,082px against a 900px viewport, which
+ * is the rule's own failure case.
+ *
+ * The plate id equals the slug, so palette.css paints each page in its system's own
+ * livery with no rule added anywhere.
+ *
+ * D62 resolved here. It read "artefact panel on the home band, screenshot on the
+ * project page" and was decided before project pages existed. Now that they do:
+ * each system's capture stays on its home plate AND at full size here — the home
+ * plate uses the crop where the full image would push it past one screen — and the
+ * three-column record, which the home page has no room for, is what the click buys.
+ */
+import Layout from '../../layouts/Layout.astro';
+import Plate from '../../components/Plate.astro';
+import CapStrip from '../../components/CapStrip.astro';
+import Record from '../../components/Record.astro';
+import Shot from '../../components/figures/Shot.astro';
+import { projects } from '../../data/projects.js';
+import { pages } from '../../data/project-pages.js';
+import '../../styles/project.css';
+
+export function getStaticPaths() {
+  return Object.keys(projects).map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+const p = projects[slug];
+const page = pages[slug];
+
+/* A route can only exist because `projects` has the key, but `pages` is a second
+   file and could fall behind it. Fail the BUILD rather than ship a page with no
+   record — a project page without its record is the duplicate of its home plate. */
+if (!page) {
+  throw new Error(
+    `[slug].astro: no entry in project-pages.js for "${slug}". Every project in ` +
+      'projects.js needs one, or its page is just the home plate again.',
+  );
+}
+
+/* Derived, never restated — so the page and the caption strip cannot disagree. */
+const notClaimed = p.notClaimed.split('·').map((s) => s.trim()).filter(Boolean);
+
+/* The meta description was `p.alt` — the IMAGE alt text. On Quorum that is a
+   description of a SAMPLE fixture panel, so the page and every social card
+   published "4 of 4 models aligned · 3 revised their position" and "13%" as
+   plain fact, stripped of the caption that labels them canned data. The first
+   body paragraph is the system's own description and carries no figures. */
+const desc = page.body[0].replace(/<[^>]+>/g, '').slice(0, 300);
+---
+
+<Layout
+  title={`${p.name} — Rohit Agrawal`}
+  description={desc}
+>
+  <Plate
+    id={slug}
+    state={p.state}
+  >
+    <div class="plate-grid">
+      <div class="plate-copy">
+        <h1 class="plate-title tight">{p.name}</h1>
+        <p class="q">{p.q}</p>
+        {page.body.map((b) => <p set:html={b} />)}
+        <p class="proof" set:html={p.proof}></p>
+        <div class="links">
+          {p.links.map((l) => (
+            <a href={l.href} target="_blank" rel="noopener">{l.label}</a>
+          ))}
+        </div>
+      </div>
+      <figure class="plate-figure">
+        <Shot
+          shot={p.shot}
+          crop={p.crop}
+          alt={p.alt}
+          prov={p.prov}
+        />
+        <CapStrip
+          label={`${slug}, counted`}
+          items={p.strip}
+        />
+      </figure>
+    </div>
+  </Plate>
+
+  <Plate id={`${slug}-record`}>
+    <div class="plate-grid one-col">
+      <div class="plate-copy wide">
+        <h2 class="plate-title tight">What it does, and what it refuses</h2>
+        <Record
+          now={page.record.now}
+          gaps={page.record.gaps}
+          notClaimed={notClaimed}
+          note={p.eng}
+        />
+        <div class="ctas proj-back">
+          <a class="btn ghost" href="/#systems">All systems</a>
+          <a class="btn primary" href="mailto:rohit.ra.agrawal@gmail.com">Email me</a>
+        </div>
+      </div>
+    </div>
+  </Plate>
+</Layout>

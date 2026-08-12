@@ -44,8 +44,7 @@
   .links a,
   .cap,
   /* Added 09 Aug — the two surfaces that had opted out. */
-  .ov-name a,
-  .cv-contact a,
+    .cv-contact a,
   .cv-proj h3 a {
     min-height: 44px;
     display: flex;

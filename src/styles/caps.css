@@ -57,6 +57,19 @@ a.cap:hover .d { color: var(--ochre); }
   .cap { border-left: none; border-top: 1px solid color-mix(in srgb, currentColor 22%, transparent); }
   .cap:nth-child(-n + 2) { border-top: none; }
   .cap:nth-child(2n) { border-left: 1px solid color-mix(in srgb, currentColor 28%, transparent); }
+  /* The 3-column span rules above are NOT scoped to a media query, so they keep
+     applying here and size cells against a grid that no longer has three tracks.
+     With four cells the last is 3n+1, so `span 3` conjured an implicit third
+     column in a two-column grid and starved tracks 1 and 2 to 29px — caption
+     text overprinted itself at every phone width. Reset them first.
+
+     This is why it appeared now: removing `Not claimed` from the strip took every
+     project from five cells to four, and five happened to land on 3n+2. The rule
+     was always wrong; a fifth cell had been hiding it. Found by a reviewer who
+     rendered the page — no gate sees it, because overflow inside a grid cell
+     never widens the document and dod.spec.js only measures document scrollWidth. */
+  .cap:last-child:nth-child(3n + 1),
+  .cap:last-child:nth-child(3n + 2) { grid-column: auto; }
   /* Two columns, so an odd last cell is the one left half-width.
      Measured on NarraTwin: last row summed 146px against a 292px strip. */
   .cap:last-child:nth-child(odd) { grid-column: span 2; }

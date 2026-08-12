@@ -1,0 +1,52 @@
+/* The two cells a home system plate gained when #overview was removed.
+ *
+ * Both were rescued from that component rather than invented: the Gate line is the
+ * column docs/positioning-phase0.md calls the unclaimed territory — "a list of
+ * projects says he is busy; a list of refusals says he is trustworthy" — and it would
+ * have been lost with the list it lived in. `Not claimed` was already a caption cell;
+ * here it becomes a labelled row, which is what projects.js:11 has been asking for.
+ *
+ * Its own file, not global.css, which stands at 451 lines against a grandfathered
+ * ceiling of 500. Same reasoning as shot.css:1-10.
+ */
+
+.sys-gate {
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin: 0.9rem 0 0;
+  color: color-mix(in srgb, var(--bone) 86%, transparent);
+}
+
+/* Ochre label, sentence-case value — the caption-cell register, not a badge.
+   DESIGN.md:354: state belongs in a ruled cell, never in a pill. */
+.sys-gate .k {
+  font-size: 0.66rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-right: 0.55rem;
+}
+
+.sys-nc {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 0.7rem;
+  margin: 0.75rem 0 0;
+  padding-top: 0.65rem;
+  border-top: 1px solid color-mix(in srgb, var(--bone) 15%, transparent);
+}
+
+.sys-nc dt {
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0;
+}
+
+.sys-nc dd {
+  margin: 0;
+  font-size: 0.84rem;
+  color: color-mix(in srgb, var(--bone) 88%, transparent);
+}

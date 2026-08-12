@@ -127,8 +127,13 @@ Packages 1 and 2 are DONE and merged (D74, D75). Start at 3.
 
 4. THE TWO-LEDGER ACT - the highest-value content. "Two ledgers, deliberately
    kept apart": employer outcomes beside independent-system evidence. Use the
-   CORRECTED wording - root-cause analysis -35%, release validation -25%.
-   NEVER MTTD, NEVER cycle time. Add the StackClimb definition (D60/D62) where a
+   CORRECTED wording - root-cause analysis -35% (Oracle) and manual
+   release-validation effort -35% (MOBILEUM, owner's decision 08-12).
+   NEVER MTTD, NEVER cycle time. And never "release validation -25%": that
+   string appears nowhere in src/data/cv.js. It was a second paraphrase
+   introduced by the correction that removed the first one. cv.js:103 is
+   Mobileum at 35%; Oracle's two 25% figures are "regression execution
+   effort" (cv.js:66) and "regression execution time" (cv.js:68). Add the StackClimb definition (D60/D62) where a
    cold reader first meets the word, and in the footer. Verified: zero
    occurrences of "two ledgers" or the definition anywhere in the output today.
 
@@ -277,8 +282,10 @@ writing any copy. The ones that keep coming back:
     sample mode; the states are LIVE / CACHED / NO READING.
   - NarraTwin: no Lighthouse score, no throughput claim. Phase 1 - No-Go is
     stated, not hidden.
-  - Employer numbers: root-cause analysis -35%, release validation -25%. Never
-    MTTD, never cycle time.
+  - Employer numbers: root-cause analysis -35% is ORACLE (cv.js:67). Manual
+    release-validation effort -35% is MOBILEUM (cv.js:103) and ships attributed
+    to Mobileum. Never MTTD, never cycle time, and never "release validation
+    -25%" - no such figure exists in the CV.
 
 == HOW TO WRITE TO THE OWNER ==
 

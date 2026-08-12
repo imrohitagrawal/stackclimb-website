@@ -188,3 +188,58 @@ test.describe('Internal links', () => {
     });
   }
 });
+
+/* Every project in the data has a page, and the home page routes to it.
+ *
+ * WHY THIS EXISTS. Both gates that touch these routes derive them from `dist/` —
+ * `builtRoutes()` above, and dod.spec.js. That is normally the right instinct
+ * (DEF-10: never hand-type a list). But a derived list cannot notice its own
+ * absence: delete one entry from getStaticPaths() and the suite simply tests one
+ * page fewer, every assertion passes, and the site ships three project pages
+ * while four systems link to them.
+ *
+ * So the expected set is derived from the DATA, not from the build. The two can
+ * then disagree, which is the whole point.
+ *
+ * WHICH CHANGE TURNS IT RED: remove any entry from getStaticPaths() in
+ * src/pages/projects/[slug].astro. The count assertion fails 3 !== 4 while every
+ * other gate in the suite stays green. Proved by mutation, not assumed.
+ */
+test.describe('Project pages', () => {
+  test('every project in the data has a built page the home page links to', async ({ page, baseURL }) => {
+    const { projects } = await import('../src/data/projects.js');
+    const slugs = Object.keys(projects);
+
+    // Partner assertion: a count of zero would make everything below vacuous.
+    expect(slugs.length, 'projects.js is empty — this test would assert nothing').toBeGreaterThan(0);
+
+    const built = ROUTES.filter((r) => r.startsWith('/projects/'));
+    expect(
+      built.sort(),
+      'the built /projects/* routes do not match projects.js — getStaticPaths dropped one',
+    ).toEqual(slugs.map((s) => `/projects/${s}`).sort());
+
+    await page.goto('/', { waitUntil: 'networkidle' });
+    const problems = [];
+    for (const slug of slugs) {
+      /* Scoped to the plate, not the document. A document-wide locator cannot tell
+         CiteVyn's link from Quorum's: swap the two hrefs and every assertion here
+         stays green while a reader clicking under CITEVYN lands on QUORUM-AI.
+         Found by a reviewer who applied that exact mutation. */
+      const link = page.locator(`#${slug} a[href="/projects/${slug}"]`);
+      if ((await link.count()) === 0) {
+        problems.push(`no link on / points at /projects/${slug}`);
+        continue;
+      }
+      // count() proves existence, never reachability — the hole a cross-model
+      // review found in contact.spec.js. Visibility is the cheap half of that.
+      if (!(await link.first().isVisible())) problems.push(`the /projects/${slug} link is not visible`);
+      if ((await link.first().innerText()).trim().length === 0) {
+        problems.push(`the /projects/${slug} link has no accessible label`);
+      }
+      const res = await page.request.get(new URL(`/projects/${slug}`, baseURL).href);
+      if (!res.ok()) problems.push(`/projects/${slug} returned ${res.status()}`);
+    }
+    expect(problems, problems.join('\n')).toEqual([]);
+  });
+});

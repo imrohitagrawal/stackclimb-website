@@ -1,0 +1,86 @@
+---
+/* One system, one plate, on the home page.
+ *
+ * Four identical structures used to be written out four times in index.astro. They
+ * are one component now, which is what let index.astro shrink under its own ceiling
+ * while gaining the Gate line and the route out.
+ *
+ * WHAT THIS PLATE CARRIES, and what it deliberately does not:
+ *
+ *   carries  name · state · question · ONE body paragraph · the signature proof ·
+ *            the Gate or Rule line · the capture · the caption strip · Not claimed ·
+ *            the external links · the route to /projects/<slug>
+ *   defers   the engineering paragraph, the remaining body paragraphs, and the
+ *            three-column record — all of which are what the click buys
+ *
+ * The rule that decides the split is measured, not aesthetic: DESIGN.md:228 says
+ * content that cannot fit becomes another plate, and every plate is min-height:100svh
+ * (global.css:82). Cutting MORE than this does not shorten the plate — it empties it.
+ * Trimmed to the bone, these four plates held 256px of true void with the page still
+ * 8.3 screens long. Take what is needed to reach one screen and stop.
+ *
+ * `Not claimed` is a labelled row of its own rather than the last cell of the caption
+ * strip. projects.js:11 records that it "must never be dropped for space — it is the
+ * site's argument, not decoration", and a row states that where a cell buried it.
+ */
+import Plate from './Plate.astro';
+import CapStrip from './CapStrip.astro';
+import Shot from './figures/Shot.astro';
+import { projects } from '../data/projects.js';
+import { pages } from '../data/project-pages.js';
+
+interface Props {
+  slug: string;
+}
+
+const { slug } = Astro.props;
+const p = projects[slug];
+const page = pages[slug];
+
+if (!p || !page) throw new Error(`SystemPlate: no data for "${slug}"`);
+
+/* Two systems ship a capture tall enough to push their plate past one viewport at
+   1440. For those the crop IS the home image — passing it as `shot` with no `crop`
+   renders it at every width. The full capture stays on the project page. */
+const shot = p.homeCrop ? p.crop : p.shot;
+const crop = p.homeCrop ? null : p.crop;
+
+const notClaimed = p.notClaimed;
+---
+
+<Plate
+  id={slug}
+  state={p.state}
+>
+  <div class="plate-grid">
+    <div class="plate-copy">
+      <h2 class="plate-title tight">{p.name}</h2>
+      <p class="q">{p.q}</p>
+      <p set:html={page.body[0]}></p>
+      <p class="proof" set:html={p.proof}></p>
+      <p class="sys-gate"><span class="k">{p.gate.k}</span>{p.gate.v}</p>
+      <div class="links">
+        {p.links.map((l) => (
+          <a href={l.href} target="_blank" rel="noopener">{l.label}</a>
+        ))}
+        <a href={`/projects/${slug}`}>The system</a>
+      </div>
+    </div>
+    <figure class="plate-figure">
+      <Shot
+        shot={shot}
+        crop={crop}
+        alt={p.alt}
+        prov={p.prov}
+      />
+      <CapStrip
+        label={`${slug}, counted`}
+        items={p.strip}
+      />
+      <dl class="sys-nc">
+        <dt>Not claimed</dt>
+        <dd>{notClaimed}</dd>
+      </dl>
+    </figure>
+  </div>
+</Plate>

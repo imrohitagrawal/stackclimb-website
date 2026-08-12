@@ -54,6 +54,8 @@ forgotten and later recovered — kept visible on purpose).
 | R-4 | Circuit breaker — bugs every round means the fault is upstream | DONE | `AGENTS.md` |
 | R-5 | `ui-ux-pro-max` as an independent lens, because the builder must not audit itself | DONE | `docs/skills/README.md` |
 | R-6 | One agent verifies the live UI image by image, as a user sees it | PARTIAL | Contract + harness exist; the skill does not |
+| R-7 | **Remove Codex (cross-model) review going forward — it takes too long** (2026-08-13) | DONE — applied from the same session | Contested below: Claude proposed keeping a time-boxed different-family pass for test-file changes only, citing the measured `contact.spec.js` case; unresolved, Codex not used meanwhile. `AGENTS.md`'s "at least one from a different model family" rule for test changes now conflicts with this directive and awaits the owner's call |
+| R-8 | Package B reviewed by a fan of: Engineering Architect, Engineering Manager, Hiring Recruiter, Engineering Peer, UI/UX Expert, Test Check, and `ui-ux-pro-max` as the single skill lens (owner confirmed the last two list items were one skill) (2026-08-13) | OPEN | Runs on Package B's plan and built result; findings verified before acting, per the 23-of-32 measurement |
 
 ## Product and content
 
@@ -136,6 +138,7 @@ produced better answers than either side had alone.
 | "Install `security-and-hardening`" | Five of its six sections are server-side; this site has no server | **Claude** | Skipped. The five applicable supply-chain rules copied into `AGENTS.md` instead |
 | "The repo has a LICENSE file" | Only `examples/doc-critic-demo/LICENSE` exists; the API reports none | **Claude** | `shared/licensing-and-credits.md` licenses the *output*, not the skills. A root LICENSE is still needed |
 | "Document the RCA before working" | I argued it would block a fix whose RCA *was* the investigation | **Owner** | Resolved by separating the two: investigating is not working. Investigate → write the RCA → get approval → then change code. `AGENTS.md` now carries the table and a worked example |
+| "Remove Codex review going forward" (08-13) | `AGENTS.md`'s own measurement: Codex found five holes in `tests/contact.spec.js` that two same-model reviewers had missed, which is why the different-model-family rule exists for test changes | **Unresolved** | Directive recorded and applied as given. Claude's counter-proposal — keep a hard-time-boxed (5-minute) different-family pass on test-file changes only — raised and not yet answered. Until answered: no Codex anywhere |
 
 ## Still unanswered by me
 

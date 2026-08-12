@@ -68,11 +68,23 @@ import Overview from '../components/Overview.astro';
           the artefact can sit between the buttons and the career facts. The
           proof of the headline should be seen before the CV detail, and it
           used to be twelve screens down. */}
-      {/* Phase 0, item 0.5. `Seeking` listed FIVE job titles, which reads as
-          "does not know what he wants" in a thirty-second skim. One slot a
-          recruiter recognises, with the specialism attached — a title too narrow
-          to search reads as "not my req", which is the opposite failure and just
-          as expensive.
+      {/* Phase 0, item 0.5 cut `Seeking` from FIVE job titles to one, because a
+          five-item list reads as "does not know what he wants" in a thirty-second
+          skim. That comment already named the opposite failure: a title too
+          narrow to search reads as "not my req", and is just as expensive.
+
+          P-3, resolved 2026-08-12 by the owner. The cut went too far — it took the
+          quality half of his record off the hero entirely, which is the half that
+          makes him unusual. Restored as TWO GROUPED HALVES rather than a list of
+          five: the grouping is what stops it reading as scattered, and it now says
+          the same three AI-platform names the CONTACT plate had been saying alone,
+          twelve screens further down. The hero and the contact plate disagreed
+          until now, and the hero is the one a recruiter actually reads.
+
+          Deliberately NOT included: SDET and QA Engineer. Both read a level below
+          Senior/Principal and would confuse which level he wants. The fourteen
+          years of quality work is the CREDENTIAL, not the target, and it is stated
+          as such on both surfaces.
 
           DEF-29 closed here too. `Base — Bengaluru, India · IST (UTC+5:30)` was
           stated verbatim in this ledger AND in the contact ledger. Same defect
@@ -94,7 +106,9 @@ import Overview from '../components/Overview.astro';
             { t: 'Led', d: '11+ quality engineers and SDETs, globally' },
             {
               t: 'Seeking',
-              d: 'Senior / Principal — AI Platform Engineering, with evaluation and release governance',
+              d:
+                'Senior / Principal — AI platform engineering, LLMOps, forward-deployed AI · ' +
+                'AI quality engineering, test automation and agentic AI',
             },
           ]}
         />
@@ -377,8 +391,9 @@ import Overview from '../components/Overview.astro';
             the plate on its own. */}
         <p>
           Open to senior and principal roles in AI platform engineering, LLMOps and
-          forward-deployed AI — and to the evaluation and release-governance work that sits
-          underneath all three.
+          forward-deployed AI — and to AI quality engineering, test automation and agentic AI
+          leadership. Fourteen years of evaluation and release governance sits underneath all
+          of them.
         </p>
         {/* CV was absent here. A recruiter reaching this plate has already
             decided to act, and on a phone the nav shows nothing (DEF-42), so

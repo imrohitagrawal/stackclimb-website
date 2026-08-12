@@ -1,0 +1,59 @@
+---
+/* The three-column record: what a system does, what is wrong with it, and what it
+ * refuses to claim — at equal width and equal weight.
+ *
+ * The third column is the reason this component exists. `projects.js:11` records
+ * that `notClaimed` "must never be dropped for space — it is the site's argument,
+ * not decoration", and until now it shipped as the last cell of a caption strip.
+ * Here it is a column, which is what the site's own thesis asks for.
+ *
+ * The middle column is `Known gaps`, not `In development`. Two reasons, both
+ * recorded: grepping docs/evidence/projects/ for planned work returns two hits for
+ * CiteVyn and one section for NarraTwin and nothing at all for the other two, so an
+ * in-development column would be empty for half the systems; and `roadmap` appears
+ * zero times in the built output on purpose, because an undated roadmap is the kind
+ * of claim AGENTS.md bans. A gap that is measured is not a promise.
+ *
+ * A column with fewer rows than its neighbours is CORRECT, not ragged. `Not claimed`
+ * is short because the site claims little. Do not pad it to match.
+ */
+interface Props {
+  /* Verified capabilities. */
+  now: string[];
+  /* Measured limits, disclosed. */
+  gaps: string[];
+  /* The refused claims, as a list. Split from `projects.js`'s `notClaimed`
+     string by the page, so the two never disagree. */
+  notClaimed: string[];
+}
+
+const { now, gaps, notClaimed } = Astro.props;
+
+/* A column that renders nothing would state, silently, that a system has no gaps.
+   That is the one failure this component must not have, so it throws at BUILD time
+   rather than shipping an empty promise. */
+const empty = Object.entries({ now, gaps, notClaimed })
+  .filter(([, v]) => !v || v.length === 0)
+  .map(([k]) => k);
+if (empty.length) {
+  throw new Error(
+    `Record: ${empty.join(', ')} is empty. An empty column reads as "there are none", ` +
+      'which is a claim. Fill it or remove the component.',
+  );
+}
+---
+
+<div class="record">
+  <div class="rec">
+    <h3>Works now</h3>
+    <ul>{now.map((i) => <li set:html={i} />)}</ul>
+  </div>
+  <div class="rec">
+    <h3>Known gaps</h3>
+    <ul>{gaps.map((i) => <li set:html={i} />)}</ul>
+  </div>
+  <div class="rec">
+    <h3>Not claimed</h3>
+    <ul>{notClaimed.map((i) => <li set:html={i} />)}</ul>
+  </div>
+</div>

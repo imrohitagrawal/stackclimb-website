@@ -11,8 +11,25 @@
  * dropped for space — it is the site's argument, not decoration.
  */
 
+/* Repository and doc URLs are long enough to breach the 120-char line ceiling if
+   written out, and projects.js has no file-budget exception. Concatenated, not
+   excepted — file-budget.mjs:16 says never raise a ceiling without a written reason. */
+const GH = 'https://github.com/imrohitagrawal/';
+
 export const projects = {
   citevyn: {
+    gate: { k: 'Gate', v: 'A 15-case retrieval suite on the candidate index gates promotion; any override is audited' },
+    name: 'CiteVyn',
+    state: 'Live — cold-starts',
+    q: '\u201CCan I trust this answer \u2014 and trace every claim to its source?\u201D',
+    links: [
+      { href: 'https://citevyn.stackclimb.com', label: 'Use it live' },
+      { href: `${GH}citevyn`, label: 'Source' },
+      {
+        href: `${GH}citevyn/blob/3d28fc8bf7a9de1903881ea7211ecb79a6f79eb5/docs/ARCHITECTURE.md`,
+        label: 'Architecture',
+      },
+    ],
     proof: 'Twenty-six answerable questions. It found the right source for <em>every one</em>.',
     shot: 'citevyn-demo',
     crop: 'citevyn-crop',
@@ -41,6 +58,22 @@ export const projects = {
   },
 
   quorum: {
+    gate: { k: 'Gate', v: 'Cost approved before anything runs; fallbacks disclosed' },
+    /* quorum-run is 1440x980. At the home plate's 477px column it renders 325px
+       tall and pushes that plate to 1.07 viewports; the crop renders 119px and the
+       full capture keeps its place on the project page. Measured, not guessed. */
+    homeCrop: true,
+    name: 'Quorum\u2011AI',
+    state: 'Live',
+    q: '\u201CWhat happens when four models disagree about your question?\u201D',
+    links: [
+      { href: 'https://quorum.stackclimb.com', label: 'Use it live' },
+      { href: `${GH}quorum-ai`, label: 'Source' },
+      {
+        href: `${GH}quorum-ai/blob/303228262d7697793a268550a3b287d27f1a1584/docs/20-architecture.md`,
+        label: 'Architecture',
+      },
+    ],
     proof:
       'Disagreement and uncertainty come back as <em>their own fields</em>, not folded into one ' +
       'confident answer.',
@@ -71,6 +104,18 @@ export const projects = {
   },
 
   saafsaans: {
+    gate: { k: 'Rule', v: 'Every reading labelled live, cached, or no reading' },
+    name: 'SaafSaans',
+    state: 'Deployed \u2014 sleeps when idle',
+    q: '\u201CIs it safe for me to go outside right now \u2014 and if not, when?\u201D',
+    links: [
+      { href: 'https://saafsaans.stackclimb.com', label: 'Open the app' },
+      { href: `${GH}saaf-saans`, label: 'Source' },
+      {
+        href: `${GH}saaf-saans/blob/3bac09012cc1a5e36d24505e54d6155ff0664aa3/docs/CASE-STUDY.md`,
+        label: 'Case study',
+      },
+    ],
     proof:
       'Two people, one sky. The senior with asthma scores <em>76</em>. The healthy adult, same ' +
       'plans, scores <em>64</em>.',
@@ -97,6 +142,21 @@ export const projects = {
   },
 
   narratwin: {
+    gate: { k: 'Gate', v: 'Its own readiness review says No-Go, so it is not deployed' },
+    /* narratwin-demo is 1440x1100 — 364px tall at the home column, 1.10 viewports. */
+    homeCrop: true,
+    name: 'NarraTwin AI',
+    state: 'Phase 1 \u2014 No-Go',
+    /* No live-app link: it is not deployed, and an absent link is correct where a
+       disabled one would imply the system exists to visit. */
+    q: '\u201CCan project knowledge become a walkthrough without inventing a claim?\u201D',
+    links: [
+      { href: `${GH}narratwin-ai`, label: 'Source' },
+      {
+        href: `${GH}narratwin-ai/blob/454025c403334933306142f65bc3e25541eeb23e/docs/RELEASE_READINESS_REVIEW.md`,
+        label: 'Release readiness review',
+      },
+    ],
     proof:
       'Twenty-five languages, six script classes. Every one proved to agree across five surfaces ' +
       'against a <em>pinned fixture</em>.',

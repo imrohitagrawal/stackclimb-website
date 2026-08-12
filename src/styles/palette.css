@@ -56,16 +56,6 @@
   --surface: #3f1a25;
 }
 
-/* The contact sheet. Until 2026-08-09 this plate had no entry and fell back
-   to the :root navy — IDENTICAL to the hero before it, so the visitor's first
-   scroll, the gesture that teaches "each section is a new plate", turned no
-   page (critique finding 3, measured distance 0.0). Umber: hue 30 at the
-   ladder's fixed steps, warm against the navy before it and clearly apart
-   from the bordeaux after it. bone 14.65:1 · ochre 6.82:1 on ground. */
-#overview {
-  --ground: #23180e;
-  --surface: #402d19;
-}
 
 #quorum {
   --ground: #0d231f;

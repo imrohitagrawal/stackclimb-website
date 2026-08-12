@@ -38,7 +38,11 @@ const EXCEPTIONS = {
   // Over-budget on the day this gate arrived. Frozen at measurement, not
   // forgiven: each is standing debt (see STATUS.md DEF-47) and the ceiling
   // drops when the file is modularized.
-  'src/pages/index.astro': { lines: 484, lineLen: 212 },
+  // 484/212 → 260/124 on 2026-08-12. The four project plates became one
+  // <SystemPlate> component and #overview was removed, which is the
+  // modularization the note above says the ceiling drops for. Measured, not
+  // rounded: the file is 260 lines with a 124-char longest line.
+  'src/pages/index.astro': { lines: 260, lineLen: 124 },
   'tests/lib/rendered-contrast.mjs': { lines: 314, lineLen: 128 },
   'tests/dod.spec.js': { lines: 259, lineLen: 112 },
   // Under 250 lines but over 120 chars somewhere — long URLs and evidence
@@ -46,7 +50,6 @@ const EXCEPTIONS = {
   'src/data/cv.js': { lineLen: 260 },
   'src/layouts/Layout.astro': { lineLen: 230 },
   'src/pages/cv.astro': { lineLen: 237 },
-  'src/components/Overview.astro': { lineLen: 127 },
   'src/components/figures/NarraTwinFigure.astro': { lineLen: 234 },
   'src/components/figures/PrivateFigure.astro': { lineLen: 136 },
   'tests/links.spec.js': { lineLen: 128 },

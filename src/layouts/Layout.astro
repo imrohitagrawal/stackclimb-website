@@ -25,7 +25,6 @@ import '../styles/print.css';
 /* Phase 1 surfaces. Separate files because global.css stands at 494 lines
    against a grandfathered ceiling of 500 it may not exceed. */
 import '../styles/avatar.css';
-import '../styles/overview.css';
 /* Item 4/5. Phase 2 motion — new file, same reason as the three above. */
 import '../styles/motion.css';
 
@@ -75,7 +74,7 @@ const canonical = new URL(
    touch.css selectors). Add a destination here and both menus carry it;
    tests/nav-reach.spec.js then proves it is reachable at every viewport. */
 const NAV = [
-  { href: '/#overview', label: 'Systems' },
+  { href: '/#systems', label: 'Systems' },
   { href: '/cv', label: 'CV' },
   { href: '/#contact', label: 'Contact' },
 ];

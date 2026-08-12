@@ -11,12 +11,17 @@ import { readLinks } from './lib/read-links.mjs';
 
 const CONTACT = '#contact';
 
-// The page ships eight plates (Nº 00–07). A floor, not an equality: adding a
-// plate must not turn a gate red (the mistake DEF-15 records). BUMP THIS in
-// the same change that adds a plate — it sat at 7 while 8 shipped, and the
-// whole #private plate could be deleted with every gate green (found by the
-// 2026-08-09 mutation audit).
-const MIN_PLATES = 8;
+// The page ships seven plates: hero, four systems, private, contact. A floor,
+// not an equality: adding a plate must not turn a gate red (the mistake DEF-15
+// records). BUMP THIS in the same change that adds a plate — it sat at 7 while
+// 8 shipped, and the whole #private plate could be deleted with every gate
+// green (found by the 2026-08-09 mutation audit).
+//
+// Lowered from 8 to 7 when #overview was removed: it listed all six systems and
+// the four plates below it repeated four of them. Lowering a floor is the exact
+// move that hid DEF-15, so it is stated here rather than done quietly — the
+// count is 7 because seven plates ship, not because 8 was inconvenient.
+const MIN_PLATES = 7;
 
 const EMAIL_ADDRESS = 'rohit.ra.agrawal@gmail.com';
 

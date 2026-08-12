@@ -1,0 +1,102 @@
+/* /projects/<slug> — the two surfaces the home plate cannot hold.
+ *
+ * Imported by the page, not by Layout.astro. Two reasons, both precedent:
+ * cv.astro:23 imports its own stylesheet the same way, and global.css stands at 451
+ * lines against a grandfathered ceiling of 500. Shipping this to `/`, `/cv` and
+ * `/404` would cost every one of them bytes they never use.
+ *
+ * Everything structural is inherited: .plate, .plate-frame, .plate-grid, .plate-copy,
+ * .q, .proof, .eng, .links, .caps and the painted ground all come from the existing
+ * sheets, keyed off the plate id — which equals the slug, so palette.css paints each
+ * project page in its own livery with no rule added here.
+ */
+
+/* Recovered from overview.css when that file was deleted with its component. These
+   two rules are what let a plate hold ONE full-width column instead of the standard
+   copy/figure pair, and the record plate is now their only user. Without them
+   .plate-copy falls back to its 34rem measure and the three columns squeeze into the
+   left half of the frame with a dead third beside them — which is exactly what
+   shipped for one build, and was caught by looking at the render rather than by any
+   gate. */
+.plate-grid.one-col {
+  grid-template-columns: 1fr;
+}
+
+.plate-copy.wide {
+  max-width: none;
+}
+
+/* The record plate reads across, not down, so its copy column is not capped at the
+   34rem measure .plate-copy uses for a two-column plate. */
+.record {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.2rem 2rem;
+  margin: 0.4rem 0 0;
+}
+
+.rec h3 {
+  font-size: 0.66rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  margin: 0 0 0.6rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--bone) 15%, transparent);
+}
+
+.rec ul {
+  margin: 0;
+  padding-left: 0.95rem;
+}
+
+.rec li {
+  font-size: 0.84rem;
+  line-height: 1.55;
+  margin-bottom: 0.5rem;
+  color: color-mix(in srgb, var(--bone) 90%, transparent);
+}
+
+/* Ochre, at reduced weight — the One Thread Rule allows no second accent, and a
+   marker is not important enough to take the full value. */
+.rec li::marker {
+  color: color-mix(in srgb, var(--accent) 75%, transparent);
+  font-size: 0.85em;
+}
+
+/* The sourced note. A 1px hairline, never 2px: D58 measured a 2px left border on
+   both mockup worlds and named it the `side-tab` AI-tell; the shipped build uses a
+   hairline or an indent instead. */
+.proj-note {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  margin: 1.5rem 0 0;
+  padding-left: 0.95rem;
+  border-left: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  max-width: 80ch;
+  color: color-mix(in srgb, var(--bone) 90%, transparent);
+}
+
+.proj-note .src {
+  font-family: var(--mono, ui-monospace, 'SF Mono', Menlo, monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--bone) 62%, transparent);
+  margin-left: 0.5rem;
+  white-space: nowrap;
+}
+
+.proj-back {
+  margin-top: 1.6rem;
+}
+
+/* Three columns need width. Below 900px they stack — without this the record kept
+   three columns at 390 and pushed the page into horizontal scroll, which Definition
+   of Done item 6 bans outright. Caught by measuring the mockup, not by reading it. */
+@media (max-width: 900px) {
+  .record {
+    grid-template-columns: 1fr;
+    gap: 1.1rem;
+  }
+}

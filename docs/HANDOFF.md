@@ -146,7 +146,7 @@ Packages 1 and 2 are DONE and merged (D74, D75). Start at 3.
    CSS on the site. Every reveal stays a progressive enhancement -
    html:not(.motion-ready) shows content fully, and tests/motion.spec.js already
    asserts that shape. THIS is the package that gets a performance lens.
-   Fold in DEF-51 here (it is a workflow change, small): the deploy job concludes
+   Fold in DEF-53 here (it is a workflow change, small): the deploy job concludes
    "success" while deploying nothing. It emits its ::warning:: but the job is
    green, so the rollup, the PR badge and branch protection all read pass. Make
    it fail, or make the skip unmistakable in the rollup. This is a defect in D73.
@@ -195,16 +195,25 @@ Packages 1 and 2 are DONE and merged (D74, D75). Start at 3.
 
 == PENDING ON THE OWNER - ask once, early, do not block on it ==
 
-  - DEF-50, HIGH, LIVE NOW: Cloudflare Email Obfuscation is on for the zone. It
+  - DEF-52, LOW (filed HIGH 08-12, downgraded same day): Cloudflare Email
+    Obfuscation is on for the zone. It
     rewrites all five mailto: links to /cdn-cgi/l/email-protection#... which 404s
     on its own, and /cv renders the literal placeholder instead of the address.
-    With JS on it works; with JS off the only contact route on the site is dead.
-    This is DEF-2's principle and P-13 reopened BY THE CDN, AFTER the build, on a
-    site that promises near-zero JavaScript. NO DEPLOY FIXES IT - it is a zone
-    setting. Dashboard: Scrape Shield -> Email Obfuscation -> off. wrangler's
-    OAuth token has no zone scope (403), so an agent cannot do it.
-    Once he turns it off, ADD A GATE: nothing in this repo checks production for
-    link reachability, only for build identity and asset 200s.
+    MEASURED IN A BROWSER BOTH WAYS: with JS ON every link resolves to mailto:
+    and /cv prints the address - it works, and that is effectively every visitor.
+    With JS OFF it degrades. This was FILED HIGH AND WAS WRONG; the owner refuted
+    it with a screenshot of the working case. Do not re-escalate it.
+    It is worth turning off on two judgment grounds, not as a fix: the build
+    ships ZERO .js files and 1,494 inline bytes, while Cloudflare adds a 1,239-
+    byte external script to undo its own change - nearly doubling the site's
+    JavaScript on a site whose argument is that it barely uses any; and it
+    protects nothing, since the repo is public and the address is plain text in
+    PRODUCT.md, src/data/cv.js and src/layouts/Layout.astro.
+    NO DEPLOY FIXES IT - it is a zone setting, and wrangler's OAuth token has no
+    zone scope (403). Owner's call, in the dashboard.
+    Worth doing regardless: nothing in this repo checks production for LINK
+    REACHABILITY, only for build identity and asset 200s. That gap is what let
+    this reach production unseen, and it is the part an agent can close.
   - P-3 is recorded DONE for a directive the site DELIBERATELY REVERSED. It asked
     for extra Seeking titles; index.astro:71 records cutting to one because five
     "reads as does not know what he wants". A reversal recorded as compliance is

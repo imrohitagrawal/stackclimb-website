@@ -222,17 +222,41 @@ Packages 1 and 2 are DONE and merged (D74, D75). Start at 3.
     honour P-3 as written.
   - CLOUDFLARE_API_TOKEN. He declined it, and that decision stands. Do not
     re-propose it; just do not mistake the skipped deploy job for a real one.
+  - P-3, the Seeking titles. He has NOT answered which way to go. The register
+    now reads REVERSED rather than a false DONE. The open recommendation is to
+    carry the same three names the contact plate already uses, up into the hero,
+    so the hero and the contact plate stop disagreeing: 'AI platform engineering,
+    LLMOps and forward-deployed AI' - plus the quality half he asked to restore,
+    'AI quality engineering, test automation and agentic AI'. Grouped in two
+    halves, not a five-item list, because a list of five reads as unfocused and a
+    single title reads as 'not my req' to a recruiter searching another word for
+    the same job. His own git history shows the five-title version existed and
+    was removed on 08-09 in 4f9efbe. DO NOT add SDET or QA Engineer as SOUGHT
+    titles - they read a level below Senior/Principal. The QA depth is the
+    credential, not the target. ASK HIM ONCE, then act.
   - NarraTwin's CI artifacts for 639aa2cf EXPIRE 2026-08-18 - eval-smoke-report
     and stage8-performance-lighthouse-reports are both still live, confirmed
     08-12. Retrieve before they go, or the strongest numbers stay unverifiable.
-  - project-doc-skills PR #22 (the watermark skill) is IN DRAFT, not merged. Four
-    lenses said do not merge and the repo's own release gates are red on the
-    branch while main is green (run-golden 209/218 vs 218/218; 8 of those 9
-    failures are gates that STOPPED BITING). The mark is hardcoded white where
-    the contract says slate, so on a light export it changes ZERO pixels while
-    reporting success. Codex's deeper verdict: nothing invokes it, so it is still
-    the passenger the RCA said it was fixing. The next step is a design decision -
-    does it belong inside publish-mirror? - not a fix commit.
+  - project-doc-skills PR #25, the watermark skill, is STOPPED at round 3 with
+    the circuit breaker fired. DO NOT MERGE IT AND DO NOT PATCH IT. Two
+    conditions fired at once: a new class of blocking finding (a sweep added in
+    round 2 deleted any .wm-*.part file under the target with no ownership, age
+    or content check - a data-loss defect introduced while fixing a data-loss
+    defect), and a round-2 fix that introduced a defect of its own.
+    The hazard was removed. Nothing else was patched, deliberately.
+    THE DIAGNOSIS IS THE HANDOFF. Two independent lenses described the same shape
+    without conferring: every fix landed on the one input its assertion happened
+    to use, and nowhere else. PNG but not JPEG or WEBP (both still stack
+    200 -> 228 -> 256 -> 284). _atomic_save but not _atomic_write_text (a killed
+    HTML run still reddens a directory forever). hidden="hidden" but not the bare
+    `hidden` that real HTML uses, because HTMLParser gives a boolean attribute the
+    value None. That is an UNDERSTANDING miss, not a coding miss.
+    WHAT TO DO FIRST, AND IT IS NOT CODE: write an explicit failure matrix -
+    every supported format x every write path x every attribute spelling -
+    and get THAT reviewed as a contract before implementing again. Mutation
+    coverage per cell. tests/mutation-runner.py currently contains ZERO watermark
+    mutations, so release-gate step 6 being blocking buys the skill nothing.
+    Full findings: gate-reviews/0026-watermark-skill-and-stale-fixture-lists.md.
 
 == CLAIMS THAT MUST NEVER SHIP ==
 

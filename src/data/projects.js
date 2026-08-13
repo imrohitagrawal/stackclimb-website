@@ -117,7 +117,11 @@ export const projects = {
       },
     ],
     proof:
-      'Two people, one sky. The senior with asthma scores <em>76</em>. The healthy adult, same ' +
+      /* "senior" was wrong — the persona that scores 76 at the captured AQI is the
+         app's DEFAULT persona, age Adult (main.py:174-179); a senior with asthma
+         scores 86. Verified by executing risk.compute_risk at 10f4213; the alt
+         text below always said "adult". Package C correction. */
+      'Two people, one sky. The adult with asthma scores <em>76</em>. The healthy adult, same ' +
       'plans, scores <em>64</em>.',
     shot: 'saafsaans-en',
     crop: 'saafsaans-crop',
@@ -135,7 +139,7 @@ export const projects = {
     strip: [
       { t: 'Risk delta', d: '76 vs 64 · identical plans' },
       { t: 'Feeds', d: '19 live · 2 known gaps' },
-      { t: 'Tests', d: '771 functions · 16,199 lines' },
+      { t: 'Tests', d: '767 functions · 16,072 lines @10f4213' },
       { t: 'Guard', d: '39 patterns · EN, Hindi, Hinglish' },
     ],
     notClaimed: 'Medical advice · uptime',
@@ -177,7 +181,7 @@ export const projects = {
       { t: 'State', d: 'Phase 1 — No-Go · not deployed' },
       { t: 'Languages', d: '25 · 6 script classes' },
       { t: 'Surface parity', d: '25 / 25 agree' },
-      { t: 'Code', d: '25,606 lines · 1,668 tests @639aa2c' },
+      { t: 'Code', d: '26,646 lines · 1,743 tests @a022862' },
     ],
     notClaimed: 'Deployment · video · avatar Q&A',
   },

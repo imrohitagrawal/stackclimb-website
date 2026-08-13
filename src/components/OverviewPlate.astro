@@ -1,0 +1,49 @@
+---
+/* The six-system overview — an index, not a second copy of the cards.
+ *
+ * Restored by package B (D79's remedial spec): D76 removed the old #overview
+ * because it restated four plates at length; the owner then found the loss of
+ * the six-system view was itself a defect. This plate is the fix under a
+ * constraint the old one broke: rows carry name · state · one plain-English
+ * line · one figure · a route — never the record columns.
+ *
+ * Two groups per D57, ordered per D60 (Being built closes on NarraTwin's
+ * No-Go). Data derives from projects.js and private-systems.js via
+ * overview.js — nothing here is a restated string.
+ *
+ * Row names are NOT headings: the four system plates below use h2 for the
+ * same names, and a second set would double every system in the document
+ * outline a screen reader walks.
+ */
+import Plate from './Plate.astro';
+import { overview } from '../data/overview.js';
+import '../styles/overview.css';
+---
+
+{/* Not .plate-grid.one-col: that utility lives in project.css, which the home
+    page never loads — using it here rendered a 1,966px plate against the 900px
+    ceiling (measured). The index carries its own full-width wrapper instead. */}
+<Plate id="overview">
+  <div class="ov-wrap">
+    <div class="plate-copy">
+      <h2 class="plate-title tight">{overview.heading}</h2>
+      {overview.groups.map((g) => (
+        <section class="ov-group">
+          <h3 class="ov-label">{g.label}</h3>
+          <ul class="ov-rows">
+            {g.rows.map((r) => (
+              <li class="ov-row">
+                <span class="ov-name">
+                  {r.href ? <a href={r.href}>{r.name}</a> : r.name}
+                </span>
+                <span class="ov-state">{r.state}</span>
+                <span class="ov-line">{r.line}</span>
+                {r.figure && <span class="ov-fig">{r.figure}</span>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+  </div>
+</Plate>

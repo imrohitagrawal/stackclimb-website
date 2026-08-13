@@ -51,6 +51,17 @@
    assert a floor, and a plate on the wrong ground still clears the floor.
    Found by a mutation audit, not by any gate; tests/palette-ladder.spec.js
    now asserts adjacent plates do not share a ground. */
+/* The overview index (package B). Olive — hue 45, saturation 45%, lightness
+   on the ladder's steps; no neighbour shares it (navy #0e1322 above via the
+   hero, oxblood #230d13 below via citevyn). Declared HERE ONLY: the ladder
+   gate harvests every `#id{--ground}` in built CSS, and a second declaration
+   in overview.css would double-count the plate.
+   Measured: bone on ground 15.7:1 · ochre on ground 7.1:1. */
+#overview {
+  --ground: #231e0d;
+  --surface: #413718;
+}
+
 #citevyn {
   --ground: #230d13;
   --surface: #3f1a25;

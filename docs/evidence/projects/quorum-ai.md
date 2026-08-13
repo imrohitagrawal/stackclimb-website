@@ -153,6 +153,23 @@ which is the same error as CiteVyn's 26-vs-54.
 
 ---
 
+## The cost rail and consensus provenance — measured 2026-08-14 at `bb20bdb` (two lenses, verified by command)
+
+Carried on the project page's plate 1 since package B. Every clause re-derivable:
+
+| Claim | Evidence |
+|---|---|
+| Confirmation token is HMAC-bound to account + exact estimated cost, expiring, single-use | `src/product_app/costs.py:1935` (HMAC-SHA256 over `account_id\|query_run_id\|estimated_cost_usd\|expires_at\|nonce`), `:1882-1910` (single-use pop, wrong-account/amount/expiry rejected) |
+| Enforced before any run exists | `src/product_app/query_runs.py:1360-1400` — HTTP 402 `COST_CONFIRMATION_REQUIRED` raised before any run object or thread is created |
+| Tests executed, not read | `.venv/bin/python -m pytest tests/unit/test_cost_guardrails.py -q` → 9 passed |
+| Simulated/templated text excluded from consensus evidence | `src/product_app/synthesis_consensus.py:153-192` (`counts_as_evidence`, defect #247), `:307-309` (templated debate rounds skipped, #185) |
+| The defect the exclusion closed, measured | #247: simulated slots scored Jaccard 0.500-0.579 and rendered "4 of 4 aligned" on a run that asked nobody (2026-08-04) |
+| Consensus arithmetic is non-LLM and says so | `synthesis_consensus.py:48,93-125` — "intentionally cheap — no LLM call, no embeddings"; UI caption `static/app.js:3731-3732` "inferred, not a tallied vote" |
+
+**Must-not-claim, reaffirmed:** the moderator's default model id equals answer slot 2's
+default (`config.py:434` = `model_slots.py:65`, both `anthropic/claude-haiku-4.5`). A separate
+call in a separate role — never "a fifth model", and never implied to be distinct weights.
+
 ## Flagged, not fixed here
 
 **Repo-root hygiene is a presentation liability.** Roughly 60 `*-ULTRACODE-PROMPT.md` /

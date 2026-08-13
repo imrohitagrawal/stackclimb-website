@@ -1,0 +1,113 @@
+/* The overview index plate. Its own file per the one-concern rule; the
+ * `--ground` for #overview lives in palette.css ONLY — palette-ladder.spec.js
+ * harvests every `#id{--ground}` in the built CSS, and a second declaration
+ * here would double-count the plate.
+ *
+ * Height budget (plan §6): at 390×844 the plate has ~1,270px of content room
+ * under the 1.75 ceiling — heading + two group labels ≤ 340px, six rows
+ * averaging ≤ 150px. At 1440 the whole plate must land ≤ 900px, so rows are
+ * one line tall on a four-column grid and the line/figure truncate never wrap
+ * more than twice.
+ */
+
+/* Full width of the frame — a single column; .plate-grid's two-column default
+   would squeeze the index into the copy column. */
+.ov-wrap {
+  width: 100%;
+}
+
+.ov-wrap .plate-copy {
+  max-width: none;
+}
+
+.ov-group {
+  margin-top: 1.6rem;
+}
+
+.ov-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 0.55rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--bone) 18%, transparent);
+}
+
+.ov-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* name · state · line · figure. The figure column is `auto`, so Aegis's
+   absent figure leaves no hole — the line simply spans to the edge. */
+.ov-row {
+  display: grid;
+  grid-template-columns: 11rem 13rem 1fr auto;
+  gap: 0.2rem 1.4rem;
+  align-items: baseline;
+  padding: 0.62rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--bone) 10%, transparent);
+}
+
+.ov-row:last-child {
+  border-bottom: none;
+}
+
+.ov-name {
+  font-weight: 650;
+  font-size: 1.02rem;
+}
+
+.ov-name a {
+  color: currentColor;
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 45%, transparent);
+  padding-bottom: 2px;
+}
+
+.ov-name a:hover {
+  color: var(--ochre);
+  border-bottom-color: var(--ochre);
+}
+
+.ov-state {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.ov-line {
+  font-size: 0.92rem;
+  color: color-mix(in srgb, var(--bone) 88%, transparent);
+}
+
+.ov-fig {
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--bone) 72%, transparent);
+  white-space: nowrap;
+}
+
+/* Stack below 900px: name+state share the first line, then the sentence,
+   then the figure. The figure is what gives way visually (smallest type),
+   never the state — plan §6. */
+@media (max-width: 900px) {
+  .ov-row {
+    grid-template-columns: 1fr auto;
+    gap: 0.15rem 0.9rem;
+  }
+
+  .ov-line,
+  .ov-fig {
+    grid-column: 1 / -1;
+  }
+
+  .ov-fig {
+    white-space: normal;
+  }
+}

@@ -21,7 +21,11 @@ const CONTACT = '#contact';
 // the four plates below it repeated four of them. Lowering a floor is the exact
 // move that hid DEF-15, so it is stated here rather than done quietly — the
 // count is 7 because seven plates ship, not because 8 was inconvenient.
-const MIN_PLATES = 7;
+//
+// Raised back to 8 by package B: #overview returned as an index (rows, not the
+// cards it used to restate). Bumped in the same change that adds the plate,
+// exactly as the note above requires.
+const MIN_PLATES = 8;
 
 const EMAIL_ADDRESS = 'rohit.ra.agrawal@gmail.com';
 

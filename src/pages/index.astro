@@ -4,8 +4,10 @@ import Plate from '../components/Plate.astro';
 import CapStrip from '../components/CapStrip.astro';
 import Ledger from '../components/Ledger.astro';
 import SystemPlate from '../components/SystemPlate.astro';
+import OverviewPlate from '../components/OverviewPlate.astro';
 import PrivateFigure from '../components/figures/PrivateFigure.astro';
 import { projects } from '../data/projects.js';
+import { privateSystems } from '../data/private-systems.js';
 import '../styles/systems.css';
 ---
 
@@ -136,23 +138,17 @@ import '../styles/systems.css';
     </div>
   </Plate>
 
-  {/* The four systems, one plate each.
-      `#overview` is gone. It listed all six systems and then four plates below
-      repeated four of them at length — the same six things said twice, and 900px
-      of the page spent saying them the second time. Its Gate column was the part
-      worth keeping (positioning-phase0: "a list of projects says he is busy; a
-      list of refusals says he is trustworthy"), so that line moved INTO each
-      plate rather than dying with the list.
-
-      The wrapper carries `#systems` because the nav label is plural. DEF-34 is
-      the defect where a plural label — "Systems" — landed the visitor on ONE
-      system, and repointing the nav at `#citevyn` would have reintroduced it
-      exactly. An anchor on the group is plural; a plate id is not.
-
-      Each plate keeps its own painted ground, which pairing two systems per
-      plate would have cost — palette.css exists to make scrolling change the
-      light, and two systems in one plate share one hue. */}
+  {/* The overview index, then the four systems, one plate each.
+      D76 removed the old #overview for restating four plates at length; the
+      owner found the loss of the six-system view was itself a defect, and
+      package B restored it as an INDEX — rows, not cards (see OverviewPlate).
+      It sits INSIDE #systems as the first child so the nav's plural `Systems`
+      and the hero CTA land on an index of six, not past it — DEF-34 is a
+      plural label landing on ONE system, and an index is the opposite case.
+      Each plate keeps its own painted ground, overview included — palette.css
+      exists to make scrolling change the light. */}
   <section id="systems">
+    <OverviewPlate />
     {Object.keys(projects).map((slug) => <SystemPlate slug={slug} />)}
   </section>
 
@@ -171,25 +167,16 @@ import '../styles/systems.css';
           its gaps should also say what exists — and the question each one is built to answer
           costs nothing to state.
         </p>
+        {/* One source with the overview rows — private-systems.js. */}
         <div class="private-pair">
-          <div class="private-card">
-            <h3>EvalAxis</h3>
-            <p class="q">
-              “Why can a failing test stop a release, when a measured drop in answer quality
-              cannot?”
-            </p>
-            <p>
-              Evaluates LLM, RAG, and agent changes with evidence — and blocks CI on a quality
-              regression.
-            </p>
-            <span class="seal">In progress · closed</span>
-          </div>
-          <div class="private-card">
-            <h3>Aegis Contracts</h3>
-            <p class="q">“What should one AI system be allowed to promise another — and who checks?”</p>
-            <p>Early-stage work on contract-shaped guarantees between AI systems.</p>
-            <span class="seal">In progress · closed</span>
-          </div>
+          {Object.values(privateSystems).map((s) => (
+            <div class="private-card">
+              <h3>{s.name}</h3>
+              <p class="q">{s.q}</p>
+              <p>{s.desc}</p>
+              <span class="seal">{s.state}</span>
+            </div>
+          ))}
         </div>
       </div>
       <figure class="plate-figure">

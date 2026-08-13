@@ -129,7 +129,12 @@ import '../styles/systems.css';
         <CapStrip
           label="The record, in numbers"
           items={[
-            { t: 'Systems built', d: '4 of 6' },
+            /* Owner 08-14: the bare fraction read as shortfall. A recruiter
+               lens diagnosed the symptom (D79 records its deletion fix as
+               rejected); the owner's fix is completion — all three facts. */
+            { t: 'Total systems', d: '6' },
+            { t: 'Built', d: '4' },
+            { t: 'In progress', d: '2' },
             { t: 'Release gates', d: '4' },
             { t: 'Golden cases passed', d: '52 / 52' },
           ]}

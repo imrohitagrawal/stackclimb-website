@@ -186,6 +186,23 @@ body::before {
   padding-bottom: 3px;
 }
 .links a:hover { border-bottom-color: var(--ochre); color: var(--ochre); }
+/* Internal navigation gets its own mark — package B2. Before this rule the
+   arrow was scoped to [target='_blank'], so "The system" rendered as plain
+   text in a row of arrowed links and read as unclickable. A CHEVRON, not a
+   rotated copy of the external arrow: at ~7px rendered, rotation alone is
+   indistinguishable. */
+.links a:not([target='_blank'])::after,
+.ov-name a::after {
+  content: '';
+  display: inline-block;
+  width: 0.58em;
+  height: 0.58em;
+  margin-left: 0.35em;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M4 1.5L9 6l-5 4.5' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='square'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M4 1.5L9 6l-5 4.5' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='square'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
 .links a[target='_blank']::after {
   content: '';
   display: inline-block;

@@ -96,6 +96,25 @@ paths carrying `force`, `measured_pass_rate`, `threshold` and `evaluation_run_id
 
 ---
 
+## The judge panel — measured 2026-08-14 at `df8cfc3` (AI-architect lens, verified by command)
+
+Carried on the project page's plate 1 since package B. Every clause re-derivable:
+
+| Claim | Evidence |
+|---|---|
+| Three rubric framings, ensemble by wording not sampling | `backend/tests/eval/judge.py:86-102` (`_STANDARD_FRAMINGS`), `:116` (`_DEFAULT_PANEL_SIZE = 3`) |
+| Temperature 0, reproducible | `judge.py:60` — "the gate never flakes run-to-run" |
+| Median over an odd panel | `judge.py:197-213` (even N decremented), `:313-317` |
+| Skeptic applied as a floor, `min()`, not a fourth vote | `judge.py:104-114`, `:320` (`final = min(median, adv_score)`), docstring `:22-24`: a lone low vote can never move a median |
+| Coverage gate: < 90% usable scores fails the run | `backend/tests/eval/thresholds.py:33` (`MIN_JUDGE_COVERAGE = 0.9`), `backend/tests/eval/runner.py:437-445` |
+| Veto proved by test | `backend/tests/test_eval_judge_robustness.py:202,211,218` — veto bites below a unanimous 5; the skeptic can never pull a score up |
+| The recorded 4.63/54 run used the panel code | `git log -1 -- artifacts/eval_report_pg.json` → `112c3ff` (07-20); panel landed `be2d676` (07-16) |
+
+**UNVERIFIED, do not claim:** the panel size N of the recorded 4.63 run — CI pins the panel
+to 1 to bound spend (`judge.py:34`) and the report summary omits N. The check that settles it:
+read `standard_scores` length from a fresh judged run's per-case output. Site copy therefore
+describes the mechanism and never asserts N for that run.
+
 ## Panel asset
 
 `src/assets/projects/citevyn-demo.webp` — from

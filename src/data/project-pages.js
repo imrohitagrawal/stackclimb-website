@@ -27,6 +27,16 @@ export const pages = {
       'Citation-grounded Q&amp;A over official AI documentation. Answers quote their sources verbatim; ' +
         'where no source supports an answer, CiteVyn refuses instead of guessing. Index updates reach ' +
         'production only through an evaluation gate.',
+      /* Package B, plate 1's new material. AI-architect lens finding, verified by
+         command 2026-08-14 at df8cfc3 — every clause traces to
+         docs/evidence/projects/citevyn.md, "The judge panel" section. Deliberately
+         silent on the panel size of the recorded 4.63 run: UNVERIFIED there. */
+      'The judge that grades its answers is built not to flatter. Each answer is scored by a panel — ' +
+        'the same model asked with three differently worded rubrics at temperature zero, so every ' +
+        'score is reproducible — and the median is taken; a fourth, skeptic judge argues why the ' +
+        'answer is wrong, and its score applies as a <b>floor</b>, because one low vote can never ' +
+        'move a three-member median. A run where fewer than 90% of cases produce a usable score ' +
+        'fails outright, rather than passing on a flattering average over the lucky survivors.',
     ],
     record: {
       now: [
@@ -57,6 +67,16 @@ export const pages = {
            of one fact on one plate is DEF-27, and it cost this plate 20px it did
            not have. The Gate line keeps it; the paragraph gives it up. */
         'then returns consensus, disagreement, source support, uncertainty, and a recommendation.',
+      /* Package B, plate 1's new material. Two lens findings, verified by command
+         2026-08-14 at bb20bdb — every clause traces to
+         docs/evidence/projects/quorum-ai.md, "The cost rail and consensus
+         provenance" section. */
+      'A costly run cannot start on a nod: the approval is a single-use, expiring token ' +
+        'cryptographically tied — an HMAC, a keyed hash — to the account and the exact estimated ' +
+        'cost, so a stale or borrowed approval is rejected with the estimate reattached. And ' +
+        'agreement is never allowed to flatter: anything Quorum wrote itself — a simulated answer, ' +
+        'a templated critique — is excluded from the evidence before consensus is scored, a rule ' +
+        'added after a run once showed &ldquo;4 of 4 aligned&rdquo; while asking nobody.',
     ],
     record: {
       now: [

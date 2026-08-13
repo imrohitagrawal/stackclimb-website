@@ -26,6 +26,8 @@ import Shot from '../../components/figures/Shot.astro';
 import { projects } from '../../data/projects.js';
 import { pages } from '../../data/project-pages.js';
 import '../../styles/project.css';
+/* .sys-gate and .sys-nc — the two cells plate 1 gained in package B. */
+import '../../styles/systems.css';
 
 export function getStaticPaths() {
   return Object.keys(projects).map((slug) => ({ params: { slug } }));
@@ -53,7 +55,15 @@ const notClaimed = p.notClaimed.split('·').map((s) => s.trim()).filter(Boolean)
    published "4 of 4 models aligned · 3 revised their position" and "13%" as
    plain fact, stripped of the caption that labels them canned data. The first
    body paragraph is the system's own description and carries no figures. */
-const desc = page.body[0].replace(/<[^>]+>/g, '').slice(0, 300);
+const desc = page.body[0]
+  .replace(/<[^>]+>/g, '')
+  /* Entities too: body[0] is authored for set:html, and Astro escapes the
+     attribute again — "Q&amp;A" was shipping as "Q&amp;amp;A" in the meta tag. */
+  .replace(/&amp;/g, '&')
+  .replace(/&ldquo;/g, '\u201c')
+  .replace(/&rdquo;/g, '\u201d')
+  .replace(/&rsquo;/g, '\u2019')
+  .slice(0, 300);
 ---
 
 <Layout
@@ -65,11 +75,19 @@ const desc = page.body[0].replace(/<[^>]+>/g, '').slice(0, 300);
     state={p.state}
   >
     <div class="plate-grid">
+      {/* Package B3. Plate 1 used to be a near-copy of the home plate: it repeated
+          body[0] and the proof line verbatim while LOSING the Gate line and the Not
+          claimed row (D77's recorded residual — "the first screen of the click buys
+          less than the plate it came from"). Now it renders body.slice(1) — the
+          material home defers — plus the two elements the click used to lose.
+          body[0] stays home-only; the meta description above still derives from it
+          in data. The record plate stays second: merging measured 1,082px against
+          the 900px viewport (D76), and the owner confirmed elements-up on 08-14. */}
       <div class="plate-copy">
         <h1 class="plate-title tight">{p.name}</h1>
         <p class="q">{p.q}</p>
-        {page.body.map((b) => <p set:html={b} />)}
-        <p class="proof" set:html={p.proof}></p>
+        {page.body.slice(1).map((b) => <p set:html={b} />)}
+        <p class="sys-gate"><span class="k">{p.gate.k}</span>{p.gate.v}</p>
         <div class="links">
           {p.links.map((l) => (
             <a href={l.href} target="_blank" rel="noopener">{l.label}</a>
@@ -87,6 +105,12 @@ const desc = page.body[0].replace(/<[^>]+>/g, '').slice(0, 300);
           label={`${slug}, counted`}
           items={p.strip}
         />
+        {/* The landing summary; the record plate keeps its Not-claimed column as
+            the comparison table — both on purpose, recorded in D80. */}
+        <dl class="sys-nc">
+          <dt>Not claimed</dt>
+          <dd>{p.notClaimed}</dd>
+        </dl>
       </figure>
     </div>
   </Plate>

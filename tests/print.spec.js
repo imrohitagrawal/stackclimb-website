@@ -19,11 +19,10 @@
 
 import { test, expect } from '@playwright/test';
 
-/* `overview` came off this list when that plate was removed: the four systems it
-   listed now carry their own Gate line, and the list said the same six things a
-   second time. The four project ids stay, so the /#citevyn assertion below is
-   untouched. */
-const PLATES = ['citevyn', 'quorum', 'saafsaans', 'narratwin', 'private', 'contact'];
+/* `overview` came off this list when that plate was removed, and returned with
+   package B, which restored the plate as an index — added back in the same
+   change, so the one new plate is not the one plate with no print proof. */
+const PLATES = ['overview', 'citevyn', 'quorum', 'saafsaans', 'narratwin', 'private', 'contact'];
 
 async function settle(page) {
   await page.waitForTimeout(3200); // past the ~3s smooth-scroll (DEF-21)

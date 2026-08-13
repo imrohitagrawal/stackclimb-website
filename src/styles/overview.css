@@ -116,10 +116,17 @@
   }
 
   /* WCAG 2.5.8: the rendered link was a 20px-tall inline target. Pad the hit
-     area without moving the layout. */
+     area without moving the layout — and move the underline from the border
+     (which the padding would drag 12px down, striking through the sentence
+     below: seen in the render) to a text-decoration, which follows the text. */
   .ov-name a {
     display: inline-block;
     padding: 12px 8px 12px 0;
     margin: -12px 0;
+    border-bottom: none;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
   }
 }

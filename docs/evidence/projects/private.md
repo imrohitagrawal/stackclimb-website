@@ -23,6 +23,35 @@ not itself a repository.
 | Application Python | **13,769 lines** | `find . -name '*.py'` excluding `.git`, `.venv`, `node_modules`, `__pycache__`, then `wc -l` |
 | Test functions | **388** | `grep -rh 'def test_' . --include='*.py'` excluding `.venv` |
 
+### CORRECTED at the same sha — package C re-audit, 2026-08-14
+
+Two independent read-only lenses plus a skeptic re-derived the table above on a `git archive`
+of `c3233de` and found the line count wrong **as a statement about the repository**:
+
+- **12,978 Python lines is the committed figure** (129 files). The 13,769 above reproduces
+  only in a working tree carrying two gitignored 791-line scripts the repository does not
+  hold. The label "Application Python" was also wrong for either number: **6,354 of the
+  12,978 lines are under `tests/`**. Site figure corrected to 12,978 in the same commit.
+- **388 test functions confirmed** — reproduces exactly. (`--collect-only` gives 426 after
+  parametrisation; different metric, never conflated — D79's retraction stands.)
+- **Gate semantics, precisely:** the regression gate's two tests are **alternatives — either
+  fires**. A metric falling more than 5 points absolute fails outright; smaller dips fail
+  only when a paired bootstrap 95% confidence interval (1,000 resamples, seed pinned to 42)
+  sits entirely below zero. `regression.py:31,35-42,143,169-170`; exit 1 via `gha/action.yml`
+  and `cli/main.py:131`. Copy must never join them with "and".
+- **The judge is itself on trial, and the repo discarded its own first result** — calibration
+  compares judge scores to human labels (kappa, PABAK, Spearman, MAE; undefined cases return
+  `None`, rendered as "NA with a reason", never zero — `calibration/agreement.py:1-21`), and
+  ADRs 0015/0017 record the first calibration run as illustrative-only (AI-seeded labels,
+  seven model fingerprints) whose κ ≈ 0.56 *"must not be quoted as the differentiator"*.
+- **The suite physically cannot spend money** — `--disable-socket` in `pyproject.toml:234`,
+  with `tests/test_socket_guard.py` existing solely to fail if the guard is removed; CI's
+  default judge is a deterministic fake stamped `model_id='fake'`.
+- **A cached score can never come from the wrong judge** — the cache key is a SHA-256 of the
+  8-tuple (prompt, response, contexts, rubric, model, model version, temperature, seed)
+  (`judge/cache.py:1-16`), so a rubric edit or model upgrade silently misses instead of
+  serving a stale verdict.
+
 Repository contains `ARCHITECTURE.md`, `migrations/`, `alembic.ini`, a `dashboard/`, `gha/`,
 and `docker-compose.obs.yml` — a real service with schema migrations, a UI and an observability
 stack, not a sketch.

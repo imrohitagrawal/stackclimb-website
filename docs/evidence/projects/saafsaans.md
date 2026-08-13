@@ -3,11 +3,67 @@
 A Delhi-NCR air-quality companion that scores *your* risk — age, condition, planned activity —
 rather than the city average, and answers questions with cited health guidance.
 
-**Measured 2026-08-11 at `667397a`** (committed 2026-08-10), tree
-`~/Projects/saaf-saans`. Live at `saafsaans.stackclimb.com` — answered HTTP 200 in **0.46s**.
+**Re-measured 2026-08-14 at `10f4213`** — `origin/master`, the published default branch. The
+2026-08-11 audit below measured `667397a`, which is one **unpushed commit ahead** of master on
+the feature branch `gate1a-window-true-at-the-hour` (`667397a^ = 10f4213`); W-1 pins the pass
+to master, so two figures moved backwards. Verified by two independent read-only lenses plus a
+skeptic re-derivation on a `git archive` of the pinned sha.
 
 > **Which tree.** `saaf-saans` is current. `saaf-saans-stable` is a frozen v1 snapshot
 > (`d73491`, 07-21). `saafsaans` without hyphens is a 200 KB docs-only stub — not code, ignore it.
+
+## Re-measured at `10f4213` — package C, 2026-08-14
+
+| Claim | Value at `10f4213` | Command |
+|---|---|---|
+| Test functions | **767** (was 771 at `667397a`) | `grep -rh 'def test_' tests --include='*.py' \| wc -l` |
+| Test Python | **16,072 lines — 193% of app** (was 16,199 / 194%) | `find tests -name '*.py' \| xargs wc -l` |
+| Application Python | **8,339 lines** — unchanged | `find saafsaans -name '*.py' \| xargs wc -l` |
+| Injection patterns | **39** — unchanged. Executed count; a raw grep of pattern-shaped lines gives 40 and is wrong | `python3 -c "from saafsaans.services import guard; print(len(guard.PATTERNS))"` |
+| Feeds | **21 entries, exactly 2 `None` (Ashok Vihar, Nehru Nagar), 19 live** — unchanged | `python3 -c "from saafsaans.services import waqi; print(len(waqi.FEED_MAP))"` |
+| Time-window defect | **Still present.** `best_window` reads only `clock.today_ist().month`; no code path reads the hour. The fix lives on the unmerged feature branch, not on master | `grep -n 'hour\|today_ist' saafsaans/services/forecast.py` |
+| Serialised eval artefact | **Still none.** No `reports/`, no eval JSON; the only ndjson is a Kibana dashboard export | `find . -type d -name reports` |
+
+### Correction — the proof line said "senior"; the persona is an adult
+
+The site's proof line read *"The senior with asthma scores 76."* Wrong: the default persona is
+age **Adult**, condition Asthma (`main.py:174-179`). Executed at the captured AQI 270:
+adult + asthma = **76** (Very High) · healthy adult, same plans = **64** · senior + asthma =
+**86** (Extreme). The entry's own alt text always said "adult with asthma" — the proof line
+contradicted it. Fixed in package C; command:
+`risk.compute_risk(270,'asthma','outdoor_exercise','adult')`.
+
+### VERIFIED — the competency vocabulary, each term confirmed in code
+
+- **Trilingual injection guard with NFKC + `Cf`-stripping and negation lookbehinds** —
+  `guard.py:381` normalises the *patterns*, `:387` the input, `:393` strips `Cf` (zero-width,
+  ZWJ, bidi); negation lookbehinds per language at `:108` (EN), `:205` (Devanagari), `:336`
+  (Hinglish). The guard was tuned against false positives: `:102-108` records *"do not ignore
+  your doctor's instructions is how a health app phrases its most important sentence"*, and
+  each narrowing carries the ordinary sentence that forced it (`:169-183`, `:333-343`).
+- **Two-ladder stricter-wins merge** — `llm.py:65` `_STRICTNESS`, `:384-386` the raise-only
+  merge. **Scope, precisely:** the merge lives on the deterministic path, which is what serves
+  in production (no API key is set, by design — `DEPLOY.md:77`: *"a public URL with an open
+  text box and a paid API key is an uncapped bill"*). On the paid path the floor reaches the
+  model as a prompt instruction, not a post-parse clamp — a MINOR limit, contained by the
+  key's deliberate absence. The site's wording ("both run, the stricter wins") is correct;
+  "overrides a generative output" would overclaim. The 08-11 section below saying
+  *"safety-monotonic composition guarantee"* is **superseded by this precision**.
+- **Three-state freshness threaded into the prompt** — `presenters.py:541` one predicate for
+  every surface; `llm.py:114-126` appends *"HELD READING, NOT CURRENT: describe it as an
+  earlier measurement, never as the air right now"* to the model's input.
+- **The risk band travels only as far as its freshness** — `main.py:846-866`: the band is
+  passed to the answer card only when a reading exists AND freshness is `live`; the 18-line
+  comment records the defect this closed (a maximum-severity instruction printed from an
+  assumed number the hero had already refused to show).
+
+### Phrasing that must NOT be used
+
+- *"Rate limits sized three orders apart"* — the repo's own comment (`ratelimit.py:44`) is
+  wrong; the true probe-to-ask ratio is **60×** (1,200 vs 20 per 5 minutes). REFUTED as copy.
+- The paid path is never described as clamped; production is never described as calling an LLM
+  (the deployed app answers every question from the deterministic path, and `/health` says
+  `"llm": false`).
 
 ---
 

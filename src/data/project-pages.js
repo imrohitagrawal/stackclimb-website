@@ -110,6 +110,17 @@ export const pages = {
         'rather than the city’s average, across a repo-stated 21 stations, and answers questions with ' +
         'cited health guidance. The Hindi draft ships behind a banner saying no Hindi speaker has ' +
         'reviewed it yet.',
+      /* Package C, plate 1's competency paragraph. Both lens findings verified by
+         command 2026-08-14 at 10f4213 (origin/master) — every clause traces to
+         docs/evidence/projects/saafsaans.md, "Re-measured at 10f4213" section.
+         The pattern count stays off this paragraph: the strip's Guard cell
+         carries it, and one fact on one plate appears once (DEF-27). */
+      'Every question passes a trilingual injection guard before anything else reads it — English, ' +
+        'Devanagari Hindi and Hinglish patterns, matched only after Unicode normalisation strips ' +
+        'invisible characters, with negation lookbehinds so &ldquo;do not ignore your ' +
+        'doctor&rsquo;s instructions&rdquo; is never flagged as an attack. It was tuned on the ' +
+        'sentences a health app must never refuse — each narrowing records the sentence that ' +
+        'forced it.',
       'Entered at <em>Build with AI</em> (Elastic × GDG Cloud New Delhi, 18 July 2026) as a four-tab ' +
         'Streamlit app that already existed, then rebuilt over the next three days into what runs today. ' +
         'It lives on one small machine that suspends when idle and wakes on request, so the first visit ' +
@@ -138,7 +149,21 @@ export const pages = {
       'Grounded walkthrough generation with citations, claim evaluation, consent checks, and release ' +
         'gates that run before anything is generated. Its own release-readiness review currently reads ' +
         'No-Go — so it is not deployed, and this page says so.',
-      'It is shown anyway, because the gate holding is the point.',
+      /* Package C, plate 1's competency paragraph — replaces the one-line
+         "It is shown anyway" sentence, whose job the first clause absorbs.
+         Both lens findings verified by command 2026-08-14 at a022862
+         (origin/main) — every clause traces to docs/evidence/projects/
+         narratwin.md, "Re-measured at a022862" section. The harness framing
+         leads BY RULE (the audit's "say it before an interviewer does",
+         recorded in D79): the grounding guarantees are proved against a mock
+         provider, and the copy says so where the techniques are named. */
+      'It is shown anyway, because the machinery is the point — and that machinery is proved ' +
+        'against a harness, not a model: no real language model is wired in yet, so every ' +
+        'guarantee here is about the system around one. The grounding check reads both directions ' +
+        'and fails closed — an answer with no checkable claims fails rather than passing empty. ' +
+        'Consent is bound by checksum to the exact evaluation it covers, and spends itself once ' +
+        'used. And nothing in the pipeline, the model included, has the authority to mark its own ' +
+        'output publishable; that denial is written as code, not policy.',
     ],
     record: {
       now: [
@@ -148,8 +173,11 @@ export const pages = {
       ],
       gaps: [
         'Its own release-readiness review reads <b>No-Go</b>, so it is not deployed',
-        'The evaluation report carries no tested commit SHA and predates current HEAD, so it does not ' +
-          'establish that today’s HEAD passes',
+        /* Reworded at a022862: the report was regenerated since the 08-11 audit
+           (its metric values changed), so "predates current HEAD" is no longer
+           demonstrably true — the gap that survives is SHA-absence. */
+        'The evaluation report carries no tested commit SHA, so its 41/41 pass cannot be tied to ' +
+          'any code state',
         'The eval-smoke result has never been committed; only the harness that produces it is in the repo',
         'Its architecture document still opens “blocked until Stage 4 gate approval”, and undersells the code',
       ],

@@ -29,9 +29,9 @@ One concern per file; no file over 200 lines. A parent indexes and links, it nev
 | `practice/` | Cross-cutting practice — skill library, cross-review, CI discipline, failure-driven engineering | 4 files written |
 | `projects/citevyn.md` | CiteVyn | **written 08-11**, measured at `df8cfc3` |
 | `projects/quorum-ai.md` | Quorum-AI | **written 08-11**, measured at `d3c860c` |
-| `projects/saafsaans.md` | SaafSaans | **written 08-11**, measured at `667397a` |
-| `projects/narratwin.md` | NarraTwin | **written 08-11**, measured at `639aa2c`; two reports unrecoverable |
-| `projects/private.md` | EvalAxis, Aegis Contracts | **written 08-11**; EvalAxis at `c3233de`, Aegis not cloned |
+| `projects/saafsaans.md` | SaafSaans | **re-measured 08-14 at `10f4213`** (origin/master); 08-11 section at `667397a` kept, superseded |
+| `projects/narratwin.md` | NarraTwin | **re-measured 08-14 at `a022862`** (origin/main); the 08-11 REFUTED table is inverted — see its correction section |
+| `projects/private.md` | EvalAxis, Aegis Contracts | **EvalAxis re-audited 08-14 at `c3233de`** — line figure corrected to 12,978; Aegis not cloned |
 
 `practice.md` at this level is a superseded pointer stub, kept so old links resolve.
 

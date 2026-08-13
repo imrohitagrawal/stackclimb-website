@@ -3,6 +3,11 @@
 Grounded multilingual walkthrough generation with citations, claim evaluation, consent checks
 and release gates that run before anything is generated.
 
+**Re-measured 2026-08-14 at `a022862`** — `origin/main`, per W-1 (read main, not what is
+checked out). The 08-11 audit below measured `639aa2c` on an issue-worktree branch. Verified
+by two independent read-only lenses plus a skeptic re-derivation on a `git archive` of the
+pinned sha.
+
 **Audited 2026-08-11.** Two trees are in play and it matters which a number came from:
 
 | Tree | HEAD | Role |
@@ -10,6 +15,56 @@ and release gates that run before anything is generated.
 | `narratwin-ai/narratwin-ai` | `2ce5731` (08-02) | main worktree; the auditor's reference |
 | `narratwin-ai/narratwin-ai-issue-415` | `639aa2c` (08-11) | current work; measured here for code counts |
 | `narratwin-ai-issue-368-google-runtime` | — | **deleted 08-11.** Held the only copies of two reports |
+
+## Re-measured at `a022862` — package C, 2026-08-14
+
+| Claim | Value at `a022862` | Command |
+|---|---|---|
+| Backend Python | **26,646 lines** (was 25,606 at `639aa2c`) | `find backend -name '*.py' -not -path '*__pycache__*' \| xargs wc -l` |
+| Test functions | **1,743** (was 1,668) | `grep -rh 'def test_' tests --include='*.py' \| wc -l` |
+| Test files | **83** (was 82) | `find tests -name 'test_*.py' \| wc -l` |
+| Languages · script classes · parity | **25 · 6 · 25/25 agree** — unchanged, same pinned hashes | `full-project-correctness-report.json` |
+| Release readiness | **Still No-Go** — `RELEASE_READINESS_REVIEW.md:10` reads it verbatim | `sed -n '10p' docs/RELEASE_READINESS_REVIEW.md` |
+| Architecture doc opener | **Unchanged** — `:9` still reads "blocked until Stage 4 gate approval" | `sed -n '9p' docs/ARCHITECTURE.md` |
+| Eval-smoke JSON | **Still never committed** | `ls reports/` |
+
+**Wording nuance:** one of the six "script classes" (`RTL`) is a writing-direction class, not
+a script. Site copy says "script classes" after the report's own key
+(`languageClassCoverage`); acceptable as the source's term, never to be expanded into a claim
+about six scripts.
+
+### CORRECTION — the REFUTED table below is now inverted
+
+At `a022862` the committed `docs/EVAL_REPORT.md` reads **answerRelevancy 0.9032258064516129**
+and **contextRecall 0.75** (faithfulness 1.0, contextPrecision 1.0, Checks 41/41) — the exact
+figures the REFUTED table below rejects as *"gone and unrecoverable"*. The report was
+regenerated and committed after the 08-11 audit. So: the 0.903/0.75 pair is now the committed
+value, and the 1.0/1.0 quartet is the stale claim. The REFUTED rows stay below as the exhibit
+(corrections stay; a mistake deleted is a mistake repeated), overruled by this section.
+The gap that survives is unchanged in substance and restated precisely: **the report still
+carries no tested commit SHA** (`grep -ni 'sha\|commit' docs/EVAL_REPORT.md` → nothing), so
+its passes cannot be tied to any code state. "Predates current HEAD" is no longer
+demonstrably true and must not be used.
+
+### VERIFIED — the competency vocabulary, each term confirmed in code
+
+- **No real language model is wired in** — `MockLLMProvider` concatenates first sentences;
+  precision: `litellm`/`openai` are **optional extras** in `pyproject.toml`, not plain
+  dependencies, and are imported nowhere; a test (`test_cut1_narration.py:796`) forbids
+  `import openai` outright. Every grounding guarantee is a guarantee about the harness.
+- **Bidirectional grounding, fail-closed** — `backend/app/rag/grounding.py:172`:
+  `"PASSED" if not unsupported_claims and total_count > 0 else "FAILED"` — an answer with
+  zero claims fails; forward pass `:48-113`, reverse pass `:115-135`.
+- **Consent bound by checksum, single-use** — `stage7.py:1681-1729`: a consent record whose
+  `source_evaluation_checksum` differs is rejected (422), and a used record
+  (`avatar_render_id is not None`) cannot authorise a second render.
+- **The model is denied reclassification authority** — `publication_boundary/contract.py:63-71`:
+  all four `*MayReclassify: False`, unknown class blocked, mixed class takes the most
+  restrictive label; `decision.py:112` voids an approval whose envelope SHA-256 digest moved;
+  a mutation test flips the authority to True and asserts rejection.
+- **The pass report carries the refusals** — the same pinned report lists nine languages as
+  `refused` (`priority2Refusals`: bn, ta, te, …), carried as planned-but-unsupported rather
+  than quietly absent.
 
 ---
 

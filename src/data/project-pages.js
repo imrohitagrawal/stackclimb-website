@@ -117,7 +117,7 @@ export const pages = {
          carries it, and one fact on one plate appears once (DEF-27). */
       'Every question passes a trilingual injection guard before anything else reads it — English, ' +
         'Devanagari Hindi and Hinglish patterns, matched only after Unicode normalisation strips ' +
-        'invisible characters, with negation-aware patterns so &ldquo;do not ignore your ' +
+        'invisible characters, with negation checks so &ldquo;do not ignore your ' +
         'doctor&rsquo;s instructions&rdquo; is never flagged as an attack. It was tuned on the ' +
         'sentences a health app must never refuse — each narrowing records the sentence that ' +
         'forced it.',

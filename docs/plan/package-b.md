@@ -131,5 +131,7 @@ disclosure and the group closes on its strongest-evidenced row.
 
 The hero strip reads `Systems built 4 of 6` while NarraTwin sits in *Being built*. Both are
 recorded decisions (D74's count; D57/D60's grouping). The row's state cell —
-`Phase 1 — No-Go · not deployed` — carries the reconciliation: built, and not usable yet.
+`Phase 1 — No-Go` (derived verbatim from `projects.js`; a review lens caught this paragraph
+first quoting a longer string that renders nowhere) — carries the reconciliation: built, and
+not usable yet.
 Not resolved here; flagged so it is a decision, not drift.

@@ -45,7 +45,9 @@
    absent figure leaves no hole — the line simply spans to the edge. */
 .ov-row {
   display: grid;
-  grid-template-columns: 11rem 13rem 1fr auto;
+  /* 15rem keeps the longest state ("Deployed — sleeps when idle") on one
+     line at 1440; the review fan measured it as the only two-line state. */
+  grid-template-columns: 11rem 15rem 1fr auto;
   gap: 0.2rem 1.4rem;
   align-items: baseline;
   padding: 0.62rem 0;
@@ -66,6 +68,9 @@
   text-decoration: none;
   border-bottom: 1px solid color-mix(in srgb, currentColor 45%, transparent);
   padding-bottom: 2px;
+  /* The chevron ::after must never wrap to a line of its own — measured on
+     the SaafSaans row at 390, where the state cell squeezed the name. */
+  white-space: nowrap;
 }
 
 .ov-name a:hover {
@@ -90,13 +95,16 @@
   font-size: 0.8rem;
   font-variant-numeric: tabular-nums;
   color: color-mix(in srgb, var(--bone) 72%, transparent);
-  white-space: nowrap;
+  /* No nowrap: measured at 1024, a nowrap figure held ~236px and squeezed
+     the sentence column to 3-4 wraps — the figure is the cell that gives
+     way, never the sentence (plan §6's rule, applied at every width). */
 }
 
-/* Stack below 900px: name+state share the first line, then the sentence,
-   then the figure. The figure is what gives way visually (smallest type),
-   never the state — plan §6. */
-@media (max-width: 900px) {
+/* Stacked rows: name+state share the first line, then the sentence, then the
+   figure. 1080, not 900: between 901 and 1080 the four-column grid leaves the
+   sentence ~15-25 characters a line (measured 1,235px plate at 950), the same
+   collapse D76 recorded for the horizontal bands at 1024. */
+@media (max-width: 1080px) {
   .ov-row {
     grid-template-columns: 1fr auto;
     gap: 0.15rem 0.9rem;
@@ -107,7 +115,11 @@
     grid-column: 1 / -1;
   }
 
-  .ov-fig {
-    white-space: normal;
+  /* WCAG 2.5.8: the rendered link was a 20px-tall inline target. Pad the hit
+     area without moving the layout. */
+  .ov-name a {
+    display: inline-block;
+    padding: 12px 8px 12px 0;
+    margin: -12px 0;
   }
 }

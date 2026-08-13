@@ -24,6 +24,11 @@ const AFTER = (el) => {
     mask: s.maskImage !== 'none' ? s.maskImage : s.webkitMaskImage,
     w: parseFloat(s.width) || 0,
     h: parseFloat(s.height) || 0,
+    /* A mask that is declared but not painted is no affordance: opacity:0 or
+       visibility:hidden left every other assertion green (found by the round-1
+       review fan injecting exactly that). */
+    opacity: parseFloat(s.opacity),
+    visibility: s.visibility,
     bgAlpha: (() => {
       const m = s.backgroundColor.match(/rgba?\(([^)]+)\)/);
       if (!m) return 0;
@@ -50,6 +55,8 @@ test('internal and external links carry different, visibly painted marks', async
     expect(m.w, `${name} mark box has zero width`).toBeGreaterThan(0);
     expect(m.h, `${name} mark box has zero height`).toBeGreaterThan(0);
     expect(m.bgAlpha, `${name} mark paints nothing`).toBeGreaterThan(0);
+    expect(m.opacity, `${name} mark is transparent`).toBeGreaterThan(0);
+    expect(m.visibility, `${name} mark is hidden`).toBe('visible');
   }
   expect(int.mask, 'internal and external marks are the same shape').not.toBe(ext.mask);
 });
@@ -62,5 +69,8 @@ test('overview row links carry the internal mark too', async ({ page }) => {
   expect(m.mask).toBeTruthy();
   expect(m.mask).not.toBe('none');
   expect(m.w).toBeGreaterThan(0);
+  expect(m.h).toBeGreaterThan(0);
   expect(m.bgAlpha).toBeGreaterThan(0);
+  expect(m.opacity).toBeGreaterThan(0);
+  expect(m.visibility).toBe('visible');
 });

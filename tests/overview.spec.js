@@ -54,8 +54,12 @@ test.describe('overview index', () => {
     const rows = await ov.locator('.ov-row').all();
     let figures = 0;
     for (const row of rows) {
-      const n = await row.locator('.ov-fig').count();
+      const figs = row.locator('.ov-fig');
+      const n = await figs.count();
       expect(n).toBeLessThanOrEqual(1);
+      // Rendered, not merely present — count() passes with display:none
+      // (found by the round-1 review fan injecting exactly that).
+      if (n) await expect(figs).toBeVisible();
       figures += n;
     }
     expect(figures).toBe(5); // four public systems + EvalAxis; Aegis has none

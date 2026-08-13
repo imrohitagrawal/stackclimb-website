@@ -50,6 +50,11 @@ for (const slug of Object.keys(projects)) {
       for (const b of banned) {
         for (const t of texts) {
           expect(t, `home-plate prose repeated on plate 1 of ${slug}`).not.toBe(b);
+          /* A word appended or a comma changed must not slip past exact
+             equality — gate a long stable prefix too (round-1 fan finding). */
+          expect(t, `home-plate prose (prefix) repeated on plate 1 of ${slug}`).not.toContain(
+            b.slice(0, 80),
+          );
         }
       }
       /* Partner assertion: the plate is not merely emptied — every system now

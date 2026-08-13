@@ -55,7 +55,15 @@ const notClaimed = p.notClaimed.split('·').map((s) => s.trim()).filter(Boolean)
    published "4 of 4 models aligned · 3 revised their position" and "13%" as
    plain fact, stripped of the caption that labels them canned data. The first
    body paragraph is the system's own description and carries no figures. */
-const desc = page.body[0].replace(/<[^>]+>/g, '').slice(0, 300);
+const desc = page.body[0]
+  .replace(/<[^>]+>/g, '')
+  /* Entities too: body[0] is authored for set:html, and Astro escapes the
+     attribute again — "Q&amp;A" was shipping as "Q&amp;amp;A" in the meta tag. */
+  .replace(/&amp;/g, '&')
+  .replace(/&ldquo;/g, '\u201c')
+  .replace(/&rdquo;/g, '\u201d')
+  .replace(/&rsquo;/g, '\u2019')
+  .slice(0, 300);
 ---
 
 <Layout

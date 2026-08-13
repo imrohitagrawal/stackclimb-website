@@ -9,66 +9,29 @@ pointer that imports this file; **edit rules here, not there.** Convention adopt
 Personal site of Rohit Agrawal at `stackclimb.com`. Astro 5, static output, deploying to
 Cloudflare Pages. Application subdomains stay on Fly.io.
 
-## ⚠ STANDING DEBT — deployment is running in a degraded mode
+## Deployment — approach C, live since 2026-08-14
 
-**Current: approach A′ — corrected 2026-08-09.** This paragraph used to read *"Cloudflare Pages
-auto-deploys every push to `main`. There is no gate between a push and production."* **That was
-wrong, and it was wrong in the safer direction.**
+**Deployment runs through CI.** A push to `main` triggers `gates.yml`'s `deploy` job, which
+`needs` both gate jobs, deploys with `wrangler pages deploy`, waits, and then runs
+`tests/post-deploy.mjs` against the live origin — because the deploy is not the check:
+wrangler once printed `Success` on a run that shipped a 404 (D71). A red gate cannot reach
+production, and a PR build never touches it.
 
-`npx wrangler pages project list` reports **`Git Provider: No`**. The Pages project is not
-connected to this repository and never has been. Nothing deploys on push. **Every deploy is a
-manual `wrangler pages deploy` run by a person or an agent.**
+Proved by execution, not assumed: run `31739608605` was the first time the deploy job RAN
+(it failed — a Pages-Edit-scoped token cannot enumerate accounts, fixed by passing
+`CLOUDFLARE_ACCOUNT_ID`); run `31740702420` then deployed and verified production green
+end-to-end, independently re-verified with `npm run post-deploy`, a direct check of every
+route, and the barred-claim sweep on the live pages.
 
-Two consequences, and they point opposite ways:
+Manual `wrangler pages deploy` still works and remains the break-glass path; the default is
+merge → CI deploys. Definition-of-Done item 7 (post-deploy green) now runs inside the deploy
+job itself, and still applies to any manual deploy.
 
-- **The risk was overstated.** There *is* a gate between a push and production: somebody has to
-  run the command. A bad merge does not reach visitors on its own.
-- **The drift was understated, and nobody was watching for it.** Because nothing deploys
-  automatically, `main` and production silently diverge. Found by measurement, not by the
-  ledger: the live site was serving commit `7ec8c24` while `main` stood six commits ahead of it.
-  A ledger that says the site auto-deploys is a ledger nobody thinks to check against.
-
-**Approach C is therefore closer than this notice implied.** There is no auto-deploy to remove —
-only a deploy step to add to CI, plus a check that fails when production is behind `main`.
-
-Manual deploy was chosen deliberately, to ship. It is temporary. **Target: approach C** —
-deployment runs *through* CI, so nothing reaches production without passing the gates, and
-nothing sits merged-but-undeployed without something saying so.
-
-**The exit condition, written here so it cannot be lost:**
-
-| Must be true before switching to C | Status |
-|---|---|
-| The 7 tests that cannot fail are repaired (DEF-11 … DEF-17) | **done 08-09** — DEF-12 refuted, five fixed by mutation-proved gates, DEF-17 pinned |
-| The suite builds before it tests (DEF-11) | **done 08-09** — CI since gates.yml:94; local via playwright.config webServer |
-| Contrast passes on all 7 plates, both viewports (DEF-5, DEF-18) | **done** — DEF-5 fixed 08-08 (18/18 both viewports), DEF-18 moot; enforced since DEF-44 made the seam gate exit non-zero |
-| CI workflow exists and has been green at least once | **done 08-09** — push run `31276450288` green, and the PR path fixed after DEF-39 |
-| Branch protection requires that check | **done 08-11** — both gate jobs required on `main`, `enforce_admins` on, force-pushes and deletions blocked. **Tested, not assumed:** a direct push was accepted while `enforce_admins` was false and rejected with `GH006` once it was on |
-
-**Every row above now reads done, as of 2026-08-11.** The framing must change with it: approach A′
-is **no longer blocked — it is simply not migrated.** `npx wrangler pages project list` still
-reports `Git Provider: No`, and `grep -rniE 'wrangler|deploy' .github/workflows/` returns **zero
-matches**: no workflow has a deploy step. The exit condition was the hard part and it is met;
-what remains is the work.
-
-One new guard against the drift this notice was written about: `tests/post-deploy.mjs` (D71) is
-the first check in this repo that looks at production, and Definition-of-Done item 7 requires it
-green after any deploy. It exists because a `wrangler pages deploy` printed `Success` and shipped
-a 404.
-
-**The migration is written.** `gates.yml` now carries a `deploy` job that `needs` both gate jobs
-and runs only on a push to `main` — so a red gate cannot reach production and a PR build never
-touches it. It deploys, waits, then runs `tests/post-deploy.mjs` against the live origin, because
-the deploy is not the check: wrangler printed `Success` on the run that shipped a 404.
-
-**It is blocked on exactly one thing: a `CLOUDFLARE_API_TOKEN` repository secret**, scoped to
-*Cloudflare Pages — Edit*. Until it exists the job **skips loudly** — a `::warning::` and a run-summary
-line saying production was not updated — rather than failing, so the absence is visible instead of
-being mistaken for success. Add it at *Settings → Secrets and variables → Actions*, and approach C
-is live with no further code change.
-
-**Say this out loud at the start of any deployment-related work**, until that secret exists and a
-deploy has actually run through CI. A temporary state nobody mentions becomes the permanent state.
+**History.** This section was the repo's standing debt from 2026-08-08 to 2026-08-14 —
+manual-only deploys, `main` and production silently diverging (once measured six commits
+apart), and an exit-condition table that was met on 08-11 but not acted on until the
+`CLOUDFLARE_API_TOKEN` secret existed. The full record: `docs/STATUS.md` rows D71, D75,
+D78, D81, and directive I-5 in `docs/OWNER-DIRECTIVES.md`.
 
 ## Non-negotiable: disagree before you comply
 

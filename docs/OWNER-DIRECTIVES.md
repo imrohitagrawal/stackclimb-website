@@ -85,7 +85,7 @@ forgotten and later recovered — kept visible on purpose).
 | ~~I-2~~ | Repo public after removing playbook language | **CLOSED 08-11 — refuted.** `gh repo view --json visibility` returns `PUBLIC`, and it has been since **08-09** (D53, which also records the history rewrite and the gitleaks sweep that gated it). This row still said the owner must run the command. **`docs/STATUS.md` struck row O2 for this exact staleness on 08-11; this register was not backfilled**, so the same wrong claim survived in a second file for two more days |
 | I-3 | Alignment regression testing — a toggle that drifts must fail | OPEN | Plan phase 1.4 |
 | I-4 | Memory management across projects, using dreaming | OPEN | Plan phase 7.2 |
-| **I-5** | **Deploy via A now, move to C once the gates work — and keep saying so until then** | **OPEN — standing debt** | Standing notice at the top of `AGENTS.md`, exit condition in a table |
+| **I-5** | **Deploy via A now, move to C once the gates work — and keep saying so until then** | **DONE 2026-08-14 — approach C live, proved by execution.** Owner added `CLOUDFLARE_API_TOKEN`; the first job run failed on account enumeration (fixed by `CLOUDFLARE_ACCOUNT_ID`, PR #22); run `31740702420` then deployed and verified production through CI, independently re-verified (post-deploy, every route, barred-claim sweep). The standing notice in `AGENTS.md` is rewritten as resolved, history kept | `AGENTS.md` deployment section · D81 |
 
 ---
 

@@ -29,9 +29,10 @@ Two independent read-only lenses plus a skeptic re-derived the table above on a 
 of `c3233de` and found the line count wrong **as a statement about the repository**:
 
 - **12,978 Python lines is the committed figure** (129 files). The 13,769 above reproduces
-  only in a working tree carrying two gitignored 791-line scripts the repository does not
-  hold. The label "Application Python" was also wrong for either number: **6,354 of the
-  12,978 lines are under `tests/`**. Site figure corrected to 12,978 in the same commit.
+  only in a working tree carrying two gitignored scripts totalling 791 lines (364 + 427)
+  that the repository does not hold. The label "Application Python" was also wrong for
+  either number: **6,354 of the 12,978 lines are under `tests/`**. Site figure corrected
+  to 12,978 in the same commit.
 - **388 test functions confirmed** — reproduces exactly. (`--collect-only` gives 426 after
   parametrisation; different metric, never conflated — D79's retraction stands.)
 - **Gate semantics, precisely:** the regression gate's two tests are **alternatives — either

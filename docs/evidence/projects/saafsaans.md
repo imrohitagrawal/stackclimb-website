@@ -27,7 +27,7 @@ skeptic re-derivation on a `git archive` of the pinned sha.
 ### Correction — the proof line said "senior"; the persona is an adult
 
 The site's proof line read *"The senior with asthma scores 76."* Wrong: the default persona is
-age **Adult**, condition Asthma (`main.py:174-179`). Executed at the captured AQI 270:
+age **Adult**, condition Asthma (`saafsaans/web/main.py:174-179`). Executed at the captured AQI 270:
 adult + asthma = **76** (Very High) · healthy adult, same plans = **64** · senior + asthma =
 **86** (Extreme). The entry's own alt text always said "adult with asthma" — the proof line
 contradicted it. Fixed in package C; command:
@@ -52,7 +52,7 @@ contradicted it. Fixed in package C; command:
 - **Three-state freshness threaded into the prompt** — `presenters.py:541` one predicate for
   every surface; `llm.py:114-126` appends *"HELD READING, NOT CURRENT: describe it as an
   earlier measurement, never as the air right now"* to the model's input.
-- **The risk band travels only as far as its freshness** — `main.py:846-866`: the band is
+- **The risk band travels only as far as its freshness** — `saafsaans/web/main.py:846-866`: the band is
   passed to the answer card only when a reading exists AND freshness is `live`; the 18-line
   comment records the defect this closed (a maximum-severity instruction printed from an
   assumed number the hero had already refused to show).

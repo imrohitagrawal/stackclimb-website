@@ -7,8 +7,8 @@
  *
  * EvalAxis's figure traces to docs/evidence/projects/private.md (the package-C
  * re-audit section), measured at sibling commit c3233de: 12,978 committed
- * Python lines — the earlier 13,769 counted two gitignored 791-line scripts
- * the repository does not carry — and 388 `def test_` functions
+ * Python lines — the earlier 13,769 counted two gitignored scripts totalling
+ * 791 lines (364 + 427) the repository does not carry — and 388 `def test_` functions
  * (`--collect-only` gives 426 after parametrisation — a different metric,
  * deliberately not quoted here).
  * Aegis carries no figure: nothing is built, and a figure would be invented.

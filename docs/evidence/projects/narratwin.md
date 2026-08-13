@@ -26,7 +26,7 @@ pinned sha.
 | Languages · script classes · parity | **25 · 6 · 25/25 agree** — unchanged, same pinned hashes | `full-project-correctness-report.json` |
 | Release readiness | **Still No-Go** — `RELEASE_READINESS_REVIEW.md:10` reads it verbatim | `sed -n '10p' docs/RELEASE_READINESS_REVIEW.md` |
 | Architecture doc opener | **Unchanged** — `:9` still reads "blocked until Stage 4 gate approval" | `sed -n '9p' docs/ARCHITECTURE.md` |
-| Eval-smoke JSON | **Still never committed** | `ls reports/` |
+| Eval-smoke JSON | **Still never committed** | `ls reports/eval-smoke/` → no such directory |
 
 **Wording nuance:** one of the six "script classes" (`RTL`) is a writing-direction class, not
 a script. Site copy says "script classes" after the report's own key
@@ -50,15 +50,15 @@ demonstrably true and must not be used.
 
 - **No real language model is wired in** — `MockLLMProvider` concatenates first sentences;
   precision: `litellm`/`openai` are **optional extras** in `pyproject.toml`, not plain
-  dependencies, and are imported nowhere; a test (`test_cut1_narration.py:796`) forbids
+  dependencies, and are imported nowhere; a test (`tests/unit/test_cut1_narration.py:796`) forbids
   `import openai` outright. Every grounding guarantee is a guarantee about the harness.
 - **Bidirectional grounding, fail-closed** — `backend/app/rag/grounding.py:172`:
   `"PASSED" if not unsupported_claims and total_count > 0 else "FAILED"` — an answer with
   zero claims fails; forward pass `:48-113`, reverse pass `:115-135`.
-- **Consent bound by checksum, single-use** — `stage7.py:1681-1729`: a consent record whose
+- **Consent bound by checksum, single-use** — `backend/app/stage7.py:1681-1729`: a consent record whose
   `source_evaluation_checksum` differs is rejected (422), and a used record
   (`avatar_render_id is not None`) cannot authorise a second render.
-- **The model is denied reclassification authority** — `publication_boundary/contract.py:63-71`:
+- **The model is denied reclassification authority** — `scripts/quality/publication_boundary/contract.py:63-71`:
   all four `*MayReclassify: False`, unknown class blocked, mixed class takes the most
   restrictive label; `decision.py:112` voids an approval whose envelope SHA-256 digest moved;
   a mutation test flips the authority to True and asserts rejection.

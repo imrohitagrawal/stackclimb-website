@@ -117,7 +117,7 @@ export const pages = {
          carries it, and one fact on one plate appears once (DEF-27). */
       'Every question passes a trilingual injection guard before anything else reads it — English, ' +
         'Devanagari Hindi and Hinglish patterns, matched only after Unicode normalisation strips ' +
-        'invisible characters, with negation lookbehinds so &ldquo;do not ignore your ' +
+        'invisible characters, with negation-aware patterns so &ldquo;do not ignore your ' +
         'doctor&rsquo;s instructions&rdquo; is never flagged as an attack. It was tuned on the ' +
         'sentences a health app must never refuse — each narrowing records the sentence that ' +
         'forced it.',
@@ -161,8 +161,8 @@ export const pages = {
         'against a harness, not a model: no real language model is wired in yet, so every ' +
         'guarantee here is about the system around one. The grounding check reads both directions ' +
         'and fails closed — an answer with no checkable claims fails rather than passing empty. ' +
-        'Consent is bound by checksum to the exact evaluation it covers, and spends itself once ' +
-        'used. And nothing in the pipeline, the model included, has the authority to mark its own ' +
+        'Consent is bound by checksum — a fingerprint of the exact evaluation it covers — and ' +
+        'spends itself once used. And nothing in the pipeline, the model included, has the authority to mark its own ' +
         'output publishable; that denial is written as code, not policy.',
     ],
     record: {
@@ -177,7 +177,7 @@ export const pages = {
            (its metric values changed), so "predates current HEAD" is no longer
            demonstrably true — the gap that survives is SHA-absence. */
         'The evaluation report carries no tested commit SHA, so its 41/41 pass cannot be tied to ' +
-          'any code state',
+          'any code state — the committed harness can re-produce it at any pinned commit',
         'The eval-smoke result has never been committed; only the harness that produces it is in the repo',
         'Its architecture document still opens “blocked until Stage 4 gate approval”, and undersells the code',
       ],

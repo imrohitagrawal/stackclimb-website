@@ -203,6 +203,25 @@ test.describe('hero entrance — 4B', () => {
     }
   });
 
+  test('anchor deep-link: no-anim suppresses the entrance while it holds', async ({ page }) => {
+    // The [data-motion=off]/no-anim CSS matters when a suppressor coexists
+    // with hero-anim — which happens on every #hash landing: plates.js sets
+    // html.no-anim for ~400ms while the head script has already set
+    // hero-anim. Deleting those selectors turns this red (watched: the
+    // toggle-preset test could not see them deleted, M4).
+    await page.goto('/#contact', { waitUntil: 'domcontentloaded' });
+    const state = await page.evaluate(() => ({
+      noAnim: document.documentElement.classList.contains('no-anim'),
+      heroAnim: document.documentElement.classList.contains('hero-anim'),
+      anim: getComputedStyle(document.querySelector('.hero .hero-ledger')).animationName,
+    }));
+    // Partner: the window must actually have been observed — no-anim holds
+    // for ~400ms after the pre-paint scripts, far longer than DCL-to-here.
+    expect(state.noAnim, 'no-anim window missed — test observed nothing').toBe(true);
+    expect(state.heroAnim).toBe(true);
+    expect(state.anim, 'entrance must hold still during an anchor jump').toBe('none');
+  });
+
   test('persisted toggle-off: hero-anim never set, elements visible', async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem('motion', 'off'));
     await page.goto('/', { waitUntil: 'networkidle' });

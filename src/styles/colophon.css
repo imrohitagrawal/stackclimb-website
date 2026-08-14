@@ -50,8 +50,13 @@
     padding-inline: calc(clamp(1.75rem, 4vw, 4rem) + 1px);
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 2rem;
+    /* No justify-content: the defn's flex-grow keeps the row full at every
+       width the 1240px frame cap allows (736px defn max + ~414px group +
+       gap > 1123px content max), so space-between was dead code — its
+       flex-start mutation left all 8 assertions green. Removed per the D85
+       proven-dead precedent. Right-flushness is owned by the defn's grow:
+       the no-grow mutation turns the spec's right-flush assertion red. */
   }
   /* The defn wraps at mid widths instead of jamming the row — 46rem defn
      plus the nowrap legal group exceeds the content width below ~1250px

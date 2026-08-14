@@ -6,9 +6,12 @@
 // WHICH CHANGE TURNS EACH RED (all watched, per the repo rule; the full
 // mutation ledger lives in docs/STATUS.md row D86):
 //   one-row @1440      — delete .colophon-row's display:flex (stack returns)
-//   right-flush @1440  — justify-content: space-between → flex-start (the
-//                        overlap checks alone survive that mutation — fan
-//                        finding; this assertion exists to bite it)
+//   right-flush @1440  — .colophon-defn flex-grow removed (flex: 0 1 auto):
+//                        free space then packs after the legal group and it
+//                        leaves the right edge. (The fan's justify-content
+//                        mutation proved INERT — the grow keeps the row full
+//                        at every width the 1240px frame cap allows, so
+//                        space-between was dead code and was removed.)
 //   alignment @both    — delete .colophon-row's width/margin/padding (the
 //                        frame-geometry replication; the plate's outer
 //                        padding alone misses by 94.6px at 1440)

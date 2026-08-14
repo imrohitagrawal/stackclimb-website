@@ -27,8 +27,11 @@
    below is belt-and-braces for a preference that flips after load. ---------- */
 
 @keyframes hero-rise {
+  /* No opacity in `to`: it interpolates to each element's OWN resting value,
+     so the quote lands on its designed 0.85 instead of being pinned at 1 by
+     the fill (built-fan finding). */
   from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: none; }
+  to { transform: none; }
 }
 
 html.hero-anim .hero .hero-ledger { animation: hero-rise 0.5s var(--ease-out) 0.08s both; }

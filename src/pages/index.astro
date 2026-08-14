@@ -125,12 +125,12 @@ import '../styles/systems.css';
           of real counted figures — the first thing read is evidence, not
           a "no." */}
       <div class="plate-figure">
-        {/* 4B: the thesis leads and paints instantly (it is the message);
-            the quote is subordinated beneath it. Strip keeps D82's whole
-            population (6/4/2) and drops the two tokens a cold reader cannot
-            parse (RCA-002 ruling 6); the strip's accessible name IS the
-            painted thesis line — they cannot diverge. */}
-        <p id="hero-thesis" class="hero-thesis">{thesis}</p>
+        {/* 4B: the thesis leads, paints instantly, and IS the strip's
+            accessible name (they cannot diverge); the quote is subordinated.
+            Strip keeps D82's population, drops the two unparseable tokens. */}
+        <p id="hero-thesis" class="hero-thesis">
+          {thesis.split('. ').map((s, n, a) => <span class="ts">{n < a.length - 1 ? s + '. ' : s}</span>)}
+        </p>
         <p class="hero-quote">
           "If your AI features work in the demo and not in the release, we should talk."
         </p>

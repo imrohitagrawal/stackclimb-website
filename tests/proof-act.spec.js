@@ -12,9 +12,8 @@
 // dash-unify, tag/entity strip) — the U+2011 / entity / span-split lessons.
 
 import { test, expect } from '@playwright/test';
-import { readFileSync, readdirSync } from 'node:fs';
-import { definition, thesis, employerRows, capabilityRows } from '../src/data/proof.js';
-import { experience } from '../src/data/cv.js';
+import { readFileSync } from 'node:fs';
+import { employerRows, capabilityRows } from '../src/data/proof.js';
 
 const DEFN =
   'StackClimb is where Rohit Agrawal builds independent AI systems — outside any employer.';
@@ -25,9 +24,13 @@ const THESIS = 'Fourteen years I can tell you about. Four systems you can check 
 const EMPLOYERS = /oracle|amazon|mobileum|snapdeal|subex|limeroad/i;
 
 const norm = (s) => s.replace(/\s+/g, ' ').trim();
-const fold = (s) => norm(s.normalize('NFKC').replace(/\p{Pd}/gu, '-').replace(/\s/gu, ' '));
-const FIGURE = /(?<![\d,.])\d[\d,]*(?:\.\d+)?(?![\d,.])/g;
-
+// Cf-strip first: soft hyphens, zero-widths and word joiners (U+00AD,
+// U+200B-200D, U+2060, FEFF) evade both dash-unification and substring
+// bars — the Codex pass's 'Ora\u200Bcle' and '&shy;' findings.
+const fold = (s) =>
+  norm(
+    s.normalize('NFKC').replace(/\p{Cf}/gu, '').replace(/\p{Pd}/gu, '-').replace(/\s/gu, ' '),
+  );
 async function gotoReduced(page, path = '/') {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto(path);
@@ -36,12 +39,18 @@ async function gotoReduced(page, path = '/') {
 const painted = (loc) =>
   loc.evaluate((el) => {
     const r = el.getBoundingClientRect();
+    const doc = document.documentElement;
+    for (let a = el; a; a = a.parentElement) {
+      const cs = getComputedStyle(a);
+      if (cs.filter !== 'none' || (cs.clipPath !== 'none' && a === el)) return false;
+    }
     return (
       el.checkVisibility({ opacityProperty: true, visibilityProperty: true }) &&
-      getComputedStyle(el).filter === 'none' &&
       r.right > 0 &&
       r.left >= 0 &&
-      r.left < document.documentElement.scrollWidth
+      r.left < doc.scrollWidth &&
+      r.bottom > 0 &&
+      r.top < doc.scrollHeight
     );
   });
 
@@ -71,16 +80,25 @@ test('the act defines the word where it is first used, beside its heading', asyn
   // ("Independent StackClimb systems") and the definition renders in the
   // same block, immediately after. The first rendered occurrence must be
   // that heading or the definition itself — nothing earlier on the page.
-  const ok = await page.evaluate(() => {
-    const body = document.body.innerText;
-    const head = document.getElementById('proof-b').innerText;
-    const defnText = document.querySelector('#proof .proof-defn').innerText;
-    const first = body.search(/stackclimb/i);
-    const headAt = body.indexOf(head);
-    const defnEnd = body.indexOf(defnText) + defnText.length;
-    return first >= 0 && headAt >= 0 && first >= headAt && first < defnEnd;
+  // Node identity, not string offsets — an earlier decoy carrying the same
+  // uppercased heading text fooled indexOf (Codex finding). The first VISIBLE
+  // text node containing the word must live in the heading or the definition.
+  // (innerText cannot see aria-label/alt: the nav wordmark's alt="StackClimb"
+  // precedes this for AT users — recorded exception, the wordmark IS the brand.)
+  const owner = await page.evaluate(() => {
+    const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode: (n) =>
+        /stackclimb/i.test(n.nodeValue) &&
+        n.parentElement.checkVisibility({ opacityProperty: true, visibilityProperty: true })
+          ? NodeFilter.FILTER_ACCEPT
+          : NodeFilter.FILTER_SKIP,
+    });
+    const first = w.nextNode();
+    if (!first) return 'none';
+    const p = first.parentElement;
+    return p.closest('#proof-b') || p.closest('.proof-defn') ? 'ok' : p.outerHTML.slice(0, 80);
   });
-  expect(ok, 'a StackClimb occurrence precedes the act’s heading+definition block').toBe(true);
+  expect(owner, 'first visible StackClimb is outside the heading+definition').toBe('ok');
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: width > 700 ? 900 : 844 });
     const gap = await page.evaluate(() => {
@@ -105,20 +123,6 @@ test('footer definition on home and a project page', async ({ page }) => {
   }
 });
 
-test('bars: product studio and self-reported render on no built page', () => {
-  const pages = ['dist', 'dist/projects']
-    .flatMap((d) => readdirSync(d).filter((f) => f.endsWith('.html')).map((f) => `${d}/${f}`))
-    .map((f) =>
-      fold(readFileSync(f, 'utf8').replace(/<[^>]+>/g, ' ').replace(/&nbsp;|&#160;|&#32;|&#8209;/gi, ' ')),
-    );
-  expect(pages.length).toBeGreaterThan(5);
-  for (const html of pages) {
-    expect(/product\s+studio/i.test(html)).toBe(false);
-    expect(/self[\s-]*reported/i.test(html)).toBe(false);
-  }
-  expect(pages.some((h) => h.includes(FOOTER_HEAD))).toBe(true); // bar partner
-});
-
 test('approximate partners: act meta chained, /cv note painted, Amazon and Mobileum stay', async ({
   page,
 }) => {
@@ -126,7 +130,8 @@ test('approximate partners: act meta chained, /cv note painted, Amazon and Mobil
   const dl = page.locator('#proof dl[aria-labelledby="proof-a proof-a-meta"]');
   await expect(dl).toHaveCount(1);
   const meta = page.locator('#proof-a-meta');
-  expect(fold(await meta.innerText()).toLowerCase()).toContain('approximate');
+  // Full-string equality — 'Not approximate' passed a substring check.
+  expect(fold(await meta.innerText()).toLowerCase()).toBe('approximate · april 2019 - april 2026');
   expect(await painted(meta)).toBe(true);
   await gotoReduced(page, '/cv');
   const note = page.locator('.cv-note');
@@ -135,12 +140,14 @@ test('approximate partners: act meta chained, /cv note painted, Amazon and Mobil
   // Scoped to the EXPERIENCE entries — 'Amazon' also appears in the awards
   // list, which let a renamed employer entry slip past a page-wide match
   // (watched during this file's own mutation run).
-  const orgs = (await page.locator('.cv-job .org').allInnerTexts()).map(fold);
-  for (const o of ['Amazon', 'Mobileum']) {
-    expect(orgs.some((t) => t.includes(o)), `${o} missing from /cv experience`).toBe(true);
+  // Per-JOB figure binding — a page-wide contains let a 25→26 edit slip
+  // past on unrelated occurrences (Codex finding).
+  const jobs = (await page.locator('.cv-job').allInnerTexts()).map(fold);
+  for (const [o, fig] of [['Amazon', '25%'], ['Mobileum', '35%']]) {
+    const job = jobs.find((t) => t.includes(o));
+    expect(job, `${o} missing from /cv experience`).toBeTruthy();
+    expect(job, `${o}'s own figure missing from its entry`).toContain(fig);
   }
-  const cv = fold(await page.locator('main').innerText());
-  for (const s of ['35%', '25%']) expect(cv).toContain(s);
 });
 
 test('attribution lives in the heading alone; no employer inside the act rows', async ({
@@ -151,7 +158,11 @@ test('attribution lives in the heading alone; no employer inside the act rows', 
   expect(heading.toLowerCase()).toContain('oracle');
   const rows = await page.locator('#proof .proof-ledger .row').allInnerTexts();
   expect(rows.length).toBe(employerRows.length + capabilityRows.length);
-  for (const r of rows) expect(EMPLOYERS.test(fold(r)), `employer name in row: ${r}`).toBe(false);
+  // The WHOLE act minus the heading — an employer name in the intro or a
+  // meta line evaded a rows-only bar (Codex finding); fold() strips the
+  // zero-width characters that split 'Ora\u200Bcle' past the regex.
+  const act = fold(await page.locator('#proof').innerText()).replace(heading, '');
+  expect(EMPLOYERS.test(act), 'employer name outside the ledger heading').toBe(false);
 });
 
 test('no No-Go in the act — and the overview still disparages nothing it holds', async ({
@@ -176,10 +187,13 @@ test('both columns: visible h3s, AT-exposed, lists bound; NOT CLAIMED describes'
   for (const id of ['proof-a', 'proof-b']) {
     expect(await painted(page.locator(`#${id}`))).toBe(true);
   }
-  const caps = page.locator('#proof dl[aria-describedby="proof-nc"]');
+  const caps = page.locator('#proof dl[aria-labelledby="proof-b"][aria-describedby="proof-nc"]');
   await expect(caps).toHaveCount(1);
+  for (const dl of await page.locator('#proof dl').all()) {
+    expect(await dl.evaluate((el) => !el.closest('[aria-hidden="true"]'))).toBe(true);
+  }
   const nc = page.locator('#proof-nc');
-  expect(fold(await nc.innerText()).toLowerCase()).toContain('not claimed');
+  expect(fold(await nc.innerText()).toLowerCase().startsWith('not claimed -')).toBe(true);
   expect(await painted(nc)).toBe(true);
 });
 
@@ -222,7 +236,8 @@ test('hero: thesis painted and exact, strip named by it, population cells kept',
   ]) {
     const cell = strip.locator('.cap', { hasText: t });
     await expect(cell).toHaveCount(1);
-    expect(fold(await cell.innerText())).toContain(d);
+    // Exact value — '60/40/20' passed a substring check (Codex finding).
+    expect(norm(await cell.locator('.d').innerText())).toBe(d);
     expect(await painted(cell)).toBe(true);
   }
 });

@@ -300,6 +300,11 @@ body::before {
   max-width: 30ch;
   margin: 0 0 0.8rem;
 }
+/* One sentence per line on a phone — 'about.' dangled mid-line at 390
+   (built-fan finding; the amendment requires the sentence break). */
+@media (max-width: 900px) {
+  .hero-thesis .ts { display: block; }
+}
 
 .hero h1 {
   font-family: var(--serif);

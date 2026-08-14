@@ -55,13 +55,27 @@ test('every employer figure is bound to its own bullet inside its own cv.js job'
       .filter(Boolean)
       .flatMap((m) => m.slice(1));
     expect(captured.length, `${r.t}: no ${r.job} point matches ${r.point}`).toBeGreaterThan(0);
+    // The LABEL must describe the bullet it binds — 'Customer churn' over a
+    // flaky-tests regex passed every figure check (R-7 recovery hole 1).
+    // Every content word of the label appears in the matched bullet.
+    const bullet = fold(job.points.find((p) => r.point.test(p))).toLowerCase();
+    for (const w of fold(r.t).toLowerCase().split(/\s+/).filter((x) => !['in', 'of', 'the'].includes(x))) {
+      expect(bullet, `${r.t}: label word '${w}' not in its own bullet`).toMatch(
+        new RegExp(`\\b${w}`),
+      );
+    }
     const rowFigs = r.d.match(FIGURE) || [];
     expect([...new Set(captured)], `${r.t}: row figures ≠ captured`).toEqual(rowFigs);
     expect(rowFigs).toEqual(r.figures);
-    // Polarity bar. Widened by the plan fan: bare 'more' — '~25% more' —
-    // matched nothing in the old /more effort/ alternation, so the promised
-    // red was a green (four lenses independently; watched red after).
-    expect(fold(r.d).toLowerCase()).not.toMatch(/slower|\bmore\b|worse|higher/);
+    // UNITS: every figure keeps its percent sign — '65 defects → 95
+    // defects' sailed past the figure equality (R-7 recovery hole 2).
+    for (const f of r.figures) expect(r.d, `${r.t}: ${f} lost its %`).toContain(`${f}%`);
+    // Direction: an ALLOWLIST beside the denylist — 'additional effort'
+    // reversed the outcome past the denylist (R-7 recovery hole 3); every
+    // row must carry a positive-direction token, so a reworded direction
+    // forces a conscious look here.
+    expect(fold(r.d).toLowerCase()).toMatch(/less|fewer|faster|→|->/);
+    expect(fold(r.d).toLowerCase()).not.toMatch(/slower|\bmore\b|worse|higher|additional|extra/);
     expect(EMPLOYERS.test(r.t + ' ' + r.d), `${r.t}: employer name inside a row`).toBe(false);
   }
 });

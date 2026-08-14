@@ -15,9 +15,11 @@
 //   alignment @both    — delete .colophon-row's width/margin/padding (the
 //                        frame-geometry replication; the plate's outer
 //                        padding alone misses by 94.6px at 1440)
-//   no-jam @1024       — refix the defn at 46rem (flex: 0 0 46rem — the
-//                        unamended plan's exact defect, confirmed at six
-//                        widths by the plan fan)
+//   no-jam @1024       — gap: 2rem → 0 (the grown defn's edge then touches
+//                        the group; watched red exactly here). The unamended
+//                        plan's 46rem refix goes red too, but at 1440's
+//                        right-flush — no-shrink items overflow with the flex
+//                        gap intact, so THIS assertion needs the gap switch.
 //   stacked @390       — media (min-width: 901px) → (min-width: 0)
 //   painted partners   — opacity: 0 on .colophon (geometry without paint
 //                        certifies an invisible footer)

@@ -1,33 +1,15 @@
 // The two-ledger act (#proof) — package 4, D57 act 01, D60 as amended by D62.
 //
-// Hardened after the R-7 Codex pass (14 holes) and the built-result fan (18
-// confirmed) — the contact.spec.js lesson repeating on a new file. Mutation
-// record lives in docs/STATUS.md row D84: each named mutation was applied
-// against a commit, the named assertion watched RED, then restored. Which
-// change turns each red:
-//   1 placement — delete <ProofPlate />; flex-reorder #systems above #proof
-//     (boxes are compared, not only DOM order).
-//   2 painted — #proof { opacity: 0 }, { display: none }, { filter:
-//     opacity(0) }, or { position: absolute; left: -99999px } (checkVisibility
-//     is ancestor-aware; filter and geometry are asserted separately).
-//   3 definition — reword it in proof.js; render a decoy "StackClimb" earlier
-//     (first-occurrence must BE the definition, case-insensitive).
-//   4 adjacency — move the definition into the other column (horizontal
-//     overlap required) or 600px away (vertical gap capped at 120).
-//   5 footer — alter one word of a kept D60 sentence.
-//   6 attribution — swap dt employers (dt itself is asserted, so a hidden
-//     decoy elsewhere in the row cannot satisfy it); delete the Oracle row.
-//   7 the invented figure — a 25% paired with release-validation in ANY
-//     spelling (unicode dashes/spaces NFKC-folded before matching), or any
-//     non-Amazon employer row carrying 25%.
-//   8 label — delete or negate the self-reported h3 (full-string equality);
-//     aria-hidden it (role query respects the accessibility tree).
-//   9 drift — 767→771 in proof.js (token-bounded: 767→76 also red), a figure
-//     absent from the strip, an unanchored sha (@df8cfc3BAD is red), a sha
-//     absent from the evidence file, or a fifth/fourth-deleted built row.
-//
-// Rows are asserted from the SAME import the component renders — a third
-// hardcoded copy would be the drift this gate exists to prevent.
+// Hardened after the R-7 Codex pass (14 holes) and the built-result fan —
+// the contact.spec.js lesson repeating on a new file. THE FULL MUTATION
+// LEDGER LIVES IN docs/STATUS.md ROW D84: seventeen mutations, each applied
+// against a named commit, the named assertion watched RED, restored. In
+// brief: plate deleted/reordered/hidden (opacity, display, filter,
+// off-screen), definition reworded/decoyed/moved cross-column, footer word
+// altered, dt employers swapped, a 25% release-validation row in ASCII and
+// U+2011 spellings, label deleted/negated/aria-hidden, drift 767→771 and
+// 767→76, @sha+suffix. Rows are asserted from the SAME import the component
+// renders — a third hardcoded copy would be the drift this gate prevents.
 
 import { test, expect } from '@playwright/test';
 import { readFileSync, readdirSync } from 'node:fs';

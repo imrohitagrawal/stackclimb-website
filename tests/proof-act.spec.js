@@ -132,8 +132,15 @@ test('approximate partners: act meta chained, /cv note painted, Amazon and Mobil
   const note = page.locator('.cv-note');
   expect(fold(await note.first().innerText()).toLowerCase()).toContain('approximate');
   expect(await painted(note.first())).toBe(true);
+  // Scoped to the EXPERIENCE entries — 'Amazon' also appears in the awards
+  // list, which let a renamed employer entry slip past a page-wide match
+  // (watched during this file's own mutation run).
+  const orgs = (await page.locator('.cv-job .org').allInnerTexts()).map(fold);
+  for (const o of ['Amazon', 'Mobileum']) {
+    expect(orgs.some((t) => t.includes(o)), `${o} missing from /cv experience`).toBe(true);
+  }
   const cv = fold(await page.locator('main').innerText());
-  for (const s of ['Amazon', 'Mobileum', '35%', '25%']) expect(cv).toContain(s);
+  for (const s of ['35%', '25%']) expect(cv).toContain(s);
 });
 
 test('attribution lives in the heading alone; no employer inside the act rows', async ({

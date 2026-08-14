@@ -6,12 +6,14 @@
 // WHICH CHANGE TURNS EACH RED (all watched, per the repo rule; the full
 // mutation ledger lives in docs/STATUS.md row D86):
 //   one-row @1440      — delete .colophon-row's display:flex (stack returns)
-//   right-flush @1440  — .colophon-defn flex-grow removed (flex: 0 1 auto):
-//                        free space then packs after the legal group and it
-//                        leaves the right edge. (The fan's justify-content
-//                        mutation proved INERT — the grow keeps the row full
-//                        at every width the 1240px frame cap allows, so
-//                        space-between was dead code and was removed.)
+//   right-flush @1440  — no-grow PLUS a narrowed defn (flex: 0 1 auto;
+//                        max-width: 20rem): free space then packs after the
+//                        group ('group not right-flush', watched). No-grow
+//                        ALONE is inert — the defn's 46rem max-content
+//                        exceeds the free row space at every width the
+//                        1240px frame cap allows, so shrink refills the row
+//                        without grow. justify-content proved equally inert
+//                        for the same reason and was removed as dead code.
 //   alignment @both    — delete .colophon-row's width/margin/padding (the
 //                        frame-geometry replication; the plate's outer
 //                        padding alone misses by 94.6px at 1440)
@@ -22,7 +24,15 @@
 //                        gap intact, so THIS assertion needs the gap switch.
 //   stacked @390       — media (min-width: 901px) → (min-width: 0)
 //   painted partners   — opacity: 0 on .colophon (geometry without paint
-//                        certifies an invisible footer)
+//                        certifies an invisible footer); runs on /, /cv and
+//                        a project page — a page-scoped display:none slipped
+//                        the /-only version (Codex R-7 pass, hole 13)
+//   containment        — .colophon height: 1px (children overflow a
+//                        collapsed footer with their rectangles intact;
+//                        both height bounds are upper-only — Codex hole 15)
+//   toggle-in-group    — moving the button out of .colophon-legal kept
+//                        every geometry check green because the painted
+//                        selector is global #motion-toggle (Codex hole 14)
 
 import { test, expect } from '@playwright/test';
 
@@ -82,13 +92,21 @@ test('desktop 1440: one row — defn left at reading alignment, legal group righ
   // Reading alignment, the instruction's own words: the defn's left edge
   // sits where plate copy sits (hero copy as the reference), ±2px.
   expect(Math.abs(b.defn.left - b.copyLeft.left), 'defn off reading alignment').toBeLessThan(2);
-  // Grouped RIGHT: flush to the row's content edge, ±2px. Survives nothing —
-  // justify-content: flex-start parks the group mid-row and goes red here.
+  // Grouped RIGHT: flush to the row's content edge, ±2px. Red switch: the
+  // header's no-grow + 20rem narrowing (356.76px flush delta, watched).
   expect(Math.abs(b.row.right - b.rowPadRight - b.legal.right), 'group not right-flush').toBeLessThan(
     2,
   );
-  // Height partner: the stacked footer measured 209.59px; the row ~96px.
+  // Height partner: the stacked footer measured 209.59px; the row 79.19px.
+  // The bound alone would pass a display:block stack (119.1px measured) —
+  // the one-row geometry above is what catches that; this catches drift.
   expect(b.footer.height, 'footer regressed toward the stack').toBeLessThan(130);
+  // Containment: a collapsed footer (height: 1px) keeps every child box and
+  // passes upper-only height bounds — the boxes must sit INSIDE the footer.
+  expect(b.legal.bottom, 'legal group overflows the footer').toBeLessThanOrEqual(
+    b.footer.bottom + 1,
+  );
+  expect(b.defn.bottom, 'defn overflows the footer').toBeLessThanOrEqual(b.footer.bottom + 1);
 });
 
 test('desktop floor 1024: the row holds without jamming', async ({ page }) => {
@@ -116,9 +134,25 @@ test('390: stacked, tightened — defn above the legal group', async ({ page }) 
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });
 
-test('painted partners — geometry above certifies only painted boxes', async ({ page }) => {
-  await gotoReduced(page);
-  for (const sel of ['footer .colophon-defn', '.colophon-legal p', '#motion-toggle']) {
-    expect(await painted(page.locator(sel)), `${sel} not painted`).toBe(true);
+test('painted partners — on every page class, and the toggle lives in the group', async ({
+  page,
+}) => {
+  // Three routes, three stylesheets that could each hide the footer alone
+  // (cv.css already display:nones it for print) — the /-only version passed
+  // a page-scoped screen display:none on /cv (Codex hole 13).
+  for (const path of ['/', '/cv', '/projects/citevyn']) {
+    await gotoReduced(page, path);
+    for (const sel of ['footer .colophon-defn', '.colophon-legal p', '#motion-toggle']) {
+      expect(await painted(page.locator(sel)), `${sel} not painted on ${path}`).toBe(true);
+    }
+    // The geometry tests read .colophon-legal's box; a toggle moved outside
+    // the group keeps them green while the global #motion-toggle selector
+    // still finds it (Codex hole 14). Prove the containment.
+    expect(
+      await page
+        .locator('#motion-toggle')
+        .evaluate((el) => !!el.closest('.colophon-legal')),
+      `toggle outside .colophon-legal on ${path}`,
+    ).toBe(true);
   }
 });

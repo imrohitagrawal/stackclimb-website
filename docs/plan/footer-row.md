@@ -67,8 +67,10 @@ before/after heights at both widths, mutation record, fan numbers.
 
 ## Amendments — the seven-lens fan (round 1), 2026-08-14
 
-13 material findings raised; every verified one CONFIRMED or SPLIT, 0 refuted (the streak
-holds). Three change the build; each supersedes the section above where they conflict.
+15 findings raised: 6 material — 5 CONFIRMED, 1 SPLIT by independent execution, 0 refuted
+(the streak holds) — and 9 minors folded. Three change the build; each supersedes the
+section above where they conflict. (This paragraph first said "13 material findings" —
+corrected by the built-result fan's manager lens against the workflow journal.)
 
 **Reading alignment was measurably wrong (peer + uiux + architect, CONFIRMED by three
 independent executions).** The plan said the plate's outer padding `clamp(1.25rem, 4.5vw,
@@ -93,8 +95,10 @@ min-width: 0` (wraps to more lines mid-width), legal group `flex: 0 0 auto`, row
 stays positive.
 
 **Minors folded:** legal group is an internal flex row (© beside toggle, right-flush —
-the unstyled group measured 125px shy of the right edge); a right-edge assertion bites the
-`justify-content` mutation the overlap checks survive; measured heights recorded as
+the unstyled group measured 125px shy of the right edge); a right-edge assertion added
+(the fan expected it to bite the `justify-content` mutation — the mutation phase then
+proved that property DEAD and it was removed; the assertion's proven red switch is a
+no-grow narrowed defn, see D86); measured heights recorded as
 fractional (209.59 / 249.53), not rounded integers; expected after-heights stated up front
 — **~96px at 1440, ~213px at 390** (uiux measured both by in-browser mutation; at 390 the
 remaining height is content the D62 string and the 44px tap floor fix in place, so

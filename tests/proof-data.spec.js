@@ -19,7 +19,8 @@ const EMPLOYERS = /oracle|amazon|mobileum|snapdeal|subex|limeroad/i;
 const norm = (t) => t.replace(/\s+/g, ' ').trim();
 const fold = (t) =>
   norm(t.normalize('NFKC').replace(/\p{Cf}/gu, '').replace(/\p{Pd}/gu, '-').replace(/\s/gu, ' '));
-const FOOTER_HEAD = 'StackClimb is where Rohit Agrawal builds independent AI systems.';
+const FOOTER_HEAD =
+  'StackClimb is where Rohit Agrawal builds independent AI systems - outside any employer.';
 const FIGURE = /(?<![\d,.])\d[\d,]*(?:\.\d+)?(?![\d,.])/g;
 
 test('proof.js: D62 verbatim, thesis locked, five rows a side', () => {

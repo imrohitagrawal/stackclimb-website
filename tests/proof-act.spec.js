@@ -17,9 +17,11 @@ import { employerRows, capabilityRows } from '../src/data/proof.js';
 
 const DEFN =
   'StackClimb is where Rohit Agrawal builds independent AI systems — outside any employer.';
-const KEPT2 = 'Independent projects are built outside any employer.';
 const KEPT3 = 'Employer outcomes are attributed to their employer and marked approximate.';
-const FOOTER_HEAD = 'StackClimb is where Rohit Agrawal builds independent AI systems.';
+// Owner's ruling on the PR: the footer carries D62's FULL line, tail
+// included; the old kept second sentence left as redundant once the tail
+// arrived. DEFN is the exact string on every page's footer.
+const FOOTER_HEAD = DEFN;
 const THESIS = 'Fourteen years I can tell you about. Four systems you can check yourself.';
 const EMPLOYERS = /oracle|amazon|mobileum|snapdeal|subex|limeroad/i;
 
@@ -118,7 +120,7 @@ test('footer definition on home and a project page', async ({ page }) => {
   for (const path of ['/', '/projects/citevyn']) {
     await gotoReduced(page, path);
     const text = norm(await page.locator('footer .colophon-defn').innerText());
-    for (const s of [FOOTER_HEAD, KEPT2, KEPT3]) expect(text).toContain(s);
+    for (const s of [FOOTER_HEAD, KEPT3]) expect(text).toContain(s);
     expect(await painted(page.locator('footer .colophon-defn'))).toBe(true);
   }
 });

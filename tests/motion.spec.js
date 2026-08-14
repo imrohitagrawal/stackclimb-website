@@ -204,11 +204,12 @@ test.describe('hero entrance — 4B', () => {
   });
 
   test('anchor deep-link: no-anim suppresses the entrance while it holds', async ({ page }) => {
-    // The [data-motion=off]/no-anim CSS matters when a suppressor coexists
-    // with hero-anim — which happens on every #hash landing: plates.js sets
-    // html.no-anim for ~400ms while the head script has already set
-    // hero-anim. Deleting those selectors turns this red (watched: the
-    // toggle-preset test could not see them deleted, M4).
+    // On every #hash landing plates.js sets html.no-anim for ~400ms while
+    // the head script has already set hero-anim. The rule that holds the
+    // hero still is global.css's kill-all (`html.no-anim * { animation:
+    // none !important }`) — deleting its animation line turns this red
+    // (watched; motion.css's own no-anim hero selectors were proven
+    // redundant by mutation, M4, and removed rather than kept as dead code).
     await page.goto('/#contact', { waitUntil: 'domcontentloaded' });
     const state = await page.evaluate(() => ({
       noAnim: document.documentElement.classList.contains('no-anim'),

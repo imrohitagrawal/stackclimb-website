@@ -43,9 +43,12 @@ html.hero-anim .hero .caps { animation: hero-rise 0.5s var(--ease-out) 0.28s bot
   }
 }
 
-html.no-anim .hero .hero-ledger,
-html.no-anim .hero .hero-quote,
-html.no-anim .hero .caps,
+/* No `html.no-anim` selectors here: global.css's kill-all
+   (`html.no-anim * { animation: none !important }`) already suppresses the
+   entrance during an anchor jump — a redundant copy would be dead code that
+   a mutation cannot distinguish (proved: deleting one changed nothing).
+   The toggle-off pair below is reachable only when a visitor flips the
+   footer toggle mid-entrance; kept for correctness in that window. */
 [data-motion='off'] .hero .hero-ledger,
 [data-motion='off'] .hero .hero-quote,
 [data-motion='off'] .hero .caps {

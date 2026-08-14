@@ -1,11 +1,11 @@
-/* Package 4 — the two-ledger act (#proof).
-   The employer name is the row's load-bearing word (exact attribution is the
-   queue's hard constraint), so dt keeps FULL salience here — the standard
-   ledger dims dt to 0.62, which would put the one word the row exists for at
-   its lowest visual weight. */
+/* Package 4B — the two-ledger act (#proof).
+   The outcome label is the row's load-bearing word, so dt keeps FULL
+   salience — the standard ledger dims dt to 0.62. Capability sentences run
+   at the definition's scale (the uiux height budget: sentence rows must not
+   inherit the ledger's right-aligned figure treatment). */
 
 .proof-col {
-  margin-top: 1.6rem;
+  margin-top: 1rem;
 }
 
 .proof-label {
@@ -14,14 +14,26 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--bone);
-  margin: 0 0 0.4rem;
+  margin: 0 0 0.15rem;
+}
+
+/* APPROXIMATE · dates / INSPECTABLE EVIDENCE / NOT CLAIMED — quiet metadata,
+   same treatment everywhere. bone at 0.62 on #1d0d23 composites ~6.6:1 (AA
+   at this size, recorded in D85). */
+.proof-meta {
+  font-size: 0.66rem;
+  font-weight: 520;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.62;
+  margin: 0 0 0.5rem;
 }
 
 .proof-defn {
   font-size: 0.92rem;
   line-height: 1.5;
   opacity: 0.85;
-  margin: 0.2rem 0 0.6rem;
+  margin: 0.2rem 0 0.4rem;
   max-width: 44ch;
 }
 
@@ -30,7 +42,32 @@
   letter-spacing: 0.12em;
 }
 
-/* Figures stay glanceable next to four-plus-word outcomes. */
 .proof-ledger dd {
   overflow-wrap: anywhere;
+}
+
+/* Capability rows: name column + sentence, left-aligned at defn scale. */
+.proof-caps .row {
+  grid-template-columns: minmax(7.5rem, max-content) 1fr;
+}
+.proof-caps dd {
+  font-size: 0.86rem;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.proof-nc {
+  margin-top: 0.5rem;
+  max-width: none;
+}
+
+/* 390: ten stacked rows carry the whole act — shave the per-row padding the
+   wide layout needs for its dotted rules (the 1477px ceiling binds here). */
+@media (max-width: 900px) {
+  .proof-ledger .row {
+    padding: 0.16rem 0.15rem 0.14rem;
+  }
+  .proof-col {
+    margin-top: 0.8rem;
+  }
 }

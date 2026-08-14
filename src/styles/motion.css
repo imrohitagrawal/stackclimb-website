@@ -16,6 +16,42 @@
    suppression are different facts and the code should say so.
    --------------------------------------------------------------------------- */
 
+/* ---------- Hero entrance (package 4B — owner's instruction, reversing the
+   exclusion below WITH ITS GUARD KEPT: the headline, name, lede, CTAs and
+   thesis line paint instantly; only the ledger, quote and strip enter.
+   `html.hero-anim` is set PRE-PAINT by Layout.astro's inline head script,
+   and never under the persisted toggle or prefers-reduced-motion (the
+   script checks both). Pure CSS animation, not a class-triggered
+   transition: no module load can strand the hero hidden, and with JS off
+   the flag never exists, so everything is visible (DEF-1). The media query
+   below is belt-and-braces for a preference that flips after load. ---------- */
+
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+html.hero-anim .hero .hero-ledger { animation: hero-rise 0.5s var(--ease-out) 0.08s both; }
+html.hero-anim .hero .hero-quote { animation: hero-rise 0.5s var(--ease-out) 0.18s both; }
+html.hero-anim .hero .caps { animation: hero-rise 0.5s var(--ease-out) 0.28s both; }
+
+@media (prefers-reduced-motion: reduce) {
+  html.hero-anim .hero .hero-ledger,
+  html.hero-anim .hero .hero-quote,
+  html.hero-anim .hero .caps {
+    animation: none;
+  }
+}
+
+html.no-anim .hero .hero-ledger,
+html.no-anim .hero .hero-quote,
+html.no-anim .hero .caps,
+[data-motion='off'] .hero .hero-ledger,
+[data-motion='off'] .hero .hero-quote,
+[data-motion='off'] .hero .caps {
+  animation: none;
+}
+
 /* ---------- Scroll-linked plate entry (improve-animations plan 001) ---------- */
 
 :root {

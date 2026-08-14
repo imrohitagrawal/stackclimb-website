@@ -1,33 +1,37 @@
 ---
-/* Package 4 — D57 act 01, the professional proof. Two ledgers with a seam:
-   employer outcomes are self-reported and say so; independent figures are
-   counted in code at recorded versions. Each ledger's heading is a VISIBLE h3
-   bound to its list with aria-labelledby — not Ledger.astro's aria-label-only
-   pattern, which renders labels invisibly. The seam is the act's argument, so
-   it must survive a headings-navigation pass (two h3s under the plate's h2).
+/* Package 4B — D57 act 01 rebuilt per RCA-002. Two ledgers with a seam:
+   Oracle-tenure outcomes (attributed once, in the heading; marked
+   approximate at ledger level — never "self-reported", ruling 1) beside
+   capability sentences a reader can repeat (P-15; phrased from the
+   overview's owner-approved lines). No status words in the right column —
+   NarraTwin's No-Go stays on the overview/plate/project page (ruling 3).
 
-   The D62 definition sits inside the built-systems column, directly under its
-   heading: the first rendered-text "StackClimb" on the page is the sentence
-   that defines it (D60 clause: the definition appears where a cold reader
-   first meets the word — before this plate the word appeared only in the nav
-   wordmark's image alt). */
+   Accessibility contract, gated by proof-act.spec.js: each column is a
+   visible h3; the employer list's accessible name chains heading + the
+   APPROXIMATE metadata line (aria-labelledby="proof-a proof-a-meta") so a
+   list-jumping screen-reader user hears the qualifier; the capability list
+   is described by the NOT CLAIMED line (aria-describedby). The D62
+   definition renders adjacent to the right heading — the first rendered
+   "StackClimb" on the page is the sentence that defines it. */
 import Plate from './Plate.astro';
-import { definition, employerRows, builtRows } from '../data/proof.js';
+import { definition, employerRows, capabilityRows } from '../data/proof.js';
 import '../styles/proof.css';
 ---
 
 <Plate id="proof">
   <div class="plate-grid">
     <div class="plate-copy">
-      <h2 class="plate-title tight">The record, in two ledgers</h2>
+      <h2 class="plate-title tight">Two ledgers, deliberately kept apart.</h2>
+      {/* One sentence, not two — the plan's first ordered cut fired: the act
+          measured 1579px at 390 against the 1477 ceiling. */}
       <p>
-        Fourteen years of employer outcomes, and the systems built since, are proved
-        differently — so they are kept apart. One ledger is self-reported and says so.
-        The other is counted in the code, where anyone can recount it.
+        Employer outcomes are reported and marked approximate; the independent systems are
+        evidence you can inspect — and the two are never averaged into a single number.
       </p>
       <div class="proof-col">
-        <h3 id="proof-a" class="proof-label">Employer record — self-reported, approximate</h3>
-        <dl class="ledger proof-ledger" aria-labelledby="proof-a">
+        <h3 id="proof-a" class="proof-label">Employer outcomes — Oracle tenure</h3>
+        <p id="proof-a-meta" class="proof-meta">Approximate · April 2019 – April 2026</p>
+        <dl class="ledger proof-ledger" aria-labelledby="proof-a proof-a-meta">
           {
             employerRows.map((r) => (
               <div class="row">
@@ -44,11 +48,12 @@ import '../styles/proof.css';
     </div>
     <div class="plate-figure">
       <div class="proof-col">
-        <h3 id="proof-b" class="proof-label">The four built systems — counted in the code, at recorded versions</h3>
+        <h3 id="proof-b" class="proof-label">Independent StackClimb systems</h3>
+        <p class="proof-meta">Inspectable evidence · public code</p>
         <p class="proof-defn">{definition}</p>
-        <dl class="ledger proof-ledger" aria-labelledby="proof-b">
+        <dl class="ledger proof-ledger proof-caps" aria-labelledby="proof-b" aria-describedby="proof-nc">
           {
-            builtRows.map((r) => (
+            capabilityRows.map((r) => (
               <div class="row">
                 <dt>{r.t}</dt>
                 <dd>{r.d}</dd>
@@ -56,6 +61,13 @@ import '../styles/proof.css';
             ))
           }
         </dl>
+        {/* The GitHub links row was the plan's second ordered cut (390
+            ceiling); "public code" survives in the eyebrow and the contact
+            plate carries the GitHub button. */}
+        <p id="proof-nc" class="proof-meta proof-nc">
+          Not claimed — users, customers, revenue, production scale, awards or partnerships
+          for any independent system.
+        </p>
       </div>
     </div>
   </div>

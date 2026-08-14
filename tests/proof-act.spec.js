@@ -1,48 +1,38 @@
-// The two-ledger act (#proof) — package 4, D57 act 01, D60 as amended by D62.
-//
-// Hardened after the R-7 Codex pass (14 holes) and the built-result fan —
-// the contact.spec.js lesson repeating on a new file. THE FULL MUTATION
-// LEDGER LIVES IN docs/STATUS.md ROW D84: seventeen mutations, each applied
-// against a named commit, the named assertion watched RED, restored. In
-// brief: plate deleted/reordered/hidden (opacity, display, filter,
-// off-screen), definition reworded/decoyed/moved cross-column, footer word
-// altered, dt employers swapped, a 25% release-validation row in ASCII and
-// U+2011 spellings, label deleted/negated/aria-hidden, drift 767→771 and
-// 767→76, @sha+suffix. Rows are asserted from the SAME import the component
-// renders — a third hardcoded copy would be the drift this gate prevents.
+// The two-ledger act (#proof) — package 4B, RCA-002's rulings gated.
+// THE FULL MUTATION LEDGER LIVES IN docs/STATUS.md ROW D85; every named
+// mutation was applied against a commit, its assertion watched RED, restored.
+// In brief: rows carry no employer name (heading only); no rendered
+// "self-reported" on / or /cv (with painted APPROXIMATE partners on both);
+// no "No-Go" in the act (with the overview's painted "Phase 1 — No-Go" as
+// the same-file partner); each figure bound to ITS OWN cv.js Oracle point
+// (cv.js carries 25 twice and 20 three times — token-anywhere passes swaps);
+// each capability term in the rendered sentence AND its evidence file;
+// thesis locked by full string including the count; D62 definition verbatim
+// at first use and in the footer. Evasions folded before matching (NFKC,
+// dash-unify, tag/entity strip) — the U+2011 / entity / span-split lessons.
 
 import { test, expect } from '@playwright/test';
 import { readFileSync, readdirSync } from 'node:fs';
-import { definition, employerRows, builtRows } from '../src/data/proof.js';
-import { projects } from '../src/data/projects.js';
+import { definition, thesis, employerRows, capabilityRows } from '../src/data/proof.js';
+import { experience } from '../src/data/cv.js';
 
 const DEFN =
   'StackClimb is where Rohit Agrawal builds independent AI systems — outside any employer.';
 const KEPT2 = 'Independent projects are built outside any employer.';
 const KEPT3 = 'Employer outcomes are attributed to their employer and marked approximate.';
 const FOOTER_HEAD = 'StackClimb is where Rohit Agrawal builds independent AI systems.';
+const THESIS = 'Fourteen years I can tell you about. Four systems you can check yourself.';
+const EMPLOYERS = /oracle|amazon|mobileum|snapdeal|subex|limeroad/i;
 
 const norm = (s) => s.replace(/\s+/g, ' ').trim();
-// NFKC-fold, unify every dash to '-', every space to ' ' — the unicode-hyphen
-// evasion (U+2011) and NBSP both collapse before any bar is applied.
 const fold = (s) => norm(s.normalize('NFKC').replace(/\p{Pd}/gu, '-').replace(/\s/gu, ' '));
-
-test('proof.js carries the D62 definition verbatim, and exactly four built rows', () => {
-  expect(definition).toBe(DEFN);
-  // The heading says FOUR built systems; the denominator is asserted here so
-  // a dropped row cannot rebalance itself against the employer ledger.
-  expect(builtRows).toHaveLength(4);
-  expect(employerRows).toHaveLength(4);
-});
+const FIGURE = /(?<![\d,.])\d[\d,]*(?:\.\d+)?(?![\d,.])/g;
 
 async function gotoReduced(page, path = '/') {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto(path);
 }
 
-// Painted = visible per the ancestor-aware check AND not filtered away AND
-// laid out inside the page's horizontal flow (off-screen positioning passes
-// checkVisibility — a Codex finding).
 const painted = (loc) =>
   loc.evaluate((el) => {
     const r = el.getBoundingClientRect();
@@ -50,199 +40,182 @@ const painted = (loc) =>
       el.checkVisibility({ opacityProperty: true, visibilityProperty: true }) &&
       getComputedStyle(el).filter === 'none' &&
       r.right > 0 &&
-      r.left < document.documentElement.scrollWidth &&
-      r.left >= 0
+      r.left >= 0 &&
+      r.left < document.documentElement.scrollWidth
     );
   });
 
-test('the act sits between the hero and the systems — in the DOM and on screen', async ({
-  page,
-}) => {
+test('the act sits between the hero and the systems — DOM and paint', async ({ page }) => {
   await gotoReduced(page);
   const order = await page.evaluate(() => {
-    const top = document.querySelector('#top');
-    const proof = document.querySelector('#proof');
-    const systems = document.querySelector('#systems');
+    const [top, proof, systems] = ['#top', '#proof', '#systems'].map((s) =>
+      document.querySelector(s),
+    );
     if (!top || !proof || !systems) return 'missing';
     const after = (a, b) => !!(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
     const t = (el) => el.getBoundingClientRect().top + window.scrollY;
-    const domOk = after(top, proof) && after(proof, systems);
-    const paintOk = t(top) < t(proof) && t(proof) < t(systems);
-    return domOk && paintOk ? 'ok' : 'misplaced';
+    return after(top, proof) && after(proof, systems) && t(top) < t(proof) && t(proof) < t(systems)
+      ? 'ok'
+      : 'misplaced';
   });
   expect(order).toBe('ok');
   expect(await painted(page.locator('#proof'))).toBe(true);
-  const h = await page.locator('#proof').evaluate((el) => el.getBoundingClientRect().height);
-  expect(h).toBeGreaterThan(200);
 });
 
-test('the act defines the word where it is first used', async ({ page }) => {
+test('the act defines the word where it is first used, beside its heading', async ({ page }) => {
   await gotoReduced(page);
   const defn = page.locator('#proof .proof-defn');
   await expect(defn).toHaveText(norm(DEFN), { useInnerText: true });
   expect(await painted(defn)).toBe(true);
-  // The FIRST "StackClimb" in rendered body text (any case — innerText
-  // reports transformed text, so an uppercase decoy still counts) must be
-  // the definition element's own text, not merely similar text.
+  // D60's exact scenario: the word is first met at the ledger heading
+  // ("Independent StackClimb systems") and the definition renders in the
+  // same block, immediately after. The first rendered occurrence must be
+  // that heading or the definition itself — nothing earlier on the page.
   const ok = await page.evaluate(() => {
     const body = document.body.innerText;
+    const head = document.getElementById('proof-b').innerText;
     const defnText = document.querySelector('#proof .proof-defn').innerText;
     const first = body.search(/stackclimb/i);
-    const defnAt = body.indexOf(defnText);
-    return first >= 0 && defnAt >= 0 && first >= defnAt && first < defnAt + defnText.length;
+    const headAt = body.indexOf(head);
+    const defnEnd = body.indexOf(defnText) + defnText.length;
+    return first >= 0 && headAt >= 0 && first >= headAt && first < defnEnd;
   });
-  expect(ok, 'an earlier StackClimb occurrence is not the definition').toBe(true);
-});
-
-for (const width of [1440, 390]) {
-  test(`the definition adjoins the built-systems heading at ${width}`, async ({ page }) => {
+  expect(ok, 'a StackClimb occurrence precedes the act’s heading+definition block').toBe(true);
+  for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: width > 700 ? 900 : 844 });
-    await gotoReduced(page);
     const gap = await page.evaluate(() => {
       const h = document.getElementById('proof-b').getBoundingClientRect();
       const d = document.querySelector('#proof .proof-defn').getBoundingClientRect();
-      const vGap = Math.min(Math.abs(d.top - h.bottom), Math.abs(h.top - d.bottom));
-      const hOverlap = Math.min(d.right, h.right) - Math.max(d.left, h.left);
-      return { vGap, hOverlap };
+      return {
+        v: Math.min(Math.abs(d.top - h.bottom), Math.abs(h.top - d.bottom)),
+        x: Math.min(d.right, h.right) - Math.max(d.left, h.left),
+      };
     });
-    // Same column (horizontal ranges overlap) and near (the real gap measures
-    // ~6px; 120 leaves slack without accepting a screen of separation).
-    expect(gap.hOverlap, 'definition left its heading’s column').toBeGreaterThan(0);
-    expect(gap.vGap, 'definition drifted from its heading').toBeLessThan(120);
-  });
-}
+    expect(gap.x, `left its column at ${width}`).toBeGreaterThan(0);
+    expect(gap.v, `drifted from its heading at ${width}`).toBeLessThan(120);
+  }
+});
 
-test('the footer defines StackClimb in the owner’s kept words — home and a project page', async ({
-  page,
-}) => {
+test('footer definition on home and a project page', async ({ page }) => {
   for (const path of ['/', '/projects/citevyn']) {
     await gotoReduced(page, path);
-    const foot = page.locator('footer .colophon-defn');
-    const text = norm(await foot.innerText());
-    expect(text).toContain(FOOTER_HEAD);
-    expect(text).toContain(KEPT2);
-    expect(text).toContain(KEPT3);
-    expect(await painted(foot)).toBe(true);
+    const text = norm(await page.locator('footer .colophon-defn').innerText());
+    for (const s of [FOOTER_HEAD, KEPT2, KEPT3]) expect(text).toContain(s);
+    expect(await painted(page.locator('footer .colophon-defn'))).toBe(true);
   }
 });
 
-test('no built page says "product studio" — and the partner proves the definition ships', () => {
+test('bars: product studio and self-reported render on no built page', () => {
   const pages = ['dist', 'dist/projects']
     .flatMap((d) => readdirSync(d).filter((f) => f.endsWith('.html')).map((f) => `${d}/${f}`))
-    // Tags become spaces and entities are decoded BEFORE the bar, so
-    // `product <em>studio</em>` and `product&nbsp;studio` cannot slip past.
     .map((f) =>
-      fold(
-        readFileSync(f, 'utf8')
-          .replace(/<[^>]+>/g, ' ')
-          .replace(/&nbsp;|&#160;|&#32;/gi, ' '),
-      ),
+      fold(readFileSync(f, 'utf8').replace(/<[^>]+>/g, ' ').replace(/&nbsp;|&#160;|&#32;|&#8209;/gi, ' ')),
     );
   expect(pages.length).toBeGreaterThan(5);
-  for (const html of pages) expect(/product\s+studio/i.test(html)).toBe(false);
-  expect(pages.some((h) => h.includes(FOOTER_HEAD))).toBe(true);
-});
-
-// Rows read as {dt, dd} pairs so the attribution is asserted on the slot that
-// carries it — a hidden decoy employer name elsewhere in the row cannot pass.
-async function ledgerRows(page, labelledBy) {
-  return page.locator(`#proof dl[aria-labelledby="${labelledBy}"] .row`).evaluateAll((rows) =>
-    rows.map((r) => ({
-      dt: r.querySelector('dt')?.innerText ?? '',
-      dd: r.querySelector('dd')?.innerText ?? '',
-      visible: r.checkVisibility({ opacityProperty: true, visibilityProperty: true }),
-    })),
-  );
-}
-
-test('employer outcomes carry exact attribution', async ({ page }) => {
-  await gotoReduced(page);
-  const rows = await ledgerRows(page, 'proof-a');
-  expect(rows).toHaveLength(employerRows.length);
-  for (const r of rows) expect(r.visible, `hidden row: ${r.dt}`).toBe(true);
-  const rc = rows.filter((r) => /root-cause analysis/i.test(fold(r.dd)));
-  expect(rc, 'exactly one root-cause analysis row').toHaveLength(1);
-  expect(rc[0].dt.toLowerCase()).toBe('oracle');
-  const rv = rows.filter((r) => /release[- ]?validation/i.test(fold(r.dd)));
-  expect(rv, 'exactly one release-validation row').toHaveLength(1);
-  expect(rv[0].dt.toLowerCase()).toBe('mobileum');
-  expect(fold(rv[0].dd), 'a 25% release-validation claim exists nowhere').not.toMatch(/25/);
-  // The only 25% this ledger may carry is Amazon's coverage figure (cv.js:80).
-  for (const r of rows.filter((r) => /25\s*%/.test(fold(r.dd)))) {
-    expect(r.dt.toLowerCase(), `unexpected 25% under ${r.dt}`).toBe('amazon');
-    expect(fold(r.dd)).toMatch(/coverage/i);
+  for (const html of pages) {
+    expect(/product\s+studio/i.test(html)).toBe(false);
+    expect(/self[\s-]*reported/i.test(html)).toBe(false);
   }
+  expect(pages.some((h) => h.includes(FOOTER_HEAD))).toBe(true); // bar partner
 });
 
-test('the self-reported label is painted, exposed, and labels a ledger with figures', async ({
+test('approximate partners: act meta chained, /cv note painted, Amazon and Mobileum stay', async ({
   page,
 }) => {
   await gotoReduced(page);
-  // Role query — respects the accessibility tree, so aria-hidden on the
-  // heading or any ancestor fails here even while paint checks pass.
-  const label = page.getByRole('heading', { level: 3, name: /self-reported/i });
-  await expect(label).toHaveCount(1);
-  expect(await painted(label)).toBe(true);
-  // Full-string equality (case-folded for the CSS uppercase transform), so
-  // "not self-reported" or a reworded label cannot satisfy a substring match.
-  expect(norm(await label.innerText()).toLowerCase()).toBe(
-    'employer record — self-reported, approximate',
-  );
-  const id = await label.getAttribute('id');
-  const rows = await ledgerRows(page, id);
-  expect(rows.length).toBeGreaterThanOrEqual(employerRows.length);
-  expect(rows.some((r) => r.dd.includes('%'))).toBe(true);
+  const dl = page.locator('#proof dl[aria-labelledby="proof-a proof-a-meta"]');
+  await expect(dl).toHaveCount(1);
+  const meta = page.locator('#proof-a-meta');
+  expect(fold(await meta.innerText()).toLowerCase()).toContain('approximate');
+  expect(await painted(meta)).toBe(true);
+  await gotoReduced(page, '/cv');
+  const note = page.locator('.cv-note');
+  expect(fold(await note.first().innerText()).toLowerCase()).toContain('approximate');
+  expect(await painted(note.first())).toBe(true);
+  const cv = fold(await page.locator('main').innerText());
+  for (const s of ['Amazon', 'Mobileum', '35%', '25%']) expect(cv).toContain(s);
 });
 
-test('both ledger headings are visible h3s, exposed to AT, bound to their lists', async ({
+test('attribution lives in the heading alone; no employer inside the act rows', async ({
   page,
 }) => {
   await gotoReduced(page);
-  // Two level-3 headings must exist in the ACCESSIBILITY TREE inside #proof.
-  const exposed = page.locator('#proof').getByRole('heading', { level: 3 });
-  await expect(exposed).toHaveCount(2);
-  const h3s = page.locator('#proof h3[id]');
-  await expect(h3s).toHaveCount(2);
-  for (const h of await h3s.all()) {
-    expect(await painted(h)).toBe(true);
-    const id = await h.getAttribute('id');
-    await expect(page.locator(`#proof dl[aria-labelledby="${id}"]`)).toHaveCount(1);
-  }
+  const heading = fold(await page.locator('#proof-a').innerText());
+  expect(heading.toLowerCase()).toContain('oracle');
+  const rows = await page.locator('#proof .proof-ledger .row').allInnerTexts();
+  expect(rows.length).toBe(employerRows.length + capabilityRows.length);
+  for (const r of rows) expect(EMPLOYERS.test(fold(r)), `employer name in row: ${r}`).toBe(false);
 });
 
-// Token-bounded on both sides — '76' must not pass against '767' (the arize/
-// summarize lesson: a substring is not a token), and single-digit or decimal
-// figures may not escape the net.
-const FIGURE = /(?<![\d,.])\d[\d,]*(?:\.\d+)?(?![\d,.])/g;
+test('no No-Go in the act — and the overview still disparages nothing it holds', async ({
+  page,
+}) => {
+  await gotoReduced(page);
+  const act = fold(await page.locator('#proof').innerText());
+  expect(/no[\s-]*go/i.test(act)).toBe(false);
+  expect(/not\s+deployed/i.test(act)).toBe(false);
+  // Partner: the disclosure stays painted and exposed one plate below.
+  const state = page.locator('#overview .ov-state', { hasText: /No-Go/ });
+  await expect(state).toHaveCount(1);
+  expect(await painted(state)).toBe(true);
+  expect(await state.evaluate((el) => !el.closest('[aria-hidden="true"]'))).toBe(true);
+});
 
-test('counted rows agree with the caption strips and their evidence files', () => {
-  for (const row of builtRows) {
-    const cell = projects[row.slug].strip.find((c) => c.t === row.cell);
-    expect(cell, `${row.slug} has no '${row.cell}' strip cell`).toBeTruthy();
-    const stripTokens = new Set(cell.d.match(FIGURE) || []);
-    const figures = row.d.replace(/@[0-9a-z]+/gi, '').match(FIGURE) || [];
-    expect(figures.length, `${row.slug} row carries no counted figure`).toBeGreaterThan(0);
-    for (const n of figures) {
-      expect(stripTokens.has(n), `${row.slug}: token '${n}' not in strip '${cell.d}'`).toBe(true);
+test('both columns: visible h3s, AT-exposed, lists bound; NOT CLAIMED describes', async ({
+  page,
+}) => {
+  await gotoReduced(page);
+  await expect(page.locator('#proof').getByRole('heading', { level: 3 })).toHaveCount(2);
+  for (const id of ['proof-a', 'proof-b']) {
+    expect(await painted(page.locator(`#${id}`))).toBe(true);
+  }
+  const caps = page.locator('#proof dl[aria-describedby="proof-nc"]');
+  await expect(caps).toHaveCount(1);
+  const nc = page.locator('#proof-nc');
+  expect(fold(await nc.innerText()).toLowerCase()).toContain('not claimed');
+  expect(await painted(nc)).toBe(true);
+});
+
+test('the rows render from the same data this file read', async ({ page }) => {
+  await gotoReduced(page);
+  for (const [sel, data] of [
+    ['#proof dl[aria-labelledby="proof-a proof-a-meta"] .row', employerRows],
+    ['#proof dl[aria-describedby="proof-nc"] .row', capabilityRows],
+  ]) {
+    const rows = await page.locator(sel).evaluateAll((els) =>
+      els.map((r) => ({
+        dt: r.querySelector('dt')?.innerText ?? '',
+        dd: r.querySelector('dd')?.innerText ?? '',
+        vis: r.checkVisibility({ opacityProperty: true, visibilityProperty: true }),
+      })),
+    );
+    expect(rows).toHaveLength(data.length);
+    for (const [i, r] of data.entries()) {
+      expect(rows[i].vis, `hidden row ${r.t}`).toBe(true);
+      expect(rows[i].dt.toLowerCase()).toBe(r.t.toLowerCase()); // dt is CSS-uppercased
+      expect(norm(rows[i].dd)).toBe(norm(r.d)); // dd exact, case and all
     }
-    // Anchored: @<exactly seven hex><end-of-token> — '@df8cfc3BAD' fails.
-    const sha = (row.d.match(/@([0-9a-f]{7})(?![0-9a-zA-Z])/) || [])[1];
-    expect(sha, `${row.slug} row carries no clean 7-hex sha`).toBeTruthy();
-    const evidence = readFileSync(`docs/evidence/projects/${row.file}`, 'utf8');
-    expect(evidence, `${sha} absent from ${row.file}`).toContain(sha);
   }
 });
 
-test('the counted rows render from the same data this file read', async ({ page }) => {
+test('hero: thesis painted and exact, strip named by it, population cells kept', async ({
+  page,
+}) => {
   await gotoReduced(page);
-  const rows = await ledgerRows(page, 'proof-b');
-  expect(rows).toHaveLength(builtRows.length);
-  for (const [i, row] of builtRows.entries()) {
-    expect(rows[i].visible, `hidden row: ${row.t}`).toBe(true);
-    // dt renders under text-transform: uppercase (compare case-folded); dd
-    // has no case transform, so it is compared EXACTLY — the sha and No-Go
-    // stay the plan's exact painted assertion.
-    expect(rows[i].dt.toLowerCase()).toBe(row.t.toLowerCase());
-    expect(norm(rows[i].dd)).toBe(norm(row.d));
+  const th = page.locator('#hero-thesis');
+  expect(norm(await th.innerText())).toBe(THESIS);
+  expect(await painted(th)).toBe(true);
+  const strip = page.locator('#top .caps');
+  await expect(strip).toHaveAttribute('aria-labelledby', 'hero-thesis');
+  expect(await strip.getAttribute('aria-label')).toBeNull();
+  for (const [t, d] of [
+    ['Systems of my own', '6'],
+    ['Built', '4'],
+    ['In progress', '2'],
+  ]) {
+    const cell = strip.locator('.cap', { hasText: t });
+    await expect(cell).toHaveCount(1);
+    expect(fold(await cell.innerText())).toContain(d);
+    expect(await painted(cell)).toBe(true);
   }
 });

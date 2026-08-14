@@ -137,3 +137,77 @@ test.describe('prefers-reduced-motion overrides the toggle', () => {
     await context.close();
   });
 });
+
+/* ---- Package 4B: the hero entrance (the reversal of motion.css's old hero
+   exclusion, with its guard). What turns each red:
+   - animates: delete the `html.hero-anim .hero .hero-ledger` rule, or the
+     head-script line that adds `hero-anim`.
+   - headline instant: add the h1/.hero-thesis to the animated selector list.
+   - reduced motion: delete the hero block inside the reduce media query.
+   - toggle off: delete the [data-motion='off'] hero selectors, or make the
+     head script add hero-anim unconditionally.
+   - no-JS fallback: make the hide a plain CSS default instead of gated on
+     the script-set `hero-anim` class (DEF-1's shape). */
+test.describe('hero entrance — 4B', () => {
+  const ELS = ['.hero .hero-ledger', '.hero .hero-quote', '.hero .caps'];
+
+  test('secondary hero elements animate; headline and thesis never do', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'networkidle' });
+    await expect(page.locator('html')).toHaveClass(/hero-anim/);
+    for (const sel of ELS) {
+      const name = await page.locator(sel).evaluate((el) => getComputedStyle(el).animationName);
+      expect(name, `${sel} should run hero-rise`).toBe('hero-rise');
+    }
+    for (const sel of ['.hero h1', '.hero .hero-thesis', '.hero .lede']) {
+      const name = await page.locator(sel).evaluate((el) => getComputedStyle(el).animationName);
+      expect(name, `${sel} must paint instantly`).toBe('none');
+    }
+    // And the animation must END visible — at each element's DESIGNED
+    // opacity (the quote is 0.85 by rule), so assert legible, not exactly 1.
+    await page.waitForTimeout(900);
+    for (const sel of ELS) {
+      const op = await page.locator(sel).evaluate((el) => parseFloat(getComputedStyle(el).opacity));
+      expect(op, `${sel} should end visible`).toBeGreaterThan(0.5);
+    }
+  });
+
+  test('prefers-reduced-motion: hero elements static and visible', async ({ browser }) => {
+    const ctx = await browser.newContext({ reducedMotion: 'reduce' });
+    const page = await ctx.newPage();
+    await page.goto('/', { waitUntil: 'networkidle' });
+    for (const sel of ELS) {
+      const s = await page.locator(sel).evaluate((el) => ({
+        anim: getComputedStyle(el).animationName,
+        op: getComputedStyle(el).opacity,
+      }));
+      expect(s.anim, `${sel} under reduced motion`).toBe('none');
+      expect(parseFloat(s.op)).toBeGreaterThan(0.5);
+    }
+    await ctx.close();
+  });
+
+  test('persisted toggle-off: hero-anim never set, elements visible', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('motion', 'off'));
+    await page.goto('/', { waitUntil: 'networkidle' });
+    await expect(page.locator('html')).not.toHaveClass(/hero-anim/);
+    for (const sel of ELS) {
+      const op = await page.locator(sel).evaluate((el) => parseFloat(getComputedStyle(el).opacity));
+      expect(op, `${sel} with motion off`).toBeGreaterThan(0.5);
+    }
+  });
+
+  test('JavaScript disabled: everything visible (DEF-1)', async ({ browser }) => {
+    const ctx = await browser.newContext({ javaScriptEnabled: false });
+    const page = await ctx.newPage();
+    await page.goto('/');
+    for (const sel of [...ELS, '.hero h1', '.hero .hero-thesis']) {
+      const s = await page.locator(sel).evaluate((el) => ({
+        op: getComputedStyle(el).opacity,
+        anim: getComputedStyle(el).animationName,
+      }));
+      expect(parseFloat(s.op), `${sel} with JS off`).toBeGreaterThan(0.5);
+      expect(s.anim).toBe('none');
+    }
+    await ctx.close();
+  });
+});

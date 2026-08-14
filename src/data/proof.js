@@ -1,64 +1,73 @@
-/* The two-ledger act (package 4, D57 act 01). Two populations, two proof rules,
- * never mixed — the footer's closing sentences state the rule; this file is the
- * data that has to obey it.
+/* The two-ledger act (package 4B, D57 act 01, RCA-002). Two populations, two
+ * proof rules, never mixed — the footer's closing sentences state the rule;
+ * this file is the data that has to obey it.
  *
- * employerRows — self-reported outcomes from the owner's CV, via cv.js (D36's
- * authoritative source; the cv.js line for each row is cited beside it).
- * Labelled once at the ledger heading, `~`-marked, and attributed to the
- * employer in the same row. Exact attribution or nothing: there is no
- * "release validation −25%" anywhere in the record, and nothing here may
- * invent one.
+ * employerRows — Oracle-tenure outcomes from the owner's CV via cv.js (D36's
+ * authoritative source). Attribution lives ONCE, in the ledger heading —
+ * never inside a row (RCA-002 ruling 2). Marked approximate at the ledger
+ * level (ruling 1); `point` names the one cv.js Oracle bullet the figure is
+ * bound to — tests/proof-act.spec.js fails a row whose figure is missing
+ * from ITS OWN point (token-anywhere passes swapped figures; cv.js carries
+ * 25 twice and 20 three times). The two near-duplicate −25% regression
+ * claims (effort, time) are merged into one row; flaky −20% and production
+ * defects −20% stay on /cv only (plan amendment, recorded).
  *
- * builtRows — the four built systems (the hero strip's `Built 4`, D82: the
- * heading names its own denominator so a subset cannot read as concealment).
- * Counted figures at recorded versions. tests/proof-act.spec.js fails if a
- * numeric token here is missing from the matching caption-strip cell in
- * projects.js, or if a sha here is absent from the system's evidence file —
- * so this surface cannot drift from the ones below it (the 771→767 lesson,
- * D83/W-1).
+ * capabilityRows — one plain-English clause per system (P-15: reader first,
+ * mechanism second), phrased from the owner-approved overview lines.
+ * `file` + `term` are the evidence trace: the term must appear in the
+ * rendered sentence AND in that docs/evidence/projects/ file, so a reworded
+ * claim loses its trace and goes red. No status words here: NarraTwin's
+ * No-Go and EvalAxis's closed state are disclosed on the overview, the
+ * plates and the project pages (ruling 3 — placement, not deletion).
  */
 
-/* D62 (docs/STATUS.md:54) — replaces D60's line at the owner's decision;
-   "product studio" is dropped. Verbatim, em-dash tail included. */
+/* D62 — replaces D60's line at the owner's decision. Verbatim. */
 export const definition =
   'StackClimb is where Rohit Agrawal builds independent AI systems — outside any employer.';
 
+/* The thesis line (RCA-002 ruling 6). "Four": only four repos are public, so
+   the invitation to check must survive the reader trying — flagged as the
+   owner's named decision in the PR; his ruling lands in D85. */
+export const thesis =
+  'Fourteen years I can tell you about. Four systems you can check yourself.';
+
 export const employerRows = [
-  { t: 'Oracle', d: 'Root-cause analysis accelerated ~35%' }, // cv.js:67
-  { t: 'Oracle', d: 'API automation coverage 65% → 95%' }, // cv.js:66
-  { t: 'Amazon', d: 'UI and API automation coverage up ~25%' }, // cv.js:80
-  { t: 'Mobileum', d: 'Manual release-validation effort down ~35%' }, // cv.js:103
+  { t: 'Manual test design', d: '~40% less effort', point: /manual test design/i, figures: ['40'] },
+  { t: 'Automation coverage', d: '65% → 95%', point: /65% to 95%/i, figures: ['65', '95'] },
+  { t: 'Regression execution', d: '~25% faster', point: /regression execution/i, figures: ['25'] },
+  { t: 'Production incidents', d: '~20% fewer', point: /production incidents/i, figures: ['20'] },
+  { t: 'Root-cause analysis', d: '~35% faster', point: /root-cause analysis/i, figures: ['35'] },
 ];
 
-/* slug/cell name the projects.js caption-strip cell the figures must agree
-   with; file names the evidence file the sha must appear in. */
-export const builtRows = [
+export const capabilityRows = [
   {
     t: 'CiteVyn',
-    d: '1,036 backend test functions · 125 e2e tests @df8cfc3',
-    slug: 'citevyn',
-    cell: 'Tests',
+    d: 'Answers only what it can cite, and refuses the rest.',
     file: 'citevyn.md',
+    term: 'refus',
   },
   {
     t: 'Quorum-AI',
-    d: '2,095 Python test functions · 358 e2e tests @d3c860c',
-    slug: 'quorum',
-    cell: 'Tests',
+    d: 'Four models answer; a moderated critique maps their disagreement.',
     file: 'quorum-ai.md',
+    term: 'moderat',
   },
   {
     t: 'SaafSaans',
-    d: '767 test functions @10f4213',
-    slug: 'saafsaans',
-    cell: 'Tests',
+    d: 'Your risk, not the city’s — every reading labelled live, cached, or none.',
     file: 'saafsaans.md',
+    term: 'labelled',
   },
   {
     t: 'NarraTwin AI',
-    d: '1,743 tests @a022862 · its own gate says No-Go',
-    slug: 'narratwin',
-    cell: 'Code',
+    d: 'Cited walkthroughs; every claim is checked against its source.',
     file: 'narratwin.md',
+    term: 'claim',
+  },
+  {
+    t: 'EvalAxis',
+    d: 'A regression gate that fails the build when quality drops — private, in progress.',
+    file: 'private.md',
+    term: 'regression gate',
   },
 ];

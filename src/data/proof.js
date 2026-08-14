@@ -42,7 +42,7 @@ export const builtRows = [
   },
   {
     t: 'Quorum-AI',
-    d: '2,095 Python test functions · 358 e2e @d3c860c',
+    d: '2,095 Python test functions · 358 e2e tests @d3c860c',
     slug: 'quorum',
     cell: 'Tests',
     file: 'quorum-ai.md',

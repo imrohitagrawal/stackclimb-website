@@ -186,6 +186,23 @@ test.describe('hero entrance — 4B', () => {
     await ctx.close();
   });
 
+  test('reduced-motion flipped AFTER load still kills the entrance (the CSS block)', async ({
+    page,
+  }) => {
+    // The head script path is covered above (it never sets hero-anim under a
+    // reduce context). This covers the belt-and-braces CSS: hero-anim IS set,
+    // then the preference flips mid-visit — only the @media block can stop
+    // the animation then. Deleting that block turns exactly this red
+    // (watched: the first version of this file missed it, M2).
+    await page.goto('/', { waitUntil: 'networkidle' });
+    await expect(page.locator('html')).toHaveClass(/hero-anim/);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    for (const sel of ELS) {
+      const name = await page.locator(sel).evaluate((el) => getComputedStyle(el).animationName);
+      expect(name, `${sel} after a mid-visit reduce flip`).toBe('none');
+    }
+  });
+
   test('persisted toggle-off: hero-anim never set, elements visible', async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem('motion', 'off'));
     await page.goto('/', { waitUntil: 'networkidle' });

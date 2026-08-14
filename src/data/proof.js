@@ -2,16 +2,16 @@
  * proof rules, never mixed — the footer's closing sentences state the rule;
  * this file is the data that has to obey it.
  *
- * employerRows — Oracle-tenure outcomes from the owner's CV via cv.js (D36's
- * authoritative source). Attribution lives ONCE, in the ledger heading —
- * never inside a row (RCA-002 ruling 2). Marked approximate at the ledger
- * level (ruling 1); `point` CAPTURES the exact figure from its cv.js
- * Oracle bullet — tests/proof-data.spec.js fails a row whose figure is
- * missing
- * from ITS OWN point (token-anywhere passes swapped figures; cv.js carries
- * 25 twice and 20 three times). The two near-duplicate −25% regression
- * claims (effort, time) are merged into one row; flaky −20% and production
- * defects −20% stay on /cv only (plan amendment, recorded).
+ * employerRows — CAREER outcomes from the owner's CV via cv.js (D36's
+ * authoritative source; RCA-005/P-21: the ledger depicts the overall
+ * career, not one tenure). No employer name renders anywhere in the act —
+ * `job` is a BINDING, never rendered: tests/proof-data.spec.js captures
+ * each row's figure from its own bullet inside its own cv.js job entry,
+ * and proof-act.spec.js proves /cv renders that job's name with the figure
+ * — attribution by name is one click deep, by machine. Marked approximate
+ * at ledger level (ruling 1). Rows are picked for OUTCOME distinctness
+ * (P-18, owner reviews the render); Oracle's regression-execution and
+ * root-cause rows stay on /cv only (RCA-005, recorded).
  *
  * capabilityRows — one plain-English clause per system (P-15: reader first,
  * mechanism second), phrased from the owner-approved overview lines.
@@ -32,19 +32,53 @@ export const definition =
 export const thesis =
   'Fourteen years I can tell you about. Four systems you can check yourself.';
 
+/* The qualifier depicts the career in the hero's own words. A dated span
+   (July 2011 – April 2026) was REJECTED by the plan fan: cv.js holds no
+   outcome figure before April 2015, so dates over these rows would be the
+   label-wider-than-content class RCA-005 exists to fix. The two FACTS here
+   are gated against cv.js in proof-data.spec.js: experience spans ≥ 14
+   years and carries exactly six employers. */
+export const qualifier = 'Approximate · Fourteen years, six employers';
+
 export const employerRows = [
-  { t: 'Manual test design', d: '~40% less effort', point: /manual test design effort by (40)%/i, figures: ['40'] },
-  { t: 'Automation coverage', d: '65% → 95%', point: /from (65)% to (95)%/i, figures: ['65', '95'] },
   {
-    t: 'Regression execution',
-    d: '~25% faster',
-    // Matches BOTH cv.js bullets (effort and time, one merged row — the
-    // plan amendment records the merge); the gate asserts set-equality.
-    point: /regression execution (?:effort|time) by (25)%/i,
+    t: 'Manual test design',
+    d: '~40% less effort',
+    job: 'Oracle',
+    point: /manual test design effort by (40)%/i,
+    figures: ['40'],
+  },
+  {
+    t: 'Automation coverage',
+    d: '65% → 95%',
+    job: 'Oracle',
+    point: /from (65)% to (95)%/i,
+    figures: ['65', '95'],
+  },
+  {
+    t: 'Production incidents',
+    d: '~20% fewer',
+    job: 'Oracle',
+    point: /production incidents by (20)%/i,
+    figures: ['20'],
+  },
+  // NEW to the act (never shipped before — named for the owner's render
+  // review): LimeRoad's payment figure. Chosen over Amazon's coverage and
+  // regression figures, which duplicate topics the Oracle rows already carry.
+  {
+    t: 'Payment defects in production',
+    d: '~25% fewer',
+    job: 'LimeRoad',
+    point: /payment-related production defects by (25)%/i,
     figures: ['25'],
   },
-  { t: 'Production incidents', d: '~20% fewer', point: /production incidents by (20)%/i, figures: ['20'] },
-  { t: 'Root-cause analysis', d: '~35% faster', point: /root-cause analysis by (35)%/i, figures: ['35'] },
+  {
+    t: 'Release validation',
+    d: '~35% less manual effort',
+    job: 'Mobileum',
+    point: /release-validation effort by roughly (35)%/i,
+    figures: ['35'],
+  },
 ];
 
 export const capabilityRows = [

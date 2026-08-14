@@ -1,11 +1,13 @@
-// The two-ledger act (#proof) — package 4B, RCA-002's rulings gated.
-// THE FULL MUTATION LEDGER LIVES IN docs/STATUS.md ROW D85; every named
-// mutation was applied against a commit, its assertion watched RED, restored.
-// In brief: rows carry no employer name (heading only); no rendered
+// The two-ledger act (#proof) — package 4B (RCA-002), rescoped by RCA-005:
+// the employer ledger depicts the CAREER, and NO employer name renders
+// anywhere in the act (attribution is performed on /cv, derived per row).
+// THE FULL MUTATION LEDGERS LIVE IN docs/STATUS.md ROWS D85 AND D87; every
+// named mutation was applied against a commit, watched RED, restored.
+// In brief: heading exact + whole-act employer bar; no rendered
 // "self-reported" on / or /cv (with painted APPROXIMATE partners on both);
 // no "No-Go" in the act (with the overview's painted "Phase 1 — No-Go" as
-// the same-file partner); each figure bound to ITS OWN cv.js Oracle point
-// (cv.js carries 25 twice and 20 three times — token-anywhere passes swaps);
+// the same-file partner); each figure bound to ITS OWN bullet in ITS OWN
+// cv.js job (proof-data.spec.js), and /cv renders each row's job + figure;
 // each capability term in the rendered sentence AND its evidence file;
 // thesis locked by full string including the count; D62 definition verbatim
 // at first use and in the footer. Evasions folded before matching (NFKC,
@@ -38,23 +40,8 @@ async function gotoReduced(page, path = '/') {
   await page.goto(path);
 }
 
-const painted = (loc) =>
-  loc.evaluate((el) => {
-    const r = el.getBoundingClientRect();
-    const doc = document.documentElement;
-    for (let a = el; a; a = a.parentElement) {
-      const cs = getComputedStyle(a);
-      if (cs.filter !== 'none' || cs.clipPath !== 'none') return false;
-    }
-    return (
-      el.checkVisibility({ opacityProperty: true, visibilityProperty: true }) &&
-      r.right > 0 &&
-      r.left >= 0 &&
-      r.left < doc.scrollWidth &&
-      r.bottom > 0 &&
-      r.top < doc.scrollHeight
-    );
-  });
+// Extracted to tests/lib/painted.mjs at 255/250 (D8: modularize, not trim).
+import { painted } from './lib/painted.mjs';
 
 test('the act sits between the hero and the systems — DOM and paint', async ({ page }) => {
   await gotoReduced(page);
@@ -125,7 +112,7 @@ test('footer definition on home and a project page', async ({ page }) => {
   }
 });
 
-test('approximate partners: act meta chained, /cv note painted, Amazon and Mobileum stay', async ({
+test('approximate partners: act meta chained, /cv note painted, every act figure attributed on /cv', async ({
   page,
 }) => {
   await gotoReduced(page);
@@ -133,38 +120,46 @@ test('approximate partners: act meta chained, /cv note painted, Amazon and Mobil
   await expect(dl).toHaveCount(1);
   const meta = page.locator('#proof-a-meta');
   // Full-string equality — 'Not approximate' passed a substring check.
-  expect(fold(await meta.innerText()).toLowerCase()).toBe('approximate · april 2019 - april 2026');
+  // RCA-005: the career qualifier; its two FACTS are gated against cv.js
+  // in proof-data.spec.js (span ≥ 14 years, exactly six entries).
+  expect(fold(await meta.innerText()).toLowerCase()).toBe(
+    'approximate · fourteen years, six employers',
+  );
   expect(await painted(meta)).toBe(true);
   await gotoReduced(page, '/cv');
   const note = page.locator('.cv-note');
   expect(fold(await note.first().innerText()).toLowerCase()).toContain('approximate');
   expect(await painted(note.first())).toBe(true);
-  // Scoped to the EXPERIENCE entries — 'Amazon' also appears in the awards
-  // list, which let a renamed employer entry slip past a page-wide match
-  // (watched during this file's own mutation run).
-  // Per-JOB figure binding — a page-wide contains let a 25→26 edit slip
-  // past on unrelated occurrences (Codex finding).
+  // DERIVED per act row (RCA-005/P-16): the act renders no employer name,
+  // so /cv must attribute EVERY act figure — the row's job name and its
+  // figure inside that job's own .cv-job block. Scoped per job: 'Amazon' in
+  // the awards list once satisfied a page-wide match; a page-wide contains
+  // let a 25→26 edit slip past on unrelated occurrences (both watched).
   const jobs = (await page.locator('.cv-job').allInnerTexts()).map(fold);
-  for (const [o, fig] of [['Amazon', '25%'], ['Mobileum', '35%']]) {
-    const job = jobs.find((t) => t.includes(o));
-    expect(job, `${o} missing from /cv experience`).toBeTruthy();
-    expect(job, `${o}'s own figure missing from its entry`).toContain(fig);
+  for (const r of employerRows) {
+    const job = jobs.find((t) => t.includes(r.job));
+    expect(job, `${r.job} missing from /cv experience`).toBeTruthy();
+    for (const fig of r.figures) {
+      expect(job, `${r.job}'s figure ${fig}% missing from its entry`).toContain(`${fig}%`);
+    }
   }
 });
 
-test('attribution lives in the heading alone; no employer inside the act rows', async ({
+test('the heading is exact, and no employer name renders anywhere in the act', async ({
   page,
 }) => {
   await gotoReduced(page);
+  // P-21's acceptance clause, gated positively — the absence bar alone
+  // would pass 'Career numbers' (plan-fan finding).
   const heading = fold(await page.locator('#proof-a').innerText());
-  expect(heading.toLowerCase()).toContain('oracle');
+  expect(heading.toLowerCase()).toBe('employer outcomes');
   const rows = await page.locator('#proof .proof-ledger .row').allInnerTexts();
   expect(rows.length).toBe(employerRows.length + capabilityRows.length);
-  // The WHOLE act minus the heading — an employer name in the intro or a
-  // meta line evaded a rows-only bar (Codex finding); fold() strips the
-  // zero-width characters that split 'Ora\u200Bcle' past the regex.
-  const act = fold(await page.locator('#proof').innerText()).replace(heading, '');
-  expect(EMPLOYERS.test(act), 'employer name outside the ledger heading').toBe(false);
+  // The WHOLE act, heading included — RCA-005 removed the act's one
+  // permitted employer name; there is no excuse zone left. fold() strips
+  // the zero-width characters that split employer names past the regex.
+  const act = fold(await page.locator('#proof').innerText());
+  expect(EMPLOYERS.test(act), 'employer name inside the act').toBe(false);
 });
 
 test('no No-Go in the act — and the overview still disparages nothing it holds', async ({

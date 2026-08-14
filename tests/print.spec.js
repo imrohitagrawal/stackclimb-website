@@ -22,7 +22,9 @@ import { test, expect } from '@playwright/test';
 /* `overview` came off this list when that plate was removed, and returned with
    package B, which restored the plate as an index — added back in the same
    change, so the one new plate is not the one plate with no print proof. */
-const PLATES = ['overview', 'citevyn', 'quorum', 'saafsaans', 'narratwin', 'private', 'contact'];
+/* `proof` added by package 4 in the same change that adds the plate — the
+   two-ledger act (D57 act 01), between the hero and #systems. */
+const PLATES = ['proof', 'overview', 'citevyn', 'quorum', 'saafsaans', 'narratwin', 'private', 'contact'];
 
 async function settle(page) {
   await page.waitForTimeout(3200); // past the ~3s smooth-scroll (DEF-21)

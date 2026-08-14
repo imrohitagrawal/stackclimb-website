@@ -4,6 +4,7 @@ import Plate from '../components/Plate.astro';
 import CapStrip from '../components/CapStrip.astro';
 import Ledger from '../components/Ledger.astro';
 import SystemPlate from '../components/SystemPlate.astro';
+import ProofPlate from '../components/ProofPlate.astro';
 import OverviewPlate from '../components/OverviewPlate.astro';
 import PrivateFigure from '../components/figures/PrivateFigure.astro';
 import { projects } from '../data/projects.js';
@@ -142,6 +143,9 @@ import '../styles/systems.css';
       </div>
     </div>
   </Plate>
+
+  {/* D57 act 01 — the two-ledger act, between the hero and the systems. */}
+  <ProofPlate />
 
   {/* The overview index, then the four systems, one plate each.
       D76 removed the old #overview for restating four plates at length; the

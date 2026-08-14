@@ -1,0 +1,62 @@
+---
+/* Package 4 — D57 act 01, the professional proof. Two ledgers with a seam:
+   employer outcomes are self-reported and say so; independent figures are
+   counted in code at recorded versions. Each ledger's heading is a VISIBLE h3
+   bound to its list with aria-labelledby — not Ledger.astro's aria-label-only
+   pattern, which renders labels invisibly. The seam is the act's argument, so
+   it must survive a headings-navigation pass (two h3s under the plate's h2).
+
+   The D62 definition sits inside the built-systems column, directly under its
+   heading: the first rendered-text "StackClimb" on the page is the sentence
+   that defines it (D60 clause: the definition appears where a cold reader
+   first meets the word — before this plate the word appeared only in the nav
+   wordmark's image alt). */
+import Plate from './Plate.astro';
+import { definition, employerRows, builtRows } from '../data/proof.js';
+import '../styles/proof.css';
+---
+
+<Plate id="proof">
+  <div class="plate-grid">
+    <div class="plate-copy">
+      <h2 class="plate-title tight">The record, in two ledgers</h2>
+      <p>
+        Fourteen years of employer outcomes, and the systems built since, are proved
+        differently — so they are kept apart. One ledger is self-reported and says so.
+        The other is counted in the code, where anyone can recount it.
+      </p>
+      <div class="proof-col">
+        <h3 id="proof-a" class="proof-label">Employer record — self-reported, approximate</h3>
+        <dl class="ledger proof-ledger" aria-labelledby="proof-a">
+          {
+            employerRows.map((r) => (
+              <div class="row">
+                <dt>{r.t}</dt>
+                <dd>{r.d}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+      <div class="links">
+        <a href="/cv">The full record</a>
+      </div>
+    </div>
+    <div class="plate-figure">
+      <div class="proof-col">
+        <h3 id="proof-b" class="proof-label">The four built systems — counted in the code</h3>
+        <p class="proof-defn">{definition}</p>
+        <dl class="ledger proof-ledger" aria-labelledby="proof-b">
+          {
+            builtRows.map((r) => (
+              <div class="row">
+                <dt>{r.t}</dt>
+                <dd>{r.d}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+  </div>
+</Plate>

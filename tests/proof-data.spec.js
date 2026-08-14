@@ -30,14 +30,17 @@ test('proof.js: D62 verbatim, thesis locked, five rows a side', () => {
 test('every employer figure is bound to its own cv.js Oracle point', () => {
   const oracle = experience.find((j) => j.org === 'Oracle');
   for (const r of employerRows) {
-    const points = oracle.points.filter((p) => r.point.test(p));
-    expect(points.length, `${r.t}: no Oracle point matches ${r.point}`).toBeGreaterThan(0);
+    // The point regex CAPTURES the claim's own figure(s) — a row whose
+    // figure matches a DIFFERENT figure in the same sentence stays red
+    // (cv.js:68 carries 25% and 20% in one bullet; token-in-point passed a
+    // swap, watched during this file's own mutation run).
+    const captured = oracle.points
+      .map((p) => p.match(r.point))
+      .filter(Boolean)
+      .flatMap((m) => m.slice(1));
+    expect(captured.length, `${r.t}: no Oracle point matches ${r.point}`).toBeGreaterThan(0);
     const rowFigs = r.d.match(FIGURE) || [];
-    expect(rowFigs, `${r.t}: row carries no figure`).not.toHaveLength(0);
-    for (const n of rowFigs) {
-      const bound = points.some((p) => (p.match(FIGURE) || []).includes(n));
-      expect(bound, `${r.t}: figure ${n} not in its own point(s): ${points}`).toBe(true);
-    }
+    expect(rowFigs, `${r.t}: row figures ≠ the claim's captured figures`).toEqual(captured);
     expect(rowFigs).toEqual(r.figures);
     expect(EMPLOYERS.test(r.t + ' ' + r.d), `${r.t}: employer name inside a row`).toBe(false);
   }

@@ -5,8 +5,7 @@
  * employerRows — Oracle-tenure outcomes from the owner's CV via cv.js (D36's
  * authoritative source). Attribution lives ONCE, in the ledger heading —
  * never inside a row (RCA-002 ruling 2). Marked approximate at the ledger
- * level (ruling 1); `point` names the one cv.js Oracle bullet the figure is
- * bound to — tests/proof-act.spec.js fails a row whose figure is missing
+ * level (ruling 1); `point` CAPTURES the exact figure from its cv.js Oracle bullet — tests/proof-act.spec.js fails a row whose figure is missing
  * from ITS OWN point (token-anywhere passes swapped figures; cv.js carries
  * 25 twice and 20 three times). The two near-duplicate −25% regression
  * claims (effort, time) are merged into one row; flaky −20% and production
@@ -32,11 +31,11 @@ export const thesis =
   'Fourteen years I can tell you about. Four systems you can check yourself.';
 
 export const employerRows = [
-  { t: 'Manual test design', d: '~40% less effort', point: /manual test design/i, figures: ['40'] },
-  { t: 'Automation coverage', d: '65% → 95%', point: /65% to 95%/i, figures: ['65', '95'] },
-  { t: 'Regression execution', d: '~25% faster', point: /regression execution/i, figures: ['25'] },
-  { t: 'Production incidents', d: '~20% fewer', point: /production incidents/i, figures: ['20'] },
-  { t: 'Root-cause analysis', d: '~35% faster', point: /root-cause analysis/i, figures: ['35'] },
+  { t: 'Manual test design', d: '~40% less effort', point: /manual test design effort by (40)%/i, figures: ['40'] },
+  { t: 'Automation coverage', d: '65% → 95%', point: /from (65)% to (95)%/i, figures: ['65', '95'] },
+  { t: 'Regression execution', d: '~25% faster', point: /regression execution (?:effort|time) by (25)%/i, figures: ['25'] },
+  { t: 'Production incidents', d: '~20% fewer', point: /production incidents by (20)%/i, figures: ['20'] },
+  { t: 'Root-cause analysis', d: '~35% faster', point: /root-cause analysis by (35)%/i, figures: ['35'] },
 ];
 
 export const capabilityRows = [

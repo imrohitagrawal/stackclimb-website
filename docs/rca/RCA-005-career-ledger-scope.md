@@ -56,6 +56,12 @@ the suffix. Consequences, applying his standing rulings to the new scope:
    the label-wider-than-content class this RCA exists to fix, one notch smaller. "Fourteen
    years, six employers" states the career (both facts derived from cv.js and gated:
    span ≥ 14 years, `experience.length` = 6) and matches the hero's own thesis words.
+   (Precision fix from the built fan: Subex carries a maintained `99% SLA adherence` — a
+   figure, but a held level, not an improvement delta of the kind ledger rows bind;
+   "carries none" was refutable by grep and reads "no improvement-delta figures" now.
+   Snapdeal genuinely carries none. The gates moved to month-granular span arithmetic and
+   distinct-org counting after the fan and the R-7 pass showed year math and entry counts
+   each held a false-green window.)
 3. **P-16 holds as written** — no employer name inside rows. With the heading unscoped, no
    employer name renders anywhere in the act; attribution by name is performed on `/cv`,
    where every figure sits under its employer (already gated), and machine-checked in the

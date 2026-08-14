@@ -18,7 +18,13 @@ import { experience } from '../src/data/cv.js';
 const DEFN =
   'StackClimb is where Rohit Agrawal builds independent AI systems — outside any employer.';
 const THESIS = 'Fourteen years I can tell you about. Four systems you can check yourself.';
-const EMPLOYERS = /oracle|amazon|mobileum|snapdeal|subex|limeroad/i;
+// DERIVED from cv.js, unioned with the legacy list — a hardcoded list let a
+// renamed employer slip every bar (Codex hole 10; mirrored in proof-act).
+const EMPLOYERS = new RegExp(
+  [...new Set([...experience.map((j) => j.org.toLowerCase()),
+    'oracle', 'amazon', 'mobileum', 'snapdeal', 'subex', 'limeroad'])].join('|'),
+  'i',
+);
 const norm = (t) => t.replace(/\s+/g, ' ').trim();
 const fold = (t) =>
   norm(t.normalize('NFKC').replace(/\p{Cf}/gu, '').replace(/\p{Pd}/gu, '-').replace(/\s/gu, ' '));
@@ -63,8 +69,8 @@ test('every employer figure is bound to its own bullet inside its own cv.js job'
 test('the career claim has its denominators: jobs spanned, span, and count', () => {
   // The rows must SPAN the career for the unscoped heading to be true —
   // ≥3 distinct jobs, at least one starting before 2016 (Mobileum, April
-  // 2015, is the earliest outcome-bearing bullet cv.js holds; Subex and
-  // Snapdeal carry no outcome figures — recorded in the plan).
+  // 2015, is the earliest improvement-delta bullet cv.js holds; Subex's
+  // one figure is a held 99% SLA level, Snapdeal carries none — the plan).
   const jobs = new Set(employerRows.map((r) => r.job));
   expect(jobs.size, 'rows collapsed back to fewer employers').toBeGreaterThanOrEqual(3);
   const years = employerRows.map((r) => {
@@ -73,12 +79,24 @@ test('the career claim has its denominators: jobs spanned, span, and count', () 
   });
   expect(Math.min(...years), 'no pre-2016 job among the rows').toBeLessThanOrEqual(2015);
   // The qualifier's two facts derive from cv.js — a hardcoded date span
-  // was rejected by the plan fan as unbindable. Partner: the string itself.
-  expect(qualifier.toLowerCase()).toContain('fourteen years, six employers');
-  expect(experience.length, 'cv.js no longer carries six employers').toBe(6);
-  const from = Math.min(...experience.map((j) => +j.from.match(/\d{4}/)[0]));
-  const to = Math.max(...experience.map((j) => +j.to.match(/\d{4}/)[0]));
-  expect(to - from, 'career span shorter than the qualifier claims').toBeGreaterThanOrEqual(14);
+  // was rejected by the plan fan as unbindable. Partner: the string itself
+  // (fold: the rendered pair carries an nbsp so 'six employers' cannot
+  // orphan across the wrap — recruiter-lens finding).
+  expect(fold(qualifier).toLowerCase()).toContain('fourteen years, six employers');
+  // DISTINCT orgs, not entry count — a boomerang second stint would keep
+  // length 6 while employers drop to five (built-fan finding).
+  const orgs = new Set(experience.map((j) => j.org));
+  expect(orgs.size, 'cv.js no longer carries six distinct employers').toBe(6);
+  // MONTH-granular — year arithmetic left an ~11-month false-green window
+  // ('April 2025' end reads as 14 by year math at 13y9m; Codex hole 6).
+  const month = (s) => {
+    const [m, y] = s.split(' ');
+    return +y * 12 + 'January February March April May June July August September October November December'
+      .split(' ').indexOf(m);
+  };
+  const from = Math.min(...experience.map((j) => month(j.from)));
+  const to = Math.max(...experience.map((j) => month(j.to)));
+  expect(to - from, 'career span under fourteen full years').toBeGreaterThanOrEqual(168);
 });
 
 test('every capability term traces to its sentence AND its evidence file', () => {

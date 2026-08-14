@@ -12,6 +12,12 @@ export const painted = (loc) =>
       const cs = getComputedStyle(a);
       if (cs.filter !== 'none' || cs.clipPath !== 'none') return false;
     }
+    // Fully transparent TEXT passes checkVisibility — `color: transparent`
+    // hid the qualifier from every reader while staying "painted" (Codex
+    // hole 12). Alpha 0 in the computed color is not painted.
+    const color = getComputedStyle(el).color;
+    const alpha = color.match(/rgba?\([^)]*[,/]\s*([\d.]+)\s*\)/);
+    if (alpha && parseFloat(alpha[1]) === 0) return false;
     return (
       el.checkVisibility({ opacityProperty: true, visibilityProperty: true }) &&
       r.right > 0 &&

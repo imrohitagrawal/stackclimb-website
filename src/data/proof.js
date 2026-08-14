@@ -38,7 +38,9 @@ export const thesis =
    label-wider-than-content class RCA-005 exists to fix. The two FACTS here
    are gated against cv.js in proof-data.spec.js: experience spans ≥ 14
    years and carries exactly six employers. */
-export const qualifier = 'Approximate · Fourteen years, six employers';
+// The nbsp keeps 'six employers' one unit — the pair wrapped as 'SIX /
+// EMPLOYERS' at both widths and read momentarily as 'fourteen years, six'.
+export const qualifier = 'Approximate · Fourteen years, six employers';
 
 export const employerRows = [
   {

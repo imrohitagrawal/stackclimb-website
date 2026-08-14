@@ -5,156 +5,124 @@ ultracode
 You are continuing work on stackclimb.com, the owner's personal site.
 `/Users/rohitagrawal/Projects/designing-website`. Astro, static, Cloudflare Pages.
 DEPLOYMENT IS APPROACH C: a merge to main deploys automatically through CI and verifies
-production itself (gates.yml deploy job; D81, C's run `31752881942`, package 4's run
-`31775613470`). Never run manual wrangler unless the CI deploy job fails — break-glass only.
+production itself (gates.yml deploy job; D81; package 4B's run `31794992352`). Never run
+manual wrangler unless the CI deploy job fails — break-glass only.
 
 READ FIRST, IN THIS ORDER, AND DO NOT SKIP:
-  AGENTS.md · docs/STATUS.md rows D84, D83, D80, D57, D62 · docs/OWNER-DIRECTIVES.md
-  docs/plan/package-4.md (the freshest planning precedent, including both amendment
-  sections and the conflict section) · docs/evidence/README.md
+  AGENTS.md · docs/STATUS.md rows D85, D84, D83, D80, D57, D62 · docs/OWNER-DIRECTIVES.md
+  (P-15 through P-19 are new and govern all copy) · docs/rca/RCA-002-proof-language.md ·
+  docs/plan/package-4b-proof-language.md (the freshest planning precedent — read both
+  amendment sections and the corrections in D85) · docs/evidence/README.md
 
-THEN STOP TRUSTING THEM. Every one of these files has been wrong in both directions.
-Verify by running a command before acting on any row. Package 4's decisive find was exactly
-this: the queue said "ship D60's canonical line verbatim" and the ledger's D62 (STATUS.md:54)
-had REPLACED that line at the owner's decision — the fan caught it, the queue had not.
-The ledger outranks this file. Always.
+THEN STOP TRUSTING THEM. Verify by running a command before acting on any row. The ledger
+outranks this file (D62 vs the stale queue proved it). D85's correction block is required
+reading: it records a hardening commit that broke two gates while the suite reads said
+green — EVERY suite read uses `set -o pipefail` + exit code, never `tail`, and playwright's
+failed-lines print ABOVE the passed line.
 
-THE RULE THAT MATTERS MOST (D79): a plan implementing a recorded decision must quote that
-decision CLAUSE BY CLAUSE, BY LINE NUMBER, each clause mapped to a named acceptance test or
-a written refusal. SUMMARIES ARE BANNED AS PLAN INPUT. Open the row. Package 4's plan fan
-still found three unmapped D57 clauses after the plan claimed compliance — map the WHOLE row.
+THE RULE THAT MATTERS MOST (D79, extended by RCA-002): a plan quotes every governing
+decision CLAUSE BY CLAUSE, BY LINE NUMBER (cite row IDs, not line numbers — the file
+grows), each clause mapped to a named acceptance test or a written refusal — AND the
+directives register's copy-governing `P-` rows are plan inputs (P-15 skipped once cost a
+full remedial package).
 
-== PENDING ON THE OWNER (surface these, do not build on them) ==
-
-  - PR #27 flagged one string decision: the FOOTER renders D62's definition without its
-    "— outside any employer" tail (the kept second sentence says those words in the next
-    breath; DEF-27's shape). The act renders the full line. If he wants the tail twice,
-    it is one string edit in Layout.astro. Recorded in D84.
+== RESOLVED BY THE OWNER THIS SESSION (do not re-open) ==
+  - Thesis count: FOUR ("Four systems you can check yourself") — confirmed, gated exact.
+  - Footer: D62's FULL definition, tail included, on every page's footer; D60's old second
+    sentence dropped there as redundant. Gated as the bar-partner string.
+  - P-16: "approximate", never "self-reported" (barred, Cf-folded). P-17: no No-Go on the
+    act. P-18: presentation delegated, he reviews renders. P-19: hero animates, guarded.
 
 == THE QUEUE, IN ORDER. ONE PACKAGE = ONE PR = MERGED BEFORE THE NEXT. ==
 
-PACKAGE 5 — /experience and /how-i-build (D57 clauses 8 and 9, refused-to-here by
-package 4's plan — open docs/plan/package-4.md's D57 map rows 3, 4, 8, 9):
+FIRST, SMALL — the footer row (owner's instruction 2026-08-14, deferred from 4B at his
+word: "add this as part of the next action item, let Package 4B be delivered"):
+  - The footer is too tall (measured 210px at 1440, 250 at 390). Owner-agreed direction:
+    ONE ROW at desktop — the definition left at reading alignment, © + the animation
+    toggle grouped right; stacked with tightened spacing at 390. Colophon.astro +
+    global.css colophon block; footer renders on every page, so eyeball all of them.
+    proof-act's footer assertions are text-based and survive; record the directive in the
+    register (P-20) in the same PR. Measure before/after heights into the STATUS row.
+
+PACKAGE 5 — /experience and /how-i-build (D57 clauses 8 and 9; open package-4's D57 map):
   - /experience: bird's-eye career evolution, complete CV downloadable from inside it
-    (D57 overrules D32). /how-i-build: the engineering model, including the published-skills
-    band (project-doc-skills, dot-github — the audit's differentiator; recorded threshold:
-    at three public skill repos it graduates to its own home act).
+    (D57 overrules D32). Amazon/Mobileum/LimeRoad rows live here in full (the home act is
+    Oracle-tenure only, P-16's ledger-level attribution model is the precedent).
+  - /how-i-build: the engineering model, including the published-skills band
+    (project-doc-skills, dot-github; recorded threshold: at three public skill repos it
+    graduates to its own home act).
   - ONLY AFTER both routes are live and linked: nav becomes
-    PROJECTS · EXPERIENCE · HOW I BUILD · CONTACT (D57 — the Systems refusal expires with
-    the 404s). Hero CTAs per D57: What I built · Career evolution · Email me. Nav visual
-    baselines move for the FIRST time — correct here and only here (they are cmp-verified
-    byte-identical through package 4; the gate that holds them is the same cmp discipline).
-  - Bump every plate-count floor and route list in the same change: contact.spec MIN_PLATES
-    (now 9), print.spec PLATES (now 8 ids incl. 'proof'), plate-height routes, links gates.
-  - HARD CONSTRAINTS carried from D84: #proof is 900px at 1440 — ZERO slack, any added line
-    on the home page above it that reflows it goes red; index.astro is 256/260 shrink-only;
-    the palette ladder passes with zero rendered slack again (7 declared + navy = 8) — any
-    NEW plate needs its own novel ground; new routes need footer definition (it is global —
-    Layout renders it, so new pages inherit it; proof-act.spec checks / and one project page).
+    PROJECTS · EXPERIENCE · HOW I BUILD · CONTACT (D57); hero CTAs What I built · Career
+    evolution · Email me. Nav visual baselines move for the FIRST time — here and only here.
+  - Bump every floor and route list in the same change: contact.spec MIN_PLATES (9),
+    print.spec PLATES (8 ids), plate-height ROUTES, links gates, proof-act's footer check
+    runs on '/' + one project page (new routes inherit the footer automatically — Colophon
+    is global).
+  - HARD CONSTRAINTS from D84/D85: #proof 900px zero slack at 1440 and 1443/1477 at 390;
+    index.astro 259/260 shrink-only; Layout.astro 227/250 (Colophon extracted); palette
+    ladder zero slack (7 declared + navy) — new plates need novel grounds; copy binds at
+    390, not 1440; measure with real MIME types (a scratch server without text/css gives
+    unstyled garbage).
 
-THEN THE OPEN REGISTER, IN THIS ORDER — the owner scheduled these on 2026-08-14; each is
-one package, planned with the same clause-by-clause rigour against its register row:
+THEN THE OPEN REGISTER, IN ORDER (owner-scheduled 2026-08-14): I-3 (alignment regression
+testing — small, first) · W-20 (watermark skill — APPROVED, register row stale, fix dated
+2026-08-12 in the same PR; built cross-repo in ~/Projects/project-doc-skills, applied here
+as og.png + footer-presence check) · P-9 (interactive résumé) · P-10 (comments, Giscus,
+low) · P-11 (NarraTwin avatar — heaviest, last) · I-4 (memory/dreaming — plan, then STOP).
+For P-9/P-10/P-11: plan autonomously, STOP at genuinely-owner decisions.
 
-  I-3 — alignment regression testing: a toggle that drifts must fail (plan phase 1.4).
-    Small, test-infrastructure shaped; do it first.
-  W-20 — the watermark skill. APPROVED BY THE OWNER 2026-08-12 — the approval and his
-    answers to all three scope questions are recorded in docs/rca/RCA-001-watermark-skill.md
-    (read it whole); the OWNER-DIRECTIVES register row still says "awaiting approval" and is
-    STALE — fix that row, dated 2026-08-12, in the same PR that starts the work.
-    CROSS-REPO: the skill is BUILT in ~/Projects/project-doc-skills as a ninth skill in
-    skills/, built into dist/watermark.skill by build-skills.sh (RCA answer 3). What lands
-    in THIS repo is the application: og.png (the whole real case — it ships uncredited) and
-    the HTML footer-presence check. Session close then covers both repos.
-  P-9 — interactive résumé (plan phase 4.4).
-  P-10 — comments facility (Giscus recommended in the register; low priority).
-  P-11 — NarraTwin avatar as the site's representative (plan phase 7.3). Heaviest; last.
-  I-4 — memory management across projects, using dreaming. Cross-project and underdefined:
-    plan it, then STOP and present the plan — do not build it without the owner's answer.
+== HOW TO WORK (all learned the expensive way; additions from 4B in caps) ==
 
-  For P-9, P-10, and P-11: plan autonomously, but STOP at every decision that is genuinely
-  the owner's — new self-descriptions, anything visual that stands in for him (the avatar's
-  look and voice above all), what a comment section says about the site's character. Present
-  the decision with options and a recommendation; build only after his answer.
-
-== HOW TO WORK (all of it learned the expensive way) ==
-
-  - ONE WRITER. Fan reviews, never construction. Do not edit the tree while a review fan
-    or reviewer subagent is running — package 4 held its fix batch until the fan returned.
-  - Review fans: full 7-lens fan on each package's PLAN and on its BUILT RESULT (Engineering
-    Architect, Engineering Manager, Hiring Recruiter, Engineering Peer, UI/UX Expert, Test
-    Check, ui-ux-pro-max as the one skill lens). Reviewers execute — at least one must RUN
-    the pages. REFUTE FINDINGS BEFORE ACTING (the ratio moves: 23/32 refuted once, 17/21
-    confirmed once, package 4 ran 0-refuted twice — the verification pass is what holds).
-    Fixes get their own reviewer. Two rounds max, then ship with residuals written into
-    docs/STATUS.md.
-  - CODEX (R-7, owner-resolved): none anywhere EXCEPT one hard-time-boxed 5-minute
-    `codex exec --sandbox read-only` pass on TEST-FILE changes. It has now paid THREE times:
-    package 4 found 14 holes in a spec that had just survived nine watched-red mutations
-    (token-boundary 76-in-767, U+2011 past a regex bar, entity-encoded barred phrase,
-    negation past a substring match, aria-hidden past every paint check, unanchored sha).
-    macOS has no `timeout` binary — box it with the Bash tool timeout. Its full output
-    survives in ~/.codex/sessions/<date>/rollout-*.jsonl if the console truncates.
-  - ASSERT PAINTED AND EXACT, NOT DECLARED. checkVisibility is ancestor-aware for opacity/
-    visibility but NOT for filter; assert filter and geometry separately (off-screen passes
-    checkVisibility). Role queries (getByRole) are the only assertions that see aria-hidden.
-    NFKC-fold and dash-fold text before any barred-string regex. Token-bound every figure
-    (a substring is not a token). Compare dt case-folded (CSS uppercase transform), dd exact.
-  - COMMIT BEFORE MUTATION-TESTING. Every mutation batch runs against a commit; record
-    mutation→red-test pairs in the STATUS row (a header claim without a record reads as
-    UNVERIFIED — a fan confirmed exactly that in package 4).
-  - FILE BUDGET BITES: new files ≤250 lines — CI failed the hardened spec at 266 before
-    the header was compressed. Check `node tests/file-budget.mjs` locally before pushing.
-  - THE STASH TRAP: any playwright run REBUILDS dist/ (DEF-11). After git stash pop, run
-    npm run build before measuring anything, or you measure the stashed tree.
-  - MEASURE WITH REAL MIME TYPES: a scratch static server without a css content-type gives
-    unstyled pages and garbage heights (package 4 measured 550px for a 900px plate that way).
-  - COPY HEIGHT BINDS AT 390, NOT 1440. Measure copy at 390.
-  - Read every commit's file list before pushing (the D78 git add -A lesson).
-  - Visual baselines: CI ONLY (gh workflow run gates.yml --ref <branch>
-    -f update_visual_baselines=true), download the artifact, commit -linux files unchanged,
-    cmp-verify nav baselines byte-identical (UNTIL package 5's nav change — then they move,
-    deliberately, once), regenerate as the LAST commit before the PR settles. Plate -darwin
-    PNGs are LOCAL-ONLY, never committed — delete stale ones, they regenerate.
-  - W-1 has teeth: read origin/<default-branch>, never the checkout. Defaults:
-    saaf-saans → master; narratwin-ai, evalaxis → main. Nesting:
-    ~/Projects/narratwin/narratwin-ai/narratwin-ai · ~/Projects/evalaxis/evalaxis-ai.
-  - Orphaned astro preview: kill by PID from lsof -iTCP:<port>. Never print secret values.
-  - docs/STATUS.md updated IN THE SAME PR, never after — a built-result fan BLOCKED package 4
-    on exactly this. Deploy run ids land in a small follow-up PR, D81/D83/D84-style.
-  - Branch protection is on. Merging a green, twice-reviewed package PR is authorised.
-    THE MERGE IS THE DEPLOY: watch the push run's deploy job RUN green (not skip), then
-    independently verify — npm run post-deploy (expect a NEW css hash), every route directly
-    (post-deploy reads only /), and the barred-claim sweep on the LIVE pages, NFKC-folded.
-    Record the run id in the ledger.
-  - STOP ENTIRELY and escalate, DECLARING it, if a circuit breaker fires (AGENTS.md's
-    list). Stop and ask when a decision is genuinely the owner's: new self-descriptions,
-    Seeking/roles copy, killing an unflattering fact (forbidden), a directive conflict.
-  - Close the session properly: summary with numbers, main level with origin by command,
-    branches deleted both sides, processes killed, ports free, git status clean, fresh
-    handoff written to docs/NEXT-SESSION-PROMPT.md.
+  - ONE WRITER. Fan reviews, never construction. NEVER edit the tree while a fan runs.
+  - COMMIT BEFORE MUTATION-TESTING — ABSOLUTE. 4B ran one batch against a dirty tree and
+    its `git checkout` restores DESTROYED three uncommitted fixes, twice. Mutations only
+    ever against a sealed commit; record mutation→red pairs in the STATUS row.
+  - PIPEFAIL + EXIT CODE on every suite read. `tail` hid a red suite twice in one day.
+  - Review fans: 7 lenses on PLAN and BUILT RESULT (Architect, Manager, Recruiter, Peer,
+    UI/UX, Test Check, ui-ux-pro-max). Reviewers execute; verifiers refute before adoption
+    (4B plan fan: 45→17 confirmed 0 refuted; built fan: 24→19 confirmed 0 refuted — the
+    0-refuted streak means findings are cheap to confirm here, keep the verify pass).
+    Fixes get their own reviewer. Two rounds, then residuals into docs/STATUS.md.
+  - CODEX (R-7 carve-out): one 5-minute `codex exec --sandbox read-only` pass on TEST-FILE
+    changes. Paid FOUR times now (14 + 15 holes in 4/4B). Box with the Bash tool timeout.
+  - ASSERT PAINTED AND EXACT: checkVisibility is ancestor-aware for opacity/visibility,
+    NOT filter/clip-path — walk ancestors; role queries are the only aria-hidden-aware
+    assertions; Cf-strip (U+00AD, U+200B-2060, FEFF) BEFORE any barred-string regex;
+    decode numeric entities in raw-HTML scans; token-bound figures; bind a figure to ITS
+    OWN source bullet by capture, set-equality when one row merges two bullets; scope /cv
+    partners per .cv-job (the awards line satisfied a page-wide match); exact cell values
+    (60/40/20 passed a substring 6/4/2 check); full-string equality for labels (negation
+    passed substring). CI-only tap-target reds at '44px': device-pixel rounding — the gate
+    carries a half-pixel tolerance, diagnosed and proved both directions in D85.
+  - FILE BUDGET: new files ≤250 lines, 120 chars. Modularize, never comment-trim (Colophon
+    and proof-data/hero-motion splits are the precedent). `node tests/file-budget.mjs`
+    before every push.
+  - Visual baselines: CI ONLY, artifact download, nav cmp byte-identical (UNTIL package
+    5's nav change), stale plate -darwin PNGs deleted (nav -darwin are current, leave).
+  - THE STASH TRAP (DEF-11): playwright runs rebuild dist; rebuild before measuring.
+  - Read every commit's file list before pushing. Deploy: THE MERGE IS THE DEPLOY — watch
+    the deploy job RUN green, post-deploy expects a NEW css hash, every route directly,
+    the barred sweep Cf-folded on live pages, run id in a follow-up PR (D81–D85 style).
+  - W-1: read origin/<default-branch> of sibling repos, never the checkout.
+  - STOP and declare if a circuit breaker fires. Stop for genuinely-owner decisions.
+  - Close the session properly: summary with numbers, main level with origin, branches
+    deleted both sides, ports free, tree clean, fresh handoff here.
 
 == CLAIMS THAT MUST NEVER SHIP ==
 
-CiteVyn: never eval_report.json (the stub), never "hit-rate 1.0 over 54", never "zero
-refusal leaks" unqualified, the 52-case golden suite is NOT the promotion gate, panel-N for
-the 4.63 run is UNVERIFIED. Quorum: the four models never read each other, never "a fifth
-model", round 2 skipped on budget is recorded as skipped. SaafSaans: never "live"
-unqualified, no sample mode, "21 stations" only with the repo-stated hedge, never "senior
-with asthma scores 76" (the adult scores 76; a senior 86), never "three orders apart" (60×),
-never 1,414 or 1,372 unlabelled, its merge is "both run, stricter wins" — never "overrides
-a generative output". NarraTwin: no real LLM — every grounding guarantee is about the
-harness and the live copy SAYS so (keep it); the gap is SHA-absence; the evidence file's
-REFUTED table is INVERTED, its correction section governs (0.903/0.75 are the committed
-values). EvalAxis: never 13,769 or 426; the two regression tests are ALTERNATIVES — either
-fires — never "and". Employer numbers: attribution exact — root-cause analysis ~35% is
-ORACLE, manual release-validation effort ~35% is MOBILEUM, the only 25% is AMAZON coverage;
-"release validation −25%" exists nowhere and never ships, in any spelling (NFKC-fold before
-sweeping). **Never "product studio" — D62 dropped it at the owner's decision.** Nothing
-ships except VERIFIED-in-evidence or labelled REPORTED.
+Everything in the 29-string live sweep D85 records, plus: never "self-reported" (P-16,
+any folded spelling) · never "product studio" (D62) · never "No-Go"/"not deployed" on the
+#proof act (P-17 — it stays on the overview/plates/project pages) · never "cross-model
+critique" (quorum's evidence prescribes "moderated critique"; the four never read each
+other) · never "pre-1.0" for EvalAxis (its evidence bars 1.0-status; "private, in
+progress") · SaafSaans labels are "live, cached, or no reading" · employer figures ONLY
+from cv.js, captured per bullet, attribution at ledger level, `~`-marked, Oracle-tenure
+only on the act · the thesis says FOUR · the mockup's "−30% test execution" and "MTTD"
+never ship. Nothing except VERIFIED-in-evidence or labelled REPORTED.
 
 == HOW TO WRITE TO THE OWNER ==
 
 Plain English. Lead with the answer; if it is no, the first word is no. Short sentences,
 bullets, a concrete example. No jargon, no AI filler. Never re-explain what he has acted
-on. Disagree out loud BEFORE complying when evidence contradicts an instruction — conflict,
-evidence, your position, an everyday analogy.
+on. Disagree out loud BEFORE complying when evidence contradicts an instruction —
+conflict, evidence, your position, an everyday analogy.

@@ -57,9 +57,15 @@ for (const route of ROUTES) {
             continue;
           }
           // Inline links in prose keep the text flow; everything else is a
-          // control and owes a finger 44px.
+          // control and owes a finger 44px. Half-a-pixel tolerance: under
+          // the mobile emulation's fractional deviceScaleFactor, a control
+          // specified at exactly 44 CSS px can round to 43.81 depending on
+          // its subpixel y-offset — an environment artifact, not a design
+          // defect (it flipped between CI runs of identical code, 4B).
+          // Proved both directions: a real 40px control still fails; the
+          // rounded 44px control passes.
           const inline = cs.display === 'inline';
-          if (!inline && r.height < higMin) {
+          if (!inline && r.height < higMin - 0.5) {
             faults.push(`${label} — standalone control under ${higMin}px`);
           }
         }

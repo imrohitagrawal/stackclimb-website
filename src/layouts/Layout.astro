@@ -4,6 +4,7 @@
    stripped to true transparency (approved) — shape and colours otherwise
    exactly his files. Imported so the asset is content-hashed, unlike /public
    (the DEF-24 trap). */
+import Colophon from '../components/Colophon.astro';
 import brandMark from '../assets/brand-mark-nav.png';
 /* Item 7. Real "StackClimb" wordmark, cropped from the owner's supplied
    dark-background/white variant to text only (the icon ships separately as
@@ -123,6 +124,13 @@ const EMAIL = 'mailto:rohit.ra.agrawal@gmail.com';
       try {
         if (localStorage.getItem('motion') === 'off') {
           document.documentElement.dataset.motion = 'off';
+        } else if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          /* 4B hero entrance flag, set PRE-PAINT so the hidden-then-rise
+             start state never flashes visible first. The rise itself is a
+             pure CSS animation (motion.css) — no module load can strand the
+             hero hidden; with JS off this script never runs and the hero is
+             simply visible (DEF-1). */
+          document.documentElement.classList.add('hero-anim');
         }
       } catch (e) {}
     </script>
@@ -205,40 +213,9 @@ const EMAIL = 'mailto:rohit.ra.agrawal@gmail.com';
       <slot />
     </main>
 
-    <footer class="colophon">
-      {/* DEF-36. This line used to continue: "Built as a work sample — static Astro,
-          self-hosted type, no trackers, no invented claims". Every clause described the
-          site rather than him, and "work sample" told a recruiter the whole page was an
-          exercise rather than a record. Deleted rather than rewritten: removing harmful
-          words needs no skill, writing new ones does. Any replacement is Phase 0 work
-          with brand-voice. A colophon may simply be a colophon. */}
-      {/* D62 (STATUS.md:54) — the definition (which replaced D60's "product
-          studio" line), plus D60's kept second and third sentences verbatim.
-          Stated deviation (docs/plan/package-4.md): the definition's
-          "— outside any employer" tail is dropped HERE only — the next
-          sentence states those words verbatim (DEF-27's shape). The #proof
-          act renders D62's full line. */}
-      <p class="colophon-defn">
-        StackClimb is where Rohit Agrawal builds independent AI systems. Independent
-        projects are built outside any employer. Employer outcomes are attributed to
-        their employer and marked approximate.
-      </p>
-      <p>© 2026 Rohit Agrawal · Bengaluru</p>
-      {/* Item 5. docs/HANDOFF.md's spec: animation ON by default, a footer
-          toggle, state persisted in localStorage. A real <button> with
-          aria-pressed — no CSS-only mechanism can persist state across a
-          page load, so unlike the mobile menu this is real script
-          (src/scripts/motion-toggle.js), not enhancement over a working
-          native control. */}
-      <button
-        type="button"
-        class="motion-toggle"
-        id="motion-toggle"
-        aria-pressed="false"
-      >
-        Animation: <span data-motion-label>on</span>
-      </button>
-    </footer>
+    {/* Extracted to its own component when the D8 budget caught this file
+        at 257/250 — the colophon is one concern (definition, ©, toggle). */}
+    <Colophon />
 
     <script>
       import '../scripts/plates.js';

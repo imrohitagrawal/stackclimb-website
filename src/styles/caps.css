@@ -19,6 +19,7 @@
 .cap:last-child:nth-child(3n + 2) { grid-column: span 2; }
 .cap:last-child:nth-child(3n + 1) { grid-column: span 3; }
 .cap {
+
   display: grid; gap: 0.18rem;
   text-align: center;
   padding: 0.7rem 0.9rem 0.62rem;
@@ -39,6 +40,8 @@
    end of every long one — "CLAIM · CONSENT …", "WITHHELD BY DES…". A caption
    that hides the fact it is captioning is worse than a taller strip. */
 .cap .d {
+  margin-top: auto;
+
   font-size: 0.74rem; font-weight: 640;
   letter-spacing: 0.09em; text-transform: uppercase;
   text-wrap: balance;

@@ -8,13 +8,21 @@ interface Item {
 
 interface Props {
   items: Item[];
-  label: string;
+  label?: string; // invisible accessible name (legacy mode)
+  labelledby?: string; // id of a PAINTED element that names the strip — when
+  // present it replaces aria-label so the visible and accessible names
+  // cannot diverge (package 4B, the hero thesis line)
 }
 
-const { items, label } = Astro.props;
+const { items, label, labelledby } = Astro.props;
 ---
 
-<div class="caps" role="list" aria-label={label}>
+<div
+  class="caps"
+  role="list"
+  aria-label={labelledby ? undefined : label}
+  aria-labelledby={labelledby}
+>
   {
     items.map((i) =>
       i.href ? (

@@ -50,7 +50,7 @@ export const summary = [
 
 /* Reverse chronological. `scope` is one line; `points` are the owner's own
  * achievement statements, condensed but not reworded into claims he did not make.
- * Every percentage here is self-reported and the page labels it once, at the top
+ * Every percentage here is approximate (internal, unverifiable from outside) and the page labels it once, at the top
  * of the section, rather than repeating the caveat on each line.
  */
 export const experience = [

@@ -1,0 +1,38 @@
+---
+/* The site footer, extracted from Layout.astro when the D8 file budget
+   caught the layout at 257/250 — modularized, not comment-trimmed, per the
+   gate's own instruction. One concern: the colophon. */
+---
+
+<footer class="colophon">
+  {/* DEF-36. This line used to continue: "Built as a work sample — static Astro,
+      self-hosted type, no trackers, no invented claims". Every clause described the
+      site rather than him, and "work sample" told a recruiter the whole page was an
+      exercise rather than a record. Deleted rather than rewritten: removing harmful
+      words needs no skill, writing new ones does. A colophon may simply be a colophon. */}
+  {/* Owner's ruling 2026-08-14 (on the PR-4B question): the FULL D62
+      definition ships here, tail included — the footer is the one surface
+      every page carries. D60's kept second sentence is dropped as pure
+      repetition once the tail is present (its three words appear verbatim
+      in the sentence before it); the third sentence stays. */}
+  <p class="colophon-defn">
+    StackClimb is where Rohit Agrawal builds independent AI systems — outside any
+    employer. Employer outcomes are attributed to their employer and marked
+    approximate.
+  </p>
+  <p>© 2026 Rohit Agrawal · Bengaluru</p>
+  {/* Item 5. docs/HANDOFF.md's spec: animation ON by default, a footer
+      toggle, state persisted in localStorage. A real <button> with
+      aria-pressed — no CSS-only mechanism can persist state across a
+      page load, so unlike the mobile menu this is real script
+      (src/scripts/motion-toggle.js), not enhancement over a working
+      native control. */}
+  <button
+    type="button"
+    class="motion-toggle"
+    id="motion-toggle"
+    aria-pressed="false"
+  >
+    Animation: <span data-motion-label>on</span>
+  </button>
+</footer>

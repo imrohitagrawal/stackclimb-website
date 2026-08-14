@@ -137,3 +137,4 @@ test.describe('prefers-reduced-motion overrides the toggle', () => {
     await context.close();
   });
 });
+

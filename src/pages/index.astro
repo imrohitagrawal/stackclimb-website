@@ -5,6 +5,7 @@ import CapStrip from '../components/CapStrip.astro';
 import Ledger from '../components/Ledger.astro';
 import SystemPlate from '../components/SystemPlate.astro';
 import ProofPlate from '../components/ProofPlate.astro';
+import { thesis } from '../data/proof.js';
 import OverviewPlate from '../components/OverviewPlate.astro';
 import PrivateFigure from '../components/figures/PrivateFigure.astro';
 import { projects } from '../data/projects.js';
@@ -124,20 +125,22 @@ import '../styles/systems.css';
           of real counted figures — the first thing read is evidence, not
           a "no." */}
       <div class="plate-figure">
+        {/* 4B: the thesis leads, paints instantly, and IS the strip's
+            accessible name (they cannot diverge); the quote is subordinated.
+            Strip keeps D82's population, drops the two unparseable tokens. */}
+        <p id="hero-thesis" class="hero-thesis">
+          {thesis.split('. ').map((s, n, a) => <span class="ts">{n < a.length - 1 ? s + '. ' : s}</span>)}
+        </p>
         <p class="hero-quote">
           "If your AI features work in the demo and not in the release, we should talk."
         </p>
         <CapStrip
-          label="The record, in numbers"
+          labelledby="hero-thesis"
           items={[
-            /* Owner 08-14: the bare fraction read as shortfall. A recruiter
-               lens diagnosed the symptom (D79 records its deletion fix as
-               rejected); the owner's fix is completion — all three facts. */
-            { t: 'Total systems', d: '6' },
+            { t: 'Systems of my own', d: '6' },
             { t: 'Built', d: '4' },
             { t: 'In progress', d: '2' },
-            { t: 'Release gates', d: '4' },
-            { t: 'Golden cases passed', d: '52 / 52' },
+            { t: 'Every figure', d: 'Counted, or marked approximate' },
           ]}
         />
       </div>

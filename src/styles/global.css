@@ -283,9 +283,28 @@ body::before {
   font-family: var(--serif);
   font-style: italic;
   font-weight: 460;
-  font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+  /* 4B: subordinated under the thesis line — one memorable sentence per
+     column, and the thesis is the claim; this is the reader's problem. */
+  font-size: clamp(1rem, 1.4vw, 1.1rem);
   line-height: 1.4;
+  opacity: 0.85;
   color: color-mix(in srgb, currentColor 92%, var(--ochre));
+}
+
+/* The thesis line (4B, RCA-002 ruling 6): the hero's memorable sentence.
+   Paints instantly — deliberately NOT in the hero entrance animation. */
+.hero-thesis {
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.5;
+  max-width: 30ch;
+  margin: 0 0 0.8rem;
+}
+/* One sentence per line on a phone — 'about.' dangled mid-line at 390
+   (built-fan finding; the amendment requires the sentence break). */
+@media (max-width: 900px) {
+  .hero-thesis { max-width: none; font-size: 1.02rem; }
+  .hero-thesis .ts { display: block; }
 }
 
 .hero h1 {

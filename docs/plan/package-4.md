@@ -127,7 +127,10 @@ sweep: `product studio` · `release validation -25%` (both spellings of the 25% 
 - `src/components/ProofPlate.astro` (new, ≤250 lines) + `src/styles/proof.css` (new)
 - `src/data/proof.js` (new, small) — employer rows + the shared counted-row derivation, so
   the act and the strips cannot drift apart
-- `src/pages/index.astro` — +2 lines (import + element), 254/260
+- `src/pages/index.astro` — +4 lines as shipped (import, comment, element, blank), 256/260
+  — the plan first said +2/254; corrected by the built-result fan, ceiling still held
+- `src/styles/global.css` — `.colophon-defn` sentence-case rule (added to this list by the
+  built-result fan; the colophon's all-caps treatment made three sentences shout)
 - `src/styles/palette.css` — the one novel `#proof` ground, measured contrast in comment
 - `src/layouts/Layout.astro` — the footer definition + kept sentences (map row 3)
 - `tests/proof-act.spec.js` (new, ≤250 lines) — the named assertions above, each
@@ -158,6 +161,22 @@ perceivability (uiux-pro-max splits, confirmed parts) · Amazon row (recruiter) 
 attribution `dt` · evidence-noun units. Round-1 refuted: none — the fan's findings all held,
 which is itself recorded (the verification pass confirmed rather than culled this time; the
 ratio moves, the pass is what holds).
+
+## Amendments — the built-result fan + the R-7 Codex pass (round 1), 2026-08-14
+
+The built-result fan raised 28 findings (18 CONFIRMED, 2 SPLIT, 0 REFUTED; three lens BLOCKs,
+all for the then-missing D84 ledger row — added with the fix batch). The time-boxed Codex
+pass on the test files found **14 holes two same-family reviews had passed** (token-boundary
+76-in-767, U+2011 evading the 25% bar, entity-encoded `product studio`, negation passing a
+substring label match, aria-hidden invisible to every paint check, unanchored sha parse,
+off-screen/filtered "painted", hidden-row innerText, no four-row denominator, DOM-vs-visual
+order, horizontal-blind adjacency, first-use decoys, case-folded dd, print.spec root-only).
+All folded into the hardened spec; each new guard's mutation watched red against `70beff9`.
+Residuals, written down rather than chased (two-round cap): print.spec's root-only computed
+check is the file's pre-existing architecture across all eight plates, not this package's;
+the hero→proof gutter is iso-luminant (1.0007:1) by design of a hue-stepped ladder — the
+verifier measured the seam sharp and required nothing; NarraTwin's `tests` unit matches its
+own strip cell and stays.
 
 ## Definition of Done, applied
 

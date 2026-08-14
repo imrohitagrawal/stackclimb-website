@@ -1,0 +1,68 @@
+/* The footer colophon — extracted from global.css when the footer-row package
+   (P-20) needed rules the 497/500 grandfathered ceiling could not take.
+   Modularized, never trimmed, per the D8 gate's own instruction. One concern:
+   the colophon.
+
+   Owner's instruction 2026-08-14 (P-20): ONE ROW at desktop — the definition
+   left at reading alignment, © + the animation toggle grouped right; stacked
+   with tightened spacing at 390. Measured before: 209.59px at 1440,
+   249.53px at 390. */
+
+.colophon {
+  color: var(--bone);
+  text-align: center;
+  /* was 2.2rem 1.5rem 2.8rem — the tightened stack (P-20) */
+  padding: 1.4rem 1.5rem 1.6rem;
+  font-size: 0.66rem; font-weight: 520;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  opacity: 0.62;
+}
+
+/* The D62 definition (package 4). Three sentences in the colophon's all-caps
+   treatment read as shouting; sentence case, slightly larger, still quiet. */
+.colophon-defn {
+  text-transform: none;
+  letter-spacing: 0.04em;
+  font-size: 0.78rem;
+  max-width: 46rem;
+  margin: 0 auto 0.6rem;
+}
+
+.colophon-legal p { margin: 0; }
+/* motion.css gives the toggle 0.9rem; the tightened stack wants less. The
+   two-class selector outranks motion.css's one wherever import order lands. */
+.colophon-legal .motion-toggle { margin-top: 0.6rem; }
+
+@media (min-width: 901px) {
+  .colophon {
+    text-align: left;
+    padding: 1.1rem clamp(1.25rem, 4.5vw, 4rem);
+  }
+  /* Reading alignment, measured not assumed: plate copy sits inside
+     .plate-frame — width min(1240px, 100%), centered, padding
+     clamp(1.75rem, 4vw, 4rem), 1px border — left edge 158.6px at 1440.
+     The plate's OUTER padding alone lands 94.6px left of that (the plan
+     fan's refuted first draft). This row replicates the frame's geometry;
+     the +1px stands in for its border. */
+  .colophon-row {
+    width: min(1240px, 100%);
+    margin-inline: auto;
+    padding-inline: calc(clamp(1.75rem, 4vw, 4rem) + 1px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+  /* The defn wraps at mid widths instead of jamming the row — 46rem defn
+     plus the nowrap legal group exceeds the content width below ~1250px
+     (fan finding, confirmed at six widths). */
+  .colophon-defn { flex: 1 1 auto; min-width: 0; margin: 0; }
+  .colophon-legal {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    white-space: nowrap;
+  }
+  .colophon-legal .motion-toggle { margin-top: 0; }
+}

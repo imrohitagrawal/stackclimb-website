@@ -42,7 +42,7 @@ const painted = (loc) =>
     const doc = document.documentElement;
     for (let a = el; a; a = a.parentElement) {
       const cs = getComputedStyle(a);
-      if (cs.filter !== 'none' || (cs.clipPath !== 'none' && a === el)) return false;
+      if (cs.filter !== 'none' || cs.clipPath !== 'none') return false;
     }
     return (
       el.checkVisibility({ opacityProperty: true, visibilityProperty: true }) &&

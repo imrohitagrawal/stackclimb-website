@@ -17,7 +17,8 @@ const DEFN =
 const THESIS = 'Fourteen years I can tell you about. Four systems you can check yourself.';
 const EMPLOYERS = /oracle|amazon|mobileum|snapdeal|subex|limeroad/i;
 const norm = (t) => t.replace(/\s+/g, ' ').trim();
-const fold = (t) => norm(t.normalize('NFKC').replace(/\p{Pd}/gu, '-').replace(/\s/gu, ' '));
+const fold = (t) =>
+  norm(t.normalize('NFKC').replace(/\p{Cf}/gu, '').replace(/\p{Pd}/gu, '-').replace(/\s/gu, ' '));
 const FOOTER_HEAD = 'StackClimb is where Rohit Agrawal builds independent AI systems.';
 const FIGURE = /(?<![\d,.])\d[\d,]*(?:\.\d+)?(?![\d,.])/g;
 

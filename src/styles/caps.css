@@ -19,8 +19,6 @@
 .cap:last-child:nth-child(3n + 2) { grid-column: span 2; }
 .cap:last-child:nth-child(3n + 1) { grid-column: span 3; }
 .cap {
-  display: flex;
-  flex-direction: column;
 
   display: grid; gap: 0.18rem;
   text-align: center;

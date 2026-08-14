@@ -14,10 +14,15 @@ export const painted = (loc) =>
     }
     // Fully transparent TEXT passes checkVisibility — `color: transparent`
     // hid the qualifier from every reader while staying "painted" (Codex
-    // hole 12). Alpha 0 in the computed color is not painted.
-    const color = getComputedStyle(el).color;
-    const alpha = color.match(/rgba?\([^)]*[,/]\s*([\d.]+)\s*\)/);
-    if (alpha && parseFloat(alpha[1]) === 0) return false;
+    // hole 12). Alpha 0 in the computed color is not painted. Component
+    // split, not a regex — the first regex captured the BLUE channel of an
+    // opaque rgb() and false-redded black text (round-2 reviewer, proved
+    // by execution before it ever fired).
+    const parts = getComputedStyle(el)
+      .color.replace(/rgba?\(|\)/g, '')
+      .split(/[,/]/)
+      .map((s) => parseFloat(s));
+    if (parts.length === 4 && parts[3] === 0) return false;
     return (
       el.checkVisibility({ opacityProperty: true, visibilityProperty: true }) &&
       r.right > 0 &&

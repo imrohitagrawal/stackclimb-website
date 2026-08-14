@@ -28,8 +28,9 @@ const FOOTER_HEAD = DEFN;
 const THESIS = 'Fourteen years I can tell you about. Four systems you can check yourself.';
 // DERIVED from cv.js, unioned with the legacy list — a hardcoded list let a
 // renamed employer (cv.js org → 'Google') sail past every bar (Codex hole 10).
+const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const EMPLOYERS = new RegExp(
-  [...new Set([...experience.map((j) => j.org.toLowerCase()),
+  [...new Set([...experience.map((j) => esc(j.org.toLowerCase())),
     'oracle', 'amazon', 'mobileum', 'snapdeal', 'subex', 'limeroad'])].join('|'),
   'i',
 );

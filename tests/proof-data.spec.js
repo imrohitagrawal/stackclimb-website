@@ -20,8 +20,9 @@ const DEFN =
 const THESIS = 'Fourteen years I can tell you about. Four systems you can check yourself.';
 // DERIVED from cv.js, unioned with the legacy list — a hardcoded list let a
 // renamed employer slip every bar (Codex hole 10; mirrored in proof-act).
+const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const EMPLOYERS = new RegExp(
-  [...new Set([...experience.map((j) => j.org.toLowerCase()),
+  [...new Set([...experience.map((j) => esc(j.org.toLowerCase())),
     'oracle', 'amazon', 'mobileum', 'snapdeal', 'subex', 'limeroad'])].join('|'),
   'i',
 );
@@ -61,7 +62,7 @@ test('every employer figure is bound to its own bullet inside its own cv.js job'
     const bullet = fold(job.points.find((p) => r.point.test(p))).toLowerCase();
     for (const w of fold(r.t).toLowerCase().split(/\s+/).filter((x) => !['in', 'of', 'the'].includes(x))) {
       expect(bullet, `${r.t}: label word '${w}' not in its own bullet`).toMatch(
-        new RegExp(`\\b${w}`),
+        new RegExp(`\\b${esc(w)}`),
       );
     }
     const rowFigs = r.d.match(FIGURE) || [];

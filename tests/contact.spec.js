@@ -25,7 +25,10 @@ const CONTACT = '#contact';
 // Raised back to 8 by package B: #overview returned as an index (rows, not the
 // cards it used to restate). Bumped in the same change that adds the plate,
 // exactly as the note above requires.
-const MIN_PLATES = 8;
+//
+// Raised to 9 by package 4: #proof, the two-ledger act between the hero and
+// #systems (D57 act 01). Same rule: bumped in the same change that adds it.
+const MIN_PLATES = 9;
 
 const EMAIL_ADDRESS = 'rohit.ra.agrawal@gmail.com';
 

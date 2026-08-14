@@ -420,6 +420,16 @@ body::before {
   opacity: 0.62;
 }
 
+/* The D62 definition (package 4). Three sentences in the colophon's all-caps
+   treatment read as shouting; sentence case, slightly larger, still quiet. */
+.colophon-defn {
+  text-transform: none;
+  letter-spacing: 0.04em;
+  font-size: 0.78rem;
+  max-width: 46rem;
+  margin: 0 auto 0.9rem;
+}
+
 /* ---------- Responsive ---------- */
 
 @media (min-width: 901px) {

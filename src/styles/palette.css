@@ -64,6 +64,20 @@
   --surface: #413718;
 }
 
+/* The two-ledger act (package 4). D80 recorded the ladder passing with ZERO
+   rendered slack, so this plate MUST bring its own novel ground — aubergine,
+   hue 285, inside the ladder's saturation band; no other ground is purple-red
+   (narratwin's greyed mauve #16131e sits at 8→22% saturation and reads grey;
+   this reads aubergine). Neighbours share nothing: navy #0e1322 above (hero),
+   olive #231e0d below (overview). Declared HERE ONLY — the ladder gate
+   harvests every `#id{--ground}` in built CSS.
+   Computed (WCAG 2.1, node, this commit): bone #f2ebdd 15.61:1 ·
+   ochre #c99b3f 7.27:1 · lit #f4efe4 16.15:1 on ground. All pass AA. */
+#proof {
+  --ground: #1d0d23;
+  --surface: #351b3f;
+}
+
 #citevyn {
   --ground: #230d13;
   --surface: #3f1a25;

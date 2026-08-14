@@ -1,0 +1,36 @@
+/* Package 4 — the two-ledger act (#proof).
+   The employer name is the row's load-bearing word (exact attribution is the
+   queue's hard constraint), so dt keeps FULL salience here — the standard
+   ledger dims dt to 0.62, which would put the one word the row exists for at
+   its lowest visual weight. */
+
+.proof-col {
+  margin-top: 1.6rem;
+}
+
+.proof-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone);
+  margin: 0 0 0.4rem;
+}
+
+.proof-defn {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  opacity: 0.85;
+  margin: 0.2rem 0 0.6rem;
+  max-width: 44ch;
+}
+
+.proof-ledger dt {
+  opacity: 1;
+  letter-spacing: 0.12em;
+}
+
+/* Figures stay glanceable next to four-plus-word outcomes. */
+.proof-ledger dd {
+  overflow-wrap: anywhere;
+}

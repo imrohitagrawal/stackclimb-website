@@ -42,7 +42,9 @@
   font-size: 0.7rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  opacity: 0.62;
+  /* opacity: 0.62 measured 4.38:1 against --lit — a 0.12 miss caught by the
+     DoD axe gate. 75% clears it with margin (recomputed, not guessed). */
+  color: color-mix(in srgb, var(--ink) 75%, transparent);
 }
 
 .skill-repos {

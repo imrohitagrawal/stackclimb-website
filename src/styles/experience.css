@@ -27,7 +27,13 @@
 
 .era-list .era-dates {
   font-weight: 500;
-  opacity: 0.62;
+  /* NOT opacity: the parent <p> matches global.css's `.plate-copy p` rule,
+     which already sets color to a bone/transparent color-mix — an opacity
+     property here would COMPOUND on top of that baked-in translucency
+     (0.88 x 0.62 ≈ 0.55), the exact axe color-contrast miss (4.08 vs 4.5)
+     found by the DoD gate. A direct color-mix from --bone bypasses the
+     inherited alpha entirely. */
+  color: color-mix(in srgb, var(--bone) 78%, transparent);
   font-size: 0.78rem;
   margin-left: 0.5rem;
 }

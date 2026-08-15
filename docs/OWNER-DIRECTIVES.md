@@ -43,6 +43,7 @@ forgotten and later recovered — kept visible on purpose).
 | W-21 | Add an everyday analogy when disagreeing | DONE | `AGENTS.md` step 4 |
 | W-22 | Copy quorum-ai's licence; attribute owner, GitHub, LinkedIn, Stackclimb | DONE | `LICENSE` |
 | W-23 | Get the plan reviewed by architect, dev, tester, PM, program, eng, ops, DevOps | PARTIAL | 4 role reviewers running |
+| W-24 | Merge each PR autonomously once it is verified and green — no waiting on him per PR (2026-08-15: "Going forward, you should autonomously go ahead and merge each PR once it is early verified and green") | STANDING from 2026-08-15. Bounds, from the repo's own rules: "verified and green" means both gate jobs passed AND the package's review/mutation record is complete; the merge is the deploy (approach C), so each merge is still followed by watching the deploy job run green and the post-deploy re-verification, recorded in the ledger. Owner-reserved decisions inside a package still stop for him — this delegates the MERGE, not the judgment calls | This row · first applied to PRs #32/#33/#34 |
 
 ## Review and orchestration
 

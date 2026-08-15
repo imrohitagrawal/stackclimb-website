@@ -155,6 +155,17 @@ Three traps:
 **Grounding answers in fetched documentation** has no public skill I could find. `grill-with-docs`
 looked like it and is not. Worth watching, since the NarraTwin avatar will need exactly this.
 
+### Skill currency — refresh log
+
+- **2026-08-14** — `npx skills update`: 50 skills checked, 6 updated upstream (brainstorming,
+  code-review-and-quality, domain-modeling, performance-optimization, requesting-code-review,
+  writing-plans — 8 files; `skills-lock.json` hashes moved with them), and the CLI collapsed
+  20 duplicated `.claude/skills/` copies into symlinks to the canonical `.agents/skills/`
+  tree. Carry-forward audit ran before commit: all 25 deleted files byte-identical to their
+  tracked targets, every symlink resolves. Updated skill bodies activate at the next session
+  start (the AGENTS.md restart rule); stated tradeoff — the footer-row package proceeds this
+  session because it consumes none of the updated skills.
+
 ---
 
 ## Open — blocked on the owner

@@ -43,6 +43,7 @@ forgotten and later recovered — kept visible on purpose).
 | W-21 | Add an everyday analogy when disagreeing | DONE | `AGENTS.md` step 4 |
 | W-22 | Copy quorum-ai's licence; attribute owner, GitHub, LinkedIn, Stackclimb | DONE | `LICENSE` |
 | W-23 | Get the plan reviewed by architect, dev, tester, PM, program, eng, ops, DevOps | PARTIAL | 4 role reviewers running |
+| W-24 | Merge each PR autonomously once it is verified and green — no waiting on him per PR (2026-08-15: "Going forward, you should autonomously go ahead and merge each PR once it is early verified and green") | STANDING from 2026-08-15. Bounds, from the repo's own rules: "verified and green" means both gate jobs passed AND the package's review/mutation record is complete; the merge is the deploy (approach C), so each merge is still followed by watching the deploy job run green and the post-deploy re-verification, recorded in the ledger. Owner-reserved decisions inside a package still stop for him — this delegates the MERGE, not the judgment calls | This row · first applied to PRs #32/#33/#34 |
 
 ## Review and orchestration
 
@@ -80,6 +81,7 @@ forgotten and later recovered — kept visible on purpose).
 | P-17 | Status disclosures (No-Go, closed) stay OFF the professional-proof act; they live where context explains them — overview, plates, project pages. Placement, not deletion (2026-08-14) | DONE 2026-08-14 (package 4B), gated with a painted partner on the overview row | RCA-002 · D85 |
 | P-18 | Presentation-level decisions are delegated; the owner reviews rendered results, not option lists. Decisions altering facts, self-descriptions or claims remain his (2026-08-14) | STANDING. First applications: the act's composition, the hero thesis-line treatment. First reserved decision flagged under it: the thesis count (Four vs Six), his ruling to land in D85 | RCA-002 |
 | P-19 | The hero must be memorable and carry animation; the old animation exclusion is reversed with its guard (headline/lede/thesis paint instantly) (2026-08-14 — discussed earlier, never recorded: a dropped instruction, backfilled) | DONE 2026-08-14 (package 4B): thesis line + guarded entrance, four suppression paths gated in `tests/motion.spec.js` | RCA-002 · D85 · `src/styles/motion.css` |
+| P-20 | The footer is too tall (measured 209.59px at 1440, 249.53px at 390): ONE ROW at desktop — the definition left at reading alignment, © + the animation toggle grouped right; stacked with tightened spacing at 390 (2026-08-14, deferred from 4B at his word: "add this as part of the next action item, let Package 4B be delivered") | DONE 2026-08-15 (footer-row package): 79.19px at 1440 · 207.94px at 390; reading alignment replicates the plate-frame geometry (the plate's outer padding alone missed by a measured 94.6px — plan-fan BLOCK class, fixed before build); gated in `tests/colophon.spec.js` with every red switch watched | D86 · `docs/plan/footer-row.md` · `src/styles/colophon.css` |
 
 ## Infrastructure
 

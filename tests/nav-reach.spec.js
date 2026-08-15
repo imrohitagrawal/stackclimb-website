@@ -56,6 +56,20 @@ async function activate(page, href) {
   await page.locator(`.site-nav a[href="${href}"]:visible`).first().click();
 }
 
+// D57's nav has no CV item (package 5). RCA-004's concern — the CV must
+// stay reachable by activation, not merely present — travels a different
+// path now: the home act's own "The full record" link (ProofPlate.astro,
+// unchanged by this package) and /experience's own CV link. Proved both
+// directions when this shipped: deleting every /cv link on '/' reds this;
+// the nav no longer needing to carry it does not.
+test('/ — the CV stays reachable by activation, off the act, not the nav', async ({ page }) => {
+  await page.goto('/');
+  const link = page.locator('a[href="/cv"]:visible').first();
+  await expect(link, 'no visible path to /cv anywhere on the home page').toBeVisible();
+  await link.click();
+  await expect(page, 'clicking the CV link did not navigate to /cv').toHaveURL(/\/cv$/);
+});
+
 for (const route of ['/', '/cv']) {
   test(`${route} — every nav destination is reachable by activation`, async ({ page }) => {
     await page.goto(route);
@@ -63,10 +77,9 @@ for (const route of ['/', '/cv']) {
 
     // The partner assertion: an emptied nav must not pass as "all reachable".
     expect(dests.length, 'the nav lists no internal destinations at all').toBeGreaterThan(0);
-    expect(
-      dests.map((d) => d.href),
-      'the CV link is the one a recruiter looks for first (O-30SEC)',
-    ).toContain('/cv');
+    // D57's nav drops /cv (package 5) — the O-30SEC concern this literal
+    // protected now travels a different path: the standalone CV-reachability
+    // test below, off the home act and /experience instead of the nav.
     // Round-2 review: deleting Systems and Contact from the NAV array passed —
     // a derived population shrinks with the mutilation it should catch.
     // RCA-004's damage statement names TWO must-reach surfaces: the CV and the

@@ -75,9 +75,15 @@ const canonical = new URL(
    to silently narrow a surface or a gate (DEF-10 routes, DEF-44 plate ids,
    touch.css selectors). Add a destination here and both menus carry it;
    tests/nav-reach.spec.js then proves it is reachable at every viewport. */
+/* D57's target nav — package 5, the nav commit. PROJECTS resolves to
+   /#systems, not a middle ecosystem page (D57 rules that out explicitly).
+   CV drops from the nav; it stays reachable from the home act's own "The
+   full record" link and from /experience — nav-reach.spec.js's reachability
+   check proves that path instead of the old nav-literal one. */
 const NAV = [
-  { href: '/#systems', label: 'Systems' },
-  { href: '/cv', label: 'CV' },
+  { href: '/#systems', label: 'Projects' },
+  { href: '/experience', label: 'Experience' },
+  { href: '/how-i-build', label: 'How I build' },
   { href: '/#contact', label: 'Contact' },
 ];
 const EMAIL = 'mailto:rohit.ra.agrawal@gmail.com';

@@ -64,6 +64,12 @@
   letter-spacing: 0.18em; text-transform: uppercase;
   border-bottom: 1px solid transparent;
   padding-bottom: 2px;
+  /* Package 5's four longer labels ("How I build") wrapped mid-word in the
+     901-1023px band — measured by injecting the labels before the nav
+     shipped. `.brand`/`.chip` already carry this; the flat row's OWN wrap
+     (unaffected) still lets the whole row break to a second line under
+     real overflow. */
+  white-space: nowrap;
 }
 
 .site-nav .chip {

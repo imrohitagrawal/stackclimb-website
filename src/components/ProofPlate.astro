@@ -1,9 +1,11 @@
 ---
-/* Package 4B — D57 act 01 rebuilt per RCA-002. Two ledgers with a seam:
-   Oracle-tenure outcomes (attributed once, in the heading; marked
-   approximate at ledger level — never "self-reported", ruling 1) beside
-   capability sentences a reader can repeat (P-15; phrased from the
-   overview's owner-approved lines). No status words in the right column —
+/* Package 4B — D57 act 01 rebuilt per RCA-002; rescoped per RCA-005 (P-21,
+   owner 2026-08-15): the employer ledger depicts the OVERALL CAREER, not
+   one tenure. No employer name renders anywhere in the act — attribution by
+   name is performed on /cv (gated, derived per row) and machine-checked by
+   the per-job figure binding in proof-data.spec.js. Marked approximate at
+   ledger level — never "self-reported" (ruling 1). Capability sentences a
+   reader can repeat (P-15) on the right; no status words there —
    NarraTwin's No-Go stays on the overview/plate/project page (ruling 3).
 
    Accessibility contract, gated by proof-act.spec.js: each column is a
@@ -14,7 +16,7 @@
    definition renders adjacent to the right heading — the first rendered
    "StackClimb" on the page is the sentence that defines it. */
 import Plate from './Plate.astro';
-import { definition, employerRows, capabilityRows } from '../data/proof.js';
+import { definition, qualifier, employerRows, capabilityRows } from '../data/proof.js';
 import '../styles/proof.css';
 ---
 
@@ -29,8 +31,8 @@ import '../styles/proof.css';
         evidence you can inspect — and the two are never averaged into a single number.
       </p>
       <div class="proof-col">
-        <h3 id="proof-a" class="proof-label">Employer outcomes — Oracle tenure</h3>
-        <p id="proof-a-meta" class="proof-meta">Approximate · April 2019 – April 2026</p>
+        <h3 id="proof-a" class="proof-label">Employer outcomes</h3>
+        <p id="proof-a-meta" class="proof-meta">{qualifier}</p>
         <dl class="ledger proof-ledger" aria-labelledby="proof-a proof-a-meta">
           {
             employerRows.map((r) => (

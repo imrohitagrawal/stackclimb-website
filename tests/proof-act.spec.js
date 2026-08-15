@@ -1,11 +1,13 @@
-// The two-ledger act (#proof) — package 4B, RCA-002's rulings gated.
-// THE FULL MUTATION LEDGER LIVES IN docs/STATUS.md ROW D85; every named
-// mutation was applied against a commit, its assertion watched RED, restored.
-// In brief: rows carry no employer name (heading only); no rendered
+// The two-ledger act (#proof) — package 4B (RCA-002), rescoped by RCA-005:
+// the employer ledger depicts the CAREER, and NO employer name renders
+// anywhere in the act (attribution is performed on /cv, derived per row).
+// THE FULL MUTATION LEDGERS LIVE IN docs/STATUS.md ROWS D85 AND D87; every
+// named mutation was applied against a commit, watched RED, restored.
+// In brief: heading exact + whole-act employer bar; no rendered
 // "self-reported" on / or /cv (with painted APPROXIMATE partners on both);
 // no "No-Go" in the act (with the overview's painted "Phase 1 — No-Go" as
-// the same-file partner); each figure bound to ITS OWN cv.js Oracle point
-// (cv.js carries 25 twice and 20 three times — token-anywhere passes swaps);
+// the same-file partner); each figure bound to ITS OWN bullet in ITS OWN
+// cv.js job (proof-data.spec.js), and /cv renders each row's job + figure;
 // each capability term in the rendered sentence AND its evidence file;
 // thesis locked by full string including the count; D62 definition verbatim
 // at first use and in the footer. Evasions folded before matching (NFKC,
@@ -14,6 +16,7 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { employerRows, capabilityRows } from '../src/data/proof.js';
+import { experience } from '../src/data/cv.js';
 
 const DEFN =
   'StackClimb is where Rohit Agrawal builds independent AI systems — outside any employer.';
@@ -23,38 +26,24 @@ const KEPT3 = 'Employer outcomes are attributed to their employer and marked app
 // arrived. DEFN is the exact string on every page's footer.
 const FOOTER_HEAD = DEFN;
 const THESIS = 'Fourteen years I can tell you about. Four systems you can check yourself.';
-const EMPLOYERS = /oracle|amazon|mobileum|snapdeal|subex|limeroad/i;
+// DERIVED from cv.js, unioned with the legacy list — a hardcoded list let a
+// renamed employer (cv.js org → 'Google') sail past every bar (Codex hole 10).
+const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const EMPLOYERS = new RegExp(
+  [...new Set([...experience.map((j) => esc(j.org.toLowerCase())),
+    'oracle', 'amazon', 'mobileum', 'snapdeal', 'subex', 'limeroad'])].join('|'),
+  'i',
+);
 
-const norm = (s) => s.replace(/\s+/g, ' ').trim();
-// Cf-strip first: soft hyphens, zero-widths and word joiners (U+00AD,
-// U+200B-200D, U+2060, FEFF) evade both dash-unification and substring
-// bars — the Codex pass's 'Ora\u200Bcle' and '&shy;' findings.
-const fold = (s) =>
-  norm(
-    s.normalize('NFKC').replace(/\p{Cf}/gu, '').replace(/\p{Pd}/gu, '-').replace(/\s/gu, ' '),
-  );
+// norm/fold extracted to tests/lib/fold.mjs at 263/250 (D8: modularize).
+import { norm, fold } from './lib/fold.mjs';
 async function gotoReduced(page, path = '/') {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto(path);
 }
 
-const painted = (loc) =>
-  loc.evaluate((el) => {
-    const r = el.getBoundingClientRect();
-    const doc = document.documentElement;
-    for (let a = el; a; a = a.parentElement) {
-      const cs = getComputedStyle(a);
-      if (cs.filter !== 'none' || cs.clipPath !== 'none') return false;
-    }
-    return (
-      el.checkVisibility({ opacityProperty: true, visibilityProperty: true }) &&
-      r.right > 0 &&
-      r.left >= 0 &&
-      r.left < doc.scrollWidth &&
-      r.bottom > 0 &&
-      r.top < doc.scrollHeight
-    );
-  });
+// Extracted to tests/lib/painted.mjs at 255/250 (D8: modularize, not trim).
+import { painted } from './lib/painted.mjs';
 
 test('the act sits between the hero and the systems — DOM and paint', async ({ page }) => {
   await gotoReduced(page);
@@ -125,46 +114,42 @@ test('footer definition on home and a project page', async ({ page }) => {
   }
 });
 
-test('approximate partners: act meta chained, /cv note painted, Amazon and Mobileum stay', async ({
-  page,
-}) => {
+test('approximate partner: the act meta, chained, exact and painted', async ({ page }) => {
   await gotoReduced(page);
   const dl = page.locator('#proof dl[aria-labelledby="proof-a proof-a-meta"]');
   await expect(dl).toHaveCount(1);
   const meta = page.locator('#proof-a-meta');
   // Full-string equality — 'Not approximate' passed a substring check.
-  expect(fold(await meta.innerText()).toLowerCase()).toBe('approximate · april 2019 - april 2026');
+  // RCA-005: the career qualifier; its two FACTS are gated against cv.js
+  // in proof-data.spec.js (month-granular span, six distinct orgs). The
+  // /cv side of this partnership lives in proof-cv.spec.js (D8 split).
+  expect(fold(await meta.innerText()).toLowerCase()).toBe(
+    'approximate · fourteen years, six employers',
+  );
   expect(await painted(meta)).toBe(true);
-  await gotoReduced(page, '/cv');
-  const note = page.locator('.cv-note');
-  expect(fold(await note.first().innerText()).toLowerCase()).toContain('approximate');
-  expect(await painted(note.first())).toBe(true);
-  // Scoped to the EXPERIENCE entries — 'Amazon' also appears in the awards
-  // list, which let a renamed employer entry slip past a page-wide match
-  // (watched during this file's own mutation run).
-  // Per-JOB figure binding — a page-wide contains let a 25→26 edit slip
-  // past on unrelated occurrences (Codex finding).
-  const jobs = (await page.locator('.cv-job').allInnerTexts()).map(fold);
-  for (const [o, fig] of [['Amazon', '25%'], ['Mobileum', '35%']]) {
-    const job = jobs.find((t) => t.includes(o));
-    expect(job, `${o} missing from /cv experience`).toBeTruthy();
-    expect(job, `${o}'s own figure missing from its entry`).toContain(fig);
-  }
 });
 
-test('attribution lives in the heading alone; no employer inside the act rows', async ({
+test('the heading is exact, and no employer name renders anywhere in the act', async ({
   page,
 }) => {
   await gotoReduced(page);
+  // P-21's acceptance clause, gated positively — the absence bar alone
+  // would pass 'Career numbers' (plan-fan finding).
   const heading = fold(await page.locator('#proof-a').innerText());
-  expect(heading.toLowerCase()).toContain('oracle');
+  expect(heading.toLowerCase()).toBe('employer outcomes');
+  // innerText cannot see generated content — `#proof-a::after { content:
+  // " — Oracle" }` re-suffixed the heading past both gates (Codex hole 11).
+  const pseudo = await page.locator('#proof-a').evaluate((el) =>
+    ['::before', '::after'].map((p) => getComputedStyle(el, p).content).join(''),
+  );
+  expect(pseudo.replace(/none|normal/g, ''), 'generated content on the heading').toBe('');
   const rows = await page.locator('#proof .proof-ledger .row').allInnerTexts();
   expect(rows.length).toBe(employerRows.length + capabilityRows.length);
-  // The WHOLE act minus the heading — an employer name in the intro or a
-  // meta line evaded a rows-only bar (Codex finding); fold() strips the
-  // zero-width characters that split 'Ora\u200Bcle' past the regex.
-  const act = fold(await page.locator('#proof').innerText()).replace(heading, '');
-  expect(EMPLOYERS.test(act), 'employer name outside the ledger heading').toBe(false);
+  // The WHOLE act, heading included — RCA-005 removed the act's one
+  // permitted employer name; there is no excuse zone left. fold() strips
+  // the zero-width characters that split employer names past the regex.
+  const act = fold(await page.locator('#proof').innerText());
+  expect(EMPLOYERS.test(act), 'employer name inside the act').toBe(false);
 });
 
 test('no No-Go in the act — and the overview still disparages nothing it holds', async ({
@@ -210,11 +195,15 @@ test('the rows render from the same data this file read', async ({ page }) => {
         dt: r.querySelector('dt')?.innerText ?? '',
         dd: r.querySelector('dd')?.innerText ?? '',
         vis: r.checkVisibility({ opacityProperty: true, visibilityProperty: true }),
+        // aria-hidden rows keep innerText and checkVisibility — the dl-level
+        // ancestry check could not see per-row hiding (Codex hole 12).
+        atHidden: !!r.closest('[aria-hidden="true"]'),
       })),
     );
     expect(rows).toHaveLength(data.length);
     for (const [i, r] of data.entries()) {
       expect(rows[i].vis, `hidden row ${r.t}`).toBe(true);
+      expect(rows[i].atHidden, `AT-hidden row ${r.t}`).toBe(false);
       expect(rows[i].dt.toLowerCase()).toBe(r.t.toLowerCase()); // dt is CSS-uppercased
       expect(norm(rows[i].dd)).toBe(norm(r.d)); // dd exact, case and all
     }

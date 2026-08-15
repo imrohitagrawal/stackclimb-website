@@ -78,6 +78,25 @@
   --surface: #351b3f;
 }
 
+/* Package 5. Two new plate families, two novel hues — the existing seven
+   span roughly 45/165/200/228/255/285/345; hue 108 (green) and hue 28
+   (amber) sit in the open bands either side of navy/olive, derived at the
+   ladder's fixed lightness/saturation (L 9.5%/17.5%, S 44%), not eyeballed.
+   Computed (WCAG 2.1, node, this commit): #experience — bone 13.91:1 ·
+   ochre 6.48:1 · lit 14.39:1. #how-i-build — bone 14.65:1 · ochre 6.82:1 ·
+   lit 15.15:1. Both pass AA at every size used. Neighbours (home page
+   order unaffected — these are new standalone routes, not inserted between
+   existing plates): declared HERE ONLY. */
+#evolution {
+  --ground: #12230e;
+  --surface: #214019;
+}
+
+#how-i-build {
+  --ground: #23180e;
+  --surface: #402b19;
+}
+
 #citevyn {
   --ground: #230d13;
   --surface: #3f1a25;

@@ -1,0 +1,107 @@
+---
+/* /how-i-build — D57 clause 9: the engineering model, from VERIFIED practice
+ * evidence only (docs/evidence/practice/). The cross-review claim is
+ * REPORTED with its own "do not publish yet" bar in cross-review.md and is
+ * deliberately absent from this page — nothing here cites that file.
+ *
+ * Every claim's key term is bound to a line inside its evidence file that
+ * follows that file's own `VERIFIED` marker (how-i-build.spec.js) — not a
+ * file-wide contains-check, which cannot distinguish a VERIFIED claim from
+ * a REPORTED one living in the same file (package-5 plan, testcheck lens).
+ */
+import Layout from '../layouts/Layout.astro';
+import Plate from '../components/Plate.astro';
+import '../styles/how-i-build.css';
+---
+
+<Layout
+  title="How I build — Rohit Agrawal"
+  description="An engineering practice built as reusable, versioned instructions, CI
+    that knows blocking from advisory, and tooling built from named incidents —
+    verified against the repositories, not described from memory."
+>
+  <Plate id="how-i-build">
+    <div class="plate-grid one-col">
+      <div class="plate-copy wide">
+        <h1 class="plate-title tight">How I build.</h1>
+
+        <div class="model-band">
+          <p class="band-lead">
+            Reusable, versioned instructions — for requirements and security, not only code.
+          </p>
+          <p class="band-support">
+            112 <span class="band-term">authored skill</span> directories, including skills
+            that route between the others and audit anything adopted from outside.
+          </p>
+        </div>
+
+        <div class="model-band">
+          <p class="band-lead">
+            CI that knows which checks can stop a release and which only inform it.
+          </p>
+          <p class="band-support">
+            One workflow's own comment: a golden-set gate is hermetic and <span
+              class="band-term"
+            >blocking</span>; a latency baseline is advisory.
+          </p>
+        </div>
+
+        <div class="model-band">
+          <p class="band-lead">
+            Tooling built from named incidents — a deploy-watchdog opens with <span
+              class="band-term"
+            >the incident that caused it</span>.
+          </p>
+        </div>
+
+        <blockquote class="artefact">
+          <p>
+            &ldquo;It fixes the failure mode we hit on #54: main got a new commit but no
+            deploy fired, leaving prod stale with no one watching.&rdquo;
+          </p>
+          <p>
+            &ldquo;WHAT IT CHECKS (honest scope): whether main HEAD has a SUCCESSFUL
+            &lsquo;Deploy to Fly.io&rsquo; run — the deploy JOB, not a /health 200.&rdquo;
+          </p>
+          <footer>deploy-drift-watchdog.yml, quorum-ai</footer>
+        </blockquote>
+      </div>
+    </div>
+  </Plate>
+
+  <Plate id="published-skills">
+    <div class="plate-grid one-col">
+      <div class="plate-copy wide">
+        <h2 class="plate-title tight">Published, not just practiced.</h2>
+        <p>
+          Two of the skills above are public repositories — the instructions themselves,
+          not a description of them.
+        </p>
+        <ul class="skill-repos">
+          <li>
+            <a
+              href="https://github.com/imrohitagrawal/project-doc-skills"
+              target="_blank"
+              rel="noopener"
+            >project-doc-skills</a>
+            — architecture-and-decisions and doc-critic, the two skills behind this
+            site's own documentation practice.
+          </li>
+          <li>
+            <a
+              href="https://github.com/imrohitagrawal/.github"
+              target="_blank"
+              rel="noopener"
+            >.github</a>
+            — the contribution and security templates every other repository here
+            inherits from.
+          </li>
+        </ul>
+        <div class="ctas">
+          <a class="btn ghost" href="/experience">Career evolution</a>
+          <a class="btn primary" href="mailto:rohit.ra.agrawal@gmail.com">Email me</a>
+        </div>
+      </div>
+    </div>
+  </Plate>
+</Layout>

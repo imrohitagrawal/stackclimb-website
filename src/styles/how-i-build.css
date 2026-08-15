@@ -1,0 +1,60 @@
+/* /how-i-build — one concern: this page's own layout. Ground/surface
+   declared in palette.css (harvested by the ladder gate). Scoped
+   .model-band .foo (not bare .foo): global.css's `.plate-copy p` /
+   `.plate-copy p + p` rules outrank a single class on specificity — a
+   bare `.band-lead`/`.band-support` silently lost every override to
+   them, measured before this fix, not assumed. */
+
+.model-band {
+  margin: 0.9rem 0;
+  padding-top: 0.9rem;
+  border-top: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+}
+.model-band:first-of-type { border-top: none; padding-top: 0; margin-top: 1.2rem; }
+
+.model-band .band-lead {
+  font-weight: 600;
+  max-width: 52ch;
+  font-size: 0.92rem;
+}
+
+.model-band .band-support {
+  margin-top: 0.35rem;
+  opacity: 0.9;
+  max-width: 54ch;
+  font-size: 0.92rem;
+}
+
+.band-term { font-weight: 700; }
+
+/* The Lit-Surface panel (D61/D62): ONE near-white surface holding real
+   operational content — a verbatim quote, never test-suite output. */
+.artefact {
+  margin: 1.2rem 0 0;
+  padding: 1.1rem 1.3rem;
+  background: var(--lit, #f4efe4);
+  color: var(--ink, #16213c);
+}
+.artefact p { font-family: var(--sans); font-size: 0.82rem; line-height: 1.5; }
+.artefact p + p { margin-top: 0.6rem; }
+.artefact footer {
+  margin-top: 0.7rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.62;
+}
+
+.skill-repos {
+  list-style: none;
+  margin: 1.4rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.skill-repos a { font-weight: 700; color: var(--ochre); text-underline-offset: 2px; }
+.skill-repos a:hover { color: var(--bone); }
+
+@media (max-width: 900px) {
+  .artefact { padding: 1.2rem 1.3rem; }
+}

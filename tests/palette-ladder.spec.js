@@ -22,6 +22,7 @@
 
 import { test, expect } from '@playwright/test';
 import { readFileSync, readdirSync } from 'node:fs';
+import { siteRoutes } from './lib/routes.mjs';
 
 function declaredGrounds() {
   // Parse the CSS that SHIPS, not the source that builds it — the lesson of
@@ -45,51 +46,66 @@ test('every palette ground rule lands on a real plate', async ({ page }) => {
   // "nothing to check".
   expect(declared.size, 'no #id --ground rules found in the built CSS').toBeGreaterThan(3);
 
-  await page.goto('/');
-  const plates = await page.evaluate(() =>
-    Object.fromEntries(
-      [...document.querySelectorAll('.plate[id]')].map((pl) => [
-        pl.id,
-        {
-          ground: getComputedStyle(pl).getPropertyValue('--ground').trim(),
-          bg: getComputedStyle(pl).backgroundColor,
-        },
-      ]),
-    ),
-  );
-  const rootGround = await page.evaluate(() =>
-    getComputedStyle(document.querySelector('.plate')).getPropertyValue('--ground'),
-  );
+  // Rule 1 (existence) is SITEWIDE — a declared ground can belong to a plate
+  // on ANY route, not only '/'. Package 5 found this the hard way: the first
+  // version of this file visited '/' alone, so a ground declared for a
+  // plate that lives only on /experience or /how-i-build faulted "no plate
+  // with that id exists" the moment it shipped, even though the plate was
+  // real — the exact DEF-48 shape, one level down, the same blind spot
+  // plate-height.spec.js's own history records for height. ROUTES is
+  // shared with that file (tests/lib/routes.mjs) so neither can drift
+  // narrower than the other.
+  const routes = await siteRoutes();
+  const allPlates = {};
+  let homePlates = {};
+  for (const route of routes) {
+    await page.goto(route);
+    const plates = await page.evaluate(() =>
+      Object.fromEntries(
+        [...document.querySelectorAll('.plate[id]')].map((pl) => [
+          pl.id,
+          {
+            ground: getComputedStyle(pl).getPropertyValue('--ground').trim(),
+            bg: getComputedStyle(pl).backgroundColor,
+          },
+        ]),
+      ),
+    );
+    Object.assign(allPlates, plates);
+    if (route === '/') homePlates = plates;
+  }
 
   const faults = [];
   for (const [id, value] of declared) {
-    if (!(id in plates)) {
-      faults.push(`palette styles #${id} but no plate with that id exists (DEF-48 shape)`);
+    if (!(id in allPlates)) {
+      faults.push(`palette styles #${id} but no plate with that id exists on any route (DEF-48 shape)`);
       continue;
     }
-    if (plates[id].ground.toLowerCase() !== value.toLowerCase()) {
-      faults.push(`#${id} declares ground ${value} but renders ${plates[id].ground}`);
+    if (allPlates[id].ground.toLowerCase() !== value.toLowerCase()) {
+      faults.push(`#${id} declares ground ${value} but renders ${allPlates[id].ground}`);
     }
   }
   expect(faults, faults.join(' · ')).toEqual([]);
 
-  // Rule 2 — the ladder spans. First attempt derived the expected count from
-  // the declared values and was refuted by its own mutation: flattening four
-  // grounds to one colour shrank "declared" and "rendered" together, so the
-  // check chased the defect downward and passed (the same self-reference that
-  // makes floors reward flattening, DEF-16). The invariant that does not move
-  // with the mutation is the ladder's own premise: EVERY plate has its own
-  // ground, so declared values must be pairwise distinct.
+  // Rule 2 — no two declared grounds anywhere on the site collide. Stays
+  // SITEWIDE deliberately: a hue collision is a defect wherever it lands.
   const values = [...declared.values()].map((v) => v.toLowerCase());
   const dupes = values.filter((v, i) => values.indexOf(v) !== i);
   expect(dupes, `palette declares the same ground twice: ${[...new Set(dupes)]}`).toEqual([]);
 
-  // And the render must carry them: declared grounds plus the shared default.
-  const rendered = new Set(Object.values(plates).map((p) => p.bg));
+  // Rule 2b — the ladder SPANS, scoped to the HOME page specifically (D80's
+  // zero-slack claim is about home). The expected count is home's OWN
+  // declared grounds, not the sitewide total — a ground declared for a
+  // plate that never renders on '/' must not inflate a threshold '/' can
+  // never meet (the mutation this rewrite fixes: declaring two new,
+  // off-home grounds broke this exact line before the fix, because the old
+  // code compared home-scoped `rendered` against a sitewide `values.length`).
+  const homeDeclaredCount = new Set(
+    [...declared.keys()].filter((id) => id in homePlates).map((id) => declared.get(id).toLowerCase()),
+  ).size;
+  const rendered = new Set(Object.values(homePlates).map((p) => p.bg));
   expect(
     rendered.size,
-    `plates render ${rendered.size} distinct grounds; the palette declares ${values.length} plus the default`,
-  ).toBeGreaterThanOrEqual(new Set(values).size + 1);
-
-  void rootGround; // read for debugging output on failure traces
+    `home renders ${rendered.size} distinct grounds; it declares ${homeDeclaredCount} plus the default`,
+  ).toBeGreaterThanOrEqual(homeDeclaredCount + 1);
 });

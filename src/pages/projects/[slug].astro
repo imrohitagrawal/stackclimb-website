@@ -4,10 +4,11 @@
  * Four routes, generated from src/data/projects.js. A new system needs a data entry
  * and an image, not an edit here — the same rule Shot.astro follows for its glob.
  *
- * TWO PLATES, deliberately. DESIGN.md:228: "content that cannot fit becomes another
- * plate, not a taller one." Plate 1 is the claim and the artefact; plate 2 is the
- * record. Putting both in one plate measured 1,082px against a 900px viewport, which
- * is the rule's own failure case.
+ * THREE PLATES. DESIGN.md:228: "content that cannot fit becomes another plate, not a
+ * taller one." Plate 1 is the claim and the artefact; plate 2 is the record. Putting
+ * both in one plate measured 1,082px against a 900px viewport, which is the rule's own
+ * failure case. Plate 3 (P-10) is the giscus comment thread — its own plate for the
+ * same reason, not appended to the already height-tuned record plate.
  *
  * The plate id equals the slug, so palette.css paints each page in its system's own
  * livery with no rule added anywhere.
@@ -132,4 +133,36 @@ const desc = page.body[0]
       </div>
     </div>
   </Plate>
+
+  {/* P-10. `data-mapping="specific"` + `data-term={slug}` — not `pathname` —
+      binds the thread to the project's stable slug so a future route rename
+      cannot orphan existing comments. The category is GitHub's own default
+      `Announcements` (locked: only the repo owner starts a thread, visitors
+      only reply) — no public API creates or renames a category, and the
+      name itself never renders in the widget a visitor sees. */}
+  <Plate id={`${slug}-comments`}>
+    <div class="plate-grid one-col">
+      <div class="plate-copy wide">
+        <h2 class="plate-title tight">Discussion</h2>
+        <p class="sys-note">
+          Comments post to this repository's GitHub Discussions and need a GitHub
+          account — the same account system the site's own code already lives in.
+        </p>
+        <div
+          class="giscus"
+          data-repo="imrohitagrawal/stackclimb-website"
+          data-repo-id="R_kgDOTzbbEg"
+          data-category="Announcements"
+          data-category-id="DIC_kwDOTzbbEs4DDj8g"
+          data-mapping="specific"
+          data-term={slug}
+          data-strict="1"
+          data-reactions-enabled="1"
+          data-theme="noborder_dark"
+          data-lang="en"
+        />
+      </div>
+    </div>
+  </Plate>
+  <script src="https://giscus.app/client.js" data-loading="lazy" crossorigin="anonymous" async></script>
 </Layout>

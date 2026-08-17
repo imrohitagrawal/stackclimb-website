@@ -107,7 +107,16 @@
 
 .site-nav .menu { display: none; }
 
-@media (max-width: 900px) {
+@media (max-width: 970px) {
+  /* Package 5's four labels (nowrap, D57) genuinely overflow the flat row's
+     available width from 901px up to ~951px — `.site-nav` is `position:
+     fixed`, so scrollWidth never reports it and there is no scrollbar to
+     reveal the clipped "Email me" CTA. Measured before this shipped: row
+     right edge exceeds the viewport through 950px, clears at 960px. The
+     breakpoint moves from 900 to 970 (measured-safe 960 plus margin) so the
+     collapsed menu — which HAS room for four longer labels — covers the
+     whole band instead of the cramped flat row. Was 900px; every other rule
+     in this block already keyed off it. */
   .site-nav > nav { display: none; }
   /* Measured: the wordmark image (~119px) plus this text on ONE row
      overflowed the bar at 390px (menu button right edge landed at 463.6px).

@@ -68,7 +68,10 @@ test('the page renders every term, bars cross-review, and quotes verbatim', asyn
   for (const term of Object.keys(FILES)) {
     expect(body.toLowerCase(), `${term} not rendered`).toContain(term.toLowerCase());
   }
-  expect(body.toLowerCase()).not.toMatch(/review each other|reviews each other|grading its own homework/);
+  // WHOLE PAGE, not just plate 1 — a bar scoped to #how-i-build alone let
+  // the phrase slip in unchecked on #published-skills (R-7 finding).
+  const whole = norm(await page.locator('body').innerText()).toLowerCase();
+  expect(whole).not.toMatch(/review each other|reviews each other|grading its own homework/);
 
   const watchdogFile = readFileSync('docs/evidence/practice/failure-driven.md', 'utf8');
   const artefactText = norm(await page.locator('.artefact').innerText());

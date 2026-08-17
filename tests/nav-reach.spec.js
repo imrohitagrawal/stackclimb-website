@@ -62,6 +62,33 @@ async function activate(page, href) {
 // unchanged by this package) and /experience's own CV link. Proved both
 // directions when this shipped: deleting every /cv link on '/' reds this;
 // the nav no longer needing to carry it does not.
+// `.site-nav` is `position:fixed`, so an overflowing flat row never grows
+// `document.documentElement.scrollWidth` and there is no scrollbar to
+// reveal a clipped CTA — a real hole the built-result fan found: four
+// nowrap labels overflowed the row's available width from 901-950px,
+// clipping "Email me" off-screen and unreachable. Which change turns it
+// red: the mobile-menu breakpoint (nav.css) dropped back under ~960px.
+test('the flat nav row never lets its own content exceed the viewport, 901-1440px', async ({
+  page,
+}) => {
+  for (const width of [901, 920, 941, 950, 970, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 300 });
+    await page.goto('/');
+    const overflow = await page.evaluate((w) => {
+      const row = document.querySelector('.site-nav > nav');
+      if (getComputedStyle(row).display === 'none') return null; // menu active
+      return Math.max(
+        0,
+        row.getBoundingClientRect().right - w,
+        (document.querySelector('.site-nav .chip')?.getBoundingClientRect().right ?? 0) - w,
+      );
+    }, width);
+    if (overflow !== null) {
+      expect(overflow, `flat nav content exceeds the viewport by ${overflow}px at ${width}px`).toBe(0);
+    }
+  }
+});
+
 test('/ — the CV stays reachable by activation, off the act, not the nav', async ({ page }) => {
   await page.goto('/');
   const link = page.locator('a[href="/cv"]:visible').first();

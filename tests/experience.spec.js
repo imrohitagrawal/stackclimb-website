@@ -52,11 +52,36 @@ test('the page renders, links to /cv exactly once IN THE BODY, and is painted', 
   // (every other spec's `gotoReduced` does the same).
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/experience');
-  await expect(page.locator('.era')).toHaveCount(eras.length);
+  const eraLocs = page.locator('.era');
+  await expect(eraLocs).toHaveCount(eras.length);
+  // Rendered org/dates/line BOUND to eras.js by position — count-only
+  // proved nothing about WHICH era rendered where (R-7 finding).
+  const rendered = await eraLocs.evaluateAll((els) =>
+    els.map((el) => ({
+      org: el.querySelector('.era-org').textContent,
+      line: el.querySelector('.era-line').textContent.trim(),
+    })),
+  );
+  for (const [i, e] of eras.entries()) {
+    expect(rendered[i].org, `era ${i} org mismatch`).toContain(e.org);
+    expect(rendered[i].line, `era ${i} line mismatch`).toBe(e.line);
+  }
   // Scoped to the page's own content — the nav also links /cv (Layout.astro,
   // flat row + mobile menu), which is not this page's claim to make.
   const cvLinks = page.locator('#evolution-record a[href="/cv"]');
   await expect(cvLinks).toHaveCount(1);
   expect(await painted(page.locator('.era-list'))).toBe(true);
   expect(await painted(cvLinks.first())).toBe(true);
+
+  // The closing line — argued for in the plan as the page's own destination
+  // (what /cv cannot give), rendered and painted, not just digit-free data.
+  const closingLoc = page.locator('.era-closing');
+  await expect(closingLoc).toHaveText(closing);
+  expect(await painted(closingLoc)).toBe(true);
+
+  // Layout.astro's multi-line `description` prop (wrapped for the 120-char
+  // line ceiling) baked its literal source newlines into the built <meta
+  // content>. Normalized once, at the source; this proves it stays that way.
+  const desc = await page.locator('meta[name="description"]').getAttribute('content');
+  expect(desc, 'description meta carries a raw newline').not.toMatch(/\n|\s{2,}/);
 });

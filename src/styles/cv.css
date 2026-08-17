@@ -101,6 +101,12 @@
 
 .cv-job, .cv-proj { margin-top: 1.6rem; }
 
+/* P-9: flex drops the native <summary> marker — redrawn, nav menu's convention. */
+.cv-proj > summary { cursor: pointer; }
+.cv-proj > summary::-webkit-details-marker { display: none; }
+.cv-proj > summary::after { content: '+'; margin-left: 0.5rem; color: var(--accent); }
+.cv-proj[open] > summary::after { content: '\2212'; }
+
 .cv-job-head {
   display: flex;
   flex-wrap: wrap;
@@ -136,6 +142,9 @@
 .cv-proj p { margin-top: 0.4rem; line-height: 1.58; }
 
 .cv-gate { font-size: 0.92rem; }
+/* Inline padding grows the Visit/Evidence hit box past the 24px WCAG 2.5.8
+   floor without losing display:inline's 44px standalone exemption. */
+.cv-gate a { padding: 5px 0; }
 
 .cv-gate-k {
   font-size: 0.72rem; /* brand-em */
@@ -230,6 +239,10 @@
     word-break: break-all;
   }
   .cv-contact a[href^='mailto:']::after { content: ''; }
+
+  /* A closed <details> hides its content on paper too — DEF-8 means print stays the complete record. */
+  .cv-proj:not([open]) > *:not(summary) { display: block !important; }
+  .cv-proj > summary::after { display: none !important; }
 
   /* Keep a job and its first lines together rather than orphaning a heading. */
   .cv-job, .cv-proj, .cv-row { break-inside: avoid; }

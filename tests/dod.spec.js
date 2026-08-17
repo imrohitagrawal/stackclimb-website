@@ -94,6 +94,14 @@ test.describe('Definition of Done', () => {
 
         const results = await new AxeBuilder({ page })
           .include(`#${id}`)
+          // P-10: giscus injects a cross-origin iframe here — its markup and
+          // colours are Github's, not this site's, and this site cannot style
+          // or fix them (an uninstalled-app error state was caught here with
+          // its own 1.15:1 text, resolved on GitHub's side, not ours, once
+          // the giscus App is installed). Excluding what this repo cannot
+          // control, not excluding what it can — first-party content on
+          // every other plate, including the rest of THIS plate, stays scanned.
+          .exclude('.giscus')
           .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
           .analyze();
 

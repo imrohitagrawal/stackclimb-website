@@ -39,7 +39,7 @@ forgotten and later recovered — kept visible on purpose).
 | W-17 | Good practices harvested for reuse on future projects | DONE | `docs/practices/` |
 | W-18 | Planning defects cost more than development defects — research deeply, fan out | **Note corrected 08-11.** This row said *"no standing rule yet"*. `AGENTS.md:363` (was cited as `:341`; that line is blank — corrected 08-12) has carried one: *"Size the fan to the phase"* — full expert fan for planning and architecture, then the T0–T3 blast-radius model for implementation |
 | W-19 | Verify by **executing**, not by reading. Agent verdicts need their own reviewer | PARTIAL | Role reviewers now told to execute; synthesizer pending |
-| W-20 | Build a watermark skill — the spec exists, nothing applies it | OPEN | `docs/rca/RCA-001-watermark-skill.md` — awaiting approval |
+| W-20 | Build a watermark skill — the spec exists, nothing applies it | **DONE 2026-08-17.** Skill built in `~/Projects/project-doc-skills` (PR #26); applied here to `public/og.png` (the RCA's own narrowed real case — the HTML case was found already implemented, corrected from the RCA's original framing). Pinned by hash, gated, mutation-proven | `docs/rca/RCA-001-watermark-skill.md` · D90 · `tests/og-watermark.spec.js` |
 | W-21 | Add an everyday analogy when disagreeing | DONE | `AGENTS.md` step 4 |
 | W-22 | Copy quorum-ai's licence; attribute owner, GitHub, LinkedIn, Stackclimb | DONE | `LICENSE` |
 | W-23 | Get the plan reviewed by architect, dev, tester, PM, program, eng, ops, DevOps | PARTIAL | 4 role reviewers running |

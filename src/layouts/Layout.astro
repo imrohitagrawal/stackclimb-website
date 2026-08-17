@@ -42,9 +42,19 @@ interface Props {
 
 const {
   title = 'Rohit Agrawal — AI systems that show their work',
-  description = 'Independent, inspectable AI systems built on citation, disclosed uncertainty, honest refusal, and release gates — by a principal-level engineer with 14+ years of production reliability. Live on stackclimb.com.',
+  description: rawDescription = 'Independent, inspectable AI systems built on citation, ' +
+    'disclosed uncertainty, honest refusal, and release gates — by a principal-level ' +
+    'engineer with 14+ years of production reliability. Live on stackclimb.com.',
   noindex = false,
 } = Astro.props;
+
+/* A multi-line description prop (wrapped for the 120-char D8 file-budget
+   line ceiling) baked its literal source newlines and indentation into the
+   built <meta content="..."> — invalid-looking markup and a broken social
+   card, found by the built-result fan on package 5's two new pages, whose
+   descriptions were the first to need wrapping. Normalized once, here, so
+   every page — not just these two — is protected from the same mistake. */
+const description = rawDescription.replace(/\s+/g, ' ').trim();
 
 /* DEF-9. The canonical and og:url used to be the string
    "https://stackclimb.com/", hard-coded. With one page that was invisible.
@@ -75,9 +85,15 @@ const canonical = new URL(
    to silently narrow a surface or a gate (DEF-10 routes, DEF-44 plate ids,
    touch.css selectors). Add a destination here and both menus carry it;
    tests/nav-reach.spec.js then proves it is reachable at every viewport. */
+/* D57's target nav — package 5, the nav commit. PROJECTS resolves to
+   /#systems, not a middle ecosystem page (D57 rules that out explicitly).
+   CV drops from the nav; it stays reachable from the home act's own "The
+   full record" link and from /experience — nav-reach.spec.js's reachability
+   check proves that path instead of the old nav-literal one. */
 const NAV = [
-  { href: '/#systems', label: 'Systems' },
-  { href: '/cv', label: 'CV' },
+  { href: '/#systems', label: 'Projects' },
+  { href: '/experience', label: 'Experience' },
+  { href: '/how-i-build', label: 'How I build' },
   { href: '/#contact', label: 'Contact' },
 ];
 const EMAIL = 'mailto:rohit.ra.agrawal@gmail.com';

@@ -1,0 +1,56 @@
+---
+/* /experience — D57 clause 8, overruling D32: a bird's-eye career EVOLUTION,
+ * not the CV restated (DEF-27 bars restating). Two plates: the arc, then
+ * the record. The complete CV is reachable from here, via /cv — its print
+ * stylesheet already produces a clean document (Print → Save as PDF); no
+ * new binary ships (package-5 plan's amendment record: the v1 build-time
+ * PDF collided with DEF-37 round 8's unconditional PDF/DOCX block).
+ */
+import Layout from '../layouts/Layout.astro';
+import Plate from '../components/Plate.astro';
+import { eras, closing } from '../data/eras.js';
+import '../styles/experience.css';
+---
+
+<Layout
+  title="Career evolution — Rohit Agrawal"
+  description="Fourteen years across six employers, from customer-facing quality work
+    to AI-assisted release governance. The arc, not the resume — the full record is
+    one click away."
+>
+  <Plate id="evolution">
+    <div class="plate-grid one-col">
+      <div class="plate-copy wide">
+        <h1 class="plate-title tight">Fourteen years.</h1>
+        <ol class="era-list">
+          {eras.map((e) => (
+            <li class="era">
+              <p class="era-org">
+                {e.job.org} — {e.job.role}
+                <span class="era-dates">{e.job.from} – {e.job.to}</span>
+              </p>
+              <p class="era-line">{e.line}</p>
+            </li>
+          ))}
+        </ol>
+        <p class="era-closing">{closing}</p>
+      </div>
+    </div>
+  </Plate>
+
+  <Plate id="evolution-record">
+    <div class="plate-grid one-col">
+      <div class="plate-copy wide">
+        <h2 class="plate-title tight">The full record</h2>
+        <p>
+          Every employer, every dated bullet, every approximate figure marked as such —
+          the complete CV lives on one page.
+        </p>
+        <div class="ctas">
+          <a class="btn primary" href="/cv">Read or print the CV</a>
+          <a class="btn ghost" href="/#systems">What I built</a>
+        </div>
+      </div>
+    </div>
+  </Plate>
+</Layout>

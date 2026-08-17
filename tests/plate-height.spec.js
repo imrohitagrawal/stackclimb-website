@@ -62,8 +62,8 @@ const LIMITS = [
    version of this file checked the home page alone and the project pages shipped at
    1.21 viewports underneath it, which is the same blind spot the gate exists to
    close, one level down. */
-const { projects } = await import('../src/data/projects.js');
-const ROUTES = ['/', ...Object.keys(projects).map((s) => `/projects/${s}`)];
+import { siteRoutes } from './lib/routes.mjs';
+const ROUTES = await siteRoutes();
 
 for (const { name, width, height, max: homeMax, deep } of LIMITS) {
   for (const route of ROUTES) {

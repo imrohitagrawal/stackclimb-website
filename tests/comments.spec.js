@@ -22,6 +22,12 @@
 //   missing mount — the .giscus div dropped for one project
 //   blocking load — the loader script loses `async`
 //   eager load    — the loader script loses `data-loading="lazy"`
+//   wrong cascade — `.sys-note`'s rule scoped back to one selector
+//                    component loses to global.css's `.plate-copy p`
+//                    (the D88 specificity class) — proved by computed
+//                    style directly, since this ground's contrast happens
+//                    to clear AA at BOTH the correct and the regressed
+//                    alpha, so axe alone can't tell them apart
 
 import { test, expect } from '@playwright/test';
 import { projects } from '../src/data/projects.js';
@@ -71,5 +77,18 @@ test('every project page mounts giscus, configured on the SCRIPT it reads from',
       await loader.evaluate((el) => el.hasAttribute('async')),
       `${slug}: loader script isn't async — would block the page's own content`,
     ).toBe(true);
+
+    // .sys-note's own color-mix rule must actually WIN the cascade against
+    // global.css's `.plate-copy p` (D88's class) — checked directly by
+    // computed alpha, not by axe (which can't distinguish 0.82 from 0.88
+    // on this particular ground).
+    const alpha = await page.locator('.sys-note').evaluate((el) => {
+      const m = getComputedStyle(el).color.match(/\/\s*([\d.]+)\)/);
+      return m ? parseFloat(m[1]) : null;
+    });
+    expect(
+      alpha,
+      `${slug}: .sys-note lost the cascade to .plate-copy p (D88's class) — alpha should be ~0.82, not the inherited ~0.88`,
+    ).toBeCloseTo(0.82, 1);
   }
 });

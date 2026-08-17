@@ -119,7 +119,7 @@ The site currently describes projects from a three-day-old reading.
 |---|---|---|
 | 7.1 | Weekly harvest + claim audit, scheduled | A drift issue, or silence |
 | 7.2 | Memory consolidation — enable auto-dream, `git init` the memory dir | History exists; prune becomes reversible |
-| 7.3 | NarraTwin avatar as the site's representative | Blocked on NarraTwin's own No-Go |
+| 7.3 | NarraTwin avatar as the site's representative | **IN PROGRESS, tied to Cut 1 (D97).** Every reading verified blocked: production No-Go, no owner-avatar asset exists (deliberately out of scope per NarraTwin's own ADR-0054), and the fallback (Meera) is blocked by that repo's own `publication_allowed: false`. Register only — no site change; existing NarraTwin page and overview already disclose this honestly |
 
 ---
 

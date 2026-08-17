@@ -88,7 +88,8 @@ test('every project page mounts giscus, configured on the SCRIPT it reads from',
     });
     expect(
       alpha,
-      `${slug}: .sys-note lost the cascade to .plate-copy p (D88's class) — alpha should be ~0.82, not the inherited ~0.88`,
+      `${slug}: .sys-note lost the cascade to .plate-copy p (D88's class) — ` +
+        'alpha should be ~0.82, not the inherited ~0.88',
     ).toBeCloseTo(0.82, 1);
   }
 });

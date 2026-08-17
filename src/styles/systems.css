@@ -50,3 +50,23 @@
   font-size: 0.84rem;
   color: color-mix(in srgb, var(--bone) 88%, transparent);
 }
+
+/* P-10: matches .cv-note's visual language (small, muted, left rule). Two
+   bugs caught by this same axe gate, both the D88 class recurring: (1) a
+   plain `opacity` COMPOUNDS with global.css's `.plate-copy p` rule
+   (already `color-mix(currentColor 88%, transparent)`) — fixed with a
+   direct color-mix instead of stacking. (2) `.sys-note` alone (one
+   selector component) loses the cascade to `.plate-copy p` (two
+   components) regardless of source order — the exact D88 specificity
+   bug, scoped two components deep here for the same reason `.era-list
+   .era-org` was. */
+.plate-copy .sys-note {
+  margin-top: 0.85rem;
+  font-size: 0.92rem; /* the documented private-note step, matches .cv-note exactly */
+  color: color-mix(in srgb, var(--bone) 82%, transparent);
+  border-left: 2px solid var(--accent);
+  padding-left: 0.8rem;
+}
+.plate-copy .sys-note a { color: var(--accent); }
+
+.giscus { margin-top: 1.4rem; }

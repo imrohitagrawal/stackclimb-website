@@ -24,6 +24,24 @@ import '../styles/cv.css';
 import {
   identity, summary, experience, projects, education, certifications, awards, skills,
 } from '../data/cv.js';
+import { pages as projectPages } from '../data/project-pages.js';
+
+/* P-9. Slugs are hand-assigned (project-pages.js's keys don't derive
+   mechanically from cv.js's names), but EXISTENCE is checked live against
+   projectPages so a page added or removed there is picked up automatically —
+   never a second hardcoded yes/no per project. */
+const EVIDENCE_SLUGS = {
+  CiteVyn: 'citevyn',
+  'Quorum-AI': 'quorum',
+  SaafSaans: 'saafsaans',
+  'NarraTwin AI': 'narratwin',
+};
+function evidenceHref(name) {
+  const slug = EVIDENCE_SLUGS[name];
+  // Absolute (R-7): the print rule below prints the raw href verbatim — a
+  // relative path is unresolvable off the page it was printed from.
+  return slug && projectPages[slug] ? new URL(`/projects/${slug}`, Astro.site).href : null;
+}
 ---
 
 <Layout
@@ -83,22 +101,43 @@ import {
         has a disclosure rule instead, or nothing yet, the row says so rather than calling it a
         gate.
       </p>
-      {projects.map((p) => (
-        <div class="cv-proj">
-          <div class="cv-job-head">
-            <h3>
-              {p.href ? <a href={p.href} rel="noopener">{p.name}</a> : p.name}
-            </h3>
-            <span class="cv-state">{p.state}</span>
-          </div>
-          <p>{p.what}</p>
-          {/* A row with no gate prints none. Aegis carried "Too early to state
-              one" UNDER a Gate label, which is an absence wearing the label —
-              the same thing #overview's figure column already refused once. */}
-          {p.gate && <p class="cv-gate"><span class="cv-gate-k">Gate</span> {p.gate}</p>}
-          {p.rule && <p class="cv-gate"><span class="cv-gate-k">Rule</span> {p.rule}</p>}
-        </div>
-      ))}
+      {/* P-9: each card is a native <details> — collapsed by default so the
+          page stays a fast scan, no JS required to open it (DEF-1's bar,
+          same pattern as the nav menu). A claim inside (gate or rule) gets
+          an Evidence link to its /projects/<slug> page where one exists, or
+          the Approximate label where it doesn't (EvalAxis: private.md's own
+          rule is "described and never linked" — no repo to point to yet). */}
+      {/* The project name stays PLAIN TEXT inside <summary> — axe's
+          nested-interactive rule (WCAG 4.1.2) bars an <a> inside a native
+          disclosure control, even though a mouse click still routes
+          correctly; a screen reader gets one ambiguous focus stop instead
+          of two clear ones. The live-product link moves into the body,
+          alongside Evidence, as "Visit". */}
+      {projects.map((p) => {
+        const evidence = evidenceHref(p.name);
+        const claim = p.gate || p.rule;
+        return (
+          <details class="cv-proj">
+            <summary class="cv-job-head">
+              <h3>{p.name}</h3>
+              <span class="cv-state">{p.state}</span>
+            </summary>
+            <p>{p.what}</p>
+            {/* A row with no gate prints none. Aegis carried "Too early to
+                state one" UNDER a Gate label, which is an absence wearing
+                the label — the same thing #overview's figure column already
+                refused once. */}
+            {p.gate && <p class="cv-gate"><span class="cv-gate-k">Gate</span> {p.gate}</p>}
+            {p.rule && <p class="cv-gate"><span class="cv-gate-k">Rule</span> {p.rule}</p>}
+            {p.href && <p class="cv-gate"><a href={p.href} rel="noopener">Visit</a></p>}
+            {claim && (
+              evidence
+                ? <p class="cv-gate"><a href={evidence} rel="noopener">Evidence</a></p>
+                : <p class="cv-gate"><strong>Approximate</strong></p>
+            )}
+          </details>
+        );
+      })}
     </section>
 
     <section class="cv-section cv-cols" aria-labelledby="s-skills">
@@ -128,6 +167,14 @@ import {
 
     <section class="cv-section" aria-labelledby="s-awards">
       <h2 id="s-awards">Recognition</h2>
+      {/* P-9: same reasoning as the Experience note above — an award citing a
+          figure or a placement is unverifiable from outside, same category
+          as the employer bullets, and gets the same label rather than a
+          second link scheme. */}
+      <p class="cv-note">
+        Every award naming a figure or a placement is <strong>approximate</strong> —
+        internal or third-party recognitions, which cannot be verified from outside them.
+      </p>
       <ul>{awards.map((a) => <li>{a}</li>)}</ul>
     </section>
 

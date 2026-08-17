@@ -38,7 +38,9 @@ const EVIDENCE_SLUGS = {
 };
 function evidenceHref(name) {
   const slug = EVIDENCE_SLUGS[name];
-  return slug && projectPages[slug] ? `/projects/${slug}` : null;
+  // Absolute (R-7): the print rule below prints the raw href verbatim — a
+  // relative path is unresolvable off the page it was printed from.
+  return slug && projectPages[slug] ? new URL(`/projects/${slug}`, Astro.site).href : null;
 }
 ---
 

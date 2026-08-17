@@ -1,6 +1,4 @@
-# Next session — the standing autonomous prompt (P-11, then close the register)
-
-ultracode
+# Next session — nothing queued (the register was fully worked as of D98)
 
 You are continuing work on stackclimb.com, the owner's personal site.
 `/Users/rohitagrawal/Projects/designing-website`. Astro, static, Cloudflare Pages.
@@ -10,132 +8,82 @@ job fails — break-glass only. **W-24 (owner, 2026-08-15): merge each PR autono
 it is verified and green — the merge is delegated, owner-reserved judgment calls are not.**
 
 READ FIRST, IN THIS ORDER, AND DO NOT SKIP:
-  AGENTS.md · docs/STATUS.md rows D96 down through D90 (this session's work, most recent
-  first) · docs/OWNER-DIRECTIVES.md (P-9 through P-21, I-4, and W-24 govern all copy and
-  all merges) · docs/plan/p9-interactive-resume.md and docs/plan/p10-comments-giscus.md
-  (both v2 — read their "Amendments"/R-7 sections, not just "What ships": the mechanism
-  that shipped is not what v1 proposed, in both cases) · docs/plan/i4-memory-management.md
-  (open questions, unanswered as of this handoff) · docs/evidence/README.md
+  AGENTS.md · `docs/STATUS.md` (D98 down through D95, this session's work, most recent
+  first) · `docs/OWNER-DIRECTIVES.md` (checked at the start of every session, per its own
+  rule — an `OPEN` row is a debt).
 
 THEN STOP TRUSTING THEM. Verify by running a command before acting on any row. The ledger
-outranks this file. EVERY suite read uses `set -o pipefail` + exit code, never `tail`.
+outranks this file.
 
-THE RULE THAT MATTERS MOST (D79, extended by RCA-002/RCA-005, reproven twice more this
-session): a plan quotes every governing decision CLAUSE BY CLAUSE, BY ROW ID, and a
-PLAN-REVIEW FAN BEFORE BUILDING catches real defects that pure inspection misses — P-9's
-v1 mechanism (raw links into internal docs, wrong repo name, would have 404'd) was killed
-by a 4-lens plan fan before one line of code existed. Do this for P-11 too; it is flagged
-as the heaviest remaining item and deserves at least that fan, not less.
+## What this session did — a pointer, not a copy
 
-== RESOLVED BY THE OWNER THIS SESSION (do not re-open) ==
-  - P-9: `/cv` enhanced in place (no new page). Unlinkable claims read `Approximate`
-    (not the internal REPORTED/UNVERIFIED taxonomy word). Interactivity is expand/collapse
-    per project card, native `<details>`, no JS. SHIPPED, deployed, production-verified
-    (D92/D93 — note D93 corrected an earlier draft's guessed `www.stackclimb.com`; the
-    real `astro.config.mjs` site value has no `www`).
-  - P-10: comments built now, on the 4 `/projects/<slug>` pages (no blog exists to attach
-    them to otherwise). GitHub Discussions category is the auto-created `Announcements`
-    (locked format), not a custom "Comments" category — no public API creates/renames
-    categories, and the name never renders in the widget a visitor sees. SHIPPED, deployed,
-    production-verified (D94/D96). **Owner action still open**: install the giscus GitHub
-    App at `github.com/apps/giscus` on `stackclimb-website` — comments won't functionally
-    post until then; the widget reports this loudly (visible "not installed" text), not
-    silently. Check `curl -L https://www.stackclimb.com/projects/citevyn | grep -c
-    'giscus is not installed'` — 0 means the App is installed and comments should work;
-    if still >0, the owner action is still pending, not a regression.
-  - I-4: **plan only, not built**, per the standing instruction. Two questions are sitting
-    unanswered in `docs/plan/i4-memory-management.md` — check if the owner has answered
-    them since; if not, they are still open and still not yours to decide silently:
-    (1) git-init this repo's own memory dir only, or all 10 project memory dirs found
-    under `~/.claude/projects/*/memory`; (2) should a consolidation pass auto-commit its
-    own edits, or produce a reviewable diff. "Auto-dream" is confirmed NOT a real Claude
-    Code feature (checked against the actual docs) — do not build toward it as if it were.
-  - W-24: autonomous merges of verified-green PRs, standing.
+`docs/STATUS.md` rows **D97** and **D98** are the record. In one sentence: P-11 ("NarraTwin
+avatar as the site's representative") was investigated, not guessed — every candidate
+reading was checked against NarraTwin's own repo and came back verified-blocked (production
+No-Go, no avatar of the owner exists and is deliberately out of Cut 1 scope per that repo's
+own ADR-0054, and the fallback of showing NarraTwin's real Meera artefact is blocked by that
+repo's own `presenter_registry.json` setting `publication_allowed: false`). The owner's final
+ruling: mark it in progress against NarraTwin's own Cut 1 milestone, register only, no site
+change. Two PRs shipped it: **#48** (the P-11 investigation and ledger update) and **#49**
+(D98, its own deploy record) — both merged under W-24, both deploy jobs ran green, both
+independently re-verified against production directly (not by trusting CI's own check):
 
-== THE QUEUE — ONE ITEM LEFT: P-11 (NarraTwin avatar as the site's representative) ==
+```bash
+curl -sL -o /dev/null -w "%{http_code}\n" https://www.stackclimb.com/          # 200
+curl -sL -o /dev/null -w "%{http_code}\n" https://www.stackclimb.com/projects/narratwin  # 200
+curl -sL https://raw.githubusercontent.com/imrohitagrawal/stackclimb-website/main/docs/STATUS.md | grep -c D98  # 2
+```
 
-**Verify the blocker before planning anything — do not assume it has cleared.** Plan
-phase 7.3 says P-11 is "Blocked on NarraTwin's own No-Go." Checked fresh at this
-handoff's own writing, against `origin/main` (W-1 — never the checkout), not assumed
-stale: `git -C ~/Projects/narratwin/narratwin-ai/narratwin-ai fetch origin && git show
-origin/main:docs/RELEASE_READINESS_REVIEW.md | head -15` → **still reads "No-Go for
-production release... real video export, and public synthetic-media distribution,"
-dated 2026-07-01.** Re-run that exact command first; if it still says No-Go, the block
-is real and current, not a stale row.
+**No code, test, or visible site content changed this session.** This was a ledger-only
+close-out — the docs blast radius (T0), self-verified, no plan-review fan or R-7 Codex pass
+needed because nothing was built.
 
-**A genuinely open question to raise with the owner before building, not resolve
-silently**: what does "the site's representative" mean while NarraTwin itself stays
-No-Go? Two readings are both plausible and lead to very different builds — (a) an avatar
-of Rohit himself, generated USING NarraTwin's own tech as a demonstration/artefact
-(NarraTwin's deployment status is then irrelevant — it's a proof-of-capability, same
-category as the existing project pages' artefacts), or (b) NarraTwin's own persona/avatar
-actually representing the SITE (which would need NarraTwin live, i.e. genuinely blocked).
-Reading (a) seems far more consistent with how every other "not deployed" system on this
-site is already handled (P-17: status disclosures stay honest, the system is shown
-anyway, "the gate holding is the point") — but this is exactly the kind of scope
-assumption P-9's v1 mechanism got wrong by not checking, so ask rather than guess.
+## The queue is empty
 
-Once the blocker and the reading are both settled: plan autonomously, STOP at genuinely-
-owner decisions (matching P-9/P-10's pattern this session — each needed 1-2 real
-AskUserQuestion rounds, not more). Full plan-review fan before building (see above);
-R-7 Codex pass on any test-file change (mandatory, see below); mutation-test every new
-assertion against the SEALED commit; independent production verification after deploy.
+Plan phase 7 (`docs/plan/build-plan.md`) had one open item, P-11, and it is now IN PROGRESS
+per the owner's own ruling, not something for a future session to re-decide. **Do not
+re-open P-11's reading question — it is settled and recorded (D97).** If NarraTwin's own
+Cut 1 status changes, that is a fact to re-check (`git -C
+~/Projects/narratwin/narratwin-ai/narratwin-ai fetch origin && git show
+origin/main:docs/RELEASE_READINESS_REVIEW.md | head -15`), not a reason to re-litigate the
+scope decision.
 
-After P-11: the register is fully worked. Session-close protocol
-(`docs/practices/session-close.md`) applies — this file gets rewritten again at that
-point, this time with nothing queued unless the owner adds something.
+## One real open item, carried forward, not dropped
 
-== HOW TO WORK (durable lessons; this session's additions in caps) ==
+**I-4 (memory management across projects)** is still `PLANNED, awaiting owner decision` —
+`docs/plan/i4-memory-management.md`, two questions genuinely his: (1) `git init` scoped to
+this repo's own memory dir only, or all ten found under `~/.claude/projects/*/memory`; (2)
+if a consolidation ("dreaming") pass is wanted, should it auto-commit its own edits or
+produce a reviewable diff first. Check `docs/OWNER-DIRECTIVES.md` I-4's row fresh — if the
+owner has answered since this was written, act on the answer; if not, it is still not yours
+to decide silently.
+
+## If the owner adds nothing new
+
+There is no standing work. Do a quick health check (`gh pr list`, `git log
+origin/main..HEAD` should be empty, `curl -I https://www.stackclimb.com/` → 200) and report
+quiet, rather than inventing work. `docs/OWNER-DIRECTIVES.md`'s other `PARTIAL` rows (W-6's
+agent-side Stop hook, W-19's synthesizer, W-23's remaining reviewers, P-1's evidence
+section, P-7's evals/observability coverage, R-6's skill) are real but not urgent — surface
+them if asked what's left, don't start them unprompted.
+
+## How to work (durable lessons, unchanged from prior sessions)
 
   - ONE WRITER. Fan reviews, never construction. NEVER edit the tree while a fan runs.
-  - COMMIT BEFORE MUTATION-TESTING — ABSOLUTE. Mutations only against a sealed commit;
-    record mutation→red pairs with EXACT MESSAGES in the STATUS row.
-  - THE D88 CASCADE-SPECIFICITY BUG RECURRED A THIRD TIME THIS SESSION, in P-10's own new
-    CSS, despite being named explicitly twice already. `.plate-copy p` (two selector
-    components) beats any bare single-class override regardless of source order — ALWAYS
-    scope a new plate-copy override two components deep (`.plate-copy .foo`) from the
-    first draft, don't wait to be caught. Also: **axe/a11y contrast checks cannot always
-    prove a cascade fix landed** — 0.88 alpha and 0.82 alpha both cleared AA on one ground
-    this session, so the "a11y test passes" claim for that fix was false confidence until
-    a direct `getComputedStyle` assertion was added. If a fix's whole point is a specific
-    computed value, assert the value directly; don't infer it from a downstream gate that
-    might not be sensitive enough to see it.
-  - THE ASTRO WHITESPACE-COLLAPSE BUG RECURRED TWICE THIS SESSION (P-9 and P-10): text
-    immediately before an inline element on the NEXT source line collapses the space to
-    zero. `.toContain()` doesn't catch it (the fused string still contains the substring).
-    Keep trailing text and the following inline tag's opening `<` on the SAME source line,
-    always, in any Astro template — don't wait for a screenshot to catch it.
-  - THIRD-PARTY EMBEDS (P-10's giscus): read the actual client source/docs for WHERE it
-    reads its config from before writing markup — config landed on the wrong element
-    (a div, when giscus reads `document.currentScript.dataset` off the SCRIPT tag) and
-    the first test passed anyway because it checked the div, not what giscus actually
-    reads. R-7 (Codex) caught this one; a plan fan or direct doc-read would have caught it
-    earlier and cheaper.
-  - CODEX (R-7 carve-out): one 5-minute `codex exec --sandbox read-only` pass on TEST-FILE
-    changes, run in the BACKGROUND (`run_in_background: true`), full output captured to a
-    file, read the END of the file (not `tail -N` piped — a large log needs `Read` with
-    `offset` near the end, `tail` alone can silently miss the actual verdict block if the
-    tool call has its own output-size limits). Found real, blocking-class issues on BOTH
-    P-9 and P-10 this session — treat it as load-bearing, not decorative.
-  - DEPLOY VERIFICATION PATTERN THAT WORKED WELL THIS SESSION: `gh run watch <id>
-    --exit-status` in the background immediately after a push to main, THEN independently
-    `curl`/headless-browser the live site yourself once it reports done — never trust the
-    CI job's own "verify production" step as the only check (this repo's own D71 history
-    is why: a step can print success while shipping a hole).
-  - TWO PARALLEL DOCS-ONLY PRs BOTH EDITING `docs/STATUS.md`'s header line WILL CONFLICT
-    on merge — this session hit it once (D95's PR and D96's PR both touched the "Last
-    updated" line and the same insertion point). Fix: `git fetch && git rebase origin/main`
-    on the second branch, resolve by keeping BOTH decision rows (newest-first) and folding
-    both facts into one header line, force-push with `--force-with-lease` (safe — it's
-    your own unmerged branch), then let CI re-run before merging.
-  - STOP and declare if a circuit breaker fires. Stop for genuinely-owner decisions —
-    this session asked 4 real AskUserQuestion rounds across P-9/P-10 (label word, page
-    scope, interactivity mechanism, Discussions category) and none were wasted; guessing
-    on any of them would have meant rebuilding.
+  - Verify by running a command before stating a fact as settled — this session's own
+    P-11 investigation is the proof: three separate "obvious" readings each turned out
+    false on the first real check (`git ls-tree`, an ADR, a registry `permission` block).
+  - Raise a conflict before complying, with evidence and a position, not a silent guess —
+    the "show Meera" fallback was the owner's own idea and still got checked and killed by
+    a registry flag rather than built on trust.
+  - GitHub's API (both GraphQL and REST write paths) had a transient outage mid-session —
+    503s on `gh pr create`/`gh pr merge` while reads kept working. The fix was retry with a
+    short backoff, or fall back to `gh api -X POST/PUT` directly. Not a repo problem; don't
+    debug this repo's config if it recurs, just retry.
   - Close the session properly: summary with numbers, main level with origin, branches
     deleted both sides, ports free, tree clean, fresh handoff here.
 
-== CLAIMS THAT MUST NEVER SHIP ==
+## Claims that must never ship
 
 Everything in the standing live sweep (D85/D87), plus: never "self-reported" (P-16, any
 folded spelling) · never "product studio" (D62) · never "No-Go"/"not deployed" on the
@@ -143,17 +91,16 @@ folded spelling) · never "product studio" (D62) · never "No-Go"/"not deployed"
 ANYWHERE in the act (gated, derived from cv.js orgs) · never a dated span the rows cannot
 evidence · never "cross-model critique" (quorum's evidence prescribes "moderated
 critique") · never "pre-1.0" for EvalAxis ("private, in progress") · SaafSaans labels are
-"live, cached, or no reading" · the thesis says FOUR · never claim NarraTwin is deployed
-or its release-readiness has changed without re-verifying against `origin/main` first
-(see the No-Go recheck above — a stale claim here is the exact failure mode P-11 exists
-to avoid repeating). Nothing except VERIFIED-in-evidence or labelled REPORTED.
+"live, cached, or no reading" · the thesis says FOUR · never claim NarraTwin is deployed or
+its release-readiness has changed without re-verifying against `origin/main` first · never
+claim or fabricate an avatar/video of the owner from NarraTwin — none exists, and D97
+records exactly why building one would violate that repo's own consent-scope decision.
 
-== HOW TO WRITE TO THE OWNER ==
+## How to write to the owner
 
 Plain English. Lead with the answer; if it is no, the first word is no. Short sentences,
 bullets, a concrete example. No jargon, no AI filler. Never re-explain what he has acted
-on. Disagree out loud BEFORE complying when evidence contradicts an instruction —
-conflict, evidence, your position, an everyday analogy. This session's proof it works
-(again): P-9's plan v1 was rejected by its own review fan before build, not after —
-raising "this mechanism would 404 and expose internal notes" cost one planning round and
-saved a shipped defect.
+on. Disagree out loud BEFORE complying when evidence contradicts an instruction — conflict,
+evidence, your position, an everyday analogy. This session's proof it works: the "show
+Meera" fallback was raised, checked, and found blocked by that repo's own data before a
+single line of site code was touched.

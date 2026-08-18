@@ -76,23 +76,14 @@ import '../styles/how-i-build.css';
 
         <div class="model-band">
           <p class="band-lead">
-            A judge-calibration harness that admits when its own labels aren't ready.
+            A calibration harness and a drift test that both admit their own limits.
           </p>
           <p class="band-support">
-            Scores agreement with Cohen's κ, PABAK, and Spearman correlation, refusing to score
-            against a fake judge. The labels it checks against are <span class="band-term"
-            >explicitly not blind human labels</span> — its own decision record says so.
-          </p>
-        </div>
-
-        <div class="model-band">
-          <p class="band-lead">
-            A statistical test that watches for a model quietly getting worse.
-          </p>
-          <p class="band-support">
-            A Kolmogorov&ndash;Smirnov test compares live output against a stored baseline, with
-            an <span class="band-term">alert on a floor breach</span> — built and demo-proven,
-            not yet wired to live traffic.
+            Judge agreement scored with Cohen's κ, PABAK, and Spearman correlation — the labels
+            it checks against are <span class="band-term">explicitly not blind human labels</span>,
+            its own decision record says so. Separately, a Kolmogorov&ndash;Smirnov test watches
+            live output against a stored baseline, with an <span class="band-term"
+            >alert on a floor breach</span> — demo-proven, not yet wired to live traffic.
           </p>
         </div>
 
@@ -102,13 +93,12 @@ import '../styles/how-i-build.css';
             an advisory one.
           </p>
           <p class="band-support">
-            OpenTelemetry and Prometheus across three systems; any token-like trace attribute is
-            removed <span class="band-term">before it leaves the process</span>. One repo's
-            judged eval only runs on a tag, a dispatch, or a pull request <span
+            OpenTelemetry and Prometheus across three systems, secrets removed <span
               class="band-term"
-            >labelled full-eval</span>, since an LLM-judged check costs real money. Another
-            enforces a fixture-backed eval suite as one of eleven contexts checked live against
-            the branch-protection API.
+            >before it leaves the process</span>. One repo's judged eval only runs on a pull
+            request <span class="band-term">labelled full-eval</span>, since it costs real
+            money; another enforces a fixture-backed eval suite as one of eleven contexts
+            checked live against the branch-protection API.
           </p>
         </div>
       </div>

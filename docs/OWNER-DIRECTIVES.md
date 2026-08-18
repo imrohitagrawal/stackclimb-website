@@ -38,11 +38,11 @@ forgotten and later recovered — kept visible on purpose).
 | W-16 | **Do not drop or forget any instruction** | DONE | This file |
 | W-17 | Good practices harvested for reuse on future projects | DONE | `docs/practices/` |
 | W-18 | Planning defects cost more than development defects — research deeply, fan out | **Note corrected 08-11.** This row said *"no standing rule yet"*. `AGENTS.md:363` (was cited as `:341`; that line is blank — corrected 08-12) has carried one: *"Size the fan to the phase"* — full expert fan for planning and architecture, then the T0–T3 blast-radius model for implementation |
-| W-19 | Verify by **executing**, not by reading. Agent verdicts need their own reviewer | PARTIAL | Role reviewers now told to execute; synthesizer pending |
+| W-19 | Verify by **executing**, not by reading. Agent verdicts need their own reviewer | DONE 2026-08-18 | Role reviewers execute; synthesizer built at `.agents/skills/review-synthesizer/SKILL.md` — D100 |
 | W-20 | Build a watermark skill — the spec exists, nothing applies it | **DONE 2026-08-17.** Skill built in `~/Projects/project-doc-skills` (PR #26); applied here to `public/og.png` (the RCA's own narrowed real case — the HTML case was found already implemented, corrected from the RCA's original framing). Pinned by hash, gated, mutation-proven | `docs/rca/RCA-001-watermark-skill.md` · D90 · `tests/og-watermark.spec.js` |
 | W-21 | Add an everyday analogy when disagreeing | DONE | `AGENTS.md` step 4 |
 | W-22 | Copy quorum-ai's licence; attribute owner, GitHub, LinkedIn, Stackclimb | DONE | `LICENSE` |
-| W-23 | Get the plan reviewed by architect, dev, tester, PM, program, eng, ops, DevOps | PARTIAL | 4 role reviewers running |
+| W-23 | Get the plan reviewed by architect, dev, tester, PM, program, eng, ops, DevOps | DONE 2026-08-18 | All 8 roles defined as a fan-from menu, not a mandate, at `docs/practices/plan-review-roles.md` — D100 |
 | W-24 | Merge each PR autonomously once it is verified and green — no waiting on him per PR (2026-08-15: "Going forward, you should autonomously go ahead and merge each PR once it is early verified and green") | STANDING from 2026-08-15. Bounds, from the repo's own rules: "verified and green" means both gate jobs passed AND the package's review/mutation record is complete; the merge is the deploy (approach C), so each merge is still followed by watching the deploy job run green and the post-deploy re-verification, recorded in the ledger. Owner-reserved decisions inside a package still stop for him — this delegates the MERGE, not the judgment calls | This row · first applied to PRs #32/#33/#34 |
 
 ## Review and orchestration
@@ -54,7 +54,7 @@ forgotten and later recovered — kept visible on purpose).
 | R-3 | Reviewers must **execute**, not read and assume | DONE | `AGENTS.md` |
 | R-4 | Circuit breaker — bugs every round means the fault is upstream | DONE | `AGENTS.md` |
 | R-5 | `ui-ux-pro-max` as an independent lens, because the builder must not audit itself | DONE | `docs/skills/README.md` |
-| R-6 | One agent verifies the live UI image by image, as a user sees it | PARTIAL | Contract + harness exist; the skill does not |
+| R-6 | One agent verifies the live UI image by image, as a user sees it | DONE 2026-08-18 | Contract and harness already existed; packaged into `.agents/skills/visual-review/SKILL.md` — D100 |
 | R-7 | **Remove Codex (cross-model) review going forward — it takes too long** (2026-08-13) | **RESOLVED 2026-08-14 with the carve-out.** Owner: *"Just keep the Codex as per your plan."* The standing rule: **no Codex anywhere except test-file changes, which get one hard-time-boxed (5-minute) `codex exec --sandbox read-only` pass** — kept because the measured `contact.spec.js` case (five holes two same-family reviewers missed) is about test files specifically. `AGENTS.md`'s different-model-family rule is therefore satisfied for tests and waived elsewhere | Contested table below records the exchange |
 | R-8 | Package B reviewed by a fan of: Engineering Architect, Engineering Manager, Hiring Recruiter, Engineering Peer, UI/UX Expert, Test Check, and `ui-ux-pro-max` as the single skill lens (owner confirmed the last two list items were one skill) (2026-08-13) | **DONE 2026-08-14** — the fan ran twice (plan: 38 findings, 13 adopted after refutation; built result: 7× PASS with a fix batch), plus a round-2 reviewer on the fixes. Recorded in D80 and PR #20 | D80 · PR #20 |
 

@@ -47,6 +47,10 @@ const FILES = {
   'authored skill': 'docs/evidence/practice/skill-library.md',
   blocking: 'docs/evidence/practice/ci-discipline.md',
   'the incident that caused it': 'docs/evidence/practice/failure-driven.md',
+  'explicitly not blind human labels': 'docs/evidence/practice/evals-observability.md',
+  'alert on a floor breach': 'docs/evidence/practice/evals-observability.md',
+  'before it leaves the process': 'docs/evidence/practice/evals-observability.md',
+  'labelled full-eval': 'docs/evidence/practice/evals-observability.md',
 };
 
 test('every rendered term traces to a VERIFIED span in its evidence file', () => {
@@ -64,13 +68,13 @@ test('the page renders every term, bars cross-review, and quotes verbatim', asyn
   // non-hero plate child at opacity:0 until scrolled into view.
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/how-i-build');
-  const body = norm(await page.locator('#how-i-build').innerText());
-  for (const term of Object.keys(FILES)) {
-    expect(body.toLowerCase(), `${term} not rendered`).toContain(term.toLowerCase());
-  }
-  // WHOLE PAGE, not just plate 1 — a bar scoped to #how-i-build alone let
-  // the phrase slip in unchecked on #published-skills (R-7 finding).
+  // WHOLE PAGE, not just plate 1 — terms now span #how-i-build and
+  // #evals-observability, and a check scoped to one plate already let a
+  // bar slip in unchecked on #published-skills once before (R-7 finding).
   const whole = norm(await page.locator('body').innerText()).toLowerCase();
+  for (const term of Object.keys(FILES)) {
+    expect(whole, `${term} not rendered`).toContain(term.toLowerCase());
+  }
   expect(whole).not.toMatch(/review each other|reviews each other|grading its own homework/);
 
   const watchdogFile = readFileSync('docs/evidence/practice/failure-driven.md', 'utf8');

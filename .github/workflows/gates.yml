@@ -184,11 +184,11 @@ jobs:
   # `needs:` both gate jobs, so a red gate cannot deploy. `if:` restricts it to
   # a push on main, so a PR build never touches production.
   #
-  # BLOCKED ON ONE SECRET: CLOUDFLARE_API_TOKEN, scoped to "Cloudflare Pages —
-  # Edit" for this account. Until it exists the job SKIPS rather than fails, so
-  # the gate suite stays green and the absence is visible in the run summary
-  # instead of being mistaken for success. Add it at
-  # Settings → Secrets and variables → Actions.
+  # DEPENDS ON ONE SECRET: CLOUDFLARE_API_TOKEN, scoped to "Cloudflare Pages —
+  # Edit" for this account. If it ever goes missing, the deploy steps below
+  # are skipped but this JOB still fails (DEF-53) — a skipped deploy must
+  # never report the same green conclusion as a real one. Deploy is not a
+  # required branch-protection check, so this cannot block a merge.
   deploy:
     name: deploy to production, then verify production
     runs-on: ubuntu-latest
@@ -241,3 +241,14 @@ jobs:
         run: |
           sleep 20
           node tests/post-deploy.mjs
+
+      # DEF-53: a skipped deploy must not report the same green conclusion as
+      # a real one. The warning above is easy to miss in a run list; a failed
+      # job is not. Deploy is not a required branch-protection check (only the
+      # two gate jobs are), so this cannot block a merge — it only stops a
+      # missing-secret run from looking identical to a real deploy.
+      - name: fail if the deploy was skipped
+        if: steps.cred.outputs.have != 'true'
+        run: |
+          echo "::error::Deploy skipped — CLOUDFLARE_API_TOKEN is missing. Failing this job on purpose so it cannot be mistaken for a real deploy."
+          exit 1

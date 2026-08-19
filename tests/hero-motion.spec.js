@@ -15,7 +15,7 @@ import { test, expect } from '@playwright/test';
    - no-JS fallback: make the hide a plain CSS default instead of gated on
      the script-set `hero-anim` class (DEF-1's shape). */
 test.describe('hero entrance — 4B', () => {
-  const ELS = ['.hero .hero-ledger', '.hero .hero-quote', '.hero .caps'];
+  const ELS = ['.hero .hero-ledger', '.hero .caps'];
 
   test('secondary hero elements animate; headline and thesis never do', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
@@ -103,7 +103,7 @@ test.describe('hero entrance — 4B', () => {
     const state = await page.evaluate(() => ({
       noAnim: document.documentElement.classList.contains('no-anim'),
       heroAnim: document.documentElement.classList.contains('hero-anim'),
-      anims: ['.hero .hero-ledger', '.hero .hero-quote', '.hero .caps'].map(
+      anims: ['.hero .hero-ledger', '.hero .caps'].map(
         (s) => getComputedStyle(document.querySelector(s)).animationName,
       ),
     }));

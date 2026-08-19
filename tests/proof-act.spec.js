@@ -25,7 +25,7 @@ const KEPT3 = 'Employer outcomes are attributed to their employer and marked app
 // included; the old kept second sentence left as redundant once the tail
 // arrived. DEFN is the exact string on every page's footer.
 const FOOTER_HEAD = DEFN;
-const THESIS = 'Fourteen years I can tell you about. Four systems you can check yourself.';
+const THESIS = 'Fourteen years I can tell you about. Six practices you can check yourself.';
 // DERIVED from cv.js, unioned with the legacy list — a hardcoded list let a
 // renamed employer (cv.js org → 'Google') sail past every bar (Codex hole 10).
 const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -221,9 +221,9 @@ test('hero: thesis painted and exact, strip named by it, population cells kept',
   await expect(strip).toHaveAttribute('aria-labelledby', 'hero-thesis');
   expect(await strip.getAttribute('aria-label')).toBeNull();
   for (const [t, d] of [
+    ['Practices, enforced', '6'],
     ['Systems of my own', '6'],
-    ['Built', '4'],
-    ['In progress', '2'],
+    ['Blocked by its own gate', '1'],
   ]) {
     const cell = strip.locator('.cap', { hasText: t });
     await expect(cell).toHaveCount(1);

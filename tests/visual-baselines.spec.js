@@ -22,8 +22,22 @@ import { test, expect } from '@playwright/test';
 // run that generated the committed PNGs.
 //
 // RED WHEN: the nav's layout shifts, a plate's box moves or resizes, or a
-// seam gap changes — any pixel drift Playwright's default threshold catches.
+// seam gap changes — any pixel drift past MAX_DIFF_PIXEL_RATIO below.
 const WIDTHS = [390, 768, 1440];
+
+// D109/D110 fallout: regenerating Linux baselines for a real change (the
+// hero plate growing) exposed that this file had zero tolerance configured
+// — Playwright's bare default. Three straight CI runs each failed a
+// DIFFERENT plate (#proof, then #overview) at ~1-2% pixel drift with
+// provably identical content (compared old vs. freshly-captured bytes and
+// pixels directly — no visible difference). That is anti-aliasing/font-
+// hinting jitter between separate headless-Chromium renders, not a
+// regression: whack-a-mole patching whichever plate flaked that run would
+// never converge. 0.03 sits comfortably above the worst noise observed
+// (0.02) and far below any real content diff seen so far (0.31-0.56 for
+// an actual hero-height change) — still catches a real regression, stops
+// catching noise that was never a defect in the page.
+const MAX_DIFF_PIXEL_RATIO = 0.03;
 
 test.describe('Visual baselines — home page nav and plate boundaries', () => {
   test('widths and plate ids under test are non-empty', async ({ page }) => {
@@ -43,7 +57,9 @@ test.describe('Visual baselines — home page nav and plate boundaries', () => {
         content: '*,*::before,*::after{animation:none!important;transition:none!important}',
       });
       await page.waitForTimeout(400);
-      await expect(page.locator('.site-nav')).toHaveScreenshot(`nav-${width}.png`);
+      await expect(page.locator('.site-nav')).toHaveScreenshot(`nav-${width}.png`, {
+        maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO,
+      });
     });
 
     test(`plate boundaries at ${width}px`, async ({ page }) => {
@@ -65,7 +81,9 @@ test.describe('Visual baselines — home page nav and plate boundaries', () => {
           id,
         );
         await page.waitForTimeout(900); // the ground cross-fade is 0.8s, per dod.spec.js
-        await expect(page.locator(`#${id}`)).toHaveScreenshot(`plate-${id}-${width}.png`);
+        await expect(page.locator(`#${id}`)).toHaveScreenshot(`plate-${id}-${width}.png`, {
+          maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO,
+        });
       }
     });
   }

@@ -1,0 +1,250 @@
+/* The hero practice panel (HeroPractice.astro). Own file, not global.css:
+   that file is grandfathered at a 500-line ceiling it may not exceed (D8).
+   Ported from the owner's own Claude Design mock — sizes below follow that
+   mock's own calibration rather than this file's usual rem ramp, the same
+   contextual exception already used for PrivateFigure's SVG labels.
+
+   Resting state (no `html.hero-anim`, no `.replaying`, reduced motion, no
+   JS): every row already resolved, both `.state-done`/`.chip-resolved`
+   visible, both `-pending` variants hidden. DEF-1 shape — nothing here
+   depends on a script existing. `.lit-surface` (palette.css) supplies the
+   panel's own background/color/border. */
+
+.practice-panel { margin-block: 0.2rem 0; }
+
+.practice-track { height: 2px; background: color-mix(in srgb, var(--ink) 12%, transparent); }
+.practice-fill { height: 2px; width: 100%; background: #6b4e14; }
+
+.practice-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem;
+  padding: 0.75rem 1rem 0.6rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  font-size: 0.625rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+}
+.practice-state {
+  display: flex; align-items: center; gap: 0.45rem;
+  font-size: 0.6rem; font-weight: 600; letter-spacing: 0.13em; text-transform: uppercase;
+  /* 78%, not the mock's 62% — measured 4.37:1 on --lit, below the 4.5:1
+     AA floor for normal text. Same fix applied to every ink-on-lit text
+     color below that measured short. */
+  color: color-mix(in srgb, var(--ink) 78%, transparent);
+}
+.practice-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex: 0 0 auto;
+  background: color-mix(in srgb, var(--ink) 35%, transparent);
+}
+
+.practice-rows { padding: 0.25rem 1rem 0.4rem; }
+.practice-row {
+  display: grid; grid-template-columns: 1fr auto; gap: 0.875rem; align-items: center;
+  padding: 0.56rem 0;
+  border-bottom: 1px dotted color-mix(in srgb, var(--ink) 20%, transparent);
+}
+.practice-row:last-child { border-bottom: none; }
+.practice-row-text { min-width: 0; }
+.practice-row-title { font-size: 0.8125rem; font-weight: 640; letter-spacing: 0.01em; }
+.practice-row-desc {
+  font-size: 0.6875rem; letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--ink) 78%, transparent);
+}
+/* NOT var(--accent): the panel is a .lit-surface island on the dark hero
+   plate, where --accent resolves to the bright ochre used everywhere else
+   in the hero (buttons, headline) — 2.22:1 on this light background,
+   measured, the same failure mode palette.css's own #private override
+   exists to fix. #6b4e14 is that exact fix, reused: palette.css already
+   computed it at 7.01:1 on --lit. */
+.practice-witness { color: #6b4e14; font-weight: 600; }
+
+.practice-chip { position: relative; display: inline-block; width: 6.5rem; height: 1.6rem; }
+.chip-pending, .chip-resolved {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.59rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase;
+  box-sizing: border-box;
+}
+.chip-pending {
+  display: none;
+  color: color-mix(in srgb, var(--ink) 70%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--ink) 58%, transparent);
+}
+.chip-resolved { opacity: 1; }
+.chip-pass { background: var(--ink); color: var(--lit, #f4efe4); border: 1px solid var(--ink); }
+.chip-block { background: color-mix(in srgb, #7a2318 7%, transparent); color: #7a2318; border: 1px solid #7a2318; }
+
+.practice-foot {
+  padding: 0.7rem 1rem 0.8rem;
+  border-top: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+}
+.practice-verdict {
+  margin: 0; font-family: var(--serif); font-size: 0.9375rem; line-height: 1.35; letter-spacing: 0.005em;
+}
+.practice-foot-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-top: 0.5rem;
+}
+.practice-prov {
+  font-size: 0.6rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink) 78%, transparent);
+}
+.practice-replay {
+  font: inherit; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase;
+  color: var(--ink); background: none; border: 1px solid color-mix(in srgb, var(--ink) 58%, transparent);
+  padding: 0.44rem 0.7rem 0.38rem; cursor: pointer;
+  /* D110: shortening the label to one word dropped the button below the
+     44px tap-target floor — it only cleared 44px before by wrapping to 2
+     lines, an accident of label length, not a sized control. */
+  min-height: 44px; display: inline-flex; align-items: center;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.practice-replay:hover,
+.practice-replay:focus-visible { border-color: #6b4e14; color: #6b4e14; }
+
+/* State swaps: `-pending` hidden / `-done` shown is the resting (resolved)
+   default everywhere. The rules below flip this under `html.hero-anim`,
+   then flip it back at the point each thing resolves. */
+.state-pending { display: none; }
+.state-done { display: inline; }
+
+/* ---------- Entrance (D107 — StackClimb-Hero-Practice, ported from the
+   owner's own Claude Design project, not authored here). Moved out of
+   motion.css (D109) when that file hit the D8 ceiling (260/250 lines) —
+   this component's resting and animated rules now live in one place,
+   which is where they belonged anyway (same reasoning as motion.css's
+   own comment on why it isn't part of global.css). `var(--ease-out)` is
+   defined in motion.css's `:root` — still visible here, custom
+   properties are not file-scoped.
+
+   Resting default above: every row already resolved, no script needed
+   (DEF-1). Under html.hero-anim it plays the six-check sequence once:
+   chips resolve on a 330ms cadence, the fill bar tracks the same span,
+   header/verdict swap at the end. `--row-delay` is set per row in the
+   markup rather than six nth-child blocks (.proof-chip's now-deleted
+   equivalent needed those).
+
+   The Replay button (practice-replay.js) does not need a second copy of
+   any of this: html.hero-anim is permanent once set, so replay just
+   nulls `animation` inline on the panel's animated descendants, forces
+   one reflow, then clears the override — the SAME rules below re-apply
+   from scratch. Nothing here has to know a replay is happening. */
+@keyframes practice-fill { from { width: 0%; } }
+@keyframes practice-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+/* Both ends explicit on both keyframes — no "omit `to`, let it fall back"
+   trick here, unlike motion.css's hero-rise: `.chip-resolved`'s own
+   opacity:0 below is the fallback target an omitted `to` would resolve
+   to, since it is declared in this SAME rule, not a separate resting
+   class. That bug shipped once already, caught by the render, not by
+   review: it fell back to 0 instead of 1, so every "resolved" chip
+   stayed invisible forever. */
+@keyframes practice-hide { from { opacity: 1; } to { opacity: 0; } }
+@keyframes practice-show { from { opacity: 0; } to { opacity: 1; } }
+
+html.hero-anim .hero .practice-fill { animation: practice-fill 1.98s linear 0.15s both; }
+html.hero-anim .hero .practice-dot {
+  /* Not var(--accent) — see .practice-witness above, same bright-ochre-
+     on-light-surface failure, same fix. */
+  background: #6b4e14;
+  animation: practice-pulse 1.1s ease-in-out 0.15s 2;
+}
+/* Chips resolve with a clip-path wipe, not the instant steps(1, jump-start)
+   snap this line shipped with. Revised on request, via emil-design-eng:
+   "nothing in the real world appears from nothing" — a pass/fail check
+   still shouldn't fade (a genuinely intermediate verdict isn't a real
+   state), but it can resolve with a beat of motion instead of a flat cut.
+   clip-path is the technique the skill itself documents for reveals, and
+   it is immune to both bugs already found on this exact line: a hard
+   geometric clip never blends a pixel's alpha the way opacity does (no
+   partial-contrast frame for axe to catch), and it's a continuous
+   animation, not a discrete step, so it has no exact boundary to miss —
+   landing a float epsilon short of 100% clips 99.9999996% instead of
+   100%, invisible to the eye, not a stuck chip. Left-to-right, matching
+   the fill bar's own direction, so the whole panel reads as one motion
+   vocabulary rather than two. 180ms — Emil's small-popover range, not the
+   80ms the snap needed, since there's now something worth seeing. Scoped
+   to the chips only: the header/verdict pair sits inline, not stacked in
+   equal-size boxes the way the chips are, so the same wipe there would
+   need restructuring its layout for content that is peripheral commentary,
+   not the six-check result a reader is actually scanning. */
+/* clip-path lives INSIDE the keyframes, not as a static override sitting
+   next to the animation — that pattern already shipped one bug on this
+   exact line (D108): a static override in the SAME rule as a
+   conditionally-killed `animation` survives the kill. A resolved chip
+   hitting a mid-visit prefers-reduced-motion flip snapped back to fully
+   clipped, caught by measuring, not by reading the CSS. `both` fill-mode
+   supplies the pre-delay state (backwards) and the completed state
+   (forwards) from the keyframe alone, and `animation:none` now correctly
+   falls back to this file's real resting clip-path (unset = fully
+   visible) instead of a leftover override with nothing left to override
+   it.
+
+   `display` on `.chip-pending` could NOT move into the keyframe the same
+   way — measured directly, not assumed: `animation-fill-mode:backwards`
+   does not reliably apply a keyframe's `display` value during the delay
+   phase in Chromium, so a keyframe-only `display` left the row stuck
+   hidden until its own delay elapsed even during its OWN first run. It
+   stays a static override here, which reopens the exact D108 shape for
+   THIS property specifically — closed by giving both guard blocks below
+   their own explicit `display:none`, rather than trusting `animation:
+   none` to undo a property it never controlled in the first place. */
+@keyframes chip-wipe-out {
+  from { clip-path: inset(0 0 0 0); }
+  to { clip-path: inset(0 0 0 100%); display: none; }
+}
+@keyframes chip-wipe-in {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+html.hero-anim .hero .chip-pending {
+  display: inline-flex;
+  animation: chip-wipe-out 0.18s var(--ease-out) calc(var(--row-delay) + 0.15s) both;
+}
+html.hero-anim .hero .chip-resolved {
+  animation: chip-wipe-in 0.18s var(--ease-out) calc(var(--row-delay) + 0.15s) both;
+}
+html.hero-anim .hero .state-pending { display: inline; animation: practice-hide 0.08s steps(1, jump-start) 2.13s both; }
+html.hero-anim .hero .state-done { opacity: 0; animation: practice-show 0.08s steps(1, jump-start) 2.13s both; }
+
+@media (prefers-reduced-motion: reduce) {
+  html.hero-anim .hero .practice-fill,
+  html.hero-anim .hero .practice-dot,
+  html.hero-anim .hero .chip-pending,
+  html.hero-anim .hero .chip-resolved,
+  html.hero-anim .hero .state-pending,
+  html.hero-anim .hero .state-done {
+    animation: none;
+  }
+  /* `.chip-pending`/`.state-pending`'s own `display:inline-flex`/`inline`
+     above is unconditional (needed — see the comment above .chip-pending),
+     so it is NOT undone by `animation:none` above; without this, a
+     mid-visit flip after either had already resolved left "Checking"
+     stuck visible forever. Measured, the same way the resolved-chip half
+     of this exact bug was measured. */
+  html.hero-anim .hero .chip-pending,
+  html.hero-anim .hero .state-pending {
+    display: none;
+  }
+}
+
+/* No `html.no-anim` selectors here: global.css's kill-all
+   (`html.no-anim * { animation: none !important }`) already suppresses the
+   entrance during an anchor jump — a redundant copy would be dead code that
+   a mutation cannot distinguish (same reasoning proved for motion.css's own
+   hero-ledger/caps rules, M4). The toggle-off pair below is reachable only
+   when a visitor flips the footer toggle mid-entrance; kept for correctness
+   in that window. Replay is safe under either kill switch with no extra
+   guard: if html.hero-anim was never set, or this block already zeroes its
+   animation, nulling and restoring inline `animation` on click re-applies
+   nothing. */
+[data-motion='off'] .hero .practice-fill,
+[data-motion='off'] .hero .practice-dot,
+[data-motion='off'] .hero .chip-pending,
+[data-motion='off'] .hero .chip-resolved,
+[data-motion='off'] .hero .state-pending,
+[data-motion='off'] .hero .state-done {
+  animation: none;
+}
+/* Same reason as the reduced-motion block above: .chip-pending/.state-pending's
+   own display is unconditional, so animation:none alone does not hide it. */
+[data-motion='off'] .hero .chip-pending,
+[data-motion='off'] .hero .state-pending {
+  display: none;
+}

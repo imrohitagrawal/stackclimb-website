@@ -35,12 +35,10 @@
 }
 
 html.hero-anim .hero .hero-ledger { animation: hero-rise 0.5s var(--ease-out) 0.08s both; }
-html.hero-anim .hero .hero-quote { animation: hero-rise 0.5s var(--ease-out) 0.18s both; }
 html.hero-anim .hero .caps { animation: hero-rise 0.5s var(--ease-out) 0.28s both; }
 
 @media (prefers-reduced-motion: reduce) {
   html.hero-anim .hero .hero-ledger,
-  html.hero-anim .hero .hero-quote,
   html.hero-anim .hero .caps {
     animation: none;
   }
@@ -51,9 +49,12 @@ html.hero-anim .hero .caps { animation: hero-rise 0.5s var(--ease-out) 0.28s bot
    entrance during an anchor jump — a redundant copy would be dead code that
    a mutation cannot distinguish (proved: deleting one changed nothing).
    The toggle-off pair below is reachable only when a visitor flips the
-   footer toggle mid-entrance; kept for correctness in that window. */
+   footer toggle mid-entrance; kept for correctness in that window. The
+   practice panel's own entrance and guards live in hero-practice.css, not
+   here — moved out when this file hit the D8 ceiling (260/250); `var(
+   --ease-out)` below is still visible there, custom properties are not
+   file-scoped. */
 [data-motion='off'] .hero .hero-ledger,
-[data-motion='off'] .hero .hero-quote,
 [data-motion='off'] .hero .caps {
   animation: none;
 }
@@ -62,7 +63,13 @@ html.hero-anim .hero .caps { animation: hero-rise 0.5s var(--ease-out) 0.28s bot
 
 :root {
   /* Already this repo's entrance curve — nav.css:130 uses it for the mobile
-     menu panel's @starting-style entrance. Reused, not reinvented. */
+     menu panel's @starting-style entrance. Reused, not reinvented. Also
+     carries the stamp's landing: a first pass used a back-ease overshoot
+     (easeOutBack) for a springy impact, and was reverted — the emil-design-eng
+     skill this hero was built with is explicit that bounce reads dated
+     outside drag-to-dismiss/playful contexts and should stay subtle even
+     there (0.1-0.3), and mine overshot to 1.56. A hard, bounce-free
+     deceleration reads as a firmer impact than a wobble does anyway. */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 }
 

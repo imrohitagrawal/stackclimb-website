@@ -28,9 +28,15 @@ export const definition =
 
 /* The thesis line (RCA-002 ruling 6). "Four": only four repos are public, so
    the invitation to check must survive the reader trying — flagged as the
-   owner's named decision in the PR; his ruling lands in D85. */
+   owner's named decision in the PR; his ruling lands in D85.
+   Revised D107: "six practices" replaces "four systems" as the hero's own
+   axis (owner's design-tool decision, "change the axis, not the artefact" —
+   a system count grows with the backlog; a practice count is fixed by
+   discipline). Same invariant as the original ruling, not a break from it:
+   all six witnesses below trace to systems whose source repos are public,
+   so the invitation to check still survives the reader trying. */
 export const thesis =
-  'Fourteen years I can tell you about. Four systems you can check yourself.';
+  'Fourteen years I can tell you about. Six practices you can check yourself.';
 
 /* The qualifier depicts the career in the hero's own words. A dated span
    (July 2011 – April 2026) was REJECTED by the plan fan: cv.js holds no

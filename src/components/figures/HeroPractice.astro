@@ -1,0 +1,108 @@
+---
+// The practice panel — a design brought in from the owner's own Claude
+// Design project (StackClimb Hero Decision.dc.html, component
+// StackClimb-Hero-Practice, variant "both" witness "true" — the memo's
+// revised "Ship this" call in its Turn 3, superseding its own Turn 2 pick).
+// Two typographic attempts and one real-image attempt were tried and
+// rejected before this session; this one did not originate here.
+//
+// The memo's own argument for it: a system-count hero grows with the
+// backlog and has to be redesigned; a practice-count hero is fixed by
+// discipline — a new project edits a witness, never a row. Every witness
+// below is pulled from projects.js's own `strip`/`state` fields, not
+// retyped, so the panel can never drift from what SystemPlate itself says.
+import { projects } from '../../data/projects.js';
+import '../../styles/hero-practice.css';
+
+// D110 (taste-skill review): a witness line reading "Name · stat · stat"
+// stacks 2-3 middle-dots once the panel's own leading " · " (template
+// below) is added on top — collapsed to one dot plus a parenthetical so
+// every row's citation carries exactly one. Runs on whatever `strip`/
+// `state` actually says, so it stays correct if that copy changes later
+// rather than needing a second hand-written rewrite per row.
+const witnessFrom = (slug, stripLabel) => {
+  const p = projects[slug];
+  const d = stripLabel ? p.strip.find((s) => s.t === stripLabel)?.d : p.state;
+  if (!d) throw new Error(`HeroPractice: no ${stripLabel ?? 'state'} on ${slug}`);
+  const detail = d.replace(/ · /g, ', ').replace(/ — /g, ', ');
+  return `${p.name} (${detail})`;
+};
+
+const ROWS = [
+  {
+    title: 'An evaluation gate, before promotion',
+    desc: 'A retrieval suite on the candidate index decides; overrides are audited',
+    witness: witnessFrom('citevyn', 'Golden suite'),
+    kind: 'pass',
+  },
+  {
+    title: 'Cite it, or refuse it',
+    desc: 'No source, no answer. Refusal is a valid outcome, not a failure',
+    witness: witnessFrom('citevyn', 'Retrieval'),
+    kind: 'pass',
+  },
+  {
+    title: 'Floors in config, not in good intentions',
+    desc: 'The build fails below the coverage floor; the number lives in the repo',
+    witness: witnessFrom('quorum', 'Coverage floor'),
+    kind: 'pass',
+  },
+  {
+    title: 'Uncertainty returned, never averaged away',
+    desc: 'Disagreement is its own field; a skipped round is recorded as skipped',
+    witness: witnessFrom('quorum', 'Decisions'),
+    kind: 'pass',
+  },
+  {
+    title: 'Provenance on every reading',
+    desc: 'Live, cached, or no reading. Degraded modes are disclosed, not hidden',
+    witness: witnessFrom('saafsaans', 'Feeds'),
+    kind: 'pass',
+  },
+  {
+    title: 'A readiness review that is allowed to say no',
+    desc: 'One of my own systems is not deployed, because its own review refused it',
+    witness: witnessFrom('narratwin', null),
+    kind: 'block',
+  },
+];
+---
+
+<div class="practice-panel lit-surface">
+  <div class="practice-track"><div class="practice-fill"></div></div>
+  <div class="practice-head">
+    <span>How I build · enforced in CI, not in review</span>
+    <span class="practice-state">
+      <span class="practice-dot" aria-hidden="true"></span>
+      <span class="state-pending">Checking</span>
+      <span class="state-done">Replay of the last run</span>
+    </span>
+  </div>
+  <div class="practice-rows">
+    {ROWS.map((r, i) => (
+      <div class="practice-row" style={`--row-delay:${((i + 1) * 0.33).toFixed(2)}s`}>
+        <div class="practice-row-text">
+          <div class="practice-row-title">{r.title}</div>
+          <div class="practice-row-desc">
+            {r.desc}
+            <span class="practice-witness"> · {r.witness}</span>
+          </div>
+        </div>
+        <span class="practice-chip">
+          <span class="chip-pending">Checking</span>
+          <span class={`chip-resolved chip-${r.kind}`}>{r.kind === 'pass' ? 'Enforced' : 'Blocking'}</span>
+        </span>
+      </div>
+    ))}
+  </div>
+  <div class="practice-foot">
+    <p class="practice-verdict" aria-live="polite">
+      <span class="state-pending">Each practice is a gate a build can fail — not a value on a slide.</span>
+      <span class="state-done">The last row is the one that costs me something. It stays.</span>
+    </p>
+    <div class="practice-foot-row">
+      <span class="practice-prov">Each figure read from the named repo at a pinned commit</span>
+      <button type="button" class="practice-replay">Replay</button>
+    </div>
+  </div>
+</div>

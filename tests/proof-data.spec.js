@@ -2,7 +2,9 @@
 // (the ledger depicts the CAREER). Split from proof-act.spec.js when the D8
 // budget caught it at 255/250 (one concern: the data contract; browser
 // assertions stay in proof-act.spec.js). Mutation ledgers: docs/STATUS.md
-// rows D85 and D87. In brief: thesis string locked (the Four ruling), five
+// rows D85 and D87. In brief: thesis string locked (revised D107 — the
+// owner's design-tool decision changed the axis from "Four systems" to
+// "Six practices"; same invariant, same lock, new string), five
 // rows a side, every figure captured from ITS OWN bullet inside ITS OWN
 // cv.js job (25/20/35 recur across jobs — token-anywhere passes swaps and
 // a page-wide match passes wrong-job bindings), rows span ≥3 jobs with one
@@ -17,7 +19,7 @@ import { experience } from '../src/data/cv.js';
 
 const DEFN =
   'StackClimb is where Rohit Agrawal builds independent AI systems — outside any employer.';
-const THESIS = 'Fourteen years I can tell you about. Four systems you can check yourself.';
+const THESIS = 'Fourteen years I can tell you about. Six practices you can check yourself.';
 // DERIVED from cv.js, unioned with the legacy list — a hardcoded list let a
 // renamed employer slip every bar (Codex hole 10; mirrored in proof-act).
 const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -35,7 +37,7 @@ const FIGURE = /(?<![\d,.])\d[\d,]*(?:\.\d+)?(?![\d,.])/g;
 
 test('proof.js: D62 verbatim, thesis locked, five rows a side', () => {
   expect(definition).toBe(DEFN);
-  expect(thesis).toBe(THESIS); // locks "Four" — the owner's named decision
+  expect(thesis).toBe(THESIS); // locks "Six practices" — D107's revision
   expect(employerRows).toHaveLength(5);
   expect(capabilityRows).toHaveLength(5);
 });

@@ -137,6 +137,10 @@ const EMAIL = 'mailto:rohit.ra.agrawal@gmail.com';
         is NOT read here — it always wins at the CSS layer independently
         (motion.css, nav.css), never overridden by this
         toggle. */}
+    {/* DEF-19: if a CSP is ever added, do not hand-write a sha256 hash for
+        this script — use Astro's `experimental.csp` so the hash is derived
+        from the shipped bytes at build time and can't go stale on the next
+        edit. See docs/STATUS.md. */}
     <script is:inline>
       try {
         if (localStorage.getItem('motion') === 'off') {

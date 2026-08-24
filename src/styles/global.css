@@ -351,6 +351,8 @@ body::before {
   transition: background 0.25s ease, color 0.25s ease;
 }
 .btn.primary { background: var(--ochre); color: var(--ink); }
+
+
 .btn.primary:hover { background: var(--bone); border-color: var(--bone); }
 .btn.ghost:hover { background: var(--ochre); color: var(--ink); }
 
@@ -425,6 +427,20 @@ body::before {
 .contact .plate-title { font-size: clamp(2.8rem, 6.5vw, 5.8rem); }
 .contact .plate-copy p { margin: 0 auto; }
 .contact .ctas { justify-content: center; }
+
+/* Five buttons wrap to a ragged 2/2/1 at 390px — three centered rows, every
+   button a different width, the last one orphaned. That was already loose at
+   four; the copy control is what made it visible. Below the site's single
+   breakpoint the row becomes two equal columns so the edges line up, and the
+   odd one out spans the full width instead of floating at its own size. */
+@media (max-width: 900px) {
+  .contact .ctas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+  }
+  .contact .ctas > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
 .contact .ledger { margin-inline: auto; }
 .contact .ledger dd { text-align: right; overflow-wrap: anywhere; }
 

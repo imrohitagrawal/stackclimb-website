@@ -1,0 +1,35 @@
+---
+/* The contact plate's email affordance: the mailto link and the copy control
+   that backs it up, kept in one component because they share one address and
+   must never drift apart. See src/scripts/copy-email.js for why the copy
+   control exists and why it cannot breach directive P-13. */
+const address = 'rohit.ra.agrawal@gmail.com';
+---
+
+<a class="btn primary" href={`mailto:${address}`}>Email me</a>
+{/* Ships hidden and is revealed by src/scripts/copy-email.js only once the
+    clipboard is actually reachable, so with JS off it never appears and the
+    plate reads exactly as it did before rather than drawing a control that
+    cannot work. The address is deliberately NOT repeated into a data-
+    attribute — the script lifts it from the mailto href above, which keeps
+    P-13's gate green (nothing prints it) and stops the two drifting. */}
+<button type="button" class="btn ghost btn-copy" data-copy-email hidden>
+  <span data-copy-label aria-live="polite">Copy email</span>
+</button>
+
+<style>
+  /* The one .btn that is a <button>, so it needs the resets an <a> never did:
+     a button inherits neither font-family nor background. */
+  .btn-copy {
+    font-family: inherit;
+    line-height: inherit;
+    background: none;
+    cursor: pointer;
+  }
+
+  /* NOT tidy-up. `.btn` sets `display: inline-block`, and an author rule beats
+     the UA stylesheet's `[hidden] { display: none }` — without this the copy
+     control paints for visitors with JS off, which is the dead surface it was
+     built to avoid. tests/contact.spec.js goes red if this is deleted. */
+  .btn[hidden] { display: none; }
+</style>

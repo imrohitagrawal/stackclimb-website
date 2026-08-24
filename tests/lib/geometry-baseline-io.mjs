@@ -1,0 +1,67 @@
+/* Reading and writing the DEF-54 geometry baseline. Split out of
+   geometry.spec.js because it is a separate concern and because the spec hit
+   252 lines against D8's 250 ceiling — the rule is modularize, never trim the
+   comments (file-budget.mjs:120). The same split post-deploy-selftest.mjs made,
+   for the same reason.
+
+   PLATFORM-SCOPED, and this was MEASURED rather than assumed — the plan's
+   acceptance item 6 doing exactly the job it was written for. The plan's
+   premise was that "numbers do not vary by OS the way anti-aliasing does".
+   That premise is REFUTED. A baseline generated on ubuntu-latest by CI run
+   32738865852 was diffed against one generated on darwin at the same commit,
+   with no source change between them: of 828 keys, 284 differed and 148 were
+   PAST THE SLACK, the worst by 42px (`plate.quorum-record` at 390).
+
+   The deltas land on plate HEIGHTS and link WIDTHS, which is the tell. macOS
+   and Linux rasterize the same self-hosted font files to different advance
+   widths, so text wraps at different points, so blocks are different heights.
+   Geometry does not escape font rendering — it inherits it through the wrap
+   point. Numbers are not OS-independent here, and now we know by how much.
+
+   So the file carries its platform, exactly as the PNG baselines do. The linux
+   file is the committed authority and the only one CI reads. A darwin file is
+   gitignored and is a developer's local convenience; it is generated from
+   whatever the page currently does, so it certifies nothing on its own. Never
+   commit one. */
+
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { serialize } from './geometry-compare.mjs';
+
+export const BASELINE = new URL(
+  `../geometry-baseline.${process.platform}.json`,
+  import.meta.url,
+).pathname;
+
+/* `!!process.env.X` is true for the STRING "0", so `UPDATE_GEOMETRY=0` would
+   have silently rewritten the baseline. Found by a cross-model review. */
+export const UPDATING = ['1', 'true', 'yes'].includes(
+  (process.env.UPDATE_GEOMETRY ?? '').toLowerCase(),
+);
+
+export const readBaseline = (path) => (existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) : null);
+
+/* Every leg the CONFIG defines, not every leg this run happened to visit.
+   `testInfo.config.projects` holds all configured projects even under
+   `--project=` or `--grep`, so a filtered run still prunes against the whole
+   matrix instead of deleting the legs it did not measure. */
+export const expectedLegs = (projects, widths, routes, legKey) =>
+  new Set(projects.flatMap((p) => widths.flatMap((w) => routes.map((r) => legKey(p.name, w, r)))));
+
+/* Playwright starts a FRESH worker process when the project changes, so the
+   spec's accumulator is empty again at the top of the second project and a
+   plain overwrite drops the first project's legs entirely. Measured: the first
+   generated file held only the mobile legs, and 23 of 44 tests then failed with
+   "measured but NOT in the baseline".
+
+   So: merge whole legs onto whatever is on disk, then prune every leg outside
+   the configured matrix. Merging alone leaves a stale leg behind when a route
+   or width is removed; pruning makes the file exactly the matrix, whatever
+   order the workers ran in. A whole leg is replaced rather than merged
+   key-by-key, so a deleted plate's key cannot survive inside a leg that was
+   re-measured. */
+export function writeBaseline(path, collected, expected) {
+  const onDisk = readBaseline(path) ?? {};
+  const merged = { ...onDisk, ...collected };
+  for (const leg of Object.keys(merged)) if (!expected.has(leg)) delete merged[leg];
+  writeFileSync(path, serialize(merged));
+}

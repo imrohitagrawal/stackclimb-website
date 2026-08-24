@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { siteRoutes } from './lib/routes.mjs';
 import { measureGeometry, NEUTRALIZE_MOTION } from './lib/geometry-measure.mjs';
-import { compareLeg, serialize, PX_TOLERANCE } from './lib/geometry-compare.mjs';
+import { compareLeg, PX_TOLERANCE } from './lib/geometry-compare.mjs';
+import { BASELINE, UPDATING, readBaseline, writeBaseline, expectedLegs } from './lib/geometry-baseline-io.mjs';
 
 /* DEF-54. The blocking gate on this site's layout is now a NUMBER, not a
  * photograph.
@@ -49,23 +49,31 @@ import { compareLeg, serialize, PX_TOLERANCE } from './lib/geometry-compare.mjs'
  * plate-top-390 by 40px. Counts and tag sequences get ZERO slack.
  *
  * WHICH WORLD IS RECORDED: JavaScript ON, in a secure context, with motion
- * neutralized (see geometry-measure.mjs). That is the world the pixel gate
- * already records, so the two layers describe the same page, and it is the
- * world in which D112's copy control is revealed — `copy-email.js` un-hides it
+ * neutralized (see geometry-measure.mjs) — the same world visual-baselines.spec.js
+ * captures, except that this file sweeps the width while keeping each project's
+ * own viewport HEIGHT, where that file pins 900 for both. Height is not cosmetic:
+ * `.plate` is `min-height: 100svh`. It is also the world in which D112's copy
+ * control is revealed — `copy-email.js` un-hides it
  * only when navigator.clipboard is reachable, and localhost IS secure. The
  * JS-off page is gated by contact.spec.js's own no-JS test, not here. Measured:
  * plate boxes are IDENTICAL with JS on and off; only the row's painted count
  * differs (5 vs 4), which the two-number count records.
  *
- * REGENERATE: UPDATE_GEOMETRY=1 npx playwright test tests/geometry.spec.js --workers=1
- * then read the diff. It is text on purpose.
+ * REGENERATE THE COMMITTED (linux) BASELINE: run gates.yml's
+ * `update_geometry_baseline` dispatch, download the artifact, commit it. Never
+ * hand-generate it on a laptop — a darwin run writes a DIFFERENT file that CI
+ * never reads, and the 42px measurement above is why.
+ * A local darwin baseline, for working on this gate on a Mac, is
+ *   UPDATE_GEOMETRY=1 npx playwright test tests/geometry.spec.js --workers=1
+ * and it is gitignored. --workers=1 is enforced, not requested: the spec throws
+ * without it, because parallel workers are separate processes and the last to
+ * write would drop the others' legs.
  */
 
 const WIDTHS = [390, 768, 1440];
-const BASELINE = new URL('./geometry-baseline.json', import.meta.url).pathname;
-const UPDATING = !!process.env.UPDATE_GEOMETRY;
 
 const ROUTES = await siteRoutes();
+
 
 /* Accumulated across every test in this run, then written whole. Never merged
    into the file on disk: a merge keeps a key for a plate that was deleted, and
@@ -74,7 +82,7 @@ const collected = {};
 
 const legKey = (project, width, route) => `${project}/w${String(width).padStart(4, '0')}/${route}`;
 
-const baseline = existsSync(BASELINE) ? JSON.parse(readFileSync(BASELINE, 'utf8')) : null;
+const baseline = readBaseline(BASELINE);
 
 test.describe('Geometry baselines — DEF-54', () => {
   test('the baseline itself is a real baseline', async ({}, testInfo) => {
@@ -86,7 +94,12 @@ test.describe('Geometry baselines — DEF-54', () => {
        Playwright's own toHaveScreenshot writes a missing snapshot and passes;
        that behaviour is deliberately NOT copied here. */
     test.skip(UPDATING, 'the baseline is being written by this run');
-    expect(baseline, `no ${BASELINE} — regenerate with UPDATE_GEOMETRY=1`).not.toBeNull();
+    expect(
+      baseline,
+      `no ${BASELINE}. On linux, that file is committed and its absence is a real failure. ` +
+        'On any other platform it is gitignored and yours to generate: ' +
+        'UPDATE_GEOMETRY=1 npx playwright test tests/geometry.spec.js --workers=1',
+    ).not.toBeNull();
 
     /* Derived from the config, not typed as a number: add a third Playwright
        project and this expects its legs the same day, rather than passing on a
@@ -197,24 +210,7 @@ test.describe('Geometry baselines — DEF-54', () => {
   }
 
   test.afterAll(({}, testInfo) => {
-    /* Playwright starts a FRESH worker process when the project changes, so
-       `collected` is empty again at the top of the second project and a plain
-       overwrite drops the first project's legs entirely. Measured: the first
-       generated file held only the mobile legs, and 23 of 44 tests then failed
-       with "measured but NOT in the baseline".
-       So: merge whole legs into whatever is on disk, then PRUNE every leg that
-       is not in the matrix this config actually defines. Merging alone would
-       leave a stale leg behind when a route or width is removed; pruning makes
-       the file exactly the matrix, whatever order the workers ran in. */
     if (!UPDATING || Object.keys(collected).length === 0) return;
-    const expected = new Set(
-      testInfo.config.projects.flatMap((p) =>
-        WIDTHS.flatMap((w) => ROUTES.map((r) => legKey(p.name, w, r))),
-      ),
-    );
-    const onDisk = existsSync(BASELINE) ? JSON.parse(readFileSync(BASELINE, 'utf8')) : {};
-    const merged = { ...onDisk, ...collected };
-    for (const leg of Object.keys(merged)) if (!expected.has(leg)) delete merged[leg];
-    writeFileSync(BASELINE, serialize(merged));
+    writeBaseline(BASELINE, collected, expectedLegs(testInfo.config.projects, WIDTHS, ROUTES, legKey));
   });
 });

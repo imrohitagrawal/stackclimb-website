@@ -45,6 +45,11 @@ function compareValue(leg, key, want, got) {
   if (!Array.isArray(want) || !Array.isArray(got)) {
     return `${where}: value is neither a string nor an array — baseline ${show(want)}, measured ${show(got)}`;
   }
+  /* Two empty arrays compare clean, because `[].every(...)` is vacuously true.
+     Unreachable from measureGeometry, which never emits one — but a corrupted
+     or hand-edited baseline can, and "0 breaches" against nothing is the
+     ["",""] shape this file exists to refuse. */
+  if (want.length === 0) return `${where}: the recorded value is empty — it measures nothing`;
   if (want.length !== got.length) {
     return `${where}: ${want.length} numbers -> ${got.length} numbers, ${show(want)} -> ${show(got)}`;
   }
@@ -74,6 +79,14 @@ function compareValue(leg, key, want, got) {
    RED WHEN: a plate is added and not baselined, or a plate vanishes. */
 export function compareLeg(leg, want, got) {
   const breaches = [];
+  /* A leg must be a plain object. `Object.keys("abcdef")` returns ["0".."5"],
+     so a corrupted baseline holding a STRING where a leg belongs would compare
+     clean against the same string — 0 breaches, nothing measured. */
+  const plain = (v) => v === undefined || (typeof v === 'object' && v !== null && !Array.isArray(v));
+  if (!plain(want)) breaches.push(`${leg}: the baseline entry is not an object — ${show(want)}`);
+  if (!plain(got)) breaches.push(`${leg}: the measurement is not an object — ${show(got)}`);
+  if (breaches.length) return breaches;
+
   const wantKeys = Object.keys(want ?? {});
   const gotKeys = Object.keys(got ?? {});
 

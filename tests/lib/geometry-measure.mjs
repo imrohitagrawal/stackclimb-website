@@ -37,8 +37,15 @@ export function measureGeometry() {
   const round = (n) => Math.round(n);
   const out = {};
 
+  /* [x, width, height]. Height alone was not enough: a cross-model review
+     pointed out that `.site-nav { transform: translateX(100px); width: calc(100% - 100px) }`
+     keeps the height and would have passed. The nav is `position: fixed`, so
+     it needs no y. */
   const nav = document.querySelector('.site-nav');
-  if (nav) out['nav'] = [round(nav.getBoundingClientRect().height)];
+  if (nav) {
+    const nr = nav.getBoundingClientRect();
+    out['nav'] = [round(nr.left), round(nr.width), round(nr.height)];
+  }
 
   /* Population derived from the DOM, never a hand-typed list — DEF-10 (routes)
      and DEF-44 (plate ids) are both on this repo's record for a list that

@@ -23,11 +23,12 @@ on:
         default: false
       update_geometry_baseline:
         description: >
-          DEF-54. Regenerate tests/geometry-baseline.json on this runner and
-          upload it as an artifact. Unlike the PNGs this file has no platform
-          suffix, so a local run overwrites the very file CI compares against —
-          which makes generating it here the safer default, and makes a
-          darwin-vs-linux diff the way to find out whether that matters.
+          DEF-54. Regenerate tests/geometry-baseline.linux.json on this
+          runner and upload it as an artifact. This is the ONLY way to refresh
+          the committed baseline. Measured, not assumed: a darwin baseline and
+          a linux one at the same commit differ on 148 of 828 keys by up to
+          42px, because the two systems rasterize the same self-hosted fonts to
+          different advance widths and the text wraps in different places.
         type: boolean
         default: false
 
@@ -116,7 +117,7 @@ jobs:
       # fail. post-deploy.mjs --self-test exists and is still wired nowhere;
       # recorded in docs/STATUS.md rather than silently repeated here.
       - name: geometry gate bites (DEF-54)
-        run: node tests/geometry-selftest.mjs
+        run: node tests/geometry-selftest.mjs --self-test
 
       - name: gitleaks
         uses: gitleaks/gitleaks-action@v2
@@ -168,7 +169,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: geometry-baseline
-          path: tests/geometry-baseline.json
+          path: tests/geometry-baseline.linux.json
           retention-days: 14
 
       # DEF-4. Manual-only: run with the "update_visual_baselines" input to

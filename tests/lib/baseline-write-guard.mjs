@@ -23,27 +23,49 @@
 
    WHY GITHUB_ACTIONS AND NOT CI. `CI=true` is exported by many local tools and
    by shell profiles — playwright.config.js already reads it for an unrelated
-   purpose — so keying the exemption on it hands the exemption to anyone whose
-   machine happens to set it. `GITHUB_ACTIONS` is set only by a GitHub-hosted
-   runner, which is the only place the sanctioned regeneration runs. GitHub
-   documents it as "always set to true when GitHub Actions is running the
-   workflow"; the value is compared loosely because a false NEGATIVE here would
-   break gates.yml's workflow_dispatch regeneration, which is the one path that
-   must never break.
+   purpose — so keying the exemption on it hands the exemption out by accident.
+   `GITHUB_ACTIONS` is set whenever GitHub Actions runs a workflow, hosted or
+   self-hosted, and by very little else. It is still an ordinary environment
+   variable and anyone can export it, which is stated plainly rather than
+   dressed up: this exemption is not authorization, it is a way of telling an
+   accident apart from a decision. Whether `act` sets it locally is UNVERIFIED
+   here — `which act` finds nothing on this machine. The
+   value is compared loosely because a false NEGATIVE here would break
+   gates.yml's workflow_dispatch regeneration, the one path that must not break.
 
-   WHAT THIS DOES NOT DO, said here rather than left to be discovered. It stops
-   a WRITE. It does not inspect a COMMIT, so it cannot see a baseline that was
-   hand-edited, pulled in with `git checkout other-branch -- <path>`, or copied
-   out of the wrong run's artifact. A commit-time provenance gate would cover
-   those and is filed separately (docs/STATUS.md, D117) rather than bundled in,
-   because every design for it needs a human-supplied escape that CI cannot
-   verify today — the workflow's `permissions:` block grants `actions: none`.
+   WHAT THIS DOES NOT DO. It guards two writers. It is not a proof of where a
+   committed baseline came from, and three routes get past it, all of them
+   deliberate acts rather than the documented command misfiring:
+
+     - `npx playwright test --ui`, then picking "Update snapshots -> All" in the
+       UI. The UI sends the mode to the test server as a command-line override
+       after this file has already run, and a CLI override outranks the config.
+     - a second Playwright config that does not import this one.
+     - a test calling `page.screenshot({ path: testInfo.snapshotPath(...) })`,
+       which writes a baseline with no update mode involved at all.
+
+   Closing those needs a check on the COMMIT rather than the write. That was
+   designed and rejected for now; the reasons are in docs/STATUS.md's rejected
+   table, and the short version is that every version of it needs a
+   human-supplied escape CI cannot verify, because gates.yml's `permissions:`
+   block grants `actions: none`.
 
    Every function takes its git lookup and its environment as arguments so the
    self-test can drive both directions without a tree and without a Linux box.
    tests/baseline-guard-selftest.mjs is that self-test; gates.yml runs it. */
 
 import { execFileSync } from 'node:child_process';
+import { realpathSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+/* git pathspecs are relative to the CWD, not to the repo. A cross-model review
+   found the hole that opens: `cd tests && npx playwright test --config
+   ../playwright.config.js ... --update-snapshots=all` left the lookup returning
+   nothing, so the guard said "untracked" and waved through a write to the real
+   tracked files. Playwright resolves its own paths against the CONFIG, so the
+   guard has to as well. Pinning the cwd here fixes it once for every caller. */
+const REPO_ROOT = fileURLToPath(new URL('../..', import.meta.url));
 
 /* Ask git which paths matching this pathspec are tracked. Returns null — not
    an empty list — when the question cannot be answered, so a caller can tell
@@ -52,6 +74,7 @@ import { execFileSync } from 'node:child_process';
 export function trackedPaths(pathspec) {
   try {
     const out = execFileSync('git', ['ls-files', '-z', '--', pathspec], {
+      cwd: REPO_ROOT,
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'ignore'],
     });
@@ -61,10 +84,6 @@ export function trackedPaths(pathspec) {
   }
 }
 
-/* Loose on purpose. A false negative would refuse the write on a real runner
-   and break the only sanctioned way to refresh a baseline; a false positive
-   needs someone to export GITHUB_ACTIONS on their laptop, which is a
-   deliberate, incriminatingly-named act rather than an accident. */
 export const onGitHubRunner = (env) =>
   ['true', '1', 'yes'].includes(String(env.GITHUB_ACTIONS ?? '').toLowerCase());
 
@@ -75,32 +94,63 @@ const SANCTIONED =
 
 class BaselineWriteRefused extends Error {}
 
+const refuse = (msg) => {
+  throw new BaselineWriteRefused(msg);
+};
+
+/* A path is not a file. `git ls-files` answers about the NAME it is given, and
+   on this repo's own filesystem two different names reach the same bytes: a
+   symlink or hard link aimed at the tracked file, and — on a case-insensitive
+   volume — `tests/GEOMETRY-BASELINE.LINUX.JSON`, which git reports as untracked
+   while the OS opens the committed file. Both were demonstrated by a
+   cross-model review. Comparing resolved paths closes the name/file gap. A
+   target that does not exist yet cannot be an alias, and realpathSync throws
+   on it, which is why the failure is swallowed here rather than raised. */
+const sameFile = (a, b) => {
+  try {
+    return realpathSync(a) === realpathSync(b);
+  } catch {
+    return false;
+  }
+};
+
 /* Where a geometry baseline write may land, or a throw saying why it may not.
-   GEOMETRY_BASELINE_OUT is the escape a Linux developer needs and a Mac
-   developer already has for free: point the write at a path git is not
-   tracking and the local loop works again. `tests/geometry-baseline.local.json`
-   is already covered by .gitignore's `tests/geometry-baseline.*.json` glob, so
-   that escape costs no .gitignore change — verified with `git check-ignore -v`.
-   The redirect target goes through the SAME tracked check, so it cannot be
-   used to aim at a second committed file. */
+   GEOMETRY_BASELINE_OUT points the write at a path git is not tracking.
+   `tests/geometry-baseline.local.json` is already covered by .gitignore's
+   `tests/geometry-baseline.*.json` glob, so it costs no .gitignore change —
+   verified with `git check-ignore -v`.
+
+   BE PRECISE ABOUT WHAT THAT BUYS, because an earlier version of this comment
+   called it "the local loop" and a review proved that wrong. It redirects the
+   WRITE only. geometry.spec.js reads BASELINE unconditionally, so every
+   comparison still runs against the committed authority — which is the correct
+   behaviour and the opposite of the snapshotPathTemplate trap, where moving
+   the write moves the read too and the gate ends up grading itself. What a
+   developer gets is a scratch file of the numbers this page produces right
+   now, to `diff` against the committed one. A Linux developer has no local
+   loop, and saying so is better than implying one.
+   The redirect target goes through the SAME checks, so it cannot be used to
+   aim at a second committed file, or at an alias of one. */
 export function resolveGeometryTarget({ path, env, lsFiles = trackedPaths }) {
   const target = env.GEOMETRY_BASELINE_OUT || path;
   if (onGitHubRunner(env)) return target;
 
-  const tracked = lsFiles(target);
-  if (tracked === null) {
-    throw new BaselineWriteRefused(
+  const named = lsFiles(target);
+  const family = lsFiles('tests/geometry-baseline.*.json');
+  if (named === null || family === null) {
+    refuse(
       `refusing to write ${target}: git could not say whether it is tracked, so this run\n` +
         `  cannot tell a local scratch file from the committed authority.\n  ${SANCTIONED}`,
     );
   }
-  if (tracked.length > 0) {
-    throw new BaselineWriteRefused(
-      `refusing to write ${target}: it is TRACKED, which makes it the committed authority\n` +
-        '  this gate compares against. A local run would overwrite the gate with whatever the\n' +
-        '  page does right now, and the comparisons are skipped while UPDATE_GEOMETRY is set,\n' +
-        `  so nothing would look wrong.\n  ${SANCTIONED}\n` +
-        '  For a local scratch baseline instead:\n' +
+  const alias = family.find((f) => sameFile(resolve(REPO_ROOT, f), resolve(REPO_ROOT, target)));
+  if (named.length > 0 || alias) {
+    refuse(
+      `refusing to write ${target}: it is TRACKED${alias && !named.length ? ` — it resolves to ${alias}` : ''},\n` +
+        '  which makes it the committed authority this gate compares against. A local run would\n' +
+        '  overwrite the gate with whatever the page does right now, and the comparisons are\n' +
+        '  skipped while UPDATE_GEOMETRY is set, so nothing would look wrong.\n' +
+        `  ${SANCTIONED}\n  For a local scratch baseline instead:\n` +
         '    GEOMETRY_BASELINE_OUT=tests/geometry-baseline.local.json UPDATE_GEOMETRY=1 \\\n' +
         '      npx playwright test tests/geometry.spec.js --workers=1',
     );
@@ -110,31 +160,52 @@ export function resolveGeometryTarget({ path, env, lsFiles = trackedPaths }) {
 
 /* Playwright writes the PNG baselines itself, so there is no call site of ours
    to guard. The config file is the seam: it is evaluated before any test runs
-   and it can read the full command line. Verified by experiment, not assumed —
-   a scratch config printed process.argv and saw `--update-snapshots=all` and
-   the `-u` shorthand exactly as typed. */
-export const wantsSnapshotUpdate = (argv) =>
-  argv.some((a) => a === '-u' || a === '--update-snapshots' || a.startsWith('--update-snapshots='));
+   and it can read the full command line. Verified by experiment, not assumed.
 
-const snapshotPathspec = (platform) => `tests/*.spec.js-snapshots/*-${platform}.png`;
+   The mode matters, and the SHORT ATTACHED FORM is where the first version of
+   this leaked: `npx playwright test -uall` is accepted by Playwright and was
+   not matched, so the guard said "no update requested" while the run rewrote
+   every tracked snapshot. Found by a cross-model review and confirmed by
+   running it. `none` is not a write request and is allowed through.
 
-/* Throws when an explicit -u / --update-snapshots would rewrite snapshots that
-   are tracked for THIS platform. Returns the reason it allowed the run
-   otherwise, which the self-test asserts on so "allowed" cannot be confused
-   with "never checked". */
+   `--update-snapshots none` written with a space is treated as a request even
+   though it is a no-op. Refusing a no-op is the harmless direction, and
+   guessing whether commander consumed the next token is not. */
+const SHORT = '-u';
+const LONG = '--update-snapshots';
+
+export function snapshotUpdateRequest(argv) {
+  for (const a of argv) {
+    if (a === SHORT || a === LONG) return 'changed';
+    if (a.startsWith(`${LONG}=`)) return a.slice(LONG.length + 1);
+    if (a.startsWith(SHORT) && a.length > SHORT.length && !a.startsWith('--')) return a.slice(SHORT.length);
+  }
+  return null;
+}
+
+export const wantsSnapshotUpdate = (argv) => {
+  const mode = snapshotUpdateRequest(argv);
+  return mode !== null && mode !== 'none';
+};
+
+export const snapshotPathspec = (platform) => `tests/*.spec.js-snapshots/*-${platform}.png`;
+
+/* Throws when an explicit update flag would rewrite snapshots that are tracked
+   for THIS platform. Returns the reason it allowed the run otherwise, so the
+   self-test can tell "allowed" apart from "never checked". */
 export function assertSnapshotUpdateAllowed({ argv, platform, env, lsFiles = trackedPaths }) {
   if (!wantsSnapshotUpdate(argv)) return 'no-update-requested';
   if (onGitHubRunner(env)) return 'github-runner';
 
   const tracked = lsFiles(snapshotPathspec(platform));
   if (tracked === null) {
-    throw new BaselineWriteRefused(
+    refuse(
       `refusing --update-snapshots: git could not say which ${platform} snapshots are\n` +
         `  tracked, so this run cannot tell local scratch files from committed ones.\n  ${SANCTIONED}`,
     );
   }
   if (tracked.length > 0) {
-    throw new BaselineWriteRefused(
+    refuse(
       `refusing --update-snapshots: ${tracked.length} ${platform} snapshot(s) are TRACKED and\n` +
         '  would be overwritten with this machine\'s render. A different OS rasterizes the same\n' +
         `  fonts differently, so the result is not the file CI reads.\n  ${SANCTIONED}`,
@@ -145,14 +216,19 @@ export function assertSnapshotUpdateAllowed({ argv, platform, env, lsFiles = tra
 
 /* The other half of the PNG story, and the one no command line reveals.
    Playwright's default updateSnapshots is 'missing': a bare `npx playwright
-   test` with no flags WRITES any snapshot that does not exist yet and passes.
-   Add a plate on Linux and a laptop-rendered `-linux.png` appears, untracked,
-   ready for the next `git add -A`. Pinning 'none' turns that silent write into
-   a loud failure — but only where tracked snapshots for this platform already
-   exist, so a Mac's first run still seeds its own gitignored `-darwin.png`
-   set, and a runner is never touched. */
+   test` WRITES any snapshot that does not exist yet. It then fails that run —
+   an earlier version of this comment said it passes, which a cross-model
+   review corrected against the installed 1.62.1 source — but the file is on
+   disk either way, and a red first run followed by a green second one is
+   exactly how 54 laptop-rendered PNGs reached a commit (d25b0fc). Pinning
+   'none' makes the missing snapshot a failure with nothing written.
+
+   Only where tracked snapshots for this platform already exist, so a Mac's
+   first run still seeds its own gitignored `-darwin.png` set. A runner is
+   never touched. An unanswerable git lookup pins 'none' too: the module's own
+   rule is that not knowing is not permission to write. */
 export function snapshotUpdateMode({ platform, env, lsFiles = trackedPaths }) {
   if (onGitHubRunner(env)) return undefined;
   const tracked = lsFiles(snapshotPathspec(platform));
-  return tracked && tracked.length > 0 ? 'none' : undefined;
+  return tracked === null || tracked.length > 0 ? 'none' : undefined;
 }

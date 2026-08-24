@@ -1,45 +1,44 @@
-/* Proves the DEF-59 baseline write guard can actually fail, and that both of
-   its call sites are wired to it. gates.yml runs this in the cheap job.
+/* Proves the DEF-59 baseline write guard can actually fail, and that all three
+   of its wiring points are connected. gates.yml runs this in the cheap job.
 
-   Why a self-test and not a Playwright spec: the guard's whole job is to refuse
-   a write on a developer's LAPTOP, so CI never exercises it in anger — CI is
-   the one machine the guard always lets through. Left unproved, it would be a
-   gate nobody has ever seen fail, which this repo has been bitten by before
-   (geometry-selftest.mjs exists for the same reason, and DEF-57 records a
-   self-test that was written and wired into nothing).
+   Why a self-test and not a Playwright spec: the guard's job is to refuse a
+   write on a developer's LAPTOP, so CI never exercises it in anger — CI is the
+   one machine it always lets through. Left unproved it would be a gate nobody
+   has seen fail, which this repo has been bitten by before (geometry-selftest
+   .mjs exists for the same reason, and DEF-57 records a self-test wired into
+   nothing).
 
-   The interesting direction is Linux, and this runs on a Mac. Both are covered
-   because the guard takes its git lookup and its environment as arguments, so
-   the Linux condition is reproducible anywhere: a lookup that says "tracked".
-   Direction 3 then re-checks the same logic against the REAL tree, so the
-   fixtures cannot drift away from what git actually reports.
+   Four directions. 1 and 2 live in tests/lib/baseline-guard-cases.mjs and run
+   on injected fixtures, so the Linux condition is drivable from a Mac. 3 drives
+   the REAL git lookup, including the failure branch, so the fixtures cannot
+   drift from what git actually does. 4 exercises the three call sites rather
+   than grepping for them.
 
-   RED WHEN: delete the `resolveGeometryTarget` call from writeBaseline(), or
-   the `assertSnapshotUpdateAllowed` call from playwright.config.js, or make
-   either guard return instead of throwing on a tracked target. Watched, not
-   assumed — see docs/STATUS.md D117 for the run output. */
+   RED WHEN: delete the `resolveGeometryTarget` call from writeBaseline(), the
+   `assertSnapshotUpdateAllowed` call from playwright.config.js, or the
+   `updateSnapshots: snapshotUpdateMode(...)` line from the same file; or make
+   any guard return instead of throwing on a tracked target; or query `path`
+   instead of the resolved `target`; or hardcode a platform in the snapshot
+   pathspec. Every one of those was run against this file — the last three
+   because a review round found them passing, which is why the fixtures now
+   answer the question they are asked. */
 
-import { readFileSync, writeFileSync } from 'node:fs';
-import {
-  resolveGeometryTarget,
-  assertSnapshotUpdateAllowed,
-  snapshotUpdateMode,
-  trackedPaths,
-  wantsSnapshotUpdate,
-} from './lib/baseline-write-guard.mjs';
-
-const LAPTOP = {}; // no GITHUB_ACTIONS
-const RUNNER = { GITHUB_ACTIONS: 'true' };
-const TRACKED = () => ['tests/geometry-baseline.linux.json'];
-const UNTRACKED = () => [];
-const NO_GIT = () => null;
+import { readFileSync, writeFileSync, symlinkSync, unlinkSync, existsSync } from 'node:fs';
+import { resolveGeometryTarget, assertSnapshotUpdateAllowed, trackedPaths } from './lib/baseline-write-guard.mjs';
+import { bites, allows, LAPTOP } from './lib/baseline-guard-cases.mjs';
 
 const results = [];
 const check = (name, ok, detail = '') => {
-  results.push({ name, ok, detail });
+  results.push({ name, ok });
   console.log(`${ok ? 'ok  ' : 'FAIL'}  ${name}${detail ? ` — ${detail}` : ''}`);
 };
-
+const run = ([name, fn]) => {
+  try {
+    check(name, fn() === true);
+  } catch (e) {
+    check(name, false, `threw: ${e.message.split('\n')[0]}`);
+  }
+};
 const refuses = (fn) => {
   try {
     fn();
@@ -49,101 +48,13 @@ const refuses = (fn) => {
   }
 };
 
-/* ── Direction 1: the guard bites ─────────────────────────────────────────
-   Each of these is the real defect, reproduced with an injected lookup. */
+for (const c of bites) run(c);
+for (const c of allows) run(c);
 
-check(
-  'geometry: a tracked target on a laptop is refused',
-  refuses(() => resolveGeometryTarget({ path: 'tests/geometry-baseline.linux.json', env: LAPTOP, lsFiles: TRACKED })),
-);
-
-const AIMED_AT_TRACKED = { GEOMETRY_BASELINE_OUT: 'tests/geometry-baseline.linux.json' };
-check(
-  'geometry: the GEOMETRY_BASELINE_OUT escape cannot aim at a tracked file either',
-  refuses(() =>
-    resolveGeometryTarget({ path: 'tests/geometry-baseline.darwin.json', env: AIMED_AT_TRACKED, lsFiles: TRACKED }),
-  ),
-);
-
-check(
-  'geometry: an unanswerable git lookup is refused, not waved through',
-  refuses(() => resolveGeometryTarget({ path: 'tests/geometry-baseline.linux.json', env: LAPTOP, lsFiles: NO_GIT })),
-);
-
-check(
-  'snapshots: -u against tracked snapshots on a laptop is refused',
-  refuses(() => assertSnapshotUpdateAllowed({ argv: ['-u'], platform: 'linux', env: LAPTOP, lsFiles: TRACKED })),
-);
-
-const UPDATE_ALL = ['--update-snapshots=all'];
-check(
-  'snapshots: --update-snapshots=all is refused the same way',
-  refuses(() => assertSnapshotUpdateAllowed({ argv: UPDATE_ALL, platform: 'linux', env: LAPTOP, lsFiles: TRACKED })),
-);
-
-check(
-  'snapshots: a bare run on a platform with tracked snapshots cannot silently write a missing one',
-  snapshotUpdateMode({ platform: 'linux', env: LAPTOP, lsFiles: TRACKED }) === 'none',
-);
-
-/* ── Direction 2: the guard does not over-fire ────────────────────────────
-   Direction 1 alone would be satisfied by a guard that refuses everything,
-   which would break the only sanctioned way to refresh a baseline. These are
-   the cells that must stay open, and the runner cells are the ones that keep
-   gates.yml's workflow_dispatch regeneration working. */
-
-check(
-  'geometry: an untracked target on a laptop is allowed (the Mac local loop)',
-  resolveGeometryTarget({ path: 'tests/geometry-baseline.darwin.json', env: LAPTOP, lsFiles: UNTRACKED }) ===
-    'tests/geometry-baseline.darwin.json',
-);
-
-const AIMED_AT_LOCAL = { GEOMETRY_BASELINE_OUT: 'tests/geometry-baseline.local.json' };
-check(
-  'geometry: the local escape path is honoured',
-  resolveGeometryTarget({ path: 'tests/geometry-baseline.linux.json', env: AIMED_AT_LOCAL, lsFiles: UNTRACKED }) ===
-    'tests/geometry-baseline.local.json',
-);
-
-check(
-  'geometry: a tracked target ON A RUNNER is allowed — the sanctioned dispatch path',
-  resolveGeometryTarget({ path: 'tests/geometry-baseline.linux.json', env: RUNNER, lsFiles: TRACKED }) ===
-    'tests/geometry-baseline.linux.json',
-);
-
-check(
-  'snapshots: --update-snapshots ON A RUNNER is allowed — the sanctioned dispatch path',
-  assertSnapshotUpdateAllowed({ argv: UPDATE_ALL, platform: 'linux', env: RUNNER, lsFiles: TRACKED }) ===
-    'github-runner',
-);
-
-check(
-  'snapshots: a run that asked for no update is never blocked',
-  assertSnapshotUpdateAllowed({ argv: ['test'], platform: 'linux', env: LAPTOP, lsFiles: TRACKED }) ===
-    'no-update-requested',
-);
-
-check(
-  'snapshots: -u where nothing is tracked for this platform is allowed (the Mac seeding run)',
-  assertSnapshotUpdateAllowed({ argv: ['-u'], platform: 'darwin', env: LAPTOP, lsFiles: UNTRACKED }) === 'untracked',
-);
-
-check(
-  'snapshots: a runner keeps Playwright default write-missing behaviour',
-  snapshotUpdateMode({ platform: 'linux', env: RUNNER, lsFiles: TRACKED }) === undefined,
-);
-
-check(
-  'flag parsing does not match an unrelated --update-* option',
-  wantsSnapshotUpdate(['--update-source-method=patch']) === false && wantsSnapshotUpdate(['-u']) === true,
-);
-
-/* ── Direction 3: the real tree ───────────────────────────────────────────
-   The partner check. Everything above runs on fixtures, and a fixture-only
-   suite would pass just as happily if git tracked nothing at all — a guard
-   over an empty population certifies sameness, not correctness. So: count what
-   git really reports, require it to be non-empty, and then re-run the refusal
-   against those real paths. */
+/* ── Direction 3: the real git lookup ─────────────────────────────────────
+   The partner check first. Everything above runs on fixtures, and a
+   fixture-only suite would pass just as happily if git tracked nothing at all
+   — a guard over an empty population certifies sameness, not correctness. */
 
 const realGeometry = trackedPaths('tests/geometry-baseline.*.json') ?? [];
 const realSnapshots = trackedPaths('tests/*.spec.js-snapshots/*-linux.png') ?? [];
@@ -156,7 +67,7 @@ check(
 
 check(
   'the real tracked geometry baseline is refused on a laptop',
-  realGeometry.every((p) => refuses(() => resolveGeometryTarget({ path: p, env: LAPTOP }))),
+  realGeometry.length > 0 && realGeometry.every((p) => refuses(() => resolveGeometryTarget({ path: p, env: LAPTOP }))),
   realGeometry.join(', '),
 );
 
@@ -166,16 +77,47 @@ check(
   `${realSnapshots.length} files`,
 );
 
+/* git pathspecs are cwd-relative, and the lookup used to inherit whatever
+   directory the process happened to start in. `cd tests && npx playwright test
+   --config ../playwright.config.js --update-snapshots=all` then found nothing
+   tracked and the guard waved the write through. Found by a cross-model review.
+   Asserting from a different cwd is the check that keeps the fix honest. */
+const here = process.cwd();
+process.chdir('tests');
+const fromElsewhere = trackedPaths('tests/*.spec.js-snapshots/*-linux.png') ?? [];
+process.chdir(here);
 check(
-  "this machine's own platform is not blocked from its gitignored local baseline",
-  trackedPaths(`tests/geometry-baseline.${process.platform}.json`)?.length > 0 ||
-    resolveGeometryTarget({ path: `tests/geometry-baseline.${process.platform}.json`, env: LAPTOP }) !== null,
-  process.platform,
+  'the lookup is anchored to the repo, not to the current directory',
+  fromElsewhere.length === realSnapshots.length && realSnapshots.length > 0,
+  `${fromElsewhere.length} from tests/, ${realSnapshots.length} from the root`,
 );
 
+/* Drives the catch block for real rather than through a fixture. An invalid
+   pathspec magic makes git exit non-zero, which is the same shape as git being
+   absent. It used to return [] here, which reads as "nothing is tracked" and is
+   permission to write. */
+check(
+  'a git lookup that fails returns null, not an empty list',
+  trackedPaths(':(nosuchmagic)anything') === null,
+);
+
+/* A symlink is a second name for the same bytes, and git answers about names.
+   The link is made at a gitignored path and removed in a finally, so it can
+   never be committed and never outlives this check by more than an exception. */
+const ALIAS = 'tests/geometry-baseline.local.json';
+let aliasRefused = false;
+try {
+  if (!existsSync(ALIAS) && realGeometry.length > 0) {
+    symlinkSync(process.cwd() + '/' + realGeometry[0], ALIAS);
+    aliasRefused = refuses(() => resolveGeometryTarget({ path: ALIAS, env: LAPTOP }));
+  }
+} finally {
+  if (existsSync(ALIAS)) unlinkSync(ALIAS);
+}
+check('a symlink pointed at the committed baseline is refused', aliasRefused, ALIAS);
+
 /* ── Direction 4: the call sites ──────────────────────────────────────────
-   A guard nothing calls is DEF-57 with a different name, so both call sites
-   are EXERCISED rather than grepped for.
+   A guard nothing calls is DEF-57 with a different name.
 
    writeBaseline() is driven against the real committed baseline: if the guard
    is wired it throws before touching disk. The bytes are read first and
@@ -187,33 +129,42 @@ check(
    Both call sites read process.env directly, and this file runs ON a runner in
    gates.yml — where the guard is supposed to say yes. So GITHUB_ACTIONS is
    cleared for the length of this section and put back afterwards. Without that
-   the two checks below would pass on a laptop and fail in CI, which is the
-   worst possible way round. */
+   the checks below would pass on a laptop and fail in CI, which is the worst
+   possible way round. */
 
 const realGitHubActions = process.env.GITHUB_ACTIONS;
 delete process.env.GITHUB_ACTIONS;
 
 const { writeBaseline } = await import('./lib/geometry-baseline-io.mjs');
 const victim = realGeometry[0];
-const before = readFileSync(victim);
+const before = victim ? readFileSync(victim) : null;
 let wired = false;
 try {
-  wired = refuses(() => writeBaseline(victim, {}, new Set()));
+  wired = Boolean(victim) && refuses(() => writeBaseline(victim, {}, new Set()));
 } finally {
-  if (!readFileSync(victim).equals(before)) writeFileSync(victim, before);
+  if (before && !readFileSync(victim).equals(before)) writeFileSync(victim, before);
 }
 check('writeBaseline() consults the guard', wired, victim);
 
-/* playwright.config.js runs before any test, and it is a plain module, so it
-   can be imported with a doctored argv. process.platform is forced to linux
-   because that is the condition under test and this machine is not it. */
+/* playwright.config.js runs before any test and it is a plain module, so it can
+   be imported with a doctored argv. process.platform is forced to linux because
+   that is the condition under test and this machine is not it.
+
+   The CLEAN import comes first and asserts the config's resolved
+   updateSnapshots. That line is the half of the PNG fix no command line
+   reveals, and deleting it left every check green until a review round caught
+   it. The refusing import follows with a cache-busting query, because a module
+   that throws while evaluating stays cached as an error and would otherwise
+   report the first import's outcome. */
 const realPlatform = process.platform;
 const realArgv = process.argv;
 Object.defineProperty(process, 'platform', { value: 'linux', configurable: true });
-process.argv = [...realArgv, '--update-snapshots=all'];
+let pinned = null;
 let configWired = false;
 try {
-  await import('../playwright.config.js');
+  pinned = (await import('../playwright.config.js')).default.updateSnapshots;
+  process.argv = [...realArgv, '--update-snapshots=all'];
+  await import('../playwright.config.js?refuse=1');
 } catch (e) {
   configWired = /refusing/.test(e.message);
 } finally {
@@ -221,7 +172,12 @@ try {
   process.argv = realArgv;
   if (realGitHubActions !== undefined) process.env.GITHUB_ACTIONS = realGitHubActions;
 }
-check('playwright.config.js consults the guard', configWired);
+check('playwright.config.js refuses an update flag', configWired);
+check(
+  'playwright.config.js pins updateSnapshots where this platform has committed snapshots',
+  pinned === 'none',
+  `resolved to ${pinned}`,
+);
 
 const failed = results.filter((r) => !r.ok);
 if (failed.length) {

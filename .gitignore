@@ -90,8 +90,16 @@ assets/inbox/**
 mockup/
 
 # Visual baselines are CI-generated only (visual-baselines.spec.js header).
-# A laptop run writes -darwin files; they must never be committed.
-tests/visual-baselines.spec.js-snapshots/*-darwin.png
+# A laptop run writes files named for its own platform; they must never be
+# committed.
+#
+# Generalized 2026-08-25 (D117). The rule used to name darwin, so a first run on
+# any OTHER platform wrote un-ignored -win32.png files, one `git add -A` from
+# repeating d25b0fc ("Remove 54 laptop-generated visual baselines committed in
+# error"). Ignore EVERY platform's file, then un-ignore the one authority — the
+# same correction the geometry rule below already carries, in the same words.
+tests/visual-baselines.spec.js-snapshots/*.png
+!tests/visual-baselines.spec.js-snapshots/*-linux.png
 
 # The DEF-54 geometry baseline is platform-scoped for the same reason, and it
 # is NOT a pixel problem: a linux baseline and a darwin one, generated at the

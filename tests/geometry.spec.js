@@ -73,9 +73,14 @@ import { BASELINE, UPDATING, readBaseline, writeBaseline, expectedLegs } from '.
  * used to write the committed authority, and this comment used to claim
  * otherwise — "and it is gitignored" was true on one platform and false on the
  * one that matters. DEF-59. It is now refused rather than corrected in prose:
- * baseline-write-guard.mjs asks git whether the target is tracked. A Linux
- * developer who still wants the local loop names a file git is not tracking:
+ * baseline-write-guard.mjs asks git whether the target is tracked. To dump the
+ * numbers this page currently produces without touching the authority, name a
+ * file git is not tracking:
  *   GEOMETRY_BASELINE_OUT=tests/geometry-baseline.local.json
+ * That redirects the WRITE only. The comparison below always reads BASELINE, so
+ * on Linux there is no local loop — there is a scratch file to `diff` against
+ * the committed one. Said plainly because an earlier draft of this comment
+ * implied a loop that does not exist.
  * --workers=1 is enforced, not requested: the spec throws
  * without it, because parallel workers are separate processes and the last to
  * write would drop the others' legs.
@@ -106,8 +111,11 @@ test.describe('Geometry baselines — DEF-54', () => {
        because two empty sets compare equal: a gate that reports "0 breaches"
        against an empty baseline has certified sameness, not correctness — the
        ["",""] hole a cross-model review found in contact.spec.js, one level up.
-       Playwright's own toHaveScreenshot writes a missing snapshot and passes;
-       that behaviour is deliberately NOT copied here. */
+       Playwright's own toHaveScreenshot WRITES a missing snapshot and fails
+       that one run, so the file is on disk and the next run is green against
+       it; that behaviour is deliberately NOT copied here. (This line used to
+       say "and passes". A cross-model review corrected it against the
+       installed 1.62.1 source, expect.js:12486.) */
     test.skip(UPDATING, 'the baseline is being written by this run');
     expect(
       baseline,

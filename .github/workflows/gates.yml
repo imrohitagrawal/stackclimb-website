@@ -145,7 +145,15 @@ jobs:
       # playwright-managed webServer would hit EADDRINUSE if it ran later.
       - name: regenerate visual baselines (manual only)
         if: github.event_name == 'workflow_dispatch' && inputs.update_visual_baselines
-        run: npx playwright test tests/visual-baselines.spec.js --update-snapshots
+        # `--update-snapshots` alone presets to "changed", which asks the SAME
+        # comparison that DEF-54 shows is blind at desktop width whether a file
+        # needs rewriting. A baseline that is wrong but sits inside
+        # MAX_DIFF_PIXEL_RATIO is therefore never refreshed by this step — that is
+        # how plate-contact-1440 came back byte-identical while the plate had
+        # gained a whole button. `=all` makes regeneration actually regenerate.
+        # Commit only the files whose PIXELS changed; most come back merely
+        # re-encoded (56 of 60 on the D112 run), which is D111's trap.
+        run: npx playwright test tests/visual-baselines.spec.js --update-snapshots=all
 
       - name: upload regenerated visual baselines
         if: github.event_name == 'workflow_dispatch' && inputs.update_visual_baselines

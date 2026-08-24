@@ -92,3 +92,16 @@ mockup/
 # Visual baselines are CI-generated only (visual-baselines.spec.js header).
 # A laptop run writes -darwin files; they must never be committed.
 tests/visual-baselines.spec.js-snapshots/*-darwin.png
+
+# The DEF-54 geometry baseline is platform-scoped for the same reason, and it
+# is NOT a pixel problem: a linux baseline and a darwin one, generated at the
+# same commit, differ on 148 of 828 keys by up to 42px, because the two systems
+# rasterize the same self-hosted fonts to different advance widths and the text
+# therefore wraps in different places. Only the linux file is committed and only
+# it is what CI reads. A local one is a developer convenience.
+# Ignore EVERY platform's file, then un-ignore the one authority. Naming the
+# platforms individually (darwin, win32) left any future one tracked by default,
+# which is the wrong direction for a rule whose whole point is that only the
+# linux file may be committed.
+tests/geometry-baseline.*.json
+!tests/geometry-baseline.linux.json

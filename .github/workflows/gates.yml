@@ -21,6 +21,16 @@ on:
           a locally-made baseline would fail on every real CI run.
         type: boolean
         default: false
+      update_geometry_baseline:
+        description: >
+          DEF-54. Regenerate tests/geometry-baseline.linux.json on this
+          runner and upload it as an artifact. This is the ONLY way to refresh
+          the committed baseline. Measured, not assumed: a darwin baseline and
+          a linux one at the same commit differ on 148 of 828 keys by up to
+          42px, because the two systems rasterize the same self-hosted fonts to
+          different advance widths and the text wraps in different places.
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -99,6 +109,20 @@ jobs:
           node tests/file-budget.mjs --self-test
           node tests/file-budget.mjs
 
+      # DEF-54: the geometry gate took over PRECISION from the screenshot gate.
+      # Both still block; the screenshot gate stays blocking as a coarse
+      # catastrophe net, so this is a change of job, not a handover of the
+      # ability to fail the build. The comparison is a pure function, so it can
+      # prove it bites without a browser, a build, or a server — which is why it
+      # runs here in the cheap job rather than only inside `npx playwright test`
+      # below. The gate that blocks layout changes should not be the one gate
+      # nobody has proved can fail. It takes no --self-test flag: a Playwright
+      # spec cannot receive argv, so the self-test is its own entry point and a
+      # flag would be inert. post-deploy.mjs --self-test exists and is still
+      # wired nowhere; filed as DEF-57 rather than silently repeated here.
+      - name: geometry gate bites (DEF-54)
+        run: node tests/geometry-selftest.mjs
+
       - name: gitleaks
         uses: gitleaks/gitleaks-action@v2
         env:
@@ -130,8 +154,27 @@ jobs:
       # baselines committed yet, this step would fail on "snapshot doesn't
       # exist" before it ever got a chance to create them.
       - name: run the test suite
-        if: "!(github.event_name == 'workflow_dispatch' && inputs.update_visual_baselines)"
+        if: "!(github.event_name == 'workflow_dispatch' && (inputs.update_visual_baselines || inputs.update_geometry_baseline))"
         run: npx playwright test
+
+      # DEF-54. Manual-only. --workers=1 is not optional: parallel workers are
+      # separate processes, and the last one to write the file would silently
+      # drop the others' legs — a truncated baseline that then passes
+      # vacuously. The spec throws if the flag is missing rather than trusting
+      # the operator to remember it.
+      - name: regenerate the geometry baseline (manual only)
+        if: github.event_name == 'workflow_dispatch' && inputs.update_geometry_baseline
+        env:
+          UPDATE_GEOMETRY: '1'
+        run: npx playwright test tests/geometry.spec.js --workers=1
+
+      - name: upload the regenerated geometry baseline
+        if: github.event_name == 'workflow_dispatch' && inputs.update_geometry_baseline
+        uses: actions/upload-artifact@v4
+        with:
+          name: geometry-baseline
+          path: tests/geometry-baseline.linux.json
+          retention-days: 14
 
       # DEF-4. Manual-only: run with the "update_visual_baselines" input to
       # regenerate tests/visual-baselines.spec.js-snapshots/ on this exact

@@ -83,9 +83,10 @@ export function measureTypeFloor({ floorPx, svgExempt }) {
     if (!Number.isFinite(px)) continue;
 
     /* SVG text reports USER UNITS, not rendered pixels — a `viewBox` scales
-       them. The private figure declares 9 and renders 6.26px at 390 and 8.11px
-       at 1024. Multiply by the screen CTM so the number is the one a reader
-       meets, then gate it like any other text. */
+       them. The private figure declares 9 and renders 4.76px at 320, 6.26px at
+       390 and 8.11px at 1024 — 1024 is the worst DESKTOP case, and neither
+       width this gate samples sees it. Multiply by the screen CTM so the number
+       is the one a reader meets, then gate it like any other text. */
     let rendered = px;
     if (el.namespaceURI === 'http://www.w3.org/2000/svg') {
       const ctm = typeof el.getScreenCTM === 'function' ? el.getScreenCTM() : null;

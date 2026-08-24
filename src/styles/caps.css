@@ -32,8 +32,8 @@
 .cap .t {
   /* 0.6rem (9.6px) was the smallest text on the site — the floor rises to
      10.56px per the 2026-08-09 critique (A2, finding 5). */
-  font-size: 0.66rem; font-weight: 560;
-  letter-spacing: 0.2em; text-transform: uppercase;
+  font-size: 0.6875rem; font-weight: 560; line-height: 1.2;
+  letter-spacing: 0.16em; text-transform: uppercase;
   opacity: 0.62;
 }
 /* Values wrap; they used to be nowrap with an ellipsis, which silently ate the
@@ -42,7 +42,7 @@
 .cap .d {
   margin-top: auto;
 
-  font-size: 0.74rem; font-weight: 640;
+  font-size: 0.74rem; font-weight: 640; line-height: 1.2;
   letter-spacing: 0.09em; text-transform: uppercase;
   text-wrap: balance;
 }

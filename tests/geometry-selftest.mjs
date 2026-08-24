@@ -19,9 +19,14 @@
 import { readFileSync } from 'node:fs';
 import { compare } from './lib/geometry-compare.mjs';
 
-/* Accepts --self-test so the invocation reads like its two siblings in
-   gates.yml (`node tests/no-pii.mjs --self-test`). The script does nothing
-   else, so the flag is optional rather than a mode switch. */
+/* NO --self-test FLAG, and that is a deliberate deviation from the plan's
+   acceptance item 2, which asked for "the repo's existing idiom (--self-test,
+   as file-budget.mjs does)". Those siblings are gates with two modes, and the
+   flag picks one. The geometry gate is a Playwright spec: it is run by
+   `npx playwright test`, cannot receive argv, and has no second mode to select.
+   A flag here would be inert decoration that reads like a switch, so the
+   self-test is its own browserless entry point instead — the same split
+   post-deploy-selftest.mjs already makes. Stated rather than quietly dropped. */
 
 const LEG = 'desktop/w1440//';
 const leg = (keys) => ({ [LEG]: keys });
@@ -50,9 +55,10 @@ const cases = [
     leg(Object.fromEntries(Object.entries(CLEAN).filter(([k]) => k !== 'plate.top'))), true],
   ['a count change caught with zero slack', leg(CLEAN),
     leg(edit({ 'row.contact/ctas#0.count': [6, 6] })), true],
-  // The count moves by exactly 1 — inside the PIXEL slack, so this only goes
-  // red because counts are exempt from it. Delete that exemption and this case
-  // is the one that turns red.
+  // The count moves by exactly 1 — inside the PIXEL slack, so this goes red
+  // only because counts are exempt from it. Deleting the exemption turns THIS
+  // case and the [6,6] case above red together; both depend on it, and neither
+  // isolates it alone.
   ['a control that ships but is never painted caught', leg(CLEAN),
     leg(edit({ 'row.contact/ctas#0.count': [5, 4] })), true],
   ['a reorder with identical boxes caught', leg(CLEAN),
@@ -82,7 +88,9 @@ const cases = [
     leg({ ...CLEAN, 'plate.contact': [] }), leg({ ...CLEAN, 'plate.contact': [] }), true],
   /* The ["",""] shape at the LEG level: present on both sides, empty on both, so
      there are no key-set differences to breach on and only the empty-leg guards
-     can fire. Proved by mutation: delete them and this goes red. */
+     can fire. It reports two breaches, one per side, so it pins the guard PAIR
+     rather than either side alone. Proved by mutation: delete both and this
+     goes red. */
   ['a leg empty on BOTH sides rejected', leg({}), leg({}), true],
   /* Object.keys("abcdefghij") is ["0".."9"], so a corrupted baseline holding a
      string where a leg belongs compares clean against the same string.

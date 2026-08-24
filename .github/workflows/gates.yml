@@ -109,15 +109,19 @@ jobs:
           node tests/file-budget.mjs --self-test
           node tests/file-budget.mjs
 
-      # DEF-54: the geometry gate replaced the pixel gate's blocking role, and
-      # its comparison is a pure function so it can prove it bites without a
-      # browser, a build, or a server. That is why it runs here in the cheap
-      # job rather than only inside `npx playwright test` below — the gate that
-      # blocks layout changes should not be the one gate nobody has proved can
-      # fail. post-deploy.mjs --self-test exists and is still wired nowhere;
-      # recorded in docs/STATUS.md rather than silently repeated here.
+      # DEF-54: the geometry gate took over PRECISION from the screenshot gate.
+      # Both still block; the screenshot gate stays blocking as a coarse
+      # catastrophe net, so this is a change of job, not a handover of the
+      # ability to fail the build. The comparison is a pure function, so it can
+      # prove it bites without a browser, a build, or a server — which is why it
+      # runs here in the cheap job rather than only inside `npx playwright test`
+      # below. The gate that blocks layout changes should not be the one gate
+      # nobody has proved can fail. It takes no --self-test flag: a Playwright
+      # spec cannot receive argv, so the self-test is its own entry point and a
+      # flag would be inert. post-deploy.mjs --self-test exists and is still
+      # wired nowhere; filed as DEF-57 rather than silently repeated here.
       - name: geometry gate bites (DEF-54)
-        run: node tests/geometry-selftest.mjs --self-test
+        run: node tests/geometry-selftest.mjs
 
       - name: gitleaks
         uses: gitleaks/gitleaks-action@v2

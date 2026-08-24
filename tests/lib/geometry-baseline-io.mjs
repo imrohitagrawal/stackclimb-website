@@ -25,12 +25,17 @@
    commit one. */
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { serialize } from './geometry-compare.mjs';
 
-export const BASELINE = new URL(
-  `../geometry-baseline.${process.platform}.json`,
-  import.meta.url,
-).pathname;
+/* fileURLToPath, not `new URL(...).pathname`. The latter leaves the path
+   percent-encoded, so a checkout under a directory with a space in its name
+   resolves to `/tmp/geo%20r2/...`, existsSync says false, and the gate fails
+   with a path that does not exist on disk. It fails loud either way; this makes
+   the message true. */
+export const BASELINE = fileURLToPath(
+  new URL(`../geometry-baseline.${process.platform}.json`, import.meta.url),
+);
 
 /* `!!process.env.X` is true for the STRING "0", so `UPDATE_GEOMETRY=0` would
    have silently rewritten the baseline. Found by a cross-model review. */
@@ -38,7 +43,20 @@ export const UPDATING = ['1', 'true', 'yes'].includes(
   (process.env.UPDATE_GEOMETRY ?? '').toLowerCase(),
 );
 
-export const readBaseline = (path) => (existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) : null);
+/* A malformed baseline returns null rather than throwing. The spec reads it at
+   module scope, so an uncaught parse error stops the FILE from loading — which
+   means the regeneration command the failure message recommends cannot run
+   until someone deletes the file by hand. Returning null keeps that recovery
+   path open while still failing: the "real baseline" test asserts not-null, so
+   a corrupt file can never be mistaken for a clean one. */
+export function readBaseline(path) {
+  if (!existsSync(path)) return null;
+  try {
+    return JSON.parse(readFileSync(path, 'utf8'));
+  } catch {
+    return null;
+  }
+}
 
 /* Every leg the CONFIG defines, not every leg this run happened to visit.
    `testInfo.config.projects` holds all configured projects even under
@@ -55,10 +73,17 @@ export const expectedLegs = (projects, widths, routes, legKey) =>
 
    So: merge whole legs onto whatever is on disk, then prune every leg outside
    the configured matrix. Merging alone leaves a stale leg behind when a route
-   or width is removed; pruning makes the file exactly the matrix, whatever
-   order the workers ran in. A whole leg is replaced rather than merged
+   or width is removed; pruning drops it, whatever order the workers ran in.
+   A whole leg is replaced rather than merged
    key-by-key, so a deleted plate's key cannot survive inside a leg that was
-   re-measured. */
+   re-measured.
+
+   Pruning removes legs the matrix does not define. It does NOT prove every leg
+   the matrix DOES define is present — a `--grep`ped update writes only what it
+   measured. Completeness is the spec's job: the "real baseline" test asserts the
+   leg count equals widths x routes x configured projects. Said plainly here
+   because an earlier version of this comment claimed pruning made the file
+   "exactly the matrix", which is half the truth. */
 export function writeBaseline(path, collected, expected) {
   const onDisk = readBaseline(path) ?? {};
   const merged = { ...onDisk, ...collected };

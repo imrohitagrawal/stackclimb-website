@@ -56,8 +56,12 @@ import { BASELINE, UPDATING, readBaseline, writeBaseline, expectedLegs } from '.
  * control is revealed — `copy-email.js` un-hides it
  * only when navigator.clipboard is reachable, and localhost IS secure. The
  * JS-off page is gated by contact.spec.js's own no-JS test, not here. Measured:
- * plate boxes are IDENTICAL with JS on and off; only the row's painted count
- * differs (5 vs 4), which the two-number count records.
+ * plate boxes are IDENTICAL with JS on and off. The difference is confined to
+ * the contact row, and it is not only the count: with JS off the painted count
+ * drops (5 -> 4), the button's own child value becomes "hidden", and the four
+ * remaining controls lay out differently because the <=900px grid rule still
+ * counts five DOM children. An earlier version of this comment said only the
+ * count differs, which was wrong.
  *
  * REGENERATE THE COMMITTED (linux) BASELINE: run gates.yml's
  * `update_geometry_baseline` dispatch, download the artifact, commit it. Never
@@ -74,10 +78,14 @@ const WIDTHS = [390, 768, 1440];
 
 const ROUTES = await siteRoutes();
 
-
-/* Accumulated across every test in this run, then written whole. Never merged
-   into the file on disk: a merge keeps a key for a plate that was deleted, and
-   the gate would go on asserting geometry that no longer exists. */
+/* Accumulated across every test in this run. writeBaseline() merges these WHOLE
+   LEGS onto what is already on disk, so a filtered run refreshes what it
+   measured and preserves what it did not. A leg is replaced entire rather than
+   key-by-key, so a deleted plate's key cannot survive inside a leg that was
+   re-measured. (This comment used to say the accumulator is never merged. That
+   was true before the file I/O moved out, and the split left the false half
+   behind — corrected after a reviewer proved the merge by driving a partial
+   run and watching an untouched leg survive.) */
 const collected = {};
 
 const legKey = (project, width, route) => `${project}/w${String(width).padStart(4, '0')}/${route}`;
@@ -86,8 +94,8 @@ const baseline = readBaseline(BASELINE);
 
 test.describe('Geometry baselines — DEF-54', () => {
   test('the baseline itself is a real baseline', async ({}, testInfo) => {
-    /* RED WHEN: tests/geometry-baseline.json is deleted, emptied to {}, or
-       regenerated against a broken page. This runs before any comparison
+    /* RED WHEN: tests/geometry-baseline.<platform>.json is deleted, emptied to
+       {}, or regenerated against a broken page. This runs before any comparison
        because two empty sets compare equal: a gate that reports "0 breaches"
        against an empty baseline has certified sameness, not correctness — the
        ["",""] hole a cross-model review found in contact.spec.js, one level up.
@@ -97,7 +105,7 @@ test.describe('Geometry baselines — DEF-54', () => {
     expect(
       baseline,
       `no ${BASELINE}. On linux, that file is committed and its absence is a real failure. ` +
-        'On any other platform it is gitignored and yours to generate: ' +
+        'Every other platform\'s file is gitignored and yours to generate: ' +
         'UPDATE_GEOMETRY=1 npx playwright test tests/geometry.spec.js --workers=1',
     ).not.toBeNull();
 

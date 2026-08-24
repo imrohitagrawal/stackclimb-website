@@ -84,12 +84,21 @@ Two layers, distinct jobs: geometry is precise, pixels are the coarse net.
 3. **Every assertion ships with its RED WHEN line** naming the change that turns it red.
 4. **No check that counts nothing.** Each assertion has a denominator proving the thing it
    counted exists — the pattern `contact.spec.js` already uses.
-5. **Cross-machine stability measured, not assumed.** Generate the baseline locally and on
+5. **Run-to-run stability: +/-1px is now MEASURED, not proposed.** During DEF-55 (2026-08-24)
+   two CI regeneration runs on the same ubuntu-latest image produced plate heights differing
+   by exactly 1px on unrelated plates — `plate-citevyn-390` 1305 -> 1306, `plate-contact-390`
+   926 -> 927 — while the genuinely changed plate moved 20-40px (`plate-top` 2556 -> 2516 at
+   390). **Zero** plates differed by more than 1px without a content change. That is direct
+   evidence the +/-1px tolerance is right and that real changes clear it by an order of
+   magnitude. It also shows the separation geometry gives that pixels do not: 1px of noise
+   against 40px of signal, versus 3.17% noise against 2.42% signal.
+
+6. **Cross-machine stability measured, not assumed.** Generate the baseline locally and on
    CI and diff them. If any value differs, the tolerance is re-derived from that measurement
    and the finding is recorded. Do not ship a +/-1px claim that was never tested on two OSes.
-6. **Full suite green** on CI, and the four D112 contact assertions still pass.
-7. **File budget green** — the new spec under 250 lines / 120 chars, `file-budget.mjs` green.
-8. **A real regression is caught end to end:** revert the `.contact .ctas` grid rule and
+7. **Full suite green** on CI, and the four D112 contact assertions still pass.
+8. **File budget green** — the new spec under 250 lines / 120 chars, `file-budget.mjs` green.
+9. **A real regression is caught end to end:** revert the `.contact .ctas` grid rule and
    confirm the gate reports the 390px row-count/geometry change.
 
 ## Rejected options, with reasons, so they are not re-proposed

@@ -96,8 +96,17 @@ const ROWS = [
     ))}
   </div>
   <div class="practice-foot">
-    <p class="practice-verdict" aria-live="polite">
-      <span class="state-pending">Each practice is a gate a build can fail — not a value on a slide.</span>
+    {/* DEF-55. No aria-live: this element's CONTENT never changes. Both
+        sentences ship in the DOM and only opacity animates between them, and
+        Replay restarts that animation without touching text — so a live
+        region here announced nothing and merely promised it did. The pending
+        sentence is aria-hidden because opacity:0 does NOT remove an element
+        from the accessibility tree, and without it a screen reader reads two
+        sentences that contradict each other. */}
+    <p class="practice-verdict">
+      <span class="state-pending" aria-hidden="true"
+        >Each practice is a gate a build can fail — not a value on a slide.</span
+      >
       <span class="state-done">The last row is the one that costs me something. It stays.</span>
     </p>
     <div class="practice-foot-row">
@@ -106,3 +115,19 @@ const ROWS = [
     </div>
   </div>
 </div>
+
+<style>
+  /* DEF-55. Both verdict sentences share one grid cell so neither reflows the
+     other. `practice-hide` (hero-practice.css) animates OPACITY only, so in
+     normal flow the invisible sentence keeps its line boxes and displaces the
+     visible one — measured in production at doneX=851 against boxX=815, and at
+     390px it stranded "The last" mid-line. Stacking also reserves the taller of
+     the two heights, so the swap no longer shifts the layout beneath it.
+
+     Scoped here rather than in hero-practice.css because that file sits at
+     exactly 250/250 lines, its D8 ceiling, and the budget is shrink-only. This
+     is the Plate.astro pattern, not a new one. Full record in
+     tests/hero-practice.spec.js and docs/STATUS.md. */
+  .practice-verdict { display: grid; }
+  .practice-verdict > span { grid-area: 1 / 1; }
+</style>

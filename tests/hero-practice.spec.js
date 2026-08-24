@@ -153,4 +153,83 @@ test.describe('hero practice panel', () => {
     // vocabulary (steps(1, start)) — checked directly, not assumed.
     expect(tf).toContain('start');
   });
+
+
+  // ---------------------------------------------------------------------------
+  // DEF-55. The verdict's two sentences are siblings in one <p>. Under
+  // html.hero-anim, hero-practice.css gives .state-pending `display: inline`
+  // and animates `practice-hide`, which changes OPACITY ONLY -- with
+  // fill-mode `both` the invisible sentence keeps its line boxes forever and
+  // shoves the visible one sideways and down. Measured in production before
+  // the fix: at 1440 the pending span held rects [815,724,393] and
+  // [815,744,36], so the real sentence began at x=851 on line TWO instead of
+  // x=815 on line one; at 390 it stranded "The last" at x=258.
+  //
+  // The reduced-motion and motion-off paths were never affected -- both set
+  // .state-pending to `display: none`, which reserves nothing. Only the
+  // default animated path is wrong, which is why this test runs there.
+  // ---------------------------------------------------------------------------
+
+  test('the resolved verdict starts at the top-left of its block, not indented by the hidden sentence', async ({
+    page,
+  }) => {
+    // RED WHEN: .practice-verdict stops stacking its two spans in one grid
+    // cell -- delete the `display: grid` rule or the `grid-area: 1 / 1` on its
+    // spans and the hidden sentence reclaims its line boxes, pushing the
+    // visible one right and down. Both were measured going red before this
+    // shipped.
+    await page.goto('/', { waitUntil: 'networkidle' });
+
+    const verdict = page.locator('.practice-verdict');
+    await expect(verdict, 'no .practice-verdict on the page').toHaveCount(1);
+    await verdict.scrollIntoViewIfNeeded();
+
+    // The swap lands at 2.13s; wait past it so this measures the RESOLVED state.
+    await page.waitForTimeout(3000);
+
+    const m = await verdict.evaluate((v) => {
+      const box = v.getBoundingClientRect();
+      const done = v.querySelector('.state-done');
+      const pending = v.querySelector('.state-pending');
+      const first = done.getClientRects()[0];
+      return {
+        boxX: box.x,
+        boxY: box.y,
+        doneX: first ? first.x : null,
+        doneY: first ? first.y : null,
+        doneText: done.textContent.trim(),
+        pendingPresent: !!pending,
+        pendingDisplay: pending ? getComputedStyle(pending).display : null,
+      };
+    });
+
+    // DENOMINATORS: both must hold, or the assertions below would pass on an
+    // empty or single-child element that never had the defect.
+    expect(m.doneText.length, 'the verdict rendered no resolved text').toBeGreaterThan(0);
+    expect(m.pendingPresent, 'no .state-pending sibling — nothing could displace anything').toBe(true);
+
+    // Only meaningful while the pending sentence still occupies the flow.
+    // Where it is display:none (reduced motion, motion off) there is nothing
+    // to overlay and the check is trivially satisfied.
+    if (m.pendingDisplay !== 'none') {
+      expect(Math.abs(m.doneX - m.boxX), `verdict starts indented: doneX=${m.doneX} boxX=${m.boxX}`)
+        .toBeLessThanOrEqual(1);
+      expect(Math.abs(m.doneY - m.boxY), `verdict starts on a later line: doneY=${m.doneY} boxY=${m.boxY}`)
+        .toBeLessThanOrEqual(2);
+    }
+  });
+
+  test('the hidden verdict sentence is not exposed to assistive technology', async ({ page }) => {
+    // RED WHEN: aria-hidden is removed from .state-pending. Both sentences are
+    // in the DOM at once and opacity:0 does NOT remove an element from the
+    // accessibility tree, so without this a screen reader reads two sentences
+    // that contradict each other.
+    await page.goto('/', { waitUntil: 'networkidle' });
+
+    const pending = page.locator('.practice-verdict .state-pending');
+    await expect(pending, 'no pending verdict sentence to check').toHaveCount(1);
+    await expect(pending, 'the hidden verdict sentence is still in the a11y tree')
+      .toHaveAttribute('aria-hidden', 'true');
+  });
+
 });

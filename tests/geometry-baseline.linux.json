@@ -1,6 +1,6 @@
 {
   "desktop/w0390//": {
-    "nav": [81],
+    "nav": [0,390,81],
     "plate.citevyn": [0,390,1304,0],
     "plate.contact": [0,390,926,0],
     "plate.narratwin": [0,390,1361,0],
@@ -59,7 +59,7 @@
     "row.top/plate-grid#0.tags": "div,div,div"
   },
   "desktop/w0390//experience": {
-    "nav": [81],
+    "nav": [0,390,81],
     "plate.evolution": [0,390,1085,0],
     "plate.evolution-record": [0,390,900,0],
     "row.evolution-record/ctas#0.box": [49,503,292,114],
@@ -69,7 +69,7 @@
     "row.evolution-record/ctas#0.tags": "a,a"
   },
   "desktop/w0390//how-i-build": {
-    "nav": [81],
+    "nav": [0,390,81],
     "plate.evals-observability": [0,390,900,0],
     "plate.how-i-build": [0,390,1025,0],
     "plate.published-skills": [0,390,900,0],
@@ -85,7 +85,7 @@
     "row.published-skills/skill-repos#0.tags": "li,li"
   },
   "desktop/w0390//projects/citevyn": {
-    "nav": [81],
+    "nav": [0,390,81],
     "plate.citevyn": [0,390,1418,0],
     "plate.citevyn-comments": [0,390,900,0],
     "plate.citevyn-record": [0,390,1504,0],
@@ -102,7 +102,7 @@
     "row.citevyn/links#0.tags": "a,a,a"
   },
   "desktop/w0390//projects/narratwin": {
-    "nav": [81],
+    "nav": [0,390,81],
     "plate.narratwin": [0,390,1444,0],
     "plate.narratwin-comments": [0,390,900,0],
     "plate.narratwin-record": [0,390,1463,0],
@@ -118,7 +118,7 @@
     "row.narratwin/links#0.tags": "a,a"
   },
   "desktop/w0390//projects/quorum": {
-    "nav": [81],
+    "nav": [0,390,81],
     "plate.quorum": [0,390,1390,0],
     "plate.quorum-comments": [0,390,900,0],
     "plate.quorum-record": [0,390,1521,0],
@@ -135,7 +135,7 @@
     "row.quorum/links#0.tags": "a,a,a"
   },
   "desktop/w0390//projects/saafsaans": {
-    "nav": [81],
+    "nav": [0,390,81],
     "plate.saafsaans": [0,390,1634,0],
     "plate.saafsaans-comments": [0,390,900,0],
     "plate.saafsaans-record": [0,390,1395,0],
@@ -152,7 +152,7 @@
     "row.saafsaans/links#0.tags": "a,a,a"
   },
   "desktop/w0768//": {
-    "nav": [81],
+    "nav": [0,768,81],
     "plate.citevyn": [0,768,1282,0],
     "plate.contact": [0,768,900,0],
     "plate.narratwin": [0,768,1102,0],
@@ -211,7 +211,7 @@
     "row.top/plate-grid#0.tags": "div,div,div"
   },
   "desktop/w0768//experience": {
-    "nav": [81],
+    "nav": [0,768,81],
     "plate.evolution": [0,768,900,0],
     "plate.evolution-record": [0,768,900,0],
     "row.evolution-record/ctas#0.box": [66,504,635,51],
@@ -221,7 +221,7 @@
     "row.evolution-record/ctas#0.tags": "a,a"
   },
   "desktop/w0768//how-i-build": {
-    "nav": [81],
+    "nav": [0,768,81],
     "plate.evals-observability": [0,768,900,0],
     "plate.how-i-build": [0,768,900,0],
     "plate.published-skills": [0,768,900,0],
@@ -237,7 +237,7 @@
     "row.published-skills/skill-repos#0.tags": "li,li"
   },
   "desktop/w0768//projects/citevyn": {
-    "nav": [81],
+    "nav": [0,768,81],
     "plate.citevyn": [0,768,1342,0],
     "plate.citevyn-comments": [0,768,900,0],
     "plate.citevyn-record": [0,768,1090,0],
@@ -254,7 +254,7 @@
     "row.citevyn/links#0.tags": "a,a,a"
   },
   "desktop/w0768//projects/narratwin": {
-    "nav": [81],
+    "nav": [0,768,81],
     "plate.narratwin": [0,768,1538,0],
     "plate.narratwin-comments": [0,768,900,0],
     "plate.narratwin-record": [0,768,1013,0],
@@ -270,7 +270,7 @@
     "row.narratwin/links#0.tags": "a,a"
   },
   "desktop/w0768//projects/quorum": {
-    "nav": [81],
+    "nav": [0,768,81],
     "plate.quorum": [0,768,1406,0],
     "plate.quorum-comments": [0,768,900,0],
     "plate.quorum-record": [0,768,1071,0],
@@ -287,7 +287,7 @@
     "row.quorum/links#0.tags": "a,a,a"
   },
   "desktop/w0768//projects/saafsaans": {
-    "nav": [81],
+    "nav": [0,768,81],
     "plate.saafsaans": [0,768,1299,0],
     "plate.saafsaans-comments": [0,768,900,0],
     "plate.saafsaans-record": [0,768,986,0],
@@ -304,7 +304,7 @@
     "row.saafsaans/links#0.tags": "a,a,a"
   },
   "desktop/w1440//": {
-    "nav": [68],
+    "nav": [0,1440,68],
     "plate.citevyn": [0,1440,900,0],
     "plate.contact": [0,1440,900,0],
     "plate.narratwin": [0,1440,900,0],
@@ -363,7 +363,7 @@
     "row.top/plate-grid#0.tags": "div,div,div"
   },
   "desktop/w1440//experience": {
-    "nav": [68],
+    "nav": [0,1440,68],
     "plate.evolution": [0,1440,906,0],
     "plate.evolution-record": [0,1440,900,0],
     "row.evolution-record/ctas#0.box": [159,545,544,51],
@@ -373,7 +373,7 @@
     "row.evolution-record/ctas#0.tags": "a,a"
   },
   "desktop/w1440//how-i-build": {
-    "nav": [68],
+    "nav": [0,1440,68],
     "plate.evals-observability": [0,1440,900,0],
     "plate.how-i-build": [0,1440,905,0],
     "plate.published-skills": [0,1440,900,0],
@@ -389,7 +389,7 @@
     "row.published-skills/skill-repos#0.tags": "li,li"
   },
   "desktop/w1440//projects/citevyn": {
-    "nav": [68],
+    "nav": [0,1440,68],
     "plate.citevyn": [0,1440,900,0],
     "plate.citevyn-comments": [0,1440,900,0],
     "plate.citevyn-record": [0,1440,900,0],
@@ -406,7 +406,7 @@
     "row.citevyn/links#0.tags": "a,a,a"
   },
   "desktop/w1440//projects/narratwin": {
-    "nav": [68],
+    "nav": [0,1440,68],
     "plate.narratwin": [0,1440,988,0],
     "plate.narratwin-comments": [0,1440,900,0],
     "plate.narratwin-record": [0,1440,900,0],
@@ -422,7 +422,7 @@
     "row.narratwin/links#0.tags": "a,a"
   },
   "desktop/w1440//projects/quorum": {
-    "nav": [68],
+    "nav": [0,1440,68],
     "plate.quorum": [0,1440,966,0],
     "plate.quorum-comments": [0,1440,900,0],
     "plate.quorum-record": [0,1440,905,0],
@@ -439,7 +439,7 @@
     "row.quorum/links#0.tags": "a,a,a"
   },
   "desktop/w1440//projects/saafsaans": {
-    "nav": [68],
+    "nav": [0,1440,68],
     "plate.saafsaans": [0,1440,900,0],
     "plate.saafsaans-comments": [0,1440,900,0],
     "plate.saafsaans-record": [0,1440,900,0],
@@ -456,7 +456,7 @@
     "row.saafsaans/links#0.tags": "a,a,a"
   },
   "mobile/w0390//": {
-    "nav": [81],
+    "nav": [0,390,81],
     "plate.citevyn": [0,390,1327,0],
     "plate.contact": [0,390,915,0],
     "plate.narratwin": [0,390,1396,0],
@@ -515,7 +515,7 @@
     "row.top/plate-grid#0.tags": "div,div,div"
   },
   "mobile/w0390//experience": {
-    "nav": [81],
+    "nav": [0,390,81],
     "plate.evolution": [0,390,1074,0],
     "plate.evolution-record": [0,390,839,0],
     "row.evolution-record/ctas#0.box": [49,472,292,114],
@@ -525,7 +525,7 @@
     "row.evolution-record/ctas#0.tags": "a,a"
   },
   "mobile/w0390//how-i-build": {
-    "nav": [81],
+    "nav": [0,390,81],
     "plate.evals-observability": [0,390,881,0],
     "plate.how-i-build": [0,390,1014,0],
     "plate.published-skills": [0,390,839,0],
@@ -541,7 +541,7 @@
     "row.published-skills/skill-repos#0.tags": "li,li"
   },
   "mobile/w0390//projects/citevyn": {
-    "nav": [81],
+    "nav": [0,390,81],
     "plate.citevyn": [0,390,1440,0],
     "plate.citevyn-comments": [0,390,839,0],
     "plate.citevyn-record": [0,390,1495,0],
@@ -558,7 +558,7 @@
     "row.citevyn/links#0.tags": "a,a,a"
   },
   "mobile/w0390//projects/narratwin": {
-    "nav": [81],
+    "nav": [0,390,81],
     "plate.narratwin": [0,390,1466,0],
     "plate.narratwin-comments": [0,390,839,0],
     "plate.narratwin-record": [0,390,1452,0],
@@ -574,7 +574,7 @@
     "row.narratwin/links#0.tags": "a,a"
   },
   "mobile/w0390//projects/quorum": {
-    "nav": [81],
+    "nav": [0,390,81],
     "plate.quorum": [0,390,1412,0],
     "plate.quorum-comments": [0,390,839,0],
     "plate.quorum-record": [0,390,1510,0],
@@ -591,7 +591,7 @@
     "row.quorum/links#0.tags": "a,a,a"
   },
   "mobile/w0390//projects/saafsaans": {
-    "nav": [81],
+    "nav": [0,390,81],
     "plate.saafsaans": [0,390,1656,0],
     "plate.saafsaans-comments": [0,390,839,0],
     "plate.saafsaans-record": [0,390,1384,0],
@@ -608,7 +608,7 @@
     "row.saafsaans/links#0.tags": "a,a,a"
   },
   "mobile/w0768//": {
-    "nav": [81],
+    "nav": [0,768,81],
     "plate.citevyn": [0,768,1292,0],
     "plate.contact": [0,768,839,0],
     "plate.narratwin": [0,768,1112,0],
@@ -667,7 +667,7 @@
     "row.top/plate-grid#0.tags": "div,div,div"
   },
   "mobile/w0768//experience": {
-    "nav": [81],
+    "nav": [0,768,81],
     "plate.evolution": [0,768,839,0],
     "plate.evolution-record": [0,768,839,0],
     "row.evolution-record/ctas#0.box": [66,473,635,51],
@@ -677,7 +677,7 @@
     "row.evolution-record/ctas#0.tags": "a,a"
   },
   "mobile/w0768//how-i-build": {
-    "nav": [81],
+    "nav": [0,768,81],
     "plate.evals-observability": [0,768,839,0],
     "plate.how-i-build": [0,768,839,0],
     "plate.published-skills": [0,768,839,0],
@@ -693,7 +693,7 @@
     "row.published-skills/skill-repos#0.tags": "li,li"
   },
   "mobile/w0768//projects/citevyn": {
-    "nav": [81],
+    "nav": [0,768,81],
     "plate.citevyn": [0,768,1351,0],
     "plate.citevyn-comments": [0,768,839,0],
     "plate.citevyn-record": [0,768,1080,0],
@@ -710,7 +710,7 @@
     "row.citevyn/links#0.tags": "a,a,a"
   },
   "mobile/w0768//projects/narratwin": {
-    "nav": [81],
+    "nav": [0,768,81],
     "plate.narratwin": [0,768,1547,0],
     "plate.narratwin-comments": [0,768,839,0],
     "plate.narratwin-record": [0,768,1002,0],
@@ -726,7 +726,7 @@
     "row.narratwin/links#0.tags": "a,a"
   },
   "mobile/w0768//projects/quorum": {
-    "nav": [81],
+    "nav": [0,768,81],
     "plate.quorum": [0,768,1415,0],
     "plate.quorum-comments": [0,768,839,0],
     "plate.quorum-record": [0,768,1060,0],
@@ -743,7 +743,7 @@
     "row.quorum/links#0.tags": "a,a,a"
   },
   "mobile/w0768//projects/saafsaans": {
-    "nav": [81],
+    "nav": [0,768,81],
     "plate.saafsaans": [0,768,1308,0],
     "plate.saafsaans-comments": [0,768,839,0],
     "plate.saafsaans-record": [0,768,975,0],
@@ -760,7 +760,7 @@
     "row.saafsaans/links#0.tags": "a,a,a"
   },
   "mobile/w1440//": {
-    "nav": [76],
+    "nav": [0,1440,76],
     "plate.citevyn": [0,1440,842,0],
     "plate.contact": [0,1440,839,0],
     "plate.narratwin": [0,1440,839,0],
@@ -819,7 +819,7 @@
     "row.top/plate-grid#0.tags": "div,div,div"
   },
   "mobile/w1440//experience": {
-    "nav": [76],
+    "nav": [0,1440,76],
     "plate.evolution": [0,1440,895,0],
     "plate.evolution-record": [0,1440,839,0],
     "row.evolution-record/ctas#0.box": [159,513,544,51],
@@ -829,7 +829,7 @@
     "row.evolution-record/ctas#0.tags": "a,a"
   },
   "mobile/w1440//how-i-build": {
-    "nav": [76],
+    "nav": [0,1440,76],
     "plate.evals-observability": [0,1440,887,0],
     "plate.how-i-build": [0,1440,894,0],
     "plate.published-skills": [0,1440,839,0],
@@ -845,7 +845,7 @@
     "row.published-skills/skill-repos#0.tags": "li,li"
   },
   "mobile/w1440//projects/citevyn": {
-    "nav": [76],
+    "nav": [0,1440,76],
     "plate.citevyn": [0,1440,842,0],
     "plate.citevyn-comments": [0,1440,839,0],
     "plate.citevyn-record": [0,1440,872,0],
@@ -862,7 +862,7 @@
     "row.citevyn/links#0.tags": "a,a,a"
   },
   "mobile/w1440//projects/narratwin": {
-    "nav": [76],
+    "nav": [0,1440,76],
     "plate.narratwin": [0,1440,977,0],
     "plate.narratwin-comments": [0,1440,839,0],
     "plate.narratwin-record": [0,1440,865,0],
@@ -878,7 +878,7 @@
     "row.narratwin/links#0.tags": "a,a"
   },
   "mobile/w1440//projects/quorum": {
-    "nav": [76],
+    "nav": [0,1440,76],
     "plate.quorum": [0,1440,955,0],
     "plate.quorum-comments": [0,1440,839,0],
     "plate.quorum-record": [0,1440,894,0],
@@ -895,7 +895,7 @@
     "row.quorum/links#0.tags": "a,a,a"
   },
   "mobile/w1440//projects/saafsaans": {
-    "nav": [76],
+    "nav": [0,1440,76],
     "plate.saafsaans": [0,1440,888,0],
     "plate.saafsaans-comments": [0,1440,839,0],
     "plate.saafsaans-record": [0,1440,846,0],

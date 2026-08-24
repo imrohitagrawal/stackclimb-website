@@ -67,9 +67,16 @@ import { BASELINE, UPDATING, readBaseline, writeBaseline, expectedLegs } from '.
  * `update_geometry_baseline` dispatch, download the artifact, commit it. Never
  * hand-generate it on a laptop — a darwin run writes a DIFFERENT file that CI
  * never reads, and the 42px measurement above is why.
- * A local darwin baseline, for working on this gate on a Mac, is
+ * A local baseline, for working on this gate, is
  *   UPDATE_GEOMETRY=1 npx playwright test tests/geometry.spec.js --workers=1
- * and it is gitignored. --workers=1 is enforced, not requested: the spec throws
+ * On a Mac that writes the gitignored darwin file. On LINUX the same command
+ * used to write the committed authority, and this comment used to claim
+ * otherwise — "and it is gitignored" was true on one platform and false on the
+ * one that matters. DEF-59. It is now refused rather than corrected in prose:
+ * baseline-write-guard.mjs asks git whether the target is tracked. A Linux
+ * developer who still wants the local loop names a file git is not tracking:
+ *   GEOMETRY_BASELINE_OUT=tests/geometry-baseline.local.json
+ * --workers=1 is enforced, not requested: the spec throws
  * without it, because parallel workers are separate processes and the last to
  * write would drop the others' legs.
  */

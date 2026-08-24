@@ -1,4 +1,13 @@
 import { defineConfig, devices } from '@playwright/test';
+import { assertSnapshotUpdateAllowed, snapshotUpdateMode } from './tests/lib/baseline-write-guard.mjs';
+
+// DEF-59. Playwright writes the PNG baselines itself, so there is no call site
+// of ours to guard — but this config is evaluated before any test runs and it
+// can read the whole command line. An explicit -u / --update-snapshots that
+// would rewrite snapshots THIS platform has committed is refused here. A
+// GitHub runner is exempt: gates.yml's workflow_dispatch regeneration is the
+// only sanctioned way to refresh them, and it must never be blocked.
+assertSnapshotUpdateAllowed({ argv: process.argv, platform: process.platform, env: process.env });
 
 // Serves the real static build, not the dev server. The dev server renders
 // differently and would let a build-only defect through.
@@ -7,6 +16,15 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: 0, // a flaky gate is a broken gate; surface it rather than paper over it
+  // DEF-59, the half no command line reveals. Playwright's default is
+  // 'missing': a bare run WRITES any snapshot that does not exist yet and
+  // passes. Add a plate on Linux and a laptop-rendered -linux.png appears,
+  // untracked, ready for the next `git add -A` — which is how 54 of them
+  // landed once already (commit d25b0fc). 'none' turns that silent write into
+  // a loud failure, and only where this platform already has committed
+  // snapshots: a Mac's first run still seeds its own gitignored -darwin set,
+  // and a runner keeps Playwright's default.
+  updateSnapshots: snapshotUpdateMode({ platform: process.platform, env: process.env }),
   reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
   use: {
     baseURL: 'http://localhost:4321',

@@ -27,6 +27,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { serialize } from './geometry-compare.mjs';
+import { resolveGeometryTarget } from './baseline-write-guard.mjs';
 
 /* fileURLToPath, not `new URL(...).pathname`. The latter leaves the path
    percent-encoded, so a checkout under a directory with a space in its name
@@ -85,8 +86,23 @@ export const expectedLegs = (projects, widths, routes, legKey) =>
    because an earlier version of this comment claimed pruning made the file
    "exactly the matrix", which is half the truth. */
 export function writeBaseline(path, collected, expected) {
-  const onDisk = readBaseline(path) ?? {};
+  /* DEF-59, and the first thing that happens: decide WHERE this may land
+     before reading or writing anything. On a GitHub runner that is `path`. On
+     a laptop it is `path` only while git is not tracking it — otherwise the
+     run would replace the committed authority with whatever the page does
+     right now, and the sentence three paragraphs up ("Never commit one") was
+     the only thing stopping it. It reads as harmless too: geometry.spec.js
+     skips every comparison while UPDATE_GEOMETRY is set, so the developer sees
+     a clean run that has just overwritten the gate.
+
+     GEOMETRY_BASELINE_OUT names a gitignored file for anyone who wants the
+     local loop anyway; `tests/geometry-baseline.local.json` is already covered
+     by .gitignore's own glob. The merge below reads and writes that SAME
+     resolved target, so a redirected run accumulates its own legs instead of
+     seeding itself from the committed file and quietly diverging. */
+  const target = resolveGeometryTarget({ path, env: process.env });
+  const onDisk = readBaseline(target) ?? {};
   const merged = { ...onDisk, ...collected };
   for (const leg of Object.keys(merged)) if (!expected.has(leg)) delete merged[leg];
-  writeFileSync(path, serialize(merged));
+  writeFileSync(target, serialize(merged));
 }

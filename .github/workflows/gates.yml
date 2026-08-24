@@ -123,6 +123,22 @@ jobs:
       - name: geometry gate bites (DEF-54)
         run: node tests/geometry-selftest.mjs
 
+      # DEF-59: the committed baselines — the geometry JSON and the 60 linux
+      # PNGs — were protected only by a sentence in a file header. On Linux the
+      # documented local regeneration command wrote the committed authority,
+      # and the run did not even look wrong, because geometry.spec.js skips its
+      # comparisons while UPDATE_GEOMETRY is set. The guard now refuses that
+      # write; this step is what proves the guard can still fail.
+      #
+      # It has to be a self-test rather than a normal gate, because the guard's
+      # job is to refuse a write on a LAPTOP and a runner is the one machine it
+      # always lets through. Left unproved it would be exactly DEF-57 again — a
+      # self-test wired into nothing. Runs here, before gitleaks, for DEF-39's
+      # reason: a check that an unrelated upstream failure can skip is not
+      # enforcement. Costs no build, no browser, and no network.
+      - name: baselines cannot be written outside CI (DEF-59)
+        run: node tests/baseline-guard-selftest.mjs
+
       - name: gitleaks
         uses: gitleaks/gitleaks-action@v2
         env:

@@ -115,8 +115,8 @@ html.no-anim .plate:not(.hero) .plate-grid > * {
 
 .motion-toggle {
   font: inherit;
-  font-size: 0.66rem; font-weight: 520;
-  letter-spacing: 0.18em; text-transform: uppercase;
+  font-size: 0.6875rem; font-weight: 520;
+  letter-spacing: 0.16em; text-transform: uppercase;
   color: currentColor;
   background: none;
   border: 1px solid color-mix(in srgb, currentColor 40%, transparent);

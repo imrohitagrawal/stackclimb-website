@@ -21,11 +21,14 @@ colors:
   surface-paper: "#d9d2c0"
 typography:
   scale:
-    caption-label: "0.6rem"
-    swatch: "0.62rem"
-    ledger-term: "0.64rem"
-    colophon: "0.66rem"
-    plate-no: "0.68rem"
+    # The floor. Nothing on any page renders below 11px, gated by
+    # tests/type-floor.spec.js. Four keys used to sit here at 0.6/0.62/0.64/0.66
+    # — four steps the design never actually had, all of them under the floor.
+    # Two named removed components: `swatch` (global.css:127, the swatch tags are
+    # gone) and `plate-no` (Plate.astro:7, replaced). Both deleted; `seal` is the
+    # real consumer of what `swatch` used to describe.
+    label-min: "0.6875rem"
+    seal: "0.6875rem"
     brand-em: "0.72rem"
     caption-value: "0.74rem"
     nav-link: "0.76rem"
@@ -65,10 +68,13 @@ typography:
     lineHeight: 1.6
   label:
     fontFamily: "'Archivo Variable', 'Helvetica Neue', Arial, sans-serif"
-    fontSize: "0.6rem"
+    fontSize: "0.6875rem"
     fontWeight: 560
+    # 1.2 has been written here since the system existed and no CSS rule ever
+    # set it, so every label inherited the body's 1.6 — a 9.6px label with 60%
+    # leading. Now implemented on the register's rules.
     lineHeight: 1.2
-    letterSpacing: "0.2em"
+    letterSpacing: "0.16em"
 rounded:
   none: "0"
   pill: "999px"
@@ -203,7 +209,7 @@ milliseconds and the layout it leaves behind lasts the whole visit.*
 - **Headline** (620, clamp(2.6rem, 5.4vw, 5.1rem), 0.98): plate titles. Uppercase serif; a `.tight` variant (clamp(2.2rem, 4.1vw, 3.8rem)) exists for long names.
 - **Title / Pull quote** (460 italic, clamp(1.1rem, 1.8vw, 1.4rem), 1.4): the plate's question, set as an italic serif line faintly warmed toward ochre (`color-mix(currentColor 92%, ochre)`).
 - **Body** (400, 1rem, 1.68): plate prose, max 52ch, at 88% of currentColor.
-- **Label** (560–640, 0.6–0.78rem, 0.16–0.24em tracking, uppercase): the workhorse register — nav links, caption labels/values, ledger terms, buttons, swatch names, seals, colophon. Letter-spacing rises as size falls.
+- **Label** (520–640, 0.6875–0.78rem, 0.09–0.20em tracking, 1.2 leading, uppercase): the workhorse register — nav links, caption labels/values, ledger terms, buttons, seals, status chips, colophon. **0.6875rem (11px) is the FLOOR: nothing on any page renders below it, and `tests/type-floor.spec.js` walks the render on every route at 1440 and 390 to prove it.** Tracking is set against the STRING, not the size alone — short terms take the wide end (0.16em), long tracked-caps lines and width-boxed chips the narrow end (0.13em) — and it comes DOWN as size goes up, so a label is never both bigger and looser. (Corrected 2026-08-25: the weight floor was already 520, not 560, and the tracking range already reached 0.09em at `caps.css`'s caption value — this line described a register the CSS had not matched for months. "Swatch names" named a component removed long ago.)
 
 ### Named Rules
 **The Caps-or-Prose Rule.** Type is either display/label uppercase or sentence-case body prose. There is no middle register: no title-case headings, no kickers, no eyebrows.
@@ -324,10 +330,10 @@ lines; the NarraTwin-style honest-absence device in figures is a dashed stroke.
 - Fixed hairline bar, no background fill; serif small-caps brand with a sans `stackclimb` aside; tracked-caps links (0.76rem, 0.18em) underlined in ochre on hover; recolors bone↔ink with the active plate's theme (0.5s).
 
 ### Caption Strip (signature)
-- The billing strip under every figure: flex row of ruled cells between 1px top/bottom rules; each cell is LABEL (0.6rem, 62% opacity) over VALUE (0.74rem, 640, uppercase). Cells with a `target` are focusable and draw an ochre leader line (1.5px stroke, dot terminus) from cell to the `data-anchor` region of the figure. System state ("Live — cold-starts", "Phase 1 — No-Go") is a caption cell like any other fact.
+- The billing strip under every figure: flex row of ruled cells between 1px top/bottom rules; each cell is LABEL (0.6875rem, 0.16em, 62% opacity) over VALUE (0.74rem, 640, uppercase), both at 1.2 leading. Cells with a `target` are focusable and draw an ochre leader line (1.5px stroke, dot terminus) from cell to the `data-anchor` region of the figure. System state ("Live — cold-starts", "Phase 1 — No-Go") is a caption cell like any other fact.
 
 ### Ledger (signature)
-- A `dl` of dotted-ruled rows: tracked-caps term left (0.64rem, 62% opacity), right-aligned value (0.84rem). Used for the career record and contact facts.
+- A `dl` of dotted-ruled rows: tracked-caps term left (0.6875rem, 0.16em, 1.2 leading, 62% opacity), right-aligned value (0.84rem). Used for the career record and contact facts.
 
 ### Figures (signature)
 - Each project is drawn as a flat SVG figure in the plate's livery: bone paper shapes, ink linework at stepped opacities, ochre functional details (tabs, gates, thread), dashed strokes for honest absence. Every citable region carries a `data-anchor` id matching a caption target. Each figure has a `<title>` and `role="img"`.

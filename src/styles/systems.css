@@ -20,8 +20,8 @@
 /* Ochre label, sentence-case value — the caption-cell register, not a badge.
    DESIGN.md:354: state belongs in a ruled cell, never in a pill. */
 .sys-gate .k {
-  font-size: 0.66rem;
-  letter-spacing: 0.15em;
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--accent);
   margin-right: 0.55rem;
@@ -38,7 +38,7 @@
 }
 
 .sys-nc dt {
-  font-size: 0.66rem;
+  font-size: 0.6875rem; line-height: 1.2;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--accent);

@@ -24,10 +24,10 @@
    column, rendering the qualifier at 16px body style (built-fan finding). */
 p.proof-meta,
 .proof-meta {
-  font-size: 0.66rem;
+  font-size: 0.6875rem; line-height: 1.2;
   color: var(--bone);
   font-weight: 520;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
   opacity: 0.62;
   margin: 0 0 0.5rem;

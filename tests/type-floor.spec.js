@@ -51,10 +51,19 @@ const WIDTHS = [
    print or squint at — leaving it out would exempt exactly the wrong page. */
 const ROUTES = [...(await siteRoutes()), '/cv'];
 
-/* Walks the RENDER, not the stylesheet. Seven stylesheets held 0.66rem and the
-   9px case was not a declaration at all — it was `font-size: 0.85em` inheriting
-   from a 0.66rem parent (src/styles/project.css:69). A grep over the CSS would
-   have reported that file clean. Only getComputedStyle sees it. */
+/* Walks the RENDER, not the stylesheet, and the two things that made that
+   necessary are both below: an SVG label whose declared 9 renders anywhere from
+   6.26px to 14.37px depending on the viewBox scale, and a reveal animation that
+   hides two thirds of the population from a naive visibility check. A grep over
+   the CSS sees neither.
+
+   WHAT THE WALK CANNOT SEE: pseudo-elements. createTreeWalker(SHOW_ELEMENT)
+   visits elements, and ::before / ::after / ::marker / ::placeholder are not in
+   the DOM tree, so a `content` string sized under the floor would pass this
+   gate. Swept by hand across all eight routes at four widths on 2026-08-25 —
+   six pseudo types, nothing under 11px — so nothing escapes today. Written here
+   as a stated boundary rather than left for someone to discover, which is how a
+   gate quietly narrows. */
 const measure = (floorPx) => {
   const out = { measured: 0, under: [], svgText: [] };
 
@@ -105,23 +114,29 @@ const measure = (floorPx) => {
 
     /* SVG text is measured but NOT gated, and both halves of that need saying.
        MEASURED CORRECTLY: getComputedStyle on an SVG <text> reports USER UNITS,
-       not rendered pixels. The private figure's tags read 9px there and render
-       at 11.29px on a 1440 desktop and 6.26px on a 390 phone, because the
-       viewBox scales. Reporting the 9 would be wrong in both directions, so the
-       screen CTM scale is applied.
+       not rendered pixels, so the private figure's two name tags read 9 and 9.5
+       there and render at whatever the viewBox scale makes them. Measured across
+       the width sweep, they are the smallest text on the site and they are NOT
+       clear at desktop either:
+           390   6.26 / 6.60      1024   8.11 / 8.56
+           768  13.62 / 14.37     1440  10.70 / 11.29     1920  10.56 / 11.15
+       1024 is the worst desktop case, and neither width this gate samples sees
+       it. The screen CTM scale is applied so the number reported is the one a
+       reader meets.
        NOT GATED: the rule is the SVG namespace, not a list of elements — a list
        is what quietly narrowed a gate twice on this repo (DEF-10, DEF-44) and a
-       namespace check cannot forget a new component. Those two strings are
-       drawn artwork inside a `role="img"` figure whose accessible name comes
-       from its <title>, and both names are also rendered as real HTML text on
-       the same plate, above the floor. Making them clear 11px at 390 needs
-       15.8 user units against name-tag rectangles 72px and 96px wide — a
-       redraw of the illustration, not a type change. Recorded as an open
-       residual in docs/STATUS.md rather than silently exempted. */
+       namespace check cannot forget a new component. Those two strings are drawn
+       artwork inside a `role="img"` figure whose accessible name comes from its
+       <title>, and both names are also rendered as real HTML text on the same
+       plate, above the floor. Clearing 11px at EVERY width needs 12.2 user units
+       against name-tag rectangles 72px and 96px wide — a redraw of the
+       illustration, not a type change. Recorded as an open defect in
+       docs/STATUS.md rather than silently exempted. */
     if (el.namespaceURI === 'http://www.w3.org/2000/svg') {
       const ctm = typeof el.getScreenCTM === 'function' ? el.getScreenCTM() : null;
       const scale = ctm ? Math.hypot(ctm.a, ctm.b) : 1;
-      out.svgText.push({ sel: describe(el), px: Math.round(px * scale * 100) / 100, text: ownText.trim().slice(0, 40) });
+      const rendered = Math.round(px * scale * 100) / 100;
+      out.svgText.push({ sel: describe(el), px: rendered, text: ownText.trim().slice(0, 40) });
       continue;
     }
 

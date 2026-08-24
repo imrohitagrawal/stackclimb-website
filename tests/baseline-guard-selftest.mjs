@@ -23,7 +23,7 @@
    because a review round found them passing, which is why the fixtures now
    answer the question they are asked. */
 
-import { readFileSync, writeFileSync, symlinkSync, unlinkSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, linkSync, unlinkSync, existsSync } from 'node:fs';
 import { resolveGeometryTarget, assertSnapshotUpdateAllowed, trackedPaths } from './lib/baseline-write-guard.mjs';
 import { bites, allows, LAPTOP } from './lib/baseline-guard-cases.mjs';
 
@@ -101,20 +101,30 @@ check(
   trackedPaths(':(nosuchmagic)anything') === null,
 );
 
-/* A symlink is a second name for the same bytes, and git answers about names.
-   The link is made at a gitignored path and removed in a finally, so it can
-   never be committed and never outlives this check by more than an exception. */
-const ALIAS = 'tests/geometry-baseline.local.json';
+/* A hard link is a second name for the same bytes, and git answers about
+   names, so this is the case the guard's dev+ino comparison exists for. A
+   symlink and, on a case-insensitive volume, a different spelling are the same
+   mechanism; the hard link is used here because it behaves identically on every
+   filesystem, including the Linux runner this has to pass on.
+
+   The name is dedicated to this check and it is only removed if this check
+   created it. The first version reused `geometry-baseline.local.json` — the
+   scratch name the guard's own message recommends — and deleted it in the
+   finally whether or not it had made it, so running the self-test destroyed a
+   developer's working file. Found by a cross-model review. */
+const ALIAS = 'tests/geometry-baseline.selftest-alias.json';
 let aliasRefused = false;
+let mine = false;
 try {
   if (!existsSync(ALIAS) && realGeometry.length > 0) {
-    symlinkSync(process.cwd() + '/' + realGeometry[0], ALIAS);
+    linkSync(realGeometry[0], ALIAS);
+    mine = true;
     aliasRefused = refuses(() => resolveGeometryTarget({ path: ALIAS, env: LAPTOP }));
   }
 } finally {
-  if (existsSync(ALIAS)) unlinkSync(ALIAS);
+  if (mine && existsSync(ALIAS)) unlinkSync(ALIAS);
 }
-check('a symlink pointed at the committed baseline is refused', aliasRefused, ALIAS);
+check('a hard link pointed at the committed baseline is refused', aliasRefused, ALIAS);
 
 /* ── Direction 4: the call sites ──────────────────────────────────────────
    A guard nothing calls is DEF-57 with a different name.
@@ -133,18 +143,29 @@ check('a symlink pointed at the committed baseline is refused', aliasRefused, AL
    possible way round. */
 
 const realGitHubActions = process.env.GITHUB_ACTIONS;
-delete process.env.GITHUB_ACTIONS;
 
+/* Both directions at the writeBaseline call site, because only the pair pins
+   down that it passes the REAL environment. Hardcoding `env: {}` there refuses
+   on a runner and breaks gates.yml's regeneration — the one path that must not
+   break — and the refuse-only check could not see it. Found by a mutation
+   reviewer. The runner arm really does write, so the bytes are captured first
+   and restored in a finally that covers both calls. */
 const { writeBaseline } = await import('./lib/geometry-baseline-io.mjs');
 const victim = realGeometry[0];
 const before = victim ? readFileSync(victim) : null;
 let wired = false;
+let runnerAllowed = false;
 try {
+  process.env.GITHUB_ACTIONS = 'true';
+  runnerAllowed = Boolean(victim) && !refuses(() => writeBaseline(victim, {}, new Set()));
+  delete process.env.GITHUB_ACTIONS;
   wired = Boolean(victim) && refuses(() => writeBaseline(victim, {}, new Set()));
 } finally {
+  delete process.env.GITHUB_ACTIONS;
   if (before && !readFileSync(victim).equals(before)) writeFileSync(victim, before);
 }
 check('writeBaseline() consults the guard', wired, victim);
+check('writeBaseline() passes the real environment — a runner is still allowed to write', runnerAllowed);
 
 /* playwright.config.js runs before any test and it is a plain module, so it can
    be imported with a doctored argv. process.platform is forced to linux because
@@ -161,7 +182,17 @@ const realArgv = process.argv;
 Object.defineProperty(process, 'platform', { value: 'linux', configurable: true });
 let pinned = null;
 let configWired = false;
+let configRunnerOk = false;
 try {
+  /* The runner arm first, and the same reasoning as above: hardcoding `env: {}`
+     at the config call site throws on a runner with --update-snapshots=all,
+     which is exactly what the sanctioned visual regeneration runs. */
+  process.env.GITHUB_ACTIONS = 'true';
+  process.argv = [...realArgv, '--update-snapshots=all'];
+  await import('../playwright.config.js?runner=1');
+  configRunnerOk = true;
+  delete process.env.GITHUB_ACTIONS;
+  process.argv = realArgv;
   pinned = (await import('../playwright.config.js')).default.updateSnapshots;
   process.argv = [...realArgv, '--update-snapshots=all'];
   await import('../playwright.config.js?refuse=1');
@@ -173,6 +204,7 @@ try {
   if (realGitHubActions !== undefined) process.env.GITHUB_ACTIONS = realGitHubActions;
 }
 check('playwright.config.js refuses an update flag', configWired);
+check('playwright.config.js passes the real environment — a runner is not blocked', configRunnerOk);
 check(
   'playwright.config.js pins updateSnapshots where this platform has committed snapshots',
   pinned === 'none',

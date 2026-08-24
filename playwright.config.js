@@ -17,8 +17,11 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: 0, // a flaky gate is a broken gate; surface it rather than paper over it
   // DEF-59, the half no command line reveals. Playwright's default is
-  // 'missing': a bare run WRITES any snapshot that does not exist yet and
-  // passes. Add a plate on Linux and a laptop-rendered -linux.png appears,
+  // 'missing': a bare run WRITES any snapshot that does not exist yet. It fails
+  // that one run and the next run is green against the file it just made — an
+  // earlier version of this line said it passes outright, corrected against the
+  // installed 1.62.1 (expect.js:12486).
+  // Add a plate on Linux and a laptop-rendered -linux.png appears,
   // untracked, ready for the next `git add -A` — which is how 54 of them
   // landed once already (commit d25b0fc). 'none' turns that silent write into
   // a loud failure, and only where this platform already has committed

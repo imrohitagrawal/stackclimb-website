@@ -11,12 +11,20 @@
    DEF-59 exactly, because the escape hatch could then be aimed straight at the
    committed file. An argument-blind fixture cannot see a wrong argument. */
 
+import { resolve } from 'node:path';
 import {
+  REPO_ROOT,
   resolveGeometryTarget,
   assertSnapshotUpdateAllowed,
   snapshotUpdateMode,
-  wantsSnapshotUpdate,
 } from './baseline-write-guard.mjs';
+import { wantsSnapshotUpdate } from './snapshot-flags.mjs';
+
+/* resolveGeometryTarget returns the path it actually checked, resolved against
+   the repo. Comparing against a bare relative string here would assert the old,
+   broken contract — the one where the guard and the writer could disagree about
+   which file a name meant. */
+const abs = (p) => resolve(REPO_ROOT, p);
 
 const GEO = 'tests/geometry-baseline.linux.json';
 const DARWIN = 'tests/geometry-baseline.darwin.json';
@@ -94,6 +102,26 @@ export const bites = [
       assertSnapshotUpdateAllowed({ argv: ['-uall'], platform: 'linux', env: LAPTOP, lsFiles: LINUX_SNAPS }),
     )],
 
+  /* The bare long form, and the flag in the MIDDLE of a realistic argv that
+     also carries a spec filename — which is exactly what gates.yml runs. Both
+     spellings were free before: every case put `--update-snapshots=all` last
+     and alone, so a parser that only matched the `=` form, or only looked at
+     the last argument, passed every check. */
+  ['snapshots: the bare --update-snapshots form is refused', () =>
+    refuses(() =>
+      assertSnapshotUpdateAllowed({
+        argv: ['--update-snapshots'], platform: 'linux', env: LAPTOP, lsFiles: LINUX_SNAPS,
+      }),
+    )],
+
+  ['snapshots: the flag is found mid-argv, next to a spec filename', () =>
+    refuses(() =>
+      assertSnapshotUpdateAllowed({
+        argv: ['test', 'tests/visual-baselines.spec.js', '--update-snapshots=all', '--workers=1'],
+        platform: 'linux', env: LAPTOP, lsFiles: LINUX_SNAPS,
+      }),
+    )],
+
   ['snapshots: -uchanged is refused too', () =>
     refuses(() =>
       assertSnapshotUpdateAllowed({ argv: ['-uchanged'], platform: 'linux', env: LAPTOP, lsFiles: LINUX_SNAPS }),
@@ -122,7 +150,7 @@ export const bites = [
    workflow_dispatch regeneration working. */
 export const allows = [
   ['geometry: an untracked target on a laptop is allowed (the Mac case)', () =>
-    yields(() => resolveGeometryTarget({ path: DARWIN, env: LAPTOP, lsFiles: NOTHING_TRACKED }), DARWIN)],
+    yields(() => resolveGeometryTarget({ path: DARWIN, env: LAPTOP, lsFiles: NOTHING_TRACKED }), abs(DARWIN))],
 
   /* GEO_TRACKED, not an empty tree, because the realistic state is that the
      committed baseline IS tracked — and that is what makes this case able to
@@ -132,11 +160,11 @@ export const allows = [
   ['geometry: the scratch-file redirect is honoured even though the default target is tracked', () =>
     yields(
       () => resolveGeometryTarget({ path: GEO, env: { GEOMETRY_BASELINE_OUT: LOCAL }, lsFiles: GEO_TRACKED }),
-      LOCAL,
+      abs(LOCAL),
     )],
 
   ['geometry: a tracked target ON A RUNNER is allowed — the sanctioned dispatch path', () =>
-    yields(() => resolveGeometryTarget({ path: GEO, env: RUNNER, lsFiles: GEO_TRACKED }), GEO)],
+    yields(() => resolveGeometryTarget({ path: GEO, env: RUNNER, lsFiles: GEO_TRACKED }), abs(GEO))],
 
   ['snapshots: --update-snapshots ON A RUNNER is allowed — the sanctioned dispatch path', () =>
     yields(

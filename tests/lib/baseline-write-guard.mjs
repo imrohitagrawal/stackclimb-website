@@ -43,6 +43,13 @@
      - a second Playwright config that does not import this one.
      - a test calling `page.screenshot({ path: testInfo.snapshotPath(...) })`,
        which writes a baseline with no update mode involved at all.
+     - an ALIAS on the PNG side. The geometry half compares device and inode, so
+       a symlink, a hard link or a case-different spelling is caught. The
+       snapshot half asks git about a pathspec and does not, so a gitignored
+       `*-darwin.png` linked at a tracked `*-linux.png` is reported untracked
+       and `-u` is allowed. Named here rather than quietly fixed, because the
+       review round that found it was the second in a row to find this same
+       class, and the rule when that happens is to stop and write it down.
 
    Closing those needs a check on the COMMIT rather than the write. That was
    designed and rejected for now; the reasons are in docs/STATUS.md's rejected
@@ -55,9 +62,10 @@
    tests/baseline-guard-selftest.mjs is that self-test; gates.yml runs it. */
 
 import { execFileSync } from 'node:child_process';
-import { realpathSync } from 'node:fs';
+import { statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { wantsSnapshotUpdate } from './snapshot-flags.mjs';
 
 /* git pathspecs are relative to the CWD, not to the repo. A cross-model review
    found the hole that opens: `cd tests && npx playwright test --config
@@ -65,7 +73,7 @@ import { fileURLToPath } from 'node:url';
    nothing, so the guard said "untracked" and waved through a write to the real
    tracked files. Playwright resolves its own paths against the CONFIG, so the
    guard has to as well. Pinning the cwd here fixes it once for every caller. */
-const REPO_ROOT = fileURLToPath(new URL('../..', import.meta.url));
+export const REPO_ROOT = fileURLToPath(new URL('../..', import.meta.url));
 
 /* Ask git which paths matching this pathspec are tracked. Returns null — not
    an empty list — when the question cannot be answered, so a caller can tell
@@ -99,16 +107,27 @@ const refuse = (msg) => {
 };
 
 /* A path is not a file. `git ls-files` answers about the NAME it is given, and
-   on this repo's own filesystem two different names reach the same bytes: a
-   symlink or hard link aimed at the tracked file, and — on a case-insensitive
-   volume — `tests/GEOMETRY-BASELINE.LINUX.JSON`, which git reports as untracked
-   while the OS opens the committed file. Both were demonstrated by a
-   cross-model review. Comparing resolved paths closes the name/file gap. A
-   target that does not exist yet cannot be an alias, and realpathSync throws
-   on it, which is why the failure is swallowed here rather than raised. */
+   several different names reach the same bytes: a symlink, a hard link, and —
+   on a case-insensitive volume — `tests/GEOMETRY-BASELINE.LINUX.JSON`, which
+   git reports as untracked while the OS opens the committed file.
+
+   This compares device and inode, which identifies the FILE. The first version
+   compared `realpathSync` output, which identifies the NAME after symlinks
+   only, and a second review round proved it through this module's own
+   documented escape hatch: `ln tests/geometry-baseline.linux.json
+   tests/geometry-baseline.local.json` followed by the GEOMETRY_BASELINE_OUT
+   command emptied the committed baseline while the guard said yes. The comment
+   at the time claimed the gap was closed. dev+ino closes all three names.
+
+   `ino === 0` is Windows' "not known". Treating that as a match would refuse
+   unrelated writes, so it is excluded. A target that does not exist yet cannot
+   be an alias, and statSync throws on it, which is why the failure is
+   swallowed here rather than raised. */
 const sameFile = (a, b) => {
   try {
-    return realpathSync(a) === realpathSync(b);
+    const x = statSync(a);
+    const y = statSync(b);
+    return x.ino !== 0 && x.dev === y.dev && x.ino === y.ino;
   } catch {
     return false;
   }
@@ -132,7 +151,16 @@ const sameFile = (a, b) => {
    The redirect target goes through the SAME checks, so it cannot be used to
    aim at a second committed file, or at an alias of one. */
 export function resolveGeometryTarget({ path, env, lsFiles = trackedPaths }) {
-  const target = env.GEOMETRY_BASELINE_OUT || path;
+  /* Resolved ONCE, against the repo, and the resolved path is what is returned.
+     A second review round proved why: the guard was checking the string against
+     REPO_ROOT while writeBaseline handed the same string to writeFileSync, which
+     resolves against process.cwd(). Run from tests/,
+     `GEOMETRY_BASELINE_OUT=geometry-baseline.linux.json` had the guard clear a
+     root-level path that does not exist while the writer truncated the
+     committed baseline. Two roots for one name is the whole bug, and returning
+     the resolved path removes it rather than patching the instance — the caller
+     can no longer resolve it differently from the checker. */
+  const target = resolve(REPO_ROOT, env.GEOMETRY_BASELINE_OUT || path);
   if (onGitHubRunner(env)) return target;
 
   const named = lsFiles(target);
@@ -143,7 +171,7 @@ export function resolveGeometryTarget({ path, env, lsFiles = trackedPaths }) {
         `  cannot tell a local scratch file from the committed authority.\n  ${SANCTIONED}`,
     );
   }
-  const alias = family.find((f) => sameFile(resolve(REPO_ROOT, f), resolve(REPO_ROOT, target)));
+  const alias = family.find((f) => sameFile(resolve(REPO_ROOT, f), target));
   if (named.length > 0 || alias) {
     refuse(
       `refusing to write ${target}: it is TRACKED${alias && !named.length ? ` — it resolves to ${alias}` : ''},\n` +
@@ -157,36 +185,6 @@ export function resolveGeometryTarget({ path, env, lsFiles = trackedPaths }) {
   }
   return target;
 }
-
-/* Playwright writes the PNG baselines itself, so there is no call site of ours
-   to guard. The config file is the seam: it is evaluated before any test runs
-   and it can read the full command line. Verified by experiment, not assumed.
-
-   The mode matters, and the SHORT ATTACHED FORM is where the first version of
-   this leaked: `npx playwright test -uall` is accepted by Playwright and was
-   not matched, so the guard said "no update requested" while the run rewrote
-   every tracked snapshot. Found by a cross-model review and confirmed by
-   running it. `none` is not a write request and is allowed through.
-
-   `--update-snapshots none` written with a space is treated as a request even
-   though it is a no-op. Refusing a no-op is the harmless direction, and
-   guessing whether commander consumed the next token is not. */
-const SHORT = '-u';
-const LONG = '--update-snapshots';
-
-export function snapshotUpdateRequest(argv) {
-  for (const a of argv) {
-    if (a === SHORT || a === LONG) return 'changed';
-    if (a.startsWith(`${LONG}=`)) return a.slice(LONG.length + 1);
-    if (a.startsWith(SHORT) && a.length > SHORT.length && !a.startsWith('--')) return a.slice(SHORT.length);
-  }
-  return null;
-}
-
-export const wantsSnapshotUpdate = (argv) => {
-  const mode = snapshotUpdateRequest(argv);
-  return mode !== null && mode !== 'none';
-};
 
 export const snapshotPathspec = (platform) => `tests/*.spec.js-snapshots/*-${platform}.png`;
 

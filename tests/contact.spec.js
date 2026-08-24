@@ -136,4 +136,84 @@ test.describe('Contact details', () => {
     expect(faults, `${faults.length} fault(s) in the contact plate`).toEqual([]);
   });
 
+
+  // ---------------------------------------------------------------------------
+  // The copy control. P-13 says contact details are labelled links, never bare
+  // text a visitor must copy by hand — and the gate above enforces the letter of
+  // it by failing if any plate PRINTS the address. Both hold. What neither
+  // covers is the visitor whose machine has no handler bound to `mailto:`: for
+  // her the plate's only conversion path silently does nothing, and there is no
+  // address on screen to fall back to. The copy button is that fallback, built
+  // so it cannot breach P-13 — the address reaches the clipboard from the
+  // existing link's href and is never written into the DOM.
+  // ---------------------------------------------------------------------------
+
+  test('the contact plate offers a working copy control that never prints the address', async ({
+    page,
+    context,
+  }) => {
+    // RED WHEN: the copy button is removed, is not revealed by its script, stops
+    // reading the address from the mailto href, copies the wrong string, or
+    // starts writing the address into the DOM (the last one also turns the
+    // print-as-text gate above red, which is the point — the two are partners).
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    await page.goto('/', { waitUntil: 'networkidle' });
+
+    const contact = page.locator(CONTACT);
+    await contact.scrollIntoViewIfNeeded();
+
+    const button = contact.locator('[data-copy-email]');
+    await expect(button, 'no copy control inside #contact').toHaveCount(1);
+    await expect(button, 'the copy control never became visible').toBeVisible();
+
+    // The label is what the visitor reads. Asserting it is non-empty stops an
+    // unlabelled button passing the way `["",""]` once certified sameness here.
+    const before = (await button.innerText()).trim();
+    expect(before.length, 'the copy control has no label').toBeGreaterThan(0);
+
+    await button.click();
+
+    // The address must actually land on the clipboard. Reading it back is the
+    // only assertion that distinguishes a wired button from a painted one.
+    const copied = await page.evaluate(() => navigator.clipboard.readText());
+    expect(copied, 'the clipboard did not receive the address').toBe(EMAIL_ADDRESS);
+
+    // ...and it must have come from the plate's own mailto link, so the two can
+    // never drift apart. A second copy of the address in a data- attribute would
+    // pass the line above and fail this one.
+    const href = await contact.locator('a[href^="mailto:"]').first().getAttribute('href');
+    expect(href, 'the copied address does not match the mailto link').toBe(`mailto:${copied}`);
+
+    // The confirmed state must be a DIFFERENT word, or the visitor gets no
+    // feedback that anything happened.
+    await expect(button, 'the label did not change after copying').not.toHaveText(before);
+
+    // P-13 still holds after the interaction — the whole point of the design.
+    const text = await contact.innerText();
+    expect(text.match(BARE_EMAIL), `#contact printed the address after copying`).toBeNull();
+  });
+
+  test('the copy control is absent when the page has no script', async ({ browser }) => {
+    // RED WHEN: the button ships visible in the markup instead of being revealed
+    // by its script. A control that cannot work must not be drawn — this site
+    // has DEF-1 and DEF-2 precisely because no-JS was treated as an afterthought
+    // once already.
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const noJs = await context.newPage();
+    await noJs.goto('/', { waitUntil: 'domcontentloaded' });
+
+    const contact = noJs.locator(CONTACT);
+    await expect(contact, '#contact is missing with JS off').toBeVisible();
+
+    // DENOMINATOR: the plate must still carry its real links with JS off, or
+    // this test would pass on a blank page.
+    const mail = contact.locator('a[href^="mailto:"]');
+    await expect(mail, 'the mailto link is gone with JS off').toHaveCount(1);
+
+    const button = contact.locator('[data-copy-email]');
+    await expect(button, 'a dead copy control is drawn with JS off').toBeHidden();
+
+    await context.close();
+  });
+
 });

@@ -7,6 +7,7 @@ import SystemPlate from '../components/SystemPlate.astro';
 import ProofPlate from '../components/ProofPlate.astro';
 import { thesis } from '../data/proof.js';
 import OverviewPlate from '../components/OverviewPlate.astro';
+import ContactEmail from '../components/ContactEmail.astro';
 import PrivateFigure from '../components/figures/PrivateFigure.astro';
 import HeroPractice from '../components/figures/HeroPractice.astro';
 import { projects } from '../data/projects.js';
@@ -220,7 +221,7 @@ import '../styles/systems.css';
             decided to act, and on a phone the nav shows nothing (DEF-42), so
             this was the end of the funnel with no route to the CV at all. */}
         <div class="ctas">
-          <a class="btn primary" href="mailto:rohit.ra.agrawal@gmail.com">Email me</a>
+          <ContactEmail />
           <a class="btn ghost" href="/cv">CV</a>
           <a class="btn ghost" href="https://www.linkedin.com/in/rohitagrawal14" target="_blank" rel="noopener">LinkedIn</a>
           <a class="btn ghost" href="https://github.com/imrohitagrawal" target="_blank" rel="noopener">GitHub</a>

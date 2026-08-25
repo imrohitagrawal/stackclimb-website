@@ -58,7 +58,12 @@ import {
 //                           lib/viewport-clip.mjs — ".site-nav is not visible",
 //                           "#top is not visible". Its PIXEL ratio would NOT
 //                           have carried it: with the html ground still painted
-//                           dark, only 8 of the 30 frames crossed 0.15.
+//                           dark, only 8 of the 30 frames crossed 0.15. That
+//                           8-of-30 is measured by a LOCAL pixelmatch-equivalent
+//                           script, not by Playwright — the two disagree at the
+//                           margin, Playwright passing plate-top-390 where the
+//                           script scored 0.1694. Treat it as approximate; the
+//                           red/green verdicts elsewhere are Playwright's own.
 //   .plate ground -> #fff   red at all three widths — plate-contact-390 0.16,
 //                           plate-contact-768 0.33, plate-proof-1440 0.30. The
 //                           nav captures stay green, correctly: the bar's

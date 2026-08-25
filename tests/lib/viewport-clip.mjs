@@ -108,7 +108,9 @@ export const assertClipFits = async (page, width, height) => {
    subject and will happily photograph a blank frame. Measured with
    `body { display: none }`: the old nav capture failed on "waiting for
    locator('.site-nav')" while the bare clip PASSED, because the html ground is
-   still painted dark and only 4-8% of the nav band changed. One assertion
+   still painted dark and only 4-8% of the nav band changed (that percentage is
+   from a local pixelmatch-equivalent script, not Playwright; the PASS itself is
+   Playwright's). One assertion
    restores it, and it is not decoration — it is the only reason the blank-page
    mutation is red on all six captures rather than on eight frames of thirty.
 

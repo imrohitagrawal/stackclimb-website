@@ -152,11 +152,25 @@ passed, 0 failed). Both mutations were run: `font-size="9"` back on one label go
 and 1440; deleting both `<text>` elements turns the new partner red with `Expected: > 0,
 Received: 0`.
 
-## One thing raised rather than changed
+## The rail — raised, then fixed
 
-The rail is `x="40" width="340"`, so it spans 40 to 380 — and the bags now span 30 to 390. The
-rail therefore ends 10 units INSIDE each bag, where before the redraw it ran 38 units past
-them. Nothing overlaps, nothing is cut, and the rail sits above the bags at `y=34`, so this is
-a question of how the drawing reads and not a defect. The rail was not part of the decided
-design, so it is recorded here for the owner instead of being adjusted. The one-attribute fix,
-if it is wanted, is `x="20" width="380"`.
+The first cut of this redraw left the rail at `x="40" width="340"`, spanning 40 to 380, while
+the bags moved out to 30 and 390. The rail ended 10 units INSIDE both bags. Nothing overlapped
+and nothing was cut — the rail sits above the bags at `y=34` — but it stopped reading as a rail
+carrying the bags and started reading as a bar that falls short of them.
+
+It was raised rather than changed, because the rail was not part of the decided design. The
+owner's ruling: it is a spec error, not a build error, and the fix is taken.
+
+**The rail is now `x="20" width="380"`, spanning 20 to 400.** That runs 10 units past each bag,
+symmetric, with 20 units of frame margin each side.
+
+**It does not restore the original overhang, and that is not possible.** The rail used to run
+**38** units past each bag; it now runs **10**. The wider bags consumed the frame margin: with
+bags at 30 and 390 inside a 420-unit `viewBox`, 20 to 400 is the largest clean overhang the
+frame still allows, and going further would put the rail's own ends on the frame edge.
+
+Nothing else moved. Re-measured after the change: 11.12px at 390, 19.01px at 1440, 8.46px at
+320, figure box 499.11 x 404.05 — every number identical to the table above, because the rail
+is neither text nor a bag. `type-floor`, `plate-height`, `dod` and `geometry` ran together:
+**180 passed, 0 failed.**

@@ -55,8 +55,10 @@ release:
 - CiteVyn treats refusal as a feature, not a failure; index promotion is evaluation-gated.
 - Quorum-AI returns disagreement and uncertainty as first-class output fields, approves cost
   before executing, and discloses when a slot fell back to simulation.
-- SaafSaans labels whether a reading is live, deterministic, or sample; its Hindi translation is
-  gated behind a banner stating no Hindi speaker has reviewed it.
+- SaafSaans labels every reading's state — `LIVE`, `CACHED`, or `NO READING` (a `sample` state
+  existed once and was deleted from the product; D74, 2026-08-12, verified in
+  `saafsaans/web/presenters.py`) — and gates its Hindi translation behind a banner stating no
+  Hindi speaker has reviewed it.
 - NarraTwin gates generation behind claim evaluation, consent checks, and release readiness.
 - project-doc-skills ships deterministic builds and verification gates.
 - EvalAxis blocks CI on a quality regression.

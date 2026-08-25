@@ -7,7 +7,17 @@ Naming: `RCA-<nnn>-<slug>.md`, numbered in the order raised.
 
 | # | Finding | Status |
 |---|---|---|
-| 001 | Watermarking is specified but no skill applies it | Awaiting approval |
+| 001 | Watermarking is specified but no skill applies it | Done 2026-08-17 (W-20, D90) |
+| 002 | `.js-ground` fails open | Refuted 08-09 — the class had no consumer; superseded by 003 (DEF-6) |
+| 002 | Proof language: verification vocabulary where reader meaning belongs | Shipped 2026-08-14 (D85). The number was reused by mistake; both files keep it |
+| 003 | The fixed nav has no ground | Fixed 08-09 (DEF-38) |
+| 004 | The mobile nav reaches nothing | Fixed 08-09 (DEF-42, D46) |
+| 005 | The employer ledger shipped scoped to one tenure while depicting the career | Shipped 2026-08-15 (D87) |
+| 006 | `PRODUCT.md` lags three rulings the site already honours | Part 1 fixed 2026-08-26 (D128); part 2 awaiting the owner's word under P-18 |
+
+*Index brought current 2026-08-26: it listed only 001, as "awaiting approval", nine days after W-20
+marked it done, and none of 002–005. Statuses above are taken from the ledger rows named, not from
+memory.*
 
 ## What every RCA carries
 

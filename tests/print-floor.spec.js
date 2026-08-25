@@ -13,24 +13,38 @@
 // /cv was already clean: cv.css sizes its reveal at 8.5pt, which is 11.33px.
 //
 // The rule this gate holds is DESIGN.md's Print-Floor Rule: under print,
-// no text — pseudo-elements included — renders below 0.6875rem (11px, 8.25pt),
-// and a revealed href prints in the case its href has.
+// no text — ::before, ::after and ::marker included — renders below 0.6875rem
+// (11px, 8.25pt), and a revealed href prints verbatim: the case its href has,
+// no tracking, no small caps.
 //
 // WHICH CHANGE TURNS IT RED — the exact edits, run as mutations before
 // shipping and recorded in docs/STATUS.md D129:
 //   1. `src/styles/print.css` `.plate-copy a::after { font-size: 0.72em }` —
 //      the floor check goes red on every route but /cv.
 //   2. Delete that whole `.plate-copy a::after` block — the PARTNER goes red
-//      on every plate route, because the revealed-href population vanishes.
-//   3. Remove `text-transform: none` from that block — the case check goes red
-//      on every plate route.
+//      on every route but /cv, because no href is revealed any more.
+//   3. Remove `text-transform: none` from that block — the verbatim check
+//      goes red on every route but /cv (uppercase inherited from the label).
+//   4. Remove `letter-spacing: normal` from it — the verbatim check goes red
+//      the same way (0.18em tracking inherited).
+//   5. `src/styles/project.css` `.rec li::marker { font-size: 0.8em }` — the
+//      floor check goes red on the four project pages (markers at 10.75px).
+//   6. In print.css, `.links a { display: contents }` plus a 6px reveal — the
+//      floor check goes red; the first draft's walker let this through.
 //
 // WHAT IT DOES NOT COVER, said rather than left to be discovered:
 //   - Page breaks, margins, and what the printer does with colour. This gate
 //     reads computed style under print emulation; it does not rasterize a
 //     sheet. print.spec.js owns the ink-on-transparent contract.
-//   - ::marker and ::placeholder. Neither carries text here (swept by hand,
-//     2026-08-26); the walker reads ::before and ::after only.
+//   - ::first-line / ::first-letter, `zoom`, `transform: scale()` and
+//     `font-size-adjust` shrink painted glyphs without changing the computed
+//     font-size. Shared with the screen gate, and none of them appears in
+//     src/ (grepped 2026-08-26). Recorded, not built for.
+//   - Form controls and ::placeholder. The build ships no <input>, <textarea>
+//     or <select> (grepped dist/, 2026-08-26).
+//   - A route this list does not name. ROUTES is the repo's convention —
+//     siteRoutes() plus the two fixed pages — shared with type-floor.spec.js;
+//     discovering pages from dist/ would belong to every gate at once.
 //   - Screen. type-floor.spec.js owns it, and its pseudo-element gap is
 //     measured empty there.
 
@@ -48,19 +62,32 @@ const FLOOR_PX = 11;
    type-floor.spec.js gates, for the same reasons it gives. */
 const ROUTES = [...(await siteRoutes()), '/cv', '/404'];
 
+/* emulateMedia changes the media type, not the viewport, so a print run
+   inherits the project's screen width. A sheet is neither 1440 nor 412 wide:
+   A4 at 96dpi is 794px. The desktop project runs at that width so at least
+   one leg is the width paper actually lays out at; the mobile project keeps
+   its own, which shares the sub-900px layout branch. A cross-model reviewer
+   raised the untested middle width; every size measured so far is identical
+   at 1440, 794 and 390, and this keeps it that way by measurement. */
+const A4 = { width: 794, height: 1123 };
+
 /* Two populations, two partners. The element floor proves the page rendered
-   (type-floor.spec.js:77 reasoning, same numbers). The PSEUDO floor proves
-   the revealed hrefs exist: without it, deleting the reveal rule would leave
-   an empty `under` list that certifies nothing. Measured 2026-08-26: home 25
-   pseudos, /cv 10, project pages 4-5, /experience 2, /how-i-build 3, /404 2.
+   (type-floor.spec.js:77 reasoning, same numbers). The REVEALS floor proves
+   the revealed hrefs exist — counted as an ::after on a link whose text
+   contains that link's href, so nothing but a real reveal can satisfy it;
+   without it, deleting the reveal rule would leave an empty `under` list
+   that certifies nothing. Measured 2026-08-26: home 25 reveals, /cv 10,
+   project pages 4-5, /experience 2, /how-i-build 3, /404 2.
    The /404 ELEMENT floor is lower than the screen gate's 5 on purpose: print
    hides the nav and colophon, and the page then owns exactly 5 text elements —
    the first RED run failed its own partner there, measured, not guessed. */
 const minTextOwners = (route) => (route === '/' ? 100 : route === '/404' ? 3 : 20);
-const minPseudos = (route) => (route === '/' ? 10 : route === '/cv' ? 5 : 0);
+const minReveals = (route) => (route === '/' ? 10 : route === '/cv' ? 5 : 0);
 
 for (const route of ROUTES) {
-  test(`${route} — under print, no text renders below ${FLOOR_PX}px, pseudo-elements included`, async ({ page }) => {
+  const title = `${route} — under print, no text renders below ${FLOOR_PX}px, pseudo-elements included`;
+  test(title, async ({ page }, testInfo) => {
+    if (testInfo.project.name === 'desktop') await page.setViewportSize(A4);
     await page.goto(route, { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
     await page.emulateMedia({ media: 'print' });
@@ -79,11 +106,11 @@ for (const route of ROUTES) {
         `expected more than ${minTextOwners(route)}; this test measured nothing`,
     ).toBeGreaterThan(minTextOwners(route));
     expect(
-      pseudos.pseudos,
-      `only ${pseudos.pseudos} text-carrying pseudo-elements on ${route} under print — ` +
-        `expected more than ${minPseudos(route)}; the revealed-href population is missing, so an empty ` +
+      pseudos.reveals,
+      `only ${pseudos.reveals} revealed hrefs on ${route} under print (${pseudos.pseudos} text-carrying ` +
+        `pseudo-elements) — expected more than ${minReveals(route)}; the reveal is missing, so an empty ` +
         `violation list proves nothing`,
-    ).toBeGreaterThan(minPseudos(route));
+    ).toBeGreaterThan(minReveals(route));
 
     /* RED WHEN: any print rule sizes text under 0.6875rem, or a screen size
        that print inherits drops below it. */
@@ -96,12 +123,13 @@ for (const route of ROUTES) {
       `${pseudos.under.length} of ${pseudos.pseudos} pseudo-elements render under ${FLOOR_PX}px on ${route} in print`,
     ).toEqual([]);
 
-    /* RED WHEN: `text-transform: none` leaves the reveal rule. The screen
-       label is tracked uppercase and the reveal inherits it, so `/cv`
-       printed as `/CV` — a different path on a case-sensitive host. */
+    /* RED WHEN: `text-transform: none` or `letter-spacing: normal` leaves the
+       reveal rule. The screen label is tracked uppercase and the reveal
+       inherits both, so `/cv` printed as `/CV` — a different path on a
+       case-sensitive host — and a URL printed as spaced letters. */
     expect(
-      pseudos.transformed.map((t) => `${t.transform}  ${t.sel}  "${t.text}"`),
-      `${pseudos.transformed.length} revealed hrefs on ${route} print in a case their href does not have`,
+      pseudos.transformed.map((t) => `${t.why}  ${t.sel}  "${t.text}"`),
+      `${pseudos.transformed.length} revealed hrefs on ${route} do not print verbatim`,
     ).toEqual([]);
   });
 }

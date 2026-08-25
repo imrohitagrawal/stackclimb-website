@@ -197,9 +197,8 @@ test.describe('Geometry baselines — DEF-54', () => {
            baseline" passes forever — DEF-54's own failure, one level up.
            DEF-58 made the plate minimum ROUTE-SHAPED and moved it into
            tests/lib/geometry-floor.mjs, beside the row floor. It was
-           `plateCount > (route === '/' ? 4 : 1)` — so every route but the home
-           page needed 2, which /cv fails by construction with its single
-           plate. Nothing else got weaker; see the note there. */
+           `plateCount > (route === '/' ? 4 : 1)` — every route but home needed
+           2, which /cv fails by construction. Nothing else got weaker. */
         const thin = plateFloorBreaches(route, plateCount);
         expect(thin, `this leg measured nothing:\n${thin.join('\n')}`).toEqual([]);
         expect(docHeight, `${route} is ${docHeight}px tall — the page did not render`)

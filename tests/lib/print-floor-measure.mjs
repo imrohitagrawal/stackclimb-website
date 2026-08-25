@@ -55,7 +55,7 @@ export function measurePseudoFloor({ floorPx }) {
       if (cs.display === 'none') continue;
       /* `none` means no pseudo-element. `normal` means none too — EXCEPT for
          ::marker, where `normal` is the default bullet or number on a
-         list-item, which is text a reader meets: project.css sizes it at
+         list-item (`inline list-item` too — round 2), which is text a reader meets: project.css sizes it at
          0.85em, and a reviewer measured it clearing the floor by 0.42px.
          `content: ''` is a box with no text (global.css draws the
          external-link arrow that way) and has no font-size a reader could
@@ -63,7 +63,7 @@ export function measurePseudoFloor({ floorPx }) {
          arrives here as `" (/cv)"`. */
       const isMarker = pseudo === '::marker';
       if (content === 'none') continue;
-      const defaultMarker = isMarker && host.display === 'list-item' && host.listStyleType !== 'none';
+      const defaultMarker = isMarker && host.display.includes('list-item') && host.listStyleType !== 'none';
       if (content === 'normal' && !defaultMarker) continue;
       if (content === '""') continue;
 
@@ -78,19 +78,21 @@ export function measurePseudoFloor({ floorPx }) {
       }
 
       /* The population the partner assertion protects: an ::after on a link
-         whose text really contains that link's href. Counting ANY text-bearing
+         whose text carries that link's href in the reveal's own `(href)` form —
+         a bare substring let `/cv-broken` pass for `/cv` (round-2 finding). Counting ANY text-bearing
          pseudo let a `url()` or `counter()` pseudo stand in for a deleted
          reveal (a cross-model finding). This count cannot be satisfied by
          anything but a revealed destination. */
       const href = el.tagName === 'A' ? el.getAttribute('href') : null;
-      if (pseudo === '::after' && href && text.includes(href)) {
+      if (pseudo === '::after' && href && text.includes('(' + href + ')')) {
         out.reveals++;
         /* Verbatim means verbatim. DESIGN.md's rule says no uppercase and no
            tracking; the first draft read `text-transform` only, and both
-           reviewers printed a tracked or small-caps URL past it. */
+           reviewers printed a tracked or small-caps URL past it. `0` computes
+           to `0px`, not `normal`, and is untracked — a round-2 false red. */
         const bad = [];
         if (cs.textTransform !== 'none') bad.push(`text-transform: ${cs.textTransform}`);
-        if (cs.letterSpacing !== 'normal') bad.push(`letter-spacing: ${cs.letterSpacing}`);
+        if (cs.letterSpacing !== 'normal' && parseFloat(cs.letterSpacing) !== 0) bad.push(`letter-spacing: ${cs.letterSpacing}`);
         if (cs.fontVariantCaps !== 'normal') bad.push(`font-variant-caps: ${cs.fontVariantCaps}`);
         if (bad.length) {
           out.transformed.push({ sel: describe(el) + pseudo, why: bad.join(', '), text: text.slice(0, 60) });

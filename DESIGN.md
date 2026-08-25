@@ -28,9 +28,10 @@ typography:
     # (Corrected: an earlier draft of this comment said four and forgot
     # plate-no, which is itself 10.88px.) Two named removed components:
     # `swatch` (global.css:127) and `plate-no` (Plate.astro:25). Both deleted;
-    # `seal` is the real consumer of what `swatch` used to describe. NOTE: the
-    # prose below still describes swatch tags in four places for a component
-    # removed long ago — pre-existing drift, filed as DEF-64, not repaired here.
+    # `seal` is the real consumer of what `swatch` used to describe. The prose
+    # below used to describe swatch tags for a component removed long ago;
+    # DEF-64 corrected it on 2026-08-25 (D121). Each site carries its own
+    # dated correction rather than a silent deletion.
     label-min: "0.6875rem"
     seal: "0.6875rem"
     brand-em: "0.72rem"
@@ -181,7 +182,7 @@ A costume palette: six painted grounds, one paper, one ink, one thread.
 - **Paper** (#e8e2d4): the one light ground (the private plate, `theme="light"`) — flips text to ink. *Was linen #b5ac9c; upgraded by the value ladder (D18) — the old value was the only ground above L60 at 15% saturation and read as mud.*
 
 ### Named Rules
-**The Three-Color Livery Rule.** Every plate declares exactly three coordinated colors — Ground, Cloth, Thread — and prints them as its swatch tag. Cloth is bone and Thread is ochre on every plate; only the Ground changes.
+**The Three-Color Livery Rule.** Every plate declares exactly three coordinated colors — Ground, Cloth, Thread. Cloth is bone and Thread is ochre on every plate; only the Ground changes. *(Corrected 2026-08-25, DEF-64. This rule read "and prints them as its swatch tag". The swatch tag was deleted on 2026-08-09 — `global.css:127` records why — so the rule is kept and only the printing is struck. The three colours are still declared: the Ground is passed as `hue` and the backdrop repaints to it.)*
 
 **The One Thread Rule.** Ochre is the only accent color in the system. If an element needs emphasis, it gets ochre or it gets nothing; no second accent may be introduced.
 
@@ -226,14 +227,18 @@ The spatial unit is the plate: a full-viewport section (`min-height: 100svh`) th
 centers a ruled frame of `min(1240px, 100%)`. Inside the frame, a two-column grid —
 copy left (1.05fr, max 34rem), figure right (0.95fr) — with fluid gap
 (clamp(2rem, 5vw, 4.5rem)) and fluid frame padding (clamp(1.75rem, 4vw, 4rem)).
-The plate tag (Plate Nº + swatch list) sits absolute in the frame's top-right.
+The plate tag sits absolute in the frame's top-right and carries the plate's state.
+*(Corrected 2026-08-25, DEF-64. It read "(Plate Nº + swatch list)". Both are gone: the
+swatch tags on 2026-08-09 (`global.css:127`), the `Plate Nº` label by the owner's call
+(`Plate.astro:25`). The 900px rule below therefore no longer says "swatches hide" —
+there is nothing left to hide.)*
 Figures are height-capped (56vh desktop, 62vh hero) so figure plus caption strip
 stay inside one viewport composition. Variant plates reuse the same frame: the
 contact plate collapses to a single centered column; the private plate splits its
 copy into a two-card pair.
 
 One breakpoint at 900px: the grid stacks (copy first, figure second), the plate tag
-goes static and left-aligned, swatches hide, the caption strip becomes a 2-column
+goes static and left-aligned, the caption strip becomes a 2-column
 grid, ledger rows stack, and nav links collapse to brand + chip. Spacing is fluid
 clamps throughout rather than a fixed step scale.
 
@@ -336,21 +341,21 @@ lines; the NarraTwin-style honest-absence device in figures is a dashed stroke.
 - Fixed hairline bar, no background fill; serif small-caps brand with a sans `stackclimb` aside; tracked-caps links (0.76rem, 0.18em) underlined in ochre on hover; recolors bone↔ink with the active plate's theme (0.5s).
 
 ### Caption Strip (signature)
-- The billing strip under every figure: flex row of ruled cells between 1px top/bottom rules; each cell is LABEL (0.6875rem, 0.16em, 62% opacity) over VALUE (0.74rem, 640, uppercase), both at 1.2 leading. Cells with a `target` are focusable and draw an ochre leader line (1.5px stroke, dot terminus) from cell to the `data-anchor` region of the figure. System state ("Live — cold-starts", "Phase 1 — No-Go") is a caption cell like any other fact.
+- The billing strip under every figure: flex row of ruled cells between 1px top/bottom rules; each cell is LABEL (0.6875rem, 0.16em, 62% opacity) over VALUE (0.74rem, 640, uppercase), both at 1.2 leading. Cells are static: they bill facts and wire to nothing. *(Corrected 2026-08-25, DEF-64. This spec said cells with a `target` are focusable and draw an ochre leader line (1.5px stroke, dot terminus) from cell to the `data-anchor` region of the figure. That machinery was deleted on 2026-08-09 — `plates.js:9` names the four pieces that went — and `data-anchor` and `data-target` appear on zero built elements. The spec was telling the next agent to build a mechanism with no code behind it. `caps.css:49` still gives `.cap[data-target]` a pointer cursor, matching nothing.)* System state ("Live — cold-starts", "Phase 1 — No-Go") is a caption cell like any other fact.
 
 ### Ledger (signature)
 - A `dl` of dotted-ruled rows: tracked-caps term left (0.6875rem, 0.16em, 1.2 leading, 62% opacity), right-aligned value (0.84rem). Used for the career record and contact facts.
 
 ### Figures (signature)
-- Each project is drawn as a flat SVG figure in the plate's livery: bone paper shapes, ink linework at stepped opacities, ochre functional details (tabs, gates, thread), dashed strokes for honest absence. Every citable region carries a `data-anchor` id matching a caption target. Each figure has a `<title>` and `role="img"`.
+- Each project is drawn as a flat SVG figure in the plate's livery: bone paper shapes, ink linework at stepped opacities, ochre functional details (tabs, gates, thread), dashed strokes for honest absence. Each figure has a `<title>` and `role="img"`. *(Corrected 2026-08-25, DEF-64. This spec also required every citable region to carry a `data-anchor` id matching a caption target. Zero built elements carry one; see the caption-strip correction above.)*
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** give every new plate the Three-Color Livery: a ground hue, bone cloth, ochre thread — declared in its swatch tag and passed as `hue` so the backdrop repaints to it.
+- **Do** give every new plate the Three-Color Livery: a ground hue, bone cloth, ochre thread — passed as `hue` so the backdrop repaints to it. *(Corrected 2026-08-25, DEF-64: "declared in its swatch tag and" struck; see the Livery Rule above.)*
 - **Do** put every fact — including unflattering state — in a ruled caption cell or ledger row, in the label-over-value register.
 - **Do** derive all rules and borders from `currentColor` via `color-mix` so components recolor with the plate theme automatically.
-- **Do** wire new figure regions with `data-anchor` ids so captions can draw leader lines to them.
+- **Do** keep caption cells static: they bill a fact, they do not wire to the figure. *(Corrected 2026-08-25, DEF-64. This read "**Do** wire new figure regions with `data-anchor` ids so captions can draw leader lines to them" — an instruction to build a mechanism deleted on 2026-08-09. If a future figure earns wired captions back, the implementation is in git history at `src/scripts/plates.js`, pre-2026-08-09-polish.)*
 - **Do** keep the copy register: state what is proven, label what is not, invent nothing.
 
 ### Don't:

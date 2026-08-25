@@ -1,7 +1,12 @@
 #!/bin/sh
 # Local mirror of the CI gate. CI is the authority; this just fails faster.
 #
-# Enable once per clone:   git config core.hooksPath .githooks
+# Bound by package.json's `prepare` script, which npm runs on every
+# `npm install` and every `npm ci` — so a fresh clone gets it without anyone
+# remembering. Manual route, if npm has not run yet:
+#   git config core.hooksPath .githooks      # relative, so worktrees work too
+# DEF-62: this used to say "enable once per clone", and it was enabled on
+# exactly one. tests/hook-binding-selftest.mjs is what proves it now.
 # Bypassing it (--no-verify) does not bypass CI. That is the point.
 
 fail=0

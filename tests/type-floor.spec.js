@@ -25,8 +25,9 @@
 //     Swept by hand across every route at four widths on 2026-08-25 — six
 //     pseudo types, nothing under 11px — so nothing escapes today. Stated here
 //     rather than left to be discovered, which is how a gate quietly narrows.
-//   - Print. @media print type is measured by nobody; print.css and cv.css use
-//     pt and em and are out of this gate's world.
+//   - Print. Owned by tests/print-floor.spec.js since 2026-08-26 (DEF-69): it
+//     emulates print and walks the pseudo-elements this gate cannot see, which
+//     is where print.css's revealed hrefs sat at 8.76px. This gate stays screen.
 //   - Structural loss. The population floor below is a DENOMINATOR — it proves
 //     the page rendered, not that all of it did. A deleted section is caught by
 //     geometry.spec.js, which reports a baselined plate as "in the baseline but

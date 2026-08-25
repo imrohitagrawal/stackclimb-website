@@ -148,7 +148,7 @@ Taken from the running site, not from stored screenshots.
 | File | Source |
 |---|---|
 | `src/assets/projects/saafsaans-en.webp` | `https://saafsaans.stackclimb.com` |
-| `src/assets/projects/saafsaans-crop.webp` | mobile crop of the above, served below 700px |
+| `src/assets/projects/saafsaans-crop.webp` | crop of the above — the shared-sky line (`ANAND VIHAR · LIVE · 5:00 PM · AQI 270 · POOR`), the persona line, headline and both score chips, 728×228. **Re-cut 2026-08-26 (DEF-70):** it was a 900×267 phone crop served below 700px; the home plate now shows it at every width (`homeCrop`), because the full capture rendered at 0.30 of its size in the desktop column. The project page still shows the full capture above 700px |
 
 **Removed 2026-08-12 (D74):** `saafsaans-hi.webp`, captured from
 `https://saafsaans.stackclimb.com/?theme=light&lang=hi`. It was referenced by nothing — no

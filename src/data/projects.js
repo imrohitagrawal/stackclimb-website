@@ -32,6 +32,12 @@ export const projects = {
     ],
     proof: 'Twenty-six answerable questions. It found the right source for <em>every one</em>.',
     shot: 'citevyn-demo',
+    /* citevyn-demo is 1160px wide; at the home plate's 477px column it rendered at
+       0.41 of its size, a 16px line meeting the reader at ~6.6px (DEF-70). The
+       crop is the answer with its two citations — 712x296, cut from the same
+       committed capture, 0.67 at the column — and is the home image at every
+       width. The full capture stays on the project page. Measured, not guessed. */
+    homeCrop: true,
     crop: 'citevyn-crop',
     alt:
       'CiteVyn answering a question about Claude Code, with two numbered citations to real ' +
@@ -124,6 +130,12 @@ export const projects = {
       'Two people, one sky. The adult with asthma scores <em>76</em>. The healthy adult, same ' +
       'plans, scores <em>64</em>.',
     shot: 'saafsaans-en',
+    /* saafsaans-en is 1600px wide; at the 477px column it rendered at 0.30 — the
+       11px mono caps at ~3.3px (DEF-70). The crop is the shared-sky line (the
+       proof says "one sky", the prov says 5:00 PM — both in frame), the persona
+       line, the headline and both score chips — 728x228, cut from the same live
+       capture, 0.65 at the column — and is the home image at every width. */
+    homeCrop: true,
     crop: 'saafsaans-crop',
     alt:
       'SaafSaans showing a risk score of 76 out of 100 for an adult with asthma beside 64 for a healthy ' +

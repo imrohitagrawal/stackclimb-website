@@ -107,13 +107,13 @@ try {
   {
     const ctx = await browser.newContext({ viewport: DESKTOP });
     const page = await ctx.newPage();
-    await page.goto(`${BASE}/?at=work`);
+    await page.goto(`${BASE}/?at=citevyn`);
     await settle(page);
-    const cell = page.locator('#work .cap-cell, #work [data-target]').first();
+    const cell = page.locator('#citevyn .cap').first();
     if (await cell.count()) {
       await cell.hover();
       await page.waitForTimeout(700);
-      await shot(page, 'caption-hovered', 'the leader line drawn from caption to figure region');
+      await shot(page, 'caption-hovered', 'a caption cell hovered — a static billing cell, nothing is drawn');
     }
     await ctx.close();
   }
@@ -148,7 +148,7 @@ try {
   {
     const ctx = await browser.newContext({ viewport: DESKTOP, reducedMotion: 'reduce' });
     const page = await ctx.newPage();
-    await page.goto(`${BASE}/?at=work`);
+    await page.goto(`${BASE}/?at=citevyn`);
     await settle(page);
     await shot(page, 'reduced-motion', 'does the page still communicate without motion');
     await ctx.close();

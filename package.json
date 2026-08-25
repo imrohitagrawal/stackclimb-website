@@ -21,6 +21,7 @@
     "@astrojs/sitemap": "^3.7.3",
     "@axe-core/playwright": "4.12.1",
     "@playwright/test": "1.62.1",
+    "htmlparser2": "9.1.0",
     "jszip": "3.10.1"
   }
 }

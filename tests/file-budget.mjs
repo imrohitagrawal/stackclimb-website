@@ -51,7 +51,9 @@ const EXCEPTIONS = {
   'src/layouts/Layout.astro': { lineLen: 230 },
   'src/pages/cv.astro': { lineLen: 237 },
   'src/components/figures/NarraTwinFigure.astro': { lineLen: 234 },
-  'src/components/figures/PrivateFigure.astro': { lineLen: 136 },
+  // 136 -> 124 on 2026-08-25: the DEF-63 redraw wraps both bag paths across
+  // three lines each. Shrink-only, so the ceiling comes down with the file.
+  'src/components/figures/PrivateFigure.astro': { lineLen: 124 },
   'tests/links.spec.js': { lineLen: 128 },
   'tests/nav-contrast.mjs': { lineLen: 142 },
   'tests/boundary-check.mjs': { lineLen: 153 },

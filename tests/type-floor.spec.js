@@ -33,6 +33,13 @@
 //     NOT measured", and by plate-height.spec.js's unpainted check.
 //   - Contrast, weight, and tracking. A legible SIZE is not a legible label;
 //     boundary-check.mjs, nav-contrast.mjs and the axe sweep own those.
+//
+// SVG TEXT IS INSIDE THIS GATE, and was not always. `getComputedStyle` on an
+// SVG <text> reports USER UNITS, which a viewBox then scales, so the number in
+// the source is not the number a reader meets. The walker multiplies by the
+// screen CTM. The two labels in the private figure were the reason: they
+// declared 9 and 9.5 and rendered 4.76px at 320. They were exempt while DEF-63
+// was open, the figure was redrawn on 2026-08-25, and SVG_EXEMPT is now empty.
 
 import { test, expect } from '@playwright/test';
 import { siteRoutes } from './lib/routes.mjs';
@@ -104,17 +111,28 @@ for (const { width, height } of WIDTHS) {
           .toBeGreaterThan(0);
       }
 
-      /* The SVG exemption is COUNTED, not trusted. A blanket namespace pass let
-         `<svg><text style="font-size:1px">` through in a reviewer's mutation.
-         Only the two private-figure labels are exempt, they are pinned by their
-         own text, and a third one fails here rather than being waved past. */
-      const exempt = svgSeen.filter((s) => SVG_EXEMPT.includes(s.text)).map((s) => s.text).sort();
+      /* SVG text is GATED now, not exempt. DEF-63 redrew the private figure and
+         its two labels are measured like every other piece of text; SVG_EXEMPT
+         is empty. The old `expect(exempt).toEqual([...SVG_EXEMPT].sort())` block
+         was deleted with it — against an empty list it asserts `[] toEqual []`
+         forever, which is a check that counts nothing.
+
+         PARTNER FIRST, for the same reason: `strayLow` is a list that is empty
+         when all is well, so on `/` the SVG text it filters must be proved to
+         exist. Without this, deleting the figure's `<text>` elements would make
+         the floor check below pass by measuring nothing.
+         RED WHEN: the two `<text>` elements in
+         src/components/figures/PrivateFigure.astro are deleted, or the private
+         figure stops rendering on `/`. */
       const strayLow = svgSeen.filter((s) => !SVG_EXEMPT.includes(s.text) && s.px < FLOOR_PX);
-      expect(strayLow.map((s) => `${s.px}px ${s.sel} "${s.text}"`), 'SVG text under the floor').toEqual([]);
       if (route === '/') {
-        expect(exempt, 'the DEF-63 exemption changed — it covers exactly two illustration labels')
-          .toEqual([...SVG_EXEMPT].sort());
+        expect(
+          svgSeen.length,
+          'no SVG text was measured on / at ' + width + 'px — the private figure carries two labels, ' +
+            'so a 0 here means the SVG floor check measured nothing and its empty list proves nothing',
+        ).toBeGreaterThan(0);
       }
+      expect(strayLow.map((s) => `${s.px}px ${s.sel} "${s.text}"`), 'SVG text under the floor').toEqual([]);
 
       expect(
         under.map((u) => `${u.px}px  ${u.sel}  "${u.text}"`),

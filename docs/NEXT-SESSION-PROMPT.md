@@ -1,193 +1,114 @@
-# Next session — Giscus (4-of-4), then P-7 (major, fresh-context), then a full open-items audit
+# Next session — six queue items remain, all LOW or decision-shaped
 
 You are continuing work on stackclimb.com, the owner's personal site.
 `/Users/rohitagrawal/Projects/designing-website`. Astro, static, Cloudflare Pages.
-DEPLOYMENT IS APPROACH C: a merge to main deploys automatically through CI and verifies
-production itself (gates.yml deploy job). Never run manual wrangler unless the CI deploy
-job fails — break-glass only. **W-24 (owner, 2026-08-15): merge each PR autonomously once
-it is verified and green — the merge is delegated, owner-reserved judgment calls are not.**
-**That delegation covers the MERGE step only. It does NOT cover deciding what the site
-claims about the owner or his practice (P-18) — see Task 2 below before you write a word
-of new site copy.**
 
-READ FIRST, IN THIS ORDER, AND DO NOT SKIP:
-  AGENTS.md · `docs/STATUS.md` (D100 down through D95, most recent first) ·
-  `docs/OWNER-DIRECTIVES.md` (checked at the start of every session, per its own rule — an
-  `OPEN` row is a debt).
+**DEPLOYMENT IS APPROACH C:** a merge to `main` deploys through CI and verifies production
+itself (`gates.yml` deploy job). Never run manual wrangler unless the CI deploy job fails —
+break-glass only.
 
-THEN STOP TRUSTING THEM. Verify by running a command before acting on any row. The ledger
-outranks this file, and this file is itself already a few hours old by the time you read it.
+**W-24 (owner, 2026-08-15):** merge each PR autonomously once it is verified and green. That
+delegates the MERGE only. It does NOT cover deciding what the site claims about the owner or
+his practice — see P-18.
 
-## What the prior session did — a pointer, not a copy
+Read first, do not restate back: `AGENTS.md` · `docs/STATUS.md` · `docs/OWNER-DIRECTIVES.md` ·
+`PRODUCT.md` · `DESIGN.md`. The ledger is the record; this file only points at it.
 
-`docs/STATUS.md` rows **D99** and **D100** are the record. In one sentence each: D99 closed
-W-6/M4 (the agent-side `Stop` hook was laptop-only in gitignored `settings.local.json`; moved
-to tracked `.claude/settings.json`). D100 closed W-19 (a `review-synthesizer` skill), W-23 (an
-8-role plan-review menu at `docs/practices/plan-review-roles.md`), and R-6 (a packaged
-`visual-review` skill). Both PRs merged under W-24, both deploy jobs ran green, both
-independently re-verified against production directly:
+## Why the previous session ended
+
+`npx impeccable install` moved **36 skill files** (1,002 insertions, 656 deletions) across both
+`impeccable` trees. Skills load at session start, so per `AGENTS.md`'s currency table that forces
+a Restart — the D119 precedent. Nothing was left broken; the session closed green.
+
+## Prove the starting state before anything else, and paste the output
 
 ```bash
-curl -sL -o /dev/null -w "%{http_code}\n" https://www.stackclimb.com/                     # 200
-curl -sL -o /dev/null -w "%{http_code}\n" https://www.stackclimb.com/projects/narratwin    # 200
-curl -sL https://raw.githubusercontent.com/imrohitagrawal/stackclimb-website/main/docs/STATUS.md | grep -c "^| D100 "  # 1
+git rev-parse --abbrev-ref HEAD && git rev-list --left-right --count origin/main...main
+git status --porcelain | wc -l
+node tests/file-budget.mjs && node tests/no-pii.mjs
+node tests/geometry-selftest.mjs && node tests/baseline-guard-selftest.mjs
+node tests/post-deploy.mjs --self-test
+node tests/hook-binding-selftest.mjs
+npm run build && npm run post-deploy
+gh run list --branch main --limit 1
 ```
 
-I-4 (memory management) was resolved for its first question: this repo's own memory folder
-(`~/.claude/projects/-Users-rohitagrawal-Projects-designing-website/memory/`) was `git init`'d
-and given one baseline commit, owner-scoped to this repo only — the other 9 project memory
-folders on the machine were deliberately left alone (cross-project change, never authorized).
-No "dreaming" consolidation job was built — Claude Code's own docs describe a real, already-
-built size-triggered pruning nudge on `MEMORY.md`, so there is currently no evidence a new
-scheduled job is even needed. Don't re-build this unless new evidence says otherwise.
+Expected at `b25f056`: level with origin, clean tree, all self-tests pass, production green.
+Full Playwright locally was **492 expected / 0 unexpected / 2 skipped**.
 
-## Task 1 — Giscus: verify the real count first, then close whatever gap actually exists
+**Do the skills-currency check in PLANNING, not later.** `npx skills update`, then diff
+`skills-lock.json`. "Updated N skill(s)" is a per-fetch message, not evidence — only `computedHash`
+values moving count. `impeccable` is NOT in the lock file and never will be via that CLI; see below.
 
-The owner installed the giscus GitHub App this session. A live check at the time found only
-**1 of 4** project pages had an actual GitHub Discussion thread (`narratwin`, `discussions/51`)
-— the other 3 (`citevyn`, `quorum`, `saafsaans`) had none, because the `Announcements` category
-only lets the repo owner start a *new* thread; visitors can only reply to one that exists.
+## Two traps this repo keeps re-teaching. Do not relearn them the hard way.
 
-**Do not assume "3 of 4" is still true — re-verify before touching anything:**
+1. **Line numbers in the ledger drift, and cited ones are often already wrong.** Last session
+   found stale citations in DEF-64's own row (`DESIGN.md:178,223,230,344` — all four wrong, off by
+   ~6 after D118) and in three comment cross-references (DEF-67). **Locate every site by CONTENT,
+   never by line number**, and re-check any number before you write it into the ledger.
+2. **`tail` swallows exit codes and hides failures.** `node tests/file-budget.mjs | tail -2` inside
+   an `&&` chain let a builder commit an over-budget file last session. Playwright's list reporter
+   prints passes last, so `| tail -3` once showed "42 passed" with 30 tests red. Use
+   `--reporter=json` and read `stats`, or read the exit code directly.
 
-```bash
-gh api graphql -f query='{ repository(owner: "imrohitagrawal", name: "stackclimb-website") {
-  discussions(first: 20) { totalCount nodes { title category { name } number url } } } }'
-```
+## The queue, in order
 
-Cross-check the titles returned against the site's real slugs — confirmed as `citevyn`,
-`quorum`, `saafsaans`, `narratwin` (`src/data/project-pages.js`, checked, not guessed).
+| # | Item | Notes |
+|---|---|---|
+| 1 | **P-1** — `PRODUCT.md` still says "self-reported" (retired 2026-08-14, RCA-002) and still describes a SaafSaans state deleted in D74 | A PARTIAL directive older than everything else open. **Find the sites by content, not the cited line numbers.** The built site already honours the fix everywhere (0 occurrences, gated); only `PRODUCT.md` lags. Copy that touches how the owner is described is **P-18 owner-reserved** — raise before writing |
+| 2 | **Print stylesheet** — `print.css` prints link URLs at ~8.76px on 23 home-page elements, gated by nothing | Deliberately out of D118's scope, which says "ON SCREEN". Needs its own floor and its own gate. Note `tests/type-floor.spec.js` explicitly excludes print, and `DESIGN.md:24,218` say "HTML text ... on screen" — so this is a new rule, not an existing one being enforced |
+| 3 | **Two illegible artefact panels** — `src/data/projects.js` already has a working `homeCrop`; needs 2 new crop assets | Visual, and the mechanism already works on the other two panels. DoD requires SEEING it: Playwright screenshots at desktop AND mobile, never headless-chrome |
+| 4 | **`npm i -D htmlparser2`** — the impeccable CLI detector runs degraded and under-reports | One command, then re-run the detector and record what the non-degraded scan finds. Note the skill tree was re-fetched at `b25f056`; re-read its current guidance rather than trusting an older description |
+| 5 | **DEF-52** — Cloudflare email obfuscation degrades only for no-JS visitors | Decide explicitly: fix, or close as accepted with the reason. Filed HIGH on 08-12 and downgraded to LOW the same day |
+| 6 | **I-4** — whether a memory consolidation pass is worth building | Genuinely undecided. Needs a decision recorded, not code |
 
-For every slug with no matching thread:
+Also open, all filed last session and all LOW: **DEF-65** (a regeneration refreshes only the tracked
+platform's baselines, so the untracked platform's set goes stale silently — D124 removed the
+*symptom* by making sizes fixed, not the cause), **DEF-67** (three stale line-number
+cross-references), **DEF-68** (`plate-height.spec.js` does not cover `/cv` and could not measure it
+if it did — it queries `section.plate[id]` and `/cv`'s plate is an `<article>`; also needs a ceiling
+decision, `/cv` is ~6.9 viewports at 390 against a deepest ceiling of 2.0).
 
-1. **Ask the owner to seed it himself first** — one visit to the page, signed into GitHub, one
-   comment. Keeps the thread opener in his own voice, and needs no code or API write.
-2. Only if he'd rather it be automated: creating the Discussion directly via a `gh api graphql
-   createDiscussion` mutation is possible (category id `DIC_kwDOTzbbEs4DDj8g`, title = the
-   slug, matching `data-mapping="specific"` + `data-term`) — but this posts public content
-   under his GitHub identity. **Ask before doing this even though W-24 covers merges** — W-24
-   delegates merging verified code, not authoring public content in his name.
+## Settled last session — do not reopen these
 
-Once all 4 exist, re-run the same GraphQL query and confirm `totalCount` and all 4 slugs are
-present — independently, not by trusting the widget rendering once. If nothing in the repo's
-own code changed (pure GitHub-side content), one `docs/STATUS.md` row documenting it is enough
-— no PR needed. If P-10's row in `docs/OWNER-DIRECTIVES.md` still says "one owner step
-outstanding," close it in the same change.
+- **DEF-61 is REFUTED, not fixed.** The two `impeccable` trees are per-harness builds of one skill,
+  not drift. Upstream ships **five** variants (`.agent/`, `.agents/`, `.claude/`, `.cursor/`,
+  `.gemini/`). `.claude/skills/impeccable` is the only skill with `user-invocable: true` and
+  `allowed-tools`, which is why it is a real directory and not a symlink. Symlinking it to
+  `.agents/` breaks `/impeccable` four different ways — recorded with reasons. There is no
+  canonical tree to pick.
+- **DEF-66 is closed as expected upstream behaviour.** The six drifting lines were verified against
+  `pbakaus/impeccable` itself: upstream's own `.agents/craft-floor.md` is 50 lines and its
+  `.claude/` copy is 44. A hand-merge would have forked vendored work to "fix" what the author did
+  on purpose.
+- **`impeccable` provenance is now recorded** (`github.com/pbakaus/impeccable`, via the Claude Code
+  plugin marketplace plus `npx impeccable install`, present since the initial commit `93e4bae`).
+  It stays UNLOCKED — absent from `skills-lock.json`, so no `computedHash`. **Its `version:` field
+  is NOT a currency signal:** the re-fetch moved 1,002 lines while `SKILL.md` stayed at 4.1.1.
+  `architecture-and-decisions` and `doc-critic` come from the owner's own
+  `imrohitagrawal/project-doc-skills` — evidence of practice, not third-party authority.
 
-## Task 2 — P-7: AI-engineering practice, done properly, fresh context, major item
+## Rules that bind every package
 
-This is the big one. Do not compress it into a quick pass. P-7's row already names the exact
-gap: `/how-i-build` (D88) covers general CI discipline but not evals/observability specifically,
-and a roadmap is deliberately absent sitewide (P-8's own ruling: an undated roadmap is a barred
-claim class). This task is: research what real, evidenced AI-engineering practice looks like at
-mature product companies, audit which of it the owner's own repos already demonstrate, find the
-honest gaps, and — only after his sign-off — put the verified list on the site.
+- **Verify before asserting.** Run the cheapest command that settles a question. If you cannot
+  verify, say `UNVERIFIED`, name the exact check, and offer it.
+- **Done means merged AND verified running in production.** Confirm the deploy JOB ran — not
+  `skipped`, not `cancelled`. One caveat learned at `1e509df`: a push webhook can silently fail to
+  create any run at all. Check `gh api "repos/:owner/:repo/actions/runs?head_sha=<sha>"` and compare
+  the merged tree against the green PR head before concluding anything.
+- **Never hand-generate baselines.** Use `gates.yml`'s `workflow_dispatch`
+  (`update_visual_baselines`, `update_geometry_baseline`). The guard refuses a laptop write
+  mechanically. A dispatch run SKIPS the test suite, so a green dispatch proves nothing — get a
+  normal PR run afterwards. Choose committed files by comparing DECODED PIXELS, never bytes.
+- **File budgets are shrink-only.** New modules 250 lines / 32,000 bytes / 120 chars.
+- **The ledger is updated in the same change.** Corrections stay. Rejected options carry reasons.
+- **One work package, one PR, merged before the next starts.** Merge `main` into the branch BEFORE
+  starting work on it.
 
-### The review fan — sized to what THIS task needs, not a stock roster
+## Close the session properly
 
-Per AGENTS.md's own rule (size the fan to the phase — full fan for planning, scaled down for
-build): this is squarely a planning-and-research phase, so it earns a real fan. Four seats,
-each justified by what P-7 specifically asks for — do not pad this by default, and do not
-shrink it to save time either:
-
-- **AI Principal Staff Engineer** — separates real engineering discipline (testing, CI, evals,
-  monitoring) from language that only sounds like it.
-- **AI Engineering Manager** — checks whether the resulting list is something a real AI eng org
-  would recognize as "yes, that's how mature teams work," not a generic checklist a search
-  engine would also produce.
-- **AI Principal Architect** — checks that every listed practice maps to a real, verifiable
-  artifact in a specific repo (a config file, a gate, a workflow, an eval script) — an assertion
-  with no artifact does not survive this lens.
-- **AI Evals/Observability Specialist** — P-7's own row names this as the specific hole
-  (`/how-i-build` doesn't cover it), so it gets a dedicated lens instead of being folded into
-  the architect's pass.
-
-Add a fifth seat only if the research phase surfaces a concrete reason (e.g., a safety/red-team
-angle if the evals research turns one up) — and say so explicitly if you do, so it's a decision,
-not fan creep.
-
-### Step order — do not skip or reorder any of these
-
-1. **Research industry practice for real.** Use WebSearch/WebFetch against real, named sources
-   — engineering writeups from Anthropic, Google, OpenAI, established MLOps/evals frameworks,
-   DORA-style metrics adapted for AI systems. Every practice that ends up on the site must trace
-   to a real source, quoted or linked — this repo's "no claim without a check" rule applies to
-   research citations exactly as it applies to everything else here.
-2. **Survey every one of the owner's own repos that's actually accessible — verify each path
-   before claiming anything about it, don't assume last session's finding still holds:**
-   `~/Projects/citevyn` · `~/Projects/quorum-ai` · `~/Projects/saaf-saans` AND
-   `~/Projects/saafsaans` (both directories exist on this machine — check `git remote -v` in
-   each to find out which is the real, current repo before citing either; do not guess) ·
-   `~/Projects/narratwin/narratwin-ai` · `~/Projects/evalaxis`. Aegis Contracts was found not
-   locally cloned as of P-14 (D80/D83) — re-check fresh (`ls ~/Projects/aegis* 2>&1`), don't
-   assume that's still true. For every repo you can actually read, ground each "practice already
-   followed" claim in a real file and line — a CI config, a golden-set test, a gate, an eval
-   script, an observability hook. No claim without the artifact behind it.
-3. **Produce the gap list, two columns**: practices verified already in place (repo + file +
-   line proving it) — and practices the research found as standard-but-missing here. Label
-   anything genuinely uncertain as uncertain; don't round it up to a claim.
-4. **Write the plan/RCA before building anything.** Per AGENTS.md's non-negotiable order:
-   investigate → write it up → state the need → get approval → then build. **This step cannot
-   be skipped for P-7 specifically, even under W-24**: the output is a public claim about the
-   owner's own practice and self-image (P-18: "decisions altering facts, self-descriptions or
-   claims remain his"). Stop here and present the draft findings plus the proposed page copy to
-   the owner. Do not write a line of live site content, and do not open a PR containing new
-   claims, before he has signed off on exactly what it says.
-5. **Only after his sign-off on the actual wording**: build it (most likely extends
-   `/how-i-build` — verify its current structure fresh before assuming it is unchanged from
-   D88), gate the new claims the way this repo already gates claims (`docs/evidence/`,
-   `tests/dod.spec.js`-style checks — match the existing pattern, don't invent a new one), update
-   the ledger in the same change, then the normal flow: branch → PR → review (max 2 rounds,
-   circuit-breaker rules apply exactly as elsewhere in AGENTS.md) → gates green → **owner-
-   authorized** merge → deploy job verified green → production independently re-checked by
-   direct command, not by trusting CI's own report.
-
-## Task 3 — A full, verified open-items audit, with P-1 and P-12 named explicitly
-
-Do this alongside Task 2's research phase, not instead of it. Sweep every row of
-`docs/OWNER-DIRECTIVES.md` and `docs/STATUS.md` and check each one against real repo state —
-read-and-repeat does not count as an audit. In the report back to the owner, explicitly name:
-
-- **P-1** — `PRODUCT.md`'s evidence section is stale; still open, no work started on it.
-- **P-12** — the logo process miss (a candidate-options step was skipped); nothing to build,
-  it's a recorded lesson, but it must stay visible, not get quietly dropped from the register.
-- Every other PARTIAL, OPEN, or off-legend status row found — report its real current status,
-  not just these two.
-
-Close the report with one paragraph, not a table: given everything genuinely open, what is the
-single highest-value next thing to work on after P-7, and why.
-
-## How to work (durable lessons, unchanged from prior sessions)
-
-  - ONE WRITER. Fan reviews, never construction. NEVER edit the tree while a fan runs.
-  - Verify by running a command before stating a fact as settled. Two sessions running now have
-    proof of this: the P-11 investigation (three "obvious" readings, each false on the first
-    real check) and this session's giscus count (assumed 4-of-4-installed meant 4-of-4-working;
-    the real blocker was thread creation, found only by querying the Discussions API directly).
-  - Raise a conflict before complying, with evidence and a position, not a silent guess.
-  - Background subagents can go idle waiting on their own monitor after CI has already gone
-    green — check `gh pr checks <n>` yourself before assuming a "still waiting" report is
-    current; nudge or take over the merge directly if it's stale.
-  - Close the session properly: summary with numbers, main level with origin, branches deleted
-    both sides, ports free, tree clean, fresh handoff here.
-
-## Claims that must never ship
-
-Everything in the standing live sweep (D85/D87), plus: never "self-reported" (P-16, any folded
-spelling) · never "product studio" (D62) · never "No-Go"/"not deployed" on the #proof act
-(P-17) · never "Oracle tenure" on the act (P-21) · never an employer name ANYWHERE in the act
-(gated, derived from cv.js orgs) · never a dated span the rows cannot evidence · never
-"cross-model critique" (quorum's evidence prescribes "moderated critique") · never "pre-1.0"
-for EvalAxis ("private, in progress") · SaafSaans labels are "live, cached, or no reading" ·
-the thesis says FOUR · never claim NarraTwin is deployed or its release-readiness has changed
-without re-verifying against `origin/main` first · never claim or fabricate an avatar/video of
-the owner from NarraTwin — none exists (D97). **New for P-7 specifically: never present a
-practice as "in use" anywhere in this list without the repo+file+line that proves it — this is
-exactly the class of claim the rest of this file already bars everywhere else on the site.**
-
-## How to write to the owner
-
-Plain English. Lead with the answer; if it is no, the first word is no. Short sentences,
-bullets, a concrete example. No jargon, no AI filler. Never re-explain what he has acted on.
-Disagree out loud BEFORE complying when evidence contradicts an instruction — conflict,
-evidence, your position, an everyday analogy.
+`docs/practices/session-close.md` is the protocol. Plain-English summary with NUMBERS · branch
+merged and `main` level with origin, proved by command · branch deleted local AND remote ·
+everything the session created cleaned up (report "none" rather than skipping the check) · handoff
+written. End with `Done` / `Verified myself` / `Cleanup` / `Pending` / `Next action`, and say
+explicitly whether work is pushed, merged, and running in production.

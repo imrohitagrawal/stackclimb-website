@@ -33,6 +33,10 @@
 //     `transform: scale()` on the image: the box grows, the text does not. Both
 //     contrived, neither in src/ (grepped 2026-08-26); shared with every gate
 //     that reads computed geometry.
+//   - Opacity. The plate reveal starts every below-the-fold plate at
+//     `opacity: 0`, so an opacity test would go red mid-animation on a healthy
+//     page — the same reason type-floor-measure.mjs does not consult it. A
+//     round-2 reviewer named `.artefact-shot img { opacity: 0 }`; recorded.
 //   - Project pages. They show the full capture on purpose — D62 in
 //     src/pages/projects/[slug].astro — and are read, not skimmed.
 

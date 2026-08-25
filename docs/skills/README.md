@@ -158,11 +158,18 @@ installer; the skill content declares **4.1.1**. Two artifacts, two numbers, nei
 other. And the two doc skills are the owner's own work, so they are evidence of practice rather
 than third-party authority under AGENTS.md's provenance rule.
 
-The 2 files that do carry real drift are DEF-66, and the fix there is a **deliberate re-fetch,
-not a hand-merge**: `impeccable` is vendored third-party work, and hand-editing it forks it and
-destroys the provenance that makes it authority. That re-fetch is blocked — the skill is
-unlocked, absent from `skills-lock.json`, and its source is unknown. See the skill-currency
-section of `docs/STATUS.md`.
+The 2 files that carry drift harness targeting does not explain were filed as DEF-66, and
+**DEF-66 is now closed as upstream behaviour, not a defect of ours** (D127, 2026-08-25). The
+re-fetch ran — `npx impeccable install` — and did not touch either file. The same two files
+pulled straight from `pbakaus/impeccable` on GitHub hash identical to the local ones, and
+upstream's own `.agents/` and `.claude/` copies carry the same asymmetry: `reference/craft-floor.md`
+is 50 lines against 44, `reference/new-work.md` 120 against 122. So the five craft bullets really
+are `.agents/`-only and the "measured rendition prior" paragraph really is `.claude/`-only —
+upstream packages them that way.
+
+**Do not hand-merge the six lines.** `impeccable` is vendored third-party work; hand-editing it
+forks it and destroys the provenance that makes it authority. If the asymmetry is worth fixing,
+it is an issue to raise upstream against `pbakaus/impeccable`, not a local patch.
 
 ## Skills deliberately NOT routed
 

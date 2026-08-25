@@ -112,6 +112,40 @@ Kowalski's bar. Motion is the answer to "the page feels dull" only after the sti
 **8. Review.** Sized to blast radius per `AGENTS.md`. Two adversarial reviewers on any test
 change, always.
 
+## How the two skill trees relate — read this before filing a drift defect
+
+`.agents/skills/` is canonical. `.claude/skills/` mirrors it with symlinks — 53 of its 56
+entries are symlinks pointing at `../../.agents/skills/<name>`.
+
+**The exception, and it is deliberate: a skill that needs Claude-specific frontmatter or a
+Claude-specific body ships as a real directory, not a symlink.** A symlink can only serve one
+file to both runtimes, so a skill whose `SKILL.md` must differ cannot be one.
+
+Three directories under `.claude/skills/` are real:
+
+| Directory | Files | `.agents/` counterpart | Why it is real |
+|---|---|---|---|
+| `impeccable` | 148 | yes (153 files) | It is the **only** skill here with `user-invocable: true`, and it also carries `argument-hint`, `license`, and `allowed-tools` scoped to `Bash(node .claude/skills/impeccable/scripts/*)`. The `.agents/` copy has none of the four. Symlinking would strip them and `/impeccable` would stop being a slash command |
+| `architecture-and-decisions` | 16 | **none** | Nothing to symlink to |
+| `doc-critic` | 14 | **none** | Nothing to symlink to |
+
+**So the two `impeccable` trees differing is the design, not a defect.** `diff -rq` reports 34
+lines between them; 31 of the 33 differing files differ **only** by which runtime they target —
+`/impeccable` against `$impeccable`, the two script roots, `CLAUDE.md` against `AGENTS.md`, the
+ask-the-user tool, and Codex-only blocks (a `spawn_agent` sub-agent gate, Run Notes) that Claude
+Code has no use for. The `.agents/` tree also ships an `agents/` directory of Codex sub-agent
+definitions that has no meaning here — which is why it holds 153 files against 148.
+
+This was filed once as DEF-61 ("decide which tree is canonical") and refuted in D123. Do not
+refile it, and do not collapse the trees — the rejected-options table in `docs/STATUS.md` carries
+the four things that breaks.
+
+The 2 files that do carry real drift are DEF-66, and the fix there is a **deliberate re-fetch,
+not a hand-merge**: `impeccable` is vendored third-party work, and hand-editing it forks it and
+destroys the provenance that makes it authority. That re-fetch is blocked — the skill is
+unlocked, absent from `skills-lock.json`, and its source is unknown. See the skill-currency
+section of `docs/STATUS.md`.
+
 ## Skills deliberately NOT routed
 
 Named so nobody wonders whether they were forgotten.

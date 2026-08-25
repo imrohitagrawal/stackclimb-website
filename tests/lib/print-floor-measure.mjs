@@ -92,7 +92,8 @@ export function measurePseudoFloor({ floorPx }) {
            to `0px`, not `normal`, and is untracked — a round-2 false red. */
         const bad = [];
         if (cs.textTransform !== 'none') bad.push(`text-transform: ${cs.textTransform}`);
-        if (cs.letterSpacing !== 'normal' && parseFloat(cs.letterSpacing) !== 0) bad.push(`letter-spacing: ${cs.letterSpacing}`);
+        const tracked = cs.letterSpacing !== 'normal' && parseFloat(cs.letterSpacing) !== 0;
+        if (tracked) bad.push(`letter-spacing: ${cs.letterSpacing}`);
         if (cs.fontVariantCaps !== 'normal') bad.push(`font-variant-caps: ${cs.fontVariantCaps}`);
         if (bad.length) {
           out.transformed.push({ sel: describe(el) + pseudo, why: bad.join(', '), text: text.slice(0, 60) });

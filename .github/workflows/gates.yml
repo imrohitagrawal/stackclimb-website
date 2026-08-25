@@ -118,10 +118,36 @@ jobs:
       # below. The gate that blocks layout changes should not be the one gate
       # nobody has proved can fail. It takes no --self-test flag: a Playwright
       # spec cannot receive argv, so the self-test is its own entry point and a
-      # flag would be inert. post-deploy.mjs --self-test exists and is still
-      # wired nowhere; filed as DEF-57 rather than silently repeated here.
-      - name: geometry gate bites (DEF-54)
+      # flag would be inert. post-deploy.mjs --self-test used to be the counter-
+      # example named here — present, and wired nowhere. It is DEF-57, and it is
+      # now the step below this one.
+      #
+      # DEF-60 rides in the same entry point: geometry-selftest.mjs also proves
+      # the row-population floor in tests/lib/geometry-floor.mjs, and its
+      # partner. The floor is the number that stays red after a baseline
+      # REGENERATION, which is the one moment a predicate-derived row can leave
+      # the gate quietly.
+      - name: geometry gate bites (DEF-54, DEF-60)
         run: node tests/geometry-selftest.mjs
+
+      # DEF-57: `tests/post-deploy.mjs --self-test` shipped on 2026-08-11 in
+      # commit 111c978, and no automation ran it once in the fourteen days
+      # since. It guards the ONLY check in this repo that looks at production,
+      # and it was the one self-test of four that nobody had watched fail — a
+      # check that has never run has proven nothing.
+      #
+      # It belongs in this job for the same reason as the three steps above: it
+      # needs no build, no browser and no network. Its fixtures are local
+      # `node:http` servers on ephemeral ports, and the `--self-test` branch
+      # exits before it ever reads dist/, so it runs with nothing built. ~8s,
+      # almost all of it the deliberate 3-attempt N-of-M retry spacing.
+      #
+      # Proved to bite before being wired, not after: neutering the srcset
+      # branch of assetRefs() turns 2 checks red, and accepting a non-200 as a
+      # healthy asset turns 3 red — including the 2026-08-11 404 this whole file
+      # exists for.
+      - name: the production gate bites (DEF-57)
+        run: node tests/post-deploy.mjs --self-test
 
       # DEF-59: the committed baselines — the geometry JSON and the 60 linux
       # PNGs — were protected only by a sentence in a file header. On Linux the
@@ -132,8 +158,9 @@ jobs:
       #
       # It has to be a self-test rather than a normal gate, because the guard's
       # job is to refuse a write on a LAPTOP and a runner is the one machine it
-      # always lets through. Left unproved it would be exactly DEF-57 again — a
-      # self-test wired into nothing. Runs here, before gitleaks, for DEF-39's
+      # always lets through. Left unproved it would have been exactly DEF-57
+      # again — a self-test wired into nothing, which is the defect fixed by the
+      # step above and no longer an open one. Runs here, before gitleaks, for DEF-39's
       # reason: a check that an unrelated upstream failure can skip is not
       # enforcement. Costs no build, no browser, and no network.
       - name: baselines cannot be written outside CI (DEF-59)
@@ -150,7 +177,8 @@ jobs:
       # here: it needs no build, no browser and no network, and a check an
       # unrelated upstream failure can skip is not enforcement (DEF-39). It is
       # wired in the same change that adds it, so it does not become a second
-      # DEF-57 — a self-test wired into nothing.
+      # DEF-57 — the self-test that was wired into nothing, now fixed and
+      # running two steps above this one.
       #
       # The `npm ci` at the top of this job now runs `prepare` on the runner
       # too, which sets core.hooksPath here. Nothing in CI commits, so that has

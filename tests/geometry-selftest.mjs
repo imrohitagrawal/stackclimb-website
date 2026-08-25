@@ -18,6 +18,8 @@
 
 import { readFileSync } from 'node:fs';
 import { compare } from './lib/geometry-compare.mjs';
+import { ROW_FLOOR, floorAudit, rowFloorBreaches } from './lib/geometry-floor.mjs';
+import { siteRoutes } from './lib/routes.mjs';
 
 /* NO --self-test FLAG, and that is a deliberate deviation from the plan's
    acceptance item 2, which asked for "the repo's existing idiom (--self-test,
@@ -144,6 +146,72 @@ try {
 } catch (err) {
   say(false, `could not read the committed baseline: ${err.message}`);
 }
+
+/* DEF-60's row-population floor, proved here for the same reason the
+   comparison is: it is a pure function, so it needs no browser, no build and
+   no server, and the gate that stops a row leaving the population should not
+   be the one nobody has watched fail.
+
+   The floor is what survives a baseline REGENERATION. Restyle a row to
+   `display: block` and the run is red either way the first time — the keys
+   report "in the baseline but NOT measured". Regenerate and those keys are
+   gone, the comparison is clean, and only these numbers still object. */
+const home = ROW_FLOOR['/'];
+const all = home.stems;
+const lost = all.filter((s) => s !== 'contact/ctas#0');
+say(home.rows === 7 && home.children === 26 && all.length === 7,
+    `the home floor is the measured population (${home.rows} rows, ${home.children} children, ${all.length} named)`);
+
+// Direction 1: a shrinking population is caught, in every check.
+say(rowFloorBreaches('/', home.rows - 1, home.children - 5, lost).length === 3,
+    'a row restyled out of the flex/grid predicate is caught — DEF-60 (6 rows, 21 children)');
+say(rowFloorBreaches('/', home.rows, home.children - 1, all).some((b) => b.includes('row children')),
+    'a control deleted from a row that KEEPS its row is caught by the child count alone');
+say(rowFloorBreaches('/', 0, 0, []).length === 3, 'a page with no rows at all is caught');
+say(rowFloorBreaches('/no-such-route', 99, 99, all).length === 1,
+    'a route with no floor is a breach, not a silent pass');
+/* The hole the counts alone cannot see, found by codex-cli 0.149.1 — a
+   different model family, as AGENTS.md requires for any test change. Both
+   totals come back to 7 / 26; only the identities object. */
+say(rowFloorBreaches('/', home.rows, home.children, [...lost, 'top/resource-links#0'])
+      .some((b) => b.includes('contact/ctas#0')),
+    'a lost row REPLACED by an unrelated row of the same size is caught by identity');
+
+// Direction 2: the floor does not cry wolf.
+say(rowFloorBreaches('/', home.rows, home.children, all).length === 0, 'the measured population passes');
+say(rowFloorBreaches('/', home.rows + 1, home.children + 4, [...all, 'top/extra#0']).length === 0,
+    'an ADDED row passes');
+
+/* THE PARTNER — per AGENTS.md, a check that counts nothing needs one proving
+   the thing counted exists. `rowCount >= floor` is trivially true against a
+   floor of 0 or a route the map never heard of, and ROW_FLOOR is hand-typed,
+   which is the DEF-10 / DEF-44 shape exactly.
+   RED WHEN: a route is added to routes.mjs with no ROW_FLOOR entry, or any
+   floor is edited down to 0. Both proved directly below. */
+const routes = await siteRoutes();
+say(routes.length >= 7, `${routes.length} routes under test — the audit below has a population`);
+const gaps = floorAudit(routes);
+say(gaps.length === 0, `every route under test has a floor${gaps.length ? `:\n    ${gaps.join('\n    ')}` : ''}`);
+/* Isolated to the one route, not `[...routes, '/unfloored']`: a count assertion
+   over the whole list goes red for ANY map defect, so it would certify the
+   wrong cause the moment a real floor was edited to 0. */
+say(floorAudit(['/unfloored']).some((b) => b.includes('/unfloored')),
+    'a new route with no floor is caught by the audit');
+say(Object.values(ROW_FLOOR).every((f) => f.rows >= 1 && f.children >= 1),
+    'no floor in the map is 0 — a floor of 0 would certify sameness, not coverage');
+/* The audit's own mutations, driven through the injected map rather than by
+   editing geometry-floor.mjs and putting it back. An empty `stems` list makes
+   the identity check vacuously true — `[].every()` in a different costume — so
+   it has to be a breach in its own right. */
+say(floorAudit(['/'], { '/': { rows: 7, children: 26, stems: [] } })
+      .some((b) => b.includes('row identities')),
+    'a route that names NO rows is caught — an empty list would certify sameness');
+say(floorAudit(['/'], { '/': { rows: 7, children: 26, stems: ['top/ctas#0'] } })
+      .some((b) => b.includes('row identities')),
+    'a route that names fewer rows than its floor is caught');
+say(floorAudit(['/'], { '/': { rows: 0, children: 0, stems: [] } }).length === 2,
+    'a floor of 0 with no named rows is caught twice, once per partner');
+say(floorAudit([], {}).length === 1, 'an emptied ROW_FLOOR is caught');
 
 if (failed === 0) {
   console.log('SELF-TEST PASS — the gate bites in both directions and rejects a vacuous baseline');

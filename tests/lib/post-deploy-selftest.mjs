@@ -50,7 +50,15 @@ export async function selfTest(check, assetRefs, buildStamp, ATTEMPTS) {
   const HTML =
     '<link rel="stylesheet" href="/_astro/Layout.AAAA1111.css">' +
     '<img src="/_astro/one.BBBB2222.webp">' +
-    '<picture><source srcset="/_astro/two.CCCC3333.webp"></picture>';
+    /* The `800w` descriptor is load-bearing, and it was missing until DEF-57
+       wired this file into CI. Without it the URL sits between two quotes, so
+       assetRefs()'s FIRST regex — the quoted-path one — matches it, and the
+       srcset branch below it could be deleted with every check here still
+       green. Measured: replacing that branch's `out.add(url)` with a no-op
+       left this self-test passing. With the descriptor the quote regex cannot
+       match (it needs a quote right after the path and finds `8`), so the
+       srcset branch is the only thing that can find this asset. */
+    '<picture><source srcset="/_astro/two.CCCC3333.webp 800w"></picture>';
   let failed = 0;
   const say = (ok, what) => { console.log(`  ${ok ? 'ok  ' : 'FAIL'} ${what}`); if (!ok) failed++; };
 

@@ -265,6 +265,16 @@ looked like it and is not. Worth watching, since the NarraTwin avatar will need 
 | ~~O2~~ | **CLOSED — the repo has been public since D53 (08-09).** This row was stale: it still read "blocked for me — run it yourself" a day after the flip actually happened. Found and fixed as ledger hygiene (item 9, `hero-animations-wordmark`) | — |
 | ~~O3~~ | **CLOSED 08-09 by D48** — the owner chose adoption as-is; shipped with the baked background stripped (approved). See D48 for scope and the recorded trade-offs |
 
+## Open — the standing backlog
+
+The queue of every open item, in priority order, with a paste-ready autonomous prompt that
+carries this repo's practices and the traps that already cost it time:
+[`docs/plan/autonomous-backlog.md`](plan/autonomous-backlog.md). Written 2026-08-25 after
+four packages shipped in one session. **Nine open defects (DEF-63 MEDIUM; DEF-52, 56, 57, 58,
+60, 61, 62, 64 LOW), two PARTIAL directives (P-1, I-4), and three non-ledger items** (print at
+8.76px, two illegible artefact panels, missing `htmlparser2`). DEF-63 is first: it is the only
+open item a visitor can see.
+
 ## Open — mine to do
 
 | # | Open item | Note |

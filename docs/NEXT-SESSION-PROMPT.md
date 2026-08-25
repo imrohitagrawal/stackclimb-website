@@ -1,4 +1,4 @@
-# Next session — six queue items remain, all LOW or decision-shaped
+# Next session — the queue is worked down to what needs the owner
 
 You are continuing work on stackclimb.com, the owner's personal site.
 `/Users/rohitagrawal/Projects/designing-website`. Astro, static, Cloudflare Pages.
@@ -14,11 +14,13 @@ his practice — see P-18.
 Read first, do not restate back: `AGENTS.md` · `docs/STATUS.md` · `docs/OWNER-DIRECTIVES.md` ·
 `PRODUCT.md` · `DESIGN.md`. The ledger is the record; this file only points at it.
 
-## Why the previous session ended
+## What the previous session did (2026-08-26, five PRs, all merged and deployed)
 
-`npx impeccable install` moved **36 skill files** (1,002 insertions, 656 deletions) across both
-`impeccable` trees. Skills load at session start, so per `AGENTS.md`'s currency table that forces
-a Restart — the D119 precedent. Nothing was left broken; the session closed green.
+D128–D133. Four of the six queue items shipped; the other two are recorded decisions that now
+wait on the owner. Read the rows, not this list: **D128** (P-1 part 1 + RCA-006), **D129**
+(DEF-69, print floor + `tests/print-floor.spec.js`), **D130** (DEF-70, home panel crops +
+`tests/panel-scale.spec.js`), **D131** (`htmlparser2`, detector un-degraded), **D132**
+(DEF-52 → OWNER ACTION), **D133** (I-4 decided, pending his word).
 
 ## Prove the starting state before anything else, and paste the output
 
@@ -33,77 +35,71 @@ npm run build && npm run post-deploy
 gh run list --branch main --limit 1
 ```
 
-Expected at `b25f056`: level with origin, clean tree, all self-tests pass, production green.
-Full Playwright locally was **492 expected / 0 unexpected / 2 skipped**.
+Expected: level with origin, clean tree, all self-tests pass, production green.
+**Local Playwright on a Mac will show geometry legs red** — the darwin geometry baseline is
+gitignored and stale (DEF-65's shape). Refresh it with
+`UPDATE_GEOMETRY=1 npx playwright test tests/geometry.spec.js --workers=1` before reading
+any local red as a defect. CI is the truth; the last PR run before this handoff was green.
 
 **Do the skills-currency check in PLANNING, not later.** `npx skills update`, then diff
-`skills-lock.json`. "Updated N skill(s)" is a per-fetch message, not evidence — only `computedHash`
-values moving count. `impeccable` is NOT in the lock file and never will be via that CLI; see below.
+`skills-lock.json`. Only `computedHash` values moving count — "Updated N skill(s)" is a
+per-fetch message. Last session: 51 fetched, **0 hashes moved**. `impeccable` is UNLOCKED and
+never appears in that file.
 
-## Two traps this repo keeps re-teaching. Do not relearn them the hard way.
+## Three things the owner has to answer — the whole queue now sits behind them
 
-1. **Line numbers in the ledger drift, and cited ones are often already wrong.** Last session
-   found stale citations in DEF-64's own row (`DESIGN.md:178,223,230,344` — all four wrong, off by
-   ~6 after D118) and in three comment cross-references (DEF-67). **Locate every site by CONTENT,
-   never by line number**, and re-check any number before you write it into the ledger.
-2. **`tail` swallows exit codes and hides failures.** `node tests/file-budget.mjs | tail -2` inside
-   an `&&` chain let a builder commit an over-budget file last session. Playwright's list reporter
-   prints passes last, so `| tail -3` once showed "42 passed" with 30 tests red. Use
-   `--reporter=json` and read `stats`, or read the exit code directly.
+| # | Item | What is needed from him |
+|---|---|---|
+| 1 | **P-1 part 2** — the two `self-reported` lines in `PRODUCT.md` (found by content: `grep -n 'self-reported' PRODUCT.md`) | RCA-006 §Open questions carries the four-part ask and the exact proposed wording. One word: apply P-16 as written, or his own wording. Then: is the six-item remaining-debt table in RCA-006 refreshed WITHOUT a re-interview, or held for one? |
+| 2 | **DEF-52** | Cloudflare dashboard → Scrape Shield → Email Address Obfuscation → off. Check that closes it: `curl -s https://stackclimb.com/ \| grep -c 'mailto:'` → **2**. Or "leave it on", and the row closes as accepted |
+| 3 | **I-4** | Confirm D133's decision (no consolidation pass; reopen at 25 index entries or a wrong memory), and whether the nine other project memory folders get history too |
 
-## The queue, in order
+**Do not start on any of these without his answer.** Each one is either his wording, his
+dashboard, or his directive. Raise, then wait; silence is not approval (AGENTS.md, step 4).
+
+## What can be worked without him, in this order, if he has not answered
 
 | # | Item | Notes |
 |---|---|---|
-| 1 | **P-1** — `PRODUCT.md` still says "self-reported" (retired 2026-08-14, RCA-002) and still describes a SaafSaans state deleted in D74 | A PARTIAL directive older than everything else open. **Find the sites by content, not the cited line numbers.** The built site already honours the fix everywhere (0 occurrences, gated); only `PRODUCT.md` lags. Copy that touches how the owner is described is **P-18 owner-reserved** — raise before writing |
-| 2 | **Print stylesheet** — `print.css` prints link URLs at ~8.76px on 23 home-page elements, gated by nothing | Deliberately out of D118's scope, which says "ON SCREEN". Needs its own floor and its own gate. Note `tests/type-floor.spec.js` explicitly excludes print, and `DESIGN.md:24,218` say "HTML text ... on screen" — so this is a new rule, not an existing one being enforced |
-| 3 | **Two illegible artefact panels** — `src/data/projects.js` already has a working `homeCrop`; needs 2 new crop assets | Visual, and the mechanism already works on the other two panels. DoD requires SEEING it: Playwright screenshots at desktop AND mobile, never headless-chrome |
-| 4 | **`npm i -D htmlparser2`** — the impeccable CLI detector runs degraded and under-reports | One command, then re-run the detector and record what the non-degraded scan finds. Note the skill tree was re-fetched at `b25f056`; re-read its current guidance rather than trusting an older description |
-| 5 | **DEF-52** — Cloudflare email obfuscation degrades only for no-JS visitors | Decide explicitly: fix, or close as accepted with the reason. Filed HIGH on 08-12 and downgraded to LOW the same day |
-| 6 | **I-4** — whether a memory consolidation pass is worth building | Genuinely undecided. Needs a decision recorded, not code |
+| 1 | **DEF-67** — three comment cross-references cite stale line numbers into `visual-baselines.spec.js` | Three one-word edits: drop the numbers, cite the file. Locate by content |
+| 2 | **DEF-68** — `plate-height.spec.js` does not cover `/cv` and could not (`section.plate[id]` vs `<article>`) | Needs the selector widened to `.plate[id]` AND a ceiling decision: `/cv` is ~6.9 viewports at 390 against a deepest ceiling of 2.0. Either an EXEMPT entry or a route-shaped ceiling, the way D126 did a route-shaped floor |
+| 3 | **DEF-65** — a regeneration refreshes only the tracked platform's baselines; the darwin set goes stale silently | A decision about how a local set is invalidated (a stamp beside the PNGs, a drain step, or delete-on-regenerate). D124 removed the symptom, not the cause |
+| 4 | **Standing critique backlog** — the detector's 25 pre-existing findings (D131 lists them by rule) | Candidates, not defects. `Bodoni Fallback` and the value-ladder colours are DESIGN.md's own prose not reflected in its front-matter; the em-dash and hierarchy flags are taste calls under P-18. Decide per rule, record, do not chase |
 
-Also open, all filed last session and all LOW: **DEF-65** (a regeneration refreshes only the tracked
-platform's baselines, so the untracked platform's set goes stale silently — D124 removed the
-*symptom* by making sizes fixed, not the cause), **DEF-67** (three stale line-number
-cross-references), **DEF-68** (`plate-height.spec.js` does not cover `/cv` and could not measure it
-if it did — it queries `section.plate[id]` and `/cv`'s plate is an `<article>`; also needs a ceiling
-decision, `/cv` is ~6.9 viewports at 390 against a deepest ceiling of 2.0).
+## Traps this repo keeps re-teaching — three were re-paid last session
 
-## Settled last session — do not reopen these
-
-- **DEF-61 is REFUTED, not fixed.** The two `impeccable` trees are per-harness builds of one skill,
-  not drift. Upstream ships **five** variants (`.agent/`, `.agents/`, `.claude/`, `.cursor/`,
-  `.gemini/`). `.claude/skills/impeccable` is the only skill with `user-invocable: true` and
-  `allowed-tools`, which is why it is a real directory and not a symlink. Symlinking it to
-  `.agents/` breaks `/impeccable` four different ways — recorded with reasons. There is no
-  canonical tree to pick.
-- **DEF-66 is closed as expected upstream behaviour.** The six drifting lines were verified against
-  `pbakaus/impeccable` itself: upstream's own `.agents/craft-floor.md` is 50 lines and its
-  `.claude/` copy is 44. A hand-merge would have forked vendored work to "fix" what the author did
-  on purpose.
-- **`impeccable` provenance is now recorded** (`github.com/pbakaus/impeccable`, via the Claude Code
-  plugin marketplace plus `npx impeccable install`, present since the initial commit `93e4bae`).
-  It stays UNLOCKED — absent from `skills-lock.json`, so no `computedHash`. **Its `version:` field
-  is NOT a currency signal:** the re-fetch moved 1,002 lines while `SKILL.md` stayed at 4.1.1.
-  `architecture-and-decisions` and `doc-critic` come from the owner's own
-  `imrohitagrawal/project-doc-skills` — evidence of practice, not third-party authority.
+1. **Line numbers in the ledger drift.** Locate every site by CONTENT. Re-check any number
+   before writing it into the ledger.
+2. **`tail` and pipes swallow exit codes.** `node tests/file-budget.mjs | tail -1` let an
+   over-budget line get committed AGAIN last session (Corrections table, top row). A gate in
+   a script is its own `&&` step with no pipe. Use `--reporter=json` and read `stats`.
+3. **`git checkout -- <file>` after a mutation erases uncommitted edits.** It did, last
+   session, to the `homeCrop` flags. Commit the GREEN state, THEN mutate.
+4. **Astro 7's `astro preview` is single-instance.** A scratch preview on any port makes
+   Playwright's own server on 4321 fail with "Process from config.webServer was not able to
+   start" — which looks like a Playwright fault and is not. Kill scratch previews before a
+   test run.
+5. **`codex exec` without a TTY waits on stdin.** Run it with `</dev/null` or it hangs
+   silently for the whole time box.
+6. **Baseline regeneration shifts every plate by a sub-pixel between runs.** Two dispatches
+   on the same build moved the hero by 9.69%. Commit the files whose pixels changed for a
+   reason you can name; the rest are noise samples inside the 0.15 net.
 
 ## Rules that bind every package
 
 - **Verify before asserting.** Run the cheapest command that settles a question. If you cannot
   verify, say `UNVERIFIED`, name the exact check, and offer it.
 - **Done means merged AND verified running in production.** Confirm the deploy JOB ran — not
-  `skipped`, not `cancelled`. One caveat learned at `1e509df`: a push webhook can silently fail to
-  create any run at all. Check `gh api "repos/:owner/:repo/actions/runs?head_sha=<sha>"` and compare
-  the merged tree against the green PR head before concluding anything.
+  `skipped`, not `cancelled`. Compare the CSS hash production serves with a `main` build's.
 - **Never hand-generate baselines.** Use `gates.yml`'s `workflow_dispatch`
-  (`update_visual_baselines`, `update_geometry_baseline`). The guard refuses a laptop write
-  mechanically. A dispatch run SKIPS the test suite, so a green dispatch proves nothing — get a
-  normal PR run afterwards. Choose committed files by comparing DECODED PIXELS, never bytes.
+  (`update_visual_baselines`, `update_geometry_baseline`). A dispatch run SKIPS the test suite,
+  so a green dispatch proves nothing — get a normal PR run afterwards. Compare DECODED PIXELS.
 - **File budgets are shrink-only.** New modules 250 lines / 32,000 bytes / 120 chars.
 - **The ledger is updated in the same change.** Corrections stay. Rejected options carry reasons.
-- **One work package, one PR, merged before the next starts.** Merge `main` into the branch BEFORE
-  starting work on it.
+- **One work package, one PR, merged before the next starts.** Merge `main` into the branch
+  BEFORE starting work on it.
+- **RCA before the fix, as its own commit.** Then the gate RED, then the fix. Every package
+  last session followed that order and it is visible in `git log`.
 
 ## Close the session properly
 

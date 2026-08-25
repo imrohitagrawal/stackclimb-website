@@ -125,3 +125,38 @@ cannot pass vacuously the day someone deletes the `<text>` elements.
 3. Mutations, run rather than reasoned about: `font-size` back to `9` on one label
    must go red at 390; deleting both `<text>` elements must turn the new partner
    assertion red.
+
+---
+
+## Outcome, measured after the build
+
+Written after the work, marked as such. The predictions above were confirmed rather than
+adjusted:
+
+| Check | Predicted | Measured |
+|---|---|---|
+| EVALAXIS and both AEGIS lines at 390 | 11.12px | **11.12px** |
+| Same at 1440 | 19.01px | **19.01px** |
+| At 320 / 360 | 8.46 / 9.98px, accepted | **8.46 / 9.98px** |
+| Tag clearance each side of the longest line | 5.47u | **5.46u** |
+| Figure box at 1440 | unchanged | **499.11 x 404.05, unchanged** |
+
+Overflow was checked twice, and the second way is the one that counts: first from the SVG
+bounding boxes, then by DECODING the rendered PNG and scanning rows of pixels. At 1440 the
+tag's rightmost painted pixel sits at 383.4 user units against a bag edge at 389.3, and its
+leftmost at 35.4 against 29.9 — inside on both sides, measured on the picture rather than on
+the geometry.
+
+The gate went red before the figure was touched (32 passed, 4 failed) and green after (36
+passed, 0 failed). Both mutations were run: `font-size="9"` back on one label goes red at 390
+and 1440; deleting both `<text>` elements turns the new partner red with `Expected: > 0,
+Received: 0`.
+
+## One thing raised rather than changed
+
+The rail is `x="40" width="340"`, so it spans 40 to 380 — and the bags now span 30 to 390. The
+rail therefore ends 10 units INSIDE each bag, where before the redraw it ran 38 units past
+them. Nothing overlaps, nothing is cut, and the rail sits above the bags at `y=34`, so this is
+a question of how the drawing reads and not a defect. The rail was not part of the decided
+design, so it is recorded here for the owner instead of being adjusted. The one-attribute fix,
+if it is wanted, is `x="20" width="380"`.

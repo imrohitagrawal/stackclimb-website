@@ -3,6 +3,7 @@ import { siteRoutes } from './lib/routes.mjs';
 import { measureGeometry, NEUTRALIZE_MOTION } from './lib/geometry-measure.mjs';
 import { compareLeg, PX_TOLERANCE } from './lib/geometry-compare.mjs';
 import { BASELINE, UPDATING, readBaseline, writeBaseline, expectedLegs } from './lib/geometry-baseline-io.mjs';
+import { rowFloorBreaches } from './lib/geometry-floor.mjs';
 
 /* DEF-54. The blocking gate on this site's layout is now a NUMBER, not a
  * photograph.
@@ -38,7 +39,9 @@ import { BASELINE, UPDATING, readBaseline, writeBaseline, expectedLegs } from '.
  *   key sets            a plate appears unbaselined, or a baselined plate
  *                       vanishes
  *   denominators        `.plate { display: none }`, `body { display: none }`,
- *                       or an empty baseline
+ *                       an empty baseline, or a structural row leaving the
+ *                       flex/grid predicate (DEF-60's row floor, which a
+ *                       regeneration cannot silence)
  *
  * TOLERANCE, under its honest name. Pixel values are rounded once at capture
  * and compared with a slack of 1, so the real window reaches ~2px: two
@@ -187,7 +190,7 @@ test.describe('Geometry baselines — DEF-54', () => {
            before either is trusted — a check with a denominator instead of a
            magic number. */
         await page.waitForTimeout(250);
-        const { keys, plateCount, docHeight } = await page.evaluate(measureGeometry);
+        const { keys, plateCount, rowCount, rowChildCount, rowStems, docHeight } = await page.evaluate(measureGeometry);
         expect(JSON.stringify(first.keys), 'the page was still settling — two captures disagreed')
           .toBe(JSON.stringify(keys));
 
@@ -200,6 +203,14 @@ test.describe('Geometry baselines — DEF-54', () => {
           .toBeGreaterThan(floor);
         expect(docHeight, `${route} is ${docHeight}px tall — the page did not render`)
           .toBeGreaterThan(height);
+
+        /* DEF-60. The row population is predicate-derived, so it can shrink
+           with no key changing value: the keys stop being produced and the next
+           regeneration deletes them. Floor and partner live in
+           tests/lib/geometry-floor.mjs, where the baseline cannot rewrite them;
+           geometry-selftest.mjs proves both bite. RED WHEN: `.ctas{display:block}`. */
+        const shrunk = rowFloorBreaches(route, rowCount, rowChildCount, rowStems);
+        expect(shrunk, `the gate's row population shrank:\n${shrunk.join('\n')}`).toEqual([]);
 
         /* Counting NODES is not counting PLATES: `body { display: none }` leaves
            every plate in the DOM, still enumerable, still reporting its children,

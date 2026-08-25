@@ -83,6 +83,13 @@ export function measureGeometry() {
      child tag sequence, and the child boxes. A gate that recorded plates,
      nav and seams alone would have passed D112 exactly as the pixel gate did. */
   const seen = Object.create(null);
+  /* DEF-60's denominators. Counted here, returned OUTSIDE `out`, and never
+     baselined — see the note on the return below. The predicate can silently
+     stop matching a row; these two numbers are what geometry-floor.mjs holds it
+     to. */
+  let rowCount = 0;
+  let rowChildCount = 0;
+  const rowStems = [];
   for (const plate of plates) {
     for (const el of plate.querySelectorAll('*')) {
       const display = getComputedStyle(el).display;
@@ -91,10 +98,20 @@ export function measureGeometry() {
       const controls = kids.filter((c) => c.matches('a[href],button') || c.querySelector('a[href],button'));
       if (controls.length < 2) continue;
 
+      rowCount += 1;
+      rowChildCount += kids.length;
+
       const cls = [...el.classList].sort().join('.') || el.tagName.toLowerCase();
       const stem = `${plate.id}/${cls}`;
       seen[stem] = (seen[stem] ?? -1) + 1;
       const key = `row.${stem}#${seen[stem]}`;
+      /* DEF-60 round two. The two counts above are aggregates, and a
+         cross-model review proved an aggregate is substitutable: restyle
+         `.contact .ctas` to block and add an unrelated five-link flex row, and
+         7 rows / 26 children comes back to 7 / 26 with the contact controls no
+         longer measured. Row IDENTITIES are what refuse that. Same string the
+         baselined key uses, minus the `row.` prefix, so the two cannot drift. */
+      rowStems.push(`${stem}#${seen[stem]}`);
 
       const pr = plate.getBoundingClientRect();
       const rr = el.getBoundingClientRect();
@@ -129,7 +146,16 @@ export function measureGeometry() {
     }
   }
 
-  /* Not baselined — returned so the spec can assert a floor the baseline
-     cannot corrupt. See the spec's anti-poison note. */
-  return { keys: out, plateCount: plates.length, docHeight: round(document.documentElement.scrollHeight) };
+  /* Not baselined — returned so the spec can assert floors the baseline cannot
+     corrupt. See the spec's anti-poison note. `rowCount` and `rowChildCount`
+     are DOM counts, not painted ones, so they do not move with the viewport:
+     measured identical at 390, 768 and 1440 in both projects. */
+  return {
+    keys: out,
+    plateCount: plates.length,
+    rowCount,
+    rowChildCount,
+    rowStems,
+    docHeight: round(document.documentElement.scrollHeight),
+  };
 }

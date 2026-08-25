@@ -78,3 +78,27 @@ it lands?
 
 Any `git init`, any commit, any new skill or scheduled job — this document is the entire
 deliverable for this pass, per the standing "plan, then STOP" instruction.
+
+## Decision — 2026-08-26 (D133), recorded for the owner's confirmation
+
+**Question 1 is answered and done for this repo:** its memory folder is a git repo
+(`6fb8e95`, 2026-08-18; second commit `fe98f47`, 2026-08-26, carrying that day's edits). The
+other nine project folders are untouched — a cross-project change stays the owner's deliberate
+yes, as the table above says.
+
+**Question 2 — a consolidation ("dreaming") pass — is decided: not built, and the trigger
+that would reopen it is named.** The evidence, three weeks in: this repo's memory holds
+**five** files and a **six-line** index. There is nothing to consolidate. Every write so far
+has been a deliberate update of an existing file rather than a duplicate, and the one
+mechanism the harness actually ships — the size nudge on `MEMORY.md` — has not fired. A
+scheduled job that rewrites the knowledge steering every future session, unreviewed, is a
+larger risk than the problem it would solve, and the problem has not appeared.
+
+**Reopen when either holds:** `MEMORY.md` passes 25 entries, or a session acts on a memory
+that turns out to be wrong (a stale fact that history alone would not have caught). Until
+then, `/memory` by hand, with git history making every prune reversible, is the whole
+mechanism.
+
+*Raised, not silently decided:* I-4 asked for dreaming by name. The disagreement is with the
+premise — the feature does not exist and the need has not shown up — not with the goal.
+His word settles it; the register carries the row as decided-pending-confirmation.

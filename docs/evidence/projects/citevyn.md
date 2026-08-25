@@ -124,3 +124,9 @@ visual baseline. Shows a real answer with **two real documentation citations**
 the left rail as `USAGE` / `EXACT LOOKUP` / `HOW-TO` / `OUT OF SCOPE`.
 
 Unlike the golden-suite fixtures, these citation URLs are real. Verified by reading the image.
+
+`src/assets/projects/citevyn-crop.webp` — the answer with its two citations, 712×296, cut from
+the capture above. **Re-cut 2026-08-26 (DEF-70):** it was a 790×380 phone crop served below
+700px; the home plate now shows it at every width (`homeCrop`), because the full capture rendered
+at 0.41 of its size in the desktop column — a 16px line at ~6.6px. The left rail with the intent
+router is out of the crop's frame and stays on the project page, which shows the full capture.

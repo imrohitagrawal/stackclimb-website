@@ -131,9 +131,10 @@ export const projects = {
       'plans, scores <em>64</em>.',
     shot: 'saafsaans-en',
     /* saafsaans-en is 1600px wide; at the 477px column it rendered at 0.30 — the
-       11px mono caps at ~3.3px (DEF-70). The crop is the persona line, the
-       headline and both score chips — 728x186, cut from the same live capture,
-       0.66 at the column — and is the home image at every width. */
+       11px mono caps at ~3.3px (DEF-70). The crop is the shared-sky line (the
+       proof says "one sky", the prov says 5:00 PM — both in frame), the persona
+       line, the headline and both score chips — 728x228, cut from the same live
+       capture, 0.65 at the column — and is the home image at every width. */
     homeCrop: true,
     crop: 'saafsaans-crop',
     alt:

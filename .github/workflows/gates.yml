@@ -139,6 +139,26 @@ jobs:
       - name: baselines cannot be written outside CI (DEF-59)
         run: node tests/baseline-guard-selftest.mjs
 
+      # DEF-62: `core.hooksPath` was an ABSOLUTE path in `.git/config`, a file
+      # git never clones. The pre-commit hook therefore ran on exactly one
+      # laptop and in exactly one working tree, while `docs/STATUS.md` row M4
+      # and directive W-6 both said it was done. The `prepare` script in
+      # package.json is the fix; this step is what proves it, by building a
+      # throwaway repo and attempting real commits through the real hook.
+      #
+      # Same reasoning as the two steps above, and the same reason it runs
+      # here: it needs no build, no browser and no network, and a check an
+      # unrelated upstream failure can skip is not enforcement (DEF-39). It is
+      # wired in the same change that adds it, so it does not become a second
+      # DEF-57 — a self-test wired into nothing.
+      #
+      # The `npm ci` at the top of this job now runs `prepare` on the runner
+      # too, which sets core.hooksPath here. Nothing in CI commits, so that has
+      # no effect; it is the same command every developer's install runs, which
+      # is the point.
+      - name: the pre-commit hook binds on every clone (DEF-62)
+        run: node tests/hook-binding-selftest.mjs
+
       - name: gitleaks
         uses: gitleaks/gitleaks-action@v2
         env:

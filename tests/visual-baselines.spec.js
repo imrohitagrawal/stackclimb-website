@@ -131,6 +131,29 @@ import {
 // geometry does NOT measure, this trade stops being acceptable and the answer
 // is a taller CLIP_HEIGHT, not a second element crop.
 //
+// WHAT NOW CATCHES A ONE-PIXEL HEIGHT CHANGE: NOTHING, and that is the trade
+// being made, not an oversight. `.plate { padding-bottom: +1px }` used to
+// hard-fail here; it now passes, and geometry.spec.js carries 1px of slack so it
+// passes there too. The reason is that a 1px height change on this page is
+// indistinguishable from noise — DEF-55 measured run-to-run drift at exactly 1px
+// on untouched plates (plate-citevyn-390 1305 -> 1306). A gate that fires on it
+// fires on nothing else for long. The same applies to
+// `.site-nav { padding-bottom: +1px }`, which repaints about 0.83% of the nav
+// band. Both were raised by the cross-model reviewer as losses; they are losses,
+// and they are the point of the demotion.
+//
+// CROSS-MODEL ROUND (Codex, read-only, 5 minutes — directive R-7). Eight
+// findings. Four accepted and fixed in lib/viewport-clip.mjs: pin
+// `scale: 'css'` so a config setting cannot multiply every image by the device
+// pixel ratio; correct assertClipFits()'s rationale, which claimed a scrollbar
+// it cannot see (`window.innerWidth` includes the scrollbar); correct
+// expectVisible()'s RED WHEN, which wrongly claimed removing ONE plate's id
+// turns it red; and disclose that the nav band is not nav-only. Two were already
+// stated above (figures below the fold at 390, the 1px change). One refuted with
+// evidence: "the tracked baselines are still 901-2469px tall, CI will still get
+// size mismatches" was true of the tree the reviewer read and false one commit
+// later — all 60 PNGs were regenerated at width x 900 and width x 120.
+//
 // DEF-65 INTERACTION, reported not assumed. DEF-65 records that regenerating
 // only the tracked linux set leaves the untracked local darwin set stale. Under
 // the old element crop that staleness surfaced as six SIZE mismatches on this

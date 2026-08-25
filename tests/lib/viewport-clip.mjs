@@ -34,6 +34,17 @@ export const CLIP_HEIGHT = 900;
    768; 69px at 1440 desktop, 76px at 1440 mobile), so the bar fills 57-68% of
    the frame and a nav catastrophe stays far above the 0.15 ratio.
 
+   THE FRAME IS NOT NAV-ONLY, and a cross-model review was right to press on
+   it: at 390px the bar is 81px of a 120px band, so 39px of the hero behind it
+   is in shot, and a deliberate change to the hero's ground can turn nav-390.png
+   red. That is not a check going red when a bug is FIXED — it is what every
+   pixel baseline does when the page changes on purpose, and the answer is the
+   same regeneration the plate captures already need. Shrinking the band to 96px
+   was considered and not taken: it trades headroom above an 81px bar for a
+   contamination that a 15px bleed does not remove either. The nav's own box is
+   measured numerically by tests/geometry.spec.js, which is where a nav-only
+   answer belongs.
+
    WHY THE NAV IS CONVERTED TOO and not left as an element crop: its height is
    derived from text metrics, which is exactly the quantity that moves by a
    pixel. The committed baselines prove it moves — 69px against 76px at the SAME
@@ -65,8 +76,19 @@ export const openHomePage = async (page, width) => {
 
 /* The partner check for "the dimensions are constant by construction". They are
    constant only while the clip FITS inside the layout viewport, because
-   Playwright clamps rather than throws. A classic 15px scrollbar appearing would
-   silently shrink every image and re-open DEF-56 with nobody noticing.
+   Playwright clamps rather than throws (measured: viewport 390x900, clip
+   440x900, result 390x900).
+
+   WHAT IT ACTUALLY GUARDS, corrected by cross-model review. An earlier version
+   of this comment said it catches "a classic 15px scrollbar appearing". That is
+   WRONG and the reviewer was right: `window.innerWidth` INCLUDES the scrollbar,
+   so a scrollbar leaves `vp.w === width` and this can never fire on it. It also
+   does not need to — the screenshot is the window's width, not the layout
+   width, so a scrollbar does not shrink the frame either.
+   What it does guard is this file's own two numbers staying coupled: the
+   viewport openHomePage() sets, and the clip its caller asks for. Get those out
+   of step and every image silently shrinks with nobody noticing, which is
+   DEF-56 again through a different door.
 
    RED WHEN: make openHomePage() set a viewport shorter or narrower than the clip
    it is about to take. Proved with `height: 800` — "layout viewport is 800px
@@ -90,16 +112,37 @@ export const assertClipFits = async (page, width, height) => {
    restores it, and it is not decoration — it is the only reason the blank-page
    mutation is red on all six captures rather than on eight frames of thirty.
 
-   RED WHEN: `body { display: none }`, `.site-nav { display: none }`, or removing
-   a plate's id from the markup. Proved with the first two. */
+   RED WHEN: `body { display: none }` or `.site-nav { display: none }`. Both
+   proved.
+
+   TWO THINGS IT DOES NOT CATCH, from cross-model review, checked before being
+   written down. Removing ONE plate's `id` does not reach here at all: the loop
+   derives its population from `.plate[id]` AFTER the removal, so that plate
+   simply leaves the list and nothing notices — only removing every id trips the
+   denominator. And `toBeVisible()` counts `opacity: 0` as visible. Both are
+   covered by tests/geometry.spec.js, which compares key sets in BOTH directions
+   and whose own header says so: "RED WHEN: a plate is added and not baselined,
+   or a plate vanishes" (lib/geometry-compare.mjs). The `plateCount` floor there
+   is 4 on `/` and would NOT catch it, so the key-set comparison is the reason,
+   not the count. */
 export const expectVisible = async (page, selector) => {
   await expect(page.locator(selector), `${selector} is not visible, so the clip photographs nothing`).toBeVisible();
 };
 
 /* The toHaveScreenshot options for one fixed frame. x/y are 0 because the clip
    is VIEWPORT-relative, not document-relative — measured: the same clip taken
-   at scrollY 0 and scrollY 3000 returns different images, both 390x900. */
+   at scrollY 0 and scrollY 3000 returns different images, both 390x900.
+
+   `scale` is pinned, not left to default. A cross-model review found the last
+   route by which "the dimensions are constant" could still be false: the
+   default is `"css"` (types/test.d.ts:225, "Defaults to \"css\"") but it is a
+   CONFIG option, so someone setting `expect: { toHaveScreenshot: { scale:
+   "device" } }` in playwright.config.js would multiply every image by the
+   device pixel ratio — 2.625 on the mobile project's Pixel 7 — and every
+   baseline would mismatch on size again. Pinning it here means this file's
+   promise does not depend on a setting in another file. */
 export const clipOf = (width, height, maxDiffPixelRatio) => ({
   clip: { x: 0, y: 0, width, height },
+  scale: 'css',
   maxDiffPixelRatio,
 });

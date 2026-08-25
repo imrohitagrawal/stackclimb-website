@@ -57,7 +57,18 @@
     background: none !important;
     mask: none !important;
     -webkit-mask: none !important;
-    font-size: 0.72em;
+    /* Was `0.72em`, which inherited the link's size — and three link sizes
+       gave three results, 8.76 / 8.99 / 10.60px, all under DESIGN.md's 11px
+       floor: 45 revealed hrefs across nine routes, 21 on the home page
+       (DEF-69, measured 2026-08-26). Pinned to the floor token instead, so
+       the reveal is 11px whatever the link beside it is. The label above is
+       tracked uppercase and the reveal inherited that too, so /projects/citevyn
+       printed as /PROJECTS/CITEVYN — a different path on a case-sensitive
+       host, offered as the thing to type. A URL prints verbatim. Held by
+       tests/print-floor.spec.js, the Print-Floor Rule in DESIGN.md. */
+    font-size: 0.6875rem;
+    text-transform: none;
+    letter-spacing: normal;
     word-break: break-all;
   }
   .plate-copy a[href^='mailto:']::after {

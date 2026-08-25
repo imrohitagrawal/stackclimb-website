@@ -52,8 +52,11 @@ const ROUTES = [...(await siteRoutes()), '/cv', '/404'];
    (type-floor.spec.js:77 reasoning, same numbers). The PSEUDO floor proves
    the revealed hrefs exist: without it, deleting the reveal rule would leave
    an empty `under` list that certifies nothing. Measured 2026-08-26: home 25
-   pseudos, /cv 10, project pages 4-5, /experience 2, /how-i-build 3, /404 2. */
-const minTextOwners = (route) => (route === '/' ? 100 : route === '/404' ? 5 : 20);
+   pseudos, /cv 10, project pages 4-5, /experience 2, /how-i-build 3, /404 2.
+   The /404 ELEMENT floor is lower than the screen gate's 5 on purpose: print
+   hides the nav and colophon, and the page then owns exactly 5 text elements —
+   the first RED run failed its own partner there, measured, not guessed. */
+const minTextOwners = (route) => (route === '/' ? 100 : route === '/404' ? 3 : 20);
 const minPseudos = (route) => (route === '/' ? 10 : route === '/cv' ? 5 : 0);
 
 for (const route of ROUTES) {

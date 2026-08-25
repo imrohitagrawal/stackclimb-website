@@ -140,11 +140,36 @@ This was filed once as DEF-61 ("decide which tree is canonical") and refuted in 
 refile it, and do not collapse the trees — the rejected-options table in `docs/STATUS.md` carries
 the four things that breaks.
 
-The 2 files that do carry real drift are DEF-66, and the fix there is a **deliberate re-fetch,
-not a hand-merge**: `impeccable` is vendored third-party work, and hand-editing it forks it and
-destroys the provenance that makes it authority. That re-fetch is blocked — the skill is
-unlocked, absent from `skills-lock.json`, and its source is unknown. See the skill-currency
-section of `docs/STATUS.md`.
+### Where these three came from
+
+All three are **unlocked** — absent from `skills-lock.json`, no `computedHash`, so `npx skills
+update` cannot currency-check them. AGENTS.md requires an unlocked skill carry its source and
+install date. Both, for all three, live in the skill-currency section of `docs/STATUS.md`; the
+short version:
+
+| Directory | Source | Installed | How |
+|---|---|---|---|
+| `impeccable` | `github.com/pbakaus/impeccable` — public, third-party | 2026-08-07, `93e4bae` (repo creation) | `/plugin marketplace add pbakaus/impeccable`, then `npx impeccable install`, then `/impeccable init`. The first and third are Claude Code slash commands, not shell |
+| `architecture-and-decisions` | `github.com/imrohitagrawal/project-doc-skills` — public, **first-party** | 2026-08-07, `6633480` | From `dist/*.skill`, never by copying `skills/<name>/` (D12 trap 2) |
+| `doc-critic` | the same repo | 2026-08-07, `6633480` | the same bundle route |
+
+Two things not to trip over. `npm view impeccable version` says **3.6.0** — that is the CLI
+installer; the skill content declares **4.1.1**. Two artifacts, two numbers, neither corrects the
+other. And the two doc skills are the owner's own work, so they are evidence of practice rather
+than third-party authority under AGENTS.md's provenance rule.
+
+The 2 files that carry drift harness targeting does not explain were filed as DEF-66, and
+**DEF-66 is now closed as upstream behaviour, not a defect of ours** (D127, 2026-08-25). The
+re-fetch ran — `npx impeccable install` — and did not touch either file. The same two files
+pulled straight from `pbakaus/impeccable` on GitHub hash identical to the local ones, and
+upstream's own `.agents/` and `.claude/` copies carry the same asymmetry: `reference/craft-floor.md`
+is 50 lines against 44, `reference/new-work.md` 120 against 122. So the five craft bullets really
+are `.agents/`-only and the "measured rendition prior" paragraph really is `.claude/`-only —
+upstream packages them that way.
+
+**Do not hand-merge the six lines.** `impeccable` is vendored third-party work; hand-editing it
+forks it and destroys the provenance that makes it authority. If the asymmetry is worth fixing,
+it is an issue to raise upstream against `pbakaus/impeccable`, not a local patch.
 
 ## Skills deliberately NOT routed
 

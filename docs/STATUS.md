@@ -281,10 +281,41 @@ looked like it and is not. Worth watching, since the NarraTwin avatar will need 
   `.claude/` `SKILL.md` frontmatter, which names a licence but not an origin. **`npx impeccable`
   is a lead, not a verified source, and is not being written down as one.** This blocks DEF-66:
   a re-fetch needs somewhere to fetch from.
-- **`architecture-and-decisions` and `doc-critic` are unlocked too**, and were not previously
-  recorded as such. Verified in the same check: `skills-lock.json` holds 51 skills and neither
-  is among them. Both exist only under `.claude/skills/`, as real directories with no `.agents/`
-  counterpart. Same missing provenance, same owner question.
+- **CORRECTED 2026-08-25 — the source is `github.com/pbakaus/impeccable`, and it was already in
+  this repo when the note above said UNKNOWN.** The owner supplied it, and it checks out: `npm
+  view impeccable repository.url` returns `git+https://github.com/pbakaus/impeccable.git`, and
+  `gh repo view pbakaus/impeccable` reports a PUBLIC repo, 62,506 stars, described as "The design
+  language that makes your AI harness better at design." **The install route, in the owner's own
+  words, three steps:** `/plugin marketplace add pbakaus/impeccable` (a Claude Code slash command,
+  not a shell command), then `npx impeccable install` from the project root, then `/impeccable
+  init` (also a slash command; it rewrites PRODUCT.md, DESIGN.md and the surface briefs, so it is
+  never run casually).
+- **Two version numbers, and they are two different artifacts.** `npm view impeccable version`
+  is **3.6.0** — that is the CLI installer on npm. The skill content this repo carries declares
+  **4.1.1** in `SKILL.md`'s `version:` field, in both trees. Neither number is wrong and neither
+  corrects the other. The version that matters for currency is the skill's, 4.1.1.
+- **Install date stands at repo creation, 2026-08-07** (`93e4bae`), in BOTH trees — unchanged by
+  this correction. There is no later install event to point at, so "at repo creation" is the
+  honest date.
+- **The correction itself, kept because corrections stay: the search that concluded UNKNOWN looked
+  for a URL, never for an author name.** It swept both skill trees, `skills-lock.json`,
+  `docs/STATUS.md` and `docs/skills/README.md` for a link or a manifest and correctly found none.
+  But `docs/SKILL-ROUTING.md:26-28` credits **`pbakaus`** in its "From" column, on all three
+  `impeccable` rows, and has since 9 August. One `grep -ri pbakaus docs/` would have settled it.
+  The lesson is the shape of the miss, not the miss: a provenance search that only accepts URLs
+  will walk past an attribution written as a name.
+- **`architecture-and-decisions` and `doc-critic` are unlocked too**, and their provenance IS
+  established — it is the owner's own published repo, not an unknown. Verified: `skills-lock.json`
+  holds 51 skills and neither is among them. Both exist only under `.claude/skills/`, as real
+  directories with no `.agents/` counterpart. **Source: `github.com/imrohitagrawal/project-doc-skills`**
+  — PUBLIC, confirmed with `gh repo view`, and its `dist/` holds `architecture-and-decisions.skill`
+  and `doc-critic.skill` alongside a `MANIFEST.sha256`. **Install date: 2026-08-07, commit
+  `6633480`** ("Install 13 skills; add skill-currency rule and the practices folder"), whose own
+  message says it in as many words: *"Installed from dist/\*.skill, NOT the source dirs --
+  UNLOCKED, no hash."* That matches D12 trap 2 above, and it is why they carry no lock entry —
+  by design, not by accident. The site itself links the repo at `src/pages/how-i-build.astro:119`.
+  Worth stating plainly: these two are **first-party**, so under AGENTS.md's provenance rule they
+  are evidence of practice, not third-party authority — unlike `impeccable`, which is external.
 
 ---
 

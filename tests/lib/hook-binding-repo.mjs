@@ -19,7 +19,7 @@
    self-test's checks red, which is the intended direction. */
 
 import { spawnSync } from 'node:child_process';
-import { cpSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
 export const GIT_ENV = {
@@ -79,9 +79,30 @@ export function buildFreshClone(repo, root) {
 
    `git reset --hard` afterwards, so an attempt that SUCCEEDS leaves no commit
    behind and an attempt that fails leaves no half-staged index — including
-   restoring `.githooks/pre-commit` when a check has overwritten it. It is
-   confined to `cwd`, which is always the throwaway repo. */
+   restoring `.githooks/pre-commit` when a check has overwritten it.
+
+   That reset is guarded by `refuseRealRepo`, in code rather than in this
+   comment. AGENTS.md's rule is that anything which must ALWAYS hold belongs in
+   an executable check, and the cost of getting this wrong is not theoretical:
+   while building this file, a hand-run probe of the hook against the real repo
+   ended in `git reset --hard HEAD~1` and destroyed an hour of uncommitted
+   work. A reviewer pointed out the invariant was still only prose. */
+function refuseRealRepo(cwd) {
+  /* The exit code is consulted before the output is used as a path: on a
+     non-repo, `rev-parse` prints its error to stderr, and feeding that text to
+     realpathSync threw a confusing ENOENT instead of saying what was wrong.
+     Fail closed either way — both branches throw. */
+  const top = git(cwd, 'rev-parse', '--show-toplevel');
+  const resolved = top.code === 0 && top.out ? realpathSync(top.out) : '';
+  if (!resolved) throw new Error(`refusing to commit in ${cwd} — not a git repository`);
+  const here = realpathSync(process.cwd());
+  if (resolved === here || resolved.startsWith(`${here}/`) || here.startsWith(`${resolved}/`)) {
+    throw new Error(`refusing to make throwaway commits in ${resolved} — that is the real repository`);
+  }
+}
+
 export function attemptCommit(cwd, path, body) {
+  refuseRealRepo(cwd);
   const head = git(cwd, 'rev-parse', 'HEAD').out;
   const abs = join(cwd, path);
   mkdirSync(dirname(abs), { recursive: true });

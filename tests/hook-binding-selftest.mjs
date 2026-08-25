@@ -1,6 +1,8 @@
 /* Proves the pre-commit hook is BOUND by something every clone gets, and that
-   once bound it blocks the four things it claims to — and still lets ordinary
-   work through.
+   once bound it blocks three of the four things it claims to — and still lets
+   ordinary work through. The fourth, gitleaks, is checked structurally rather
+   than behaviourally, for a reason spelled out beside those two checks. Saying
+   "four" here would be the kind of overclaim this repo treats as a defect.
 
    DEF-62: `core.hooksPath` was set to an ABSOLUTE path inside `.git/config`, a
    file git never clones. So the hook ran on exactly one laptop, in exactly one
@@ -22,18 +24,19 @@
 
    Both directions everywhere. Most checks below count a FAILURE, and a hook
    that fails every commit would satisfy all of them; the ordinary-file checks
-   and the four PARTNER checks at the top are what stop that. Each check
-   carries its own `RED WHEN:`.
+   and the static partners in lib/hook-binding-partners.mjs are what stop that.
+   Each check carries its own `RED WHEN:`.
 
    Run: node tests/hook-binding-selftest.mjs   (gates.yml, cheap job) */
 
-import { accessSync, chmodSync, constants, existsSync, mkdirSync, mkdtempSync } from 'node:fs';
-import { readFileSync, realpathSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { accessSync, chmodSync, constants, existsSync, mkdirSync } from 'node:fs';
+import { mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
   attemptCommit, buildFreshClone, CLEAN, DIRTY, firstLine, git, sh,
 } from './lib/hook-binding-repo.mjs';
+import { staticPartners } from './lib/hook-binding-partners.mjs';
 
 const REPO = process.cwd();
 const results = [];
@@ -43,40 +46,13 @@ const check = (name, ok, detail = '') => {
 };
 
 /* ── PARTNERS ─────────────────────────────────────────────────────
-   Everything after this section counts refusals. Against a deleted, emptied,
-   or de-fanged hook those refusals would simply stop happening, and a
-   refusal-only suite would report nothing wrong. These assert that the thing
-   being counted exists. */
+   The static half — read the hook and package.json and check them — lives in
+   lib/hook-binding-partners.mjs. It runs FIRST, because every check below it
+   counts a refusal, and a refusal that stops happening looks exactly like a
+   gate with nothing to catch. */
 
-const HOOK = join(REPO, '.githooks/pre-commit');
-const bytes = existsSync(HOOK) ? statSync(HOOK).size : 0;
-// RED WHEN: `: > .githooks/pre-commit`, or `rm .githooks/pre-commit`.
-check('the hook file exists and is not empty', bytes > 0, `${bytes} bytes`);
-
-const mode = git(REPO, 'ls-files', '-s', '--', '.githooks/pre-commit').out.split(/\s+/)[0];
-// RED WHEN: `git update-index --chmod=-x .githooks/pre-commit`. Git declines
-// to run a hook that is not executable — with a hint, not an error — so every
-// clone would get the file and still have no gate.
-check('the hook is tracked executable (100755)', mode === '100755', `git ls-files -s says ${mode || 'untracked'}`);
-
-const hookText = bytes ? readFileSync(HOOK, 'utf8') : '';
-const FOUR = ['tests/no-pii.mjs --staged', 'assets/inbox/', '.env', 'gitleaks'];
-const present = FOUR.filter((s) => hookText.includes(s));
-// RED WHEN: delete any one of the hook's four checks.
-check('the hook still carries all four of its checks', present.length === FOUR.length, `${present.length}/4 present`);
-
-const pkg = JSON.parse(readFileSync(join(REPO, 'package.json'), 'utf8'));
-const prepare = pkg.scripts?.prepare ?? '';
-// RED WHEN: remove the `prepare` script — which is exactly the DEF-62 state
-// this whole file exists to close.
-check('package.json carries a prepare script', prepare.length > 0, prepare || 'absent');
-
-const tokens = prepare.split(/\s+/);
-const absolute = tokens.some((t) => t.startsWith('/') || t.startsWith('~') || t.includes(REPO));
-// RED WHEN: write `git config core.hooksPath "$PWD/.githooks"`. An absolute
-// path is DEF-62 itself: correct on the machine that ran it, absent everywhere
-// else, and pointed at the main checkout from inside every linked worktree.
-check('the prepare script names no absolute path', prepare.length > 0 && !absolute, prepare || 'absent');
+const { results: partners, prepare } = staticPartners(REPO);
+for (const p of partners) check(p.name, p.ok, p.detail);
 
 const tmpRoot = realpathSync(mkdtempSync(join(tmpdir(), 'hook-binding-')));
 try {
@@ -149,12 +125,18 @@ try {
   const dirty = attemptCommit(CLONE, 'planted.md', DIRTY);
   // RED WHEN: drop `node tests/no-pii.mjs --staged` from the hook.
   check('bound: a staged personal phone number is refused', dirty.refused, `git commit exit ${dirty.code}`);
-  // RED WHEN: the commit fails for any reason OTHER than the PII scan — a
-  // missing node, a bad path. An exit code alone cannot tell those apart, and
-  // a hook that is simply ignored produces a git hint instead of this line.
+  /* RED WHEN: the commit fails for any reason OTHER than the PII scan — a
+     missing node, a bad path. An exit code alone cannot tell those apart, and
+     a hook that is simply ignored produces a git hint instead of this line.
+     The pattern must be the scanner's OWN failure line. An earlier version
+     also accepted `commit blocked`, which is the hook's closing banner at
+     .githooks/pre-commit:36 and is printed for all four rules — so it
+     certified "the hook printed its banner", not "rule 1 fired". Proved by a
+     cross-checking reviewer: renaming `node` to `nodeXYZ` in the hook left
+     this check GREEN while its own detail column read `command not found`. */
   check(
     'bound: and it is the PII scan that refused, not something else',
-    /phone|personal contact|commit blocked/i.test(dirty.out),
+    /PII gate: \d+ match/i.test(dirty.out),
     firstLine(dirty.out),
   );
 
@@ -166,7 +148,19 @@ try {
   const inbox = attemptCommit(CLONE, 'assets/inbox/planted.md', CLEAN);
   // RED WHEN: delete the assets/inbox/ block from the hook.
   check('bound: a file under assets/inbox/ is refused', inbox.refused, `git commit exit ${inbox.code}`);
-  check('bound: and it is the inbox rule that refused', /inbox/.test(inbox.out), firstLine(inbox.out));
+  /* Matches the rule's OWN message, not the bare word "inbox" — which also
+     appears in any staged path a subprocess happens to print. It bites today
+     either way (proved by deleting the rule), but a regex that could be
+     satisfied by an echoed filename is not attribution. */
+  check('bound: and it is the inbox rule that refused',
+    /files staged under assets\/inbox\//.test(inbox.out), firstLine(inbox.out));
+
+  /* The inbox rule deliberately exempts README.md and .gitkeep, and nothing
+     tested that exemption — deleting both `grep -v` filters from the hook left
+     every check green. RED WHEN: drop the README.md exemption from the hook. */
+  const inboxOk = attemptCommit(CLONE, 'assets/inbox/README.md', CLEAN);
+  check('bound: the inbox rule still exempts its README', inboxOk.staged && inboxOk.code === 0,
+    `staged ${inboxOk.staged}, git commit exit ${inboxOk.code}`);
 
   const dotenv = attemptCommit(CLONE, '.env', 'EXAMPLE_SETTING=placeholder\n');
   // RED WHEN: delete the .env block from the hook.

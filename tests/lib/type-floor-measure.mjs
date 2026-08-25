@@ -6,14 +6,15 @@
    no closure over anything outside itself. Same contract as
    lib/geometry-measure.mjs. */
 
-/* The two illustration labels the floor does not reach. NOT a general SVG
-   exemption — a cross-model reviewer proved that a blanket namespace pass lets
-   `<svg><text style="font-size:1px">` through, and this repo has DEF-10 and
-   DEF-44 on record for a hand-typed list quietly widening. So the exemption is
-   pinned by CONTENT and COUNTED: the spec asserts exactly these two strings are
-   exempt and no more, which makes a third one a test failure rather than a
-   silent addition. Their real sizes and the redraw they need are DEF-63. */
-export const SVG_EXEMPT = ['EVALAXIS', 'AEGIS-CONTRACTS'];
+/* EMPTY, and it stays empty. This held the two private-figure labels while
+   DEF-63 was open; the figure was redrawn on 2026-08-25 and both labels now
+   clear the floor, so nothing on this site is exempt from it. The mechanism is
+   kept rather than deleted because a blanket namespace pass — which is what
+   this replaced — let `<svg><text style="font-size:1px">` through in a
+   cross-model reviewer's mutation, and this repo has DEF-10 and DEF-44 on
+   record for a hand-typed list quietly widening. Anything added here is a
+   named string that a reader can weigh, not a whole namespace. */
+export const SVG_EXEMPT = [];
 
 export function measureTypeFloor({ floorPx, svgExempt }) {
   const out = { measured: 0, under: [], svgSeen: [], details: 0 };
@@ -83,10 +84,15 @@ export function measureTypeFloor({ floorPx, svgExempt }) {
     if (!Number.isFinite(px)) continue;
 
     /* SVG text reports USER UNITS, not rendered pixels — a `viewBox` scales
-       them. The private figure declares 9 and renders 4.76px at 320, 6.26px at
-       390 and 8.11px at 1024 — 1024 is the worst DESKTOP case, and neither
-       width this gate samples sees it. Multiply by the screen CTM so the number
-       is the one a reader meets, then gate it like any other text. */
+       them. Before DEF-63 was fixed the private figure declared 9 and rendered
+       4.76px at 320, 6.26px at 390 and 7.13px at 901 — and 901 is the worst
+       DESKTOP case, not 1024: the two-column breakpoint sits just under it, so
+       the figure is at its narrowest there, and a 60-width sweep from 901 to
+       1500 in 10px steps rises monotonically from that minimum. An earlier
+       version of this comment said 1024 (8.11px), which is simply a wider
+       figure. Neither width this gate samples sees either. Multiply by the
+       screen CTM so the number is the one a reader meets, then gate it like any
+       other text. */
     let rendered = px;
     if (el.namespaceURI === 'http://www.w3.org/2000/svg') {
       const ctm = typeof el.getScreenCTM === 'function' ? el.getScreenCTM() : null;

@@ -1,50 +1,66 @@
 ---
 // The private work: two garment bags, zipped. Named, not shown.
+//
+// The bags are 128 user units wide and the name tags 115.4 x 46, which is the
+// DEF-63 redraw. Both were smaller and the type on them was 9 and 9.5 user
+// units — 4.76px on a 320px phone, the smallest text on the site, and
+// `AEGIS-CONTRACTS` overflowed its own 96-unit tag at every width. The viewBox
+// is deliberately unchanged so the figure's rendered box, and every plate
+// height measured against it, stay exactly where they were. Working: the
+// rendered size of this text is `declared x (figure width in px / 420)`, so it
+// is gated on the render by tests/type-floor.spec.js, not on the number here.
 ---
 
 <svg class="figure private-figure" viewBox="0 0 420 340" role="img" aria-labelledby="pv-title">
   <title id="pv-title">Two zipped garment bags on a rail, each carrying a name tag.</title>
 
-  <!-- rail -->
-  <rect x="40" y="34" width="340" height="4" rx="2" fill="#16213c" opacity="0.5"></rect>
+  <!-- rail — 20 to 400, so it runs 10 units past each bag. The bags widened to
+       30-390 in the DEF-63 redraw and this line did not move with them, which
+       left the rail ending INSIDE both bags. 10 units is the largest clean
+       overhang the 420-unit frame still allows; the original had 38. -->
+  <rect x="20" y="34" width="380" height="4" rx="2" fill="#16213c" opacity="0.5"></rect>
 
   <!-- bag one — EvalAxis -->
   <g>
-    <path d="M130 38 L130 52" stroke="#16213c" stroke-width="2.5" fill="none"></path>
+    <path d="M94 38 L94 52" stroke="#16213c" stroke-width="2.5" fill="none"></path>
     <path
-      d="M78 110 C 78 76 102 54 130 54 C 158 54 182 76 182 110 L182 296 C182 302 177 306 172 306 L88 306 C 83 306 78 302 78 296 Z"
+      d="M30 110 C 30 76 59.54 54 94 54 C 128.46 54 158 76 158 110
+         L158 296 C158 302 151.85 306 145.69 306
+         L42.31 306 C 36.15 306 30 302 30 296 Z"
       fill="#8f8672"
     ></path>
-    <path d="M130 62 L130 298" stroke="#16213c" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.55" fill="none"></path>
-    <circle cx="130" cy="120" r="5" fill="none" stroke="#c99b3f" stroke-width="2"></circle>
-    <path d="M96 296 L164 296" stroke="#c99b3f" stroke-width="1.4" stroke-dasharray="4 3" fill="none"></path>
-    <g transform="rotate(-6 130 220)">
-      <rect x="94" y="204" width="72" height="30" rx="2" fill="#f2ebdd" stroke="#16213c" stroke-opacity="0.4"></rect>
+    <path d="M94 62 L94 298" stroke="#16213c" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.55" fill="none"></path>
+    <circle cx="94" cy="120" r="5" fill="none" stroke="#c99b3f" stroke-width="2"></circle>
+    <path d="M52.15 296 L135.85 296" stroke="#c99b3f" stroke-width="1.4" stroke-dasharray="4 3" fill="none"></path>
+    <g transform="rotate(-6 94 220)">
+      <rect x="36.3" y="197" width="115.4" height="46" rx="2" fill="#f2ebdd" stroke="#16213c" stroke-opacity="0.4"></rect>
       <text
-        x="130" y="223" text-anchor="middle"
-        font-family="Archivo, Arial, sans-serif" font-size="9.5" font-weight="700"
-        letter-spacing="1.2" fill="#16213c"
+        x="94" y="225.73" text-anchor="middle"
+        font-family="Archivo, Arial, sans-serif" font-size="16" font-weight="700"
+        letter-spacing="0.45" fill="#16213c"
       >EVALAXIS</text>
     </g>
   </g>
 
-  <!-- bag two — aegis-contracts -->
+  <!-- bag two — Aegis Contracts -->
   <g>
-    <path d="M290 38 L290 52" stroke="#16213c" stroke-width="2.5" fill="none"></path>
+    <path d="M326 38 L326 52" stroke="#16213c" stroke-width="2.5" fill="none"></path>
     <path
-      d="M238 110 C 238 76 262 54 290 54 C 318 54 342 76 342 110 L342 296 C342 302 337 306 332 306 L248 306 C 243 306 238 302 238 296 Z"
+      d="M262 110 C 262 76 291.54 54 326 54 C 360.46 54 390 76 390 110
+         L390 296 C390 302 383.85 306 377.69 306
+         L274.31 306 C 268.15 306 262 302 262 296 Z"
       fill="#7f775f"
     ></path>
-    <path d="M290 62 L290 298" stroke="#16213c" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.55" fill="none"></path>
-    <circle cx="290" cy="120" r="5" fill="none" stroke="#c99b3f" stroke-width="2"></circle>
-    <path d="M256 296 L324 296" stroke="#c99b3f" stroke-width="1.4" stroke-dasharray="4 3" fill="none"></path>
-    <g transform="rotate(5 290 220)">
-      <rect x="242" y="204" width="96" height="30" rx="2" fill="#f2ebdd" stroke="#16213c" stroke-opacity="0.4"></rect>
+    <path d="M326 62 L326 298" stroke="#16213c" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.55" fill="none"></path>
+    <circle cx="326" cy="120" r="5" fill="none" stroke="#c99b3f" stroke-width="2"></circle>
+    <path d="M284.15 296 L367.85 296" stroke="#c99b3f" stroke-width="1.4" stroke-dasharray="4 3" fill="none"></path>
+    <g transform="rotate(5 326 220)">
+      <rect x="268.3" y="197" width="115.4" height="46" rx="2" fill="#f2ebdd" stroke="#16213c" stroke-opacity="0.4"></rect>
       <text
-        x="290" y="223" text-anchor="middle"
-        font-family="Archivo, Arial, sans-serif" font-size="9" font-weight="700"
-        letter-spacing="1" fill="#16213c"
-      >AEGIS-CONTRACTS</text>
+        x="326" y="216.13" text-anchor="middle"
+        font-family="Archivo, Arial, sans-serif" font-size="16" font-weight="700"
+        letter-spacing="0.45" fill="#16213c"
+      ><tspan x="326">AEGIS</tspan><tspan x="326" dy="19.2">CONTRACTS</tspan></text>
     </g>
   </g>
 </svg>

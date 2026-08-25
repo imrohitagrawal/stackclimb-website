@@ -133,7 +133,7 @@ Work top to bottom. Each row is one package and one PR.
 
 | # | Package | Why here |
 |---|---|---|
-| 1 | **DEF-63** — two SVG labels at 9.5px/9px in `PrivateFigure.astro:25,45`, plus `AEGIS-CONTRACTS` overflowing its own name tag | The only MEDIUM open, the only one a visitor SEES, and the last text below the floor D118 just set. Both are `font-size` attributes on inline SVG, so no stylesheet can reach them — this needs the figure redrawn, and the tag must fit its longest string |
+| ~~1~~ | ~~**DEF-63**~~ **DONE 08-25, D120 — the figure is redrawn and both labels are GATED, not exempt.** Original entry: **DEF-63** — two SVG labels at 9.5px/9px in `PrivateFigure.astro:25,45`, plus `AEGIS-CONTRACTS` overflowing its own name tag | The only MEDIUM open, the only one a visitor SEES, and the last text below the floor D118 just set. Both are `font-size` attributes on inline SVG, so no stylesheet can reach them — this needs the figure redrawn, and the tag must fit its longest string |
 | 2 | **DEF-64** — `DESIGN.md` mandates a component removed long ago, in four places | Doc-vs-code divergence in the file every agent reads first. Cheap, and it pairs naturally with 1 because both touch the design system |
 | 3 | **DEF-62** — `.githooks/pre-commit` binds only through untracked `.git/config`, while two tracked files call it done | An enforcement gate that enforces on exactly one machine is not enforcement. Fix before relying on any hook |
 | 4 | **DEF-61** — the two tracked copies of the `impeccable` skill differ in 34 places | An agent reading one copy can follow different instructions from an agent reading the other. Decide which tree is canonical; this is a judgement, not a cleanup |

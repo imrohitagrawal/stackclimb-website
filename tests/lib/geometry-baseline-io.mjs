@@ -22,7 +22,32 @@
    file is the committed authority and the only one CI reads. A darwin file is
    gitignored and is a developer's local convenience; it is generated from
    whatever the page currently does, so it certifies nothing on its own. Never
-   commit one. */
+   commit one.
+
+   REGENERATE THE COMMITTED (linux) BASELINE: run gates.yml's
+   `update_geometry_baseline` dispatch, download the artifact, commit it. Never
+   hand-generate it on a laptop — a darwin run writes a DIFFERENT file that CI
+   never reads, and the 42px measurement above is why. (This paragraph lived in
+   geometry.spec.js's header until DEF-58 moved it here, where the writing is —
+   and where "the 42px measurement above" is finally true. In the spec it
+   pointed at a number that was never in that file.)
+   A local baseline, for working on this gate, is
+     UPDATE_GEOMETRY=1 npx playwright test tests/geometry.spec.js --workers=1
+   On a Mac that writes the gitignored darwin file. On LINUX the same command
+   used to write the committed authority, and the spec's comment used to claim
+   otherwise — "and it is gitignored" was true on one platform and false on the
+   one that matters. DEF-59. It is now refused rather than corrected in prose:
+   baseline-write-guard.mjs asks git whether the target is tracked. To dump the
+   numbers this page currently produces without touching the authority, name a
+   file git is not tracking:
+     GEOMETRY_BASELINE_OUT=tests/geometry-baseline.local.json
+   That redirects the WRITE only. The spec's comparison always reads BASELINE,
+   so on Linux there is no local loop — there is a scratch file to `diff`
+   against the committed one. Said plainly because an earlier draft implied a
+   loop that does not exist.
+   --workers=1 is enforced, not requested: the spec throws without it, because
+   parallel workers are separate processes and the last to write would drop the
+   others' legs. */
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';

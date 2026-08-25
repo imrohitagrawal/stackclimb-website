@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { siteRoutes } from './lib/routes.mjs';
+import { geometryRoutes } from './lib/routes.mjs';
 import { measureGeometry, NEUTRALIZE_MOTION } from './lib/geometry-measure.mjs';
 import { compareLeg, PX_TOLERANCE } from './lib/geometry-compare.mjs';
 import { BASELINE, UPDATING, readBaseline, writeBaseline, expectedLegs } from './lib/geometry-baseline-io.mjs';
-import { rowFloorBreaches } from './lib/geometry-floor.mjs';
+import { plateFloorBreaches, rowFloorBreaches } from './lib/geometry-floor.mjs';
 
 /* DEF-54. The blocking gate on this site's layout is now a NUMBER, not a
  * photograph.
@@ -39,59 +39,56 @@ import { rowFloorBreaches } from './lib/geometry-floor.mjs';
  *   key sets            a plate appears unbaselined, or a baselined plate
  *                       vanishes
  *   denominators        `.plate { display: none }`, `body { display: none }`,
- *                       an empty baseline, or a structural row leaving the
- *                       flex/grid predicate (DEF-60's row floor, which a
- *                       regeneration cannot silence)
+ *                       an empty baseline, a route rendering fewer plates than
+ *                       geometry-floor.mjs's route-shaped minimum (DEF-58), or
+ *                       a structural row leaving the flex/grid predicate
+ *                       (DEF-60's row floor, which a regeneration cannot
+ *                       silence)
  *
- * TOLERANCE, under its honest name. Pixel values are rounded once at capture
- * and compared with a slack of 1, so the real window reaches ~2px: two
- * measurements 1.999px apart can round to integers 1 apart. Calling that
- * "+/-1px" would be unearned precision. It is still an order of magnitude
- * under the signal — DEF-55 measured run-to-run noise at exactly 1px on
- * untouched plates (plate-citevyn-390 1305 -> 1306) while a real change moved
- * plate-top-390 by 40px. Counts and tag sequences get ZERO slack.
+ * TOLERANCE, under its honest name: a slack of 1 on a value already rounded at
+ * capture, so the real window reaches ~2px, and ZERO on counts and tag
+ * sequences. The measurements behind those numbers sit beside PX_TOLERANCE in
+ * tests/lib/geometry-compare.mjs, which is where they were already written —
+ * this file used to restate them, and two copies of a number is one too many.
  *
  * WHICH WORLD IS RECORDED: JavaScript ON, in a secure context, with motion
  * neutralized (see geometry-measure.mjs) — the same world visual-baselines.spec.js
  * captures, except that this file sweeps the width while keeping each project's
  * own viewport HEIGHT, where that file pins 900 for both. Height is not cosmetic:
  * `.plate` is `min-height: 100svh`. It is also the world in which D112's copy
- * control is revealed — `copy-email.js` un-hides it
- * only when navigator.clipboard is reachable, and localhost IS secure. The
- * JS-off page is gated by contact.spec.js's own no-JS test, not here. Measured:
- * plate boxes are IDENTICAL with JS on and off. The difference is confined to
- * the contact row, and it is not only the count: with JS off the painted count
- * drops (5 -> 4), the button's own child value becomes "hidden", and the four
- * remaining controls lay out differently because the <=900px grid rule still
- * counts five DOM children. An earlier version of this comment said only the
- * count differs, which was wrong.
+ * control is revealed — `copy-email.js` un-hides it only when
+ * navigator.clipboard is reachable, and localhost IS secure. The JS-off page is
+ * gated by contact.spec.js's own no-JS test, not here; what exactly differs
+ * between the two worlds, measured, is recorded in geometry-measure.mjs beside
+ * the capture it describes.
  *
- * REGENERATE THE COMMITTED (linux) BASELINE: run gates.yml's
- * `update_geometry_baseline` dispatch, download the artifact, commit it. Never
- * hand-generate it on a laptop — a darwin run writes a DIFFERENT file that CI
- * never reads, and the 42px measurement above is why.
- * A local baseline, for working on this gate, is
- *   UPDATE_GEOMETRY=1 npx playwright test tests/geometry.spec.js --workers=1
- * On a Mac that writes the gitignored darwin file. On LINUX the same command
- * used to write the committed authority, and this comment used to claim
- * otherwise — "and it is gitignored" was true on one platform and false on the
- * one that matters. DEF-59. It is now refused rather than corrected in prose:
- * baseline-write-guard.mjs asks git whether the target is tracked. To dump the
- * numbers this page currently produces without touching the authority, name a
- * file git is not tracking:
- *   GEOMETRY_BASELINE_OUT=tests/geometry-baseline.local.json
- * That redirects the WRITE only. The comparison below always reads BASELINE, so
- * on Linux there is no local loop — there is a scratch file to `diff` against
- * the committed one. Said plainly because an earlier draft of this comment
- * implied a loop that does not exist.
- * --workers=1 is enforced, not requested: the spec throws
- * without it, because parallel workers are separate processes and the last to
- * write would drop the others' legs.
+ * REGENERATE THE COMMITTED (linux) BASELINE: gates.yml's
+ * `update_geometry_baseline` dispatch, never a laptop. The procedure, the 42px
+ * darwin-vs-linux measurement under it, the DEF-59 write guard and why
+ * --workers=1 is enforced live in tests/lib/geometry-baseline-io.mjs, where the
+ * writing happens — moved by DEF-58, which also fixed the dangling reference to
+ * "the 42px measurement above" that was never in this file.
+ *
+ * WHICH ROUTES: tests/lib/routes.mjs's geometryRoutes() — the plate routes plus
+ * /cv. Read the note there before touching it.
+ *
+ * /cv's TWO `<details>` PANELS ARE MEASURED SHUT — a decision, not an oversight.
+ * Shut is the state the page ships in and the state a visitor meets; opening one
+ * is an interaction, and this file records the settled render. Shut also needs
+ * no STEP, so there is no step to go wrong: type-floor.spec.js must force the
+ * panels open to read their text, which is why it must also assert the forcing
+ * worked (its `details > 0`). Nothing on /cv sets `open`, in markup or script,
+ * so the state is deterministic by construction. The cost was measured, not
+ * assumed: of /cv's 17 keys, opening both panels moves exactly TWO —
+ * `plate.cv`'s height (3884 -> 4749 at 1440) and `row.cv/cv-foot#0`'s y inside
+ * the plate (3737 -> 4602). Every identity, count, tag sequence and child box is
+ * the same either way. THE LIMIT: layout inside an opened panel is gated by
+ * nobody — its type size is, its geometry is not.
  */
 
 const WIDTHS = [390, 768, 1440];
 
-const ROUTES = await siteRoutes();
+const ROUTES = await geometryRoutes();
 
 /* Accumulated across every test in this run. writeBaseline() merges these WHOLE
    LEGS onto what is already on disk, so a filtered run refreshes what it
@@ -194,13 +191,16 @@ test.describe('Geometry baselines — DEF-54', () => {
         expect(JSON.stringify(first.keys), 'the page was still settling — two captures disagreed')
           .toBe(JSON.stringify(keys));
 
-        /* DENOMINATORS. Each is hard-coded on purpose: it is the one thing the
+        /* DENOMINATORS. Hard-coded on purpose: they are the one thing the
            baseline cannot corrupt. Regenerate while `.plate { display: none }`
            is in force and every recorded number is 0, after which "matches the
-           baseline" passes forever — DEF-54's own failure, one level up. */
-        const floor = route === '/' ? 4 : 1;
-        expect(plateCount, `only ${plateCount} plates on ${route} — this test measured nothing`)
-          .toBeGreaterThan(floor);
+           baseline" passes forever — DEF-54's own failure, one level up.
+           DEF-58 made the plate minimum ROUTE-SHAPED and moved it into
+           tests/lib/geometry-floor.mjs, beside the row floor. It was
+           `plateCount > (route === '/' ? 4 : 1)` — every route but home needed
+           2, which /cv fails by construction. Nothing else got weaker. */
+        const thin = plateFloorBreaches(route, plateCount);
+        expect(thin, `this leg measured nothing:\n${thin.join('\n')}`).toEqual([]);
         expect(docHeight, `${route} is ${docHeight}px tall — the page did not render`)
           .toBeGreaterThan(height);
 

@@ -18,8 +18,8 @@
 
 import { readFileSync } from 'node:fs';
 import { compare } from './lib/geometry-compare.mjs';
-import { ROW_FLOOR, floorAudit, rowFloorBreaches } from './lib/geometry-floor.mjs';
-import { siteRoutes } from './lib/routes.mjs';
+import { ROW_FLOOR, floorAudit, minPlates, plateFloorBreaches, rowFloorBreaches } from './lib/geometry-floor.mjs';
+import { geometryRoutes } from './lib/routes.mjs';
 
 /* NO --self-test FLAG, and that is a deliberate deviation from the plan's
    acceptance item 2, which asked for "the repo's existing idiom (--self-test,
@@ -182,14 +182,43 @@ say(rowFloorBreaches('/', home.rows, home.children, all).length === 0, 'the meas
 say(rowFloorBreaches('/', home.rows + 1, home.children + 4, [...all, 'top/extra#0']).length === 0,
     'an ADDED row passes');
 
+/* DEF-58's PLATE minimum, browserless. It replaced the constant
+   `plateCount > (route === '/' ? 4 : 1)`, which /cv failed by construction with
+   its single plate. The first two cases are the promise of a route-shaped
+   denominator: /cv is relaxed and NOTHING ELSE IS. RED WHEN: any MIN_PLATES
+   value drops below 1, or DEFAULT_MIN_PLATES stops being the strict 2. */
+const routes = await geometryRoutes();
+const wasStrict = (r) => (r === '/' ? 4 : 1) + 1; // the old `> floor`, as `>= min`
+say(routes.filter((r) => r !== '/cv').every((r) => minPlates(r) === wasStrict(r)),
+    'every route gated before DEF-58 keeps its old strictness exactly');
+say(minPlates('/cv') === 1 && plateFloorBreaches('/cv', 1).length === 0,
+    "/cv's one measured plate passes at a minimum of 1 — DEF-58's whole point");
+say(routes.every((r) => plateFloorBreaches(r, 0).length === 1),
+    `a route rendering ZERO plates is caught on all ${routes.length} routes, /cv included`);
+say(plateFloorBreaches('/', 4).length === 1 && plateFloorBreaches('/projects/citevyn', 1).length === 1,
+    'the home page at 4 plates and a project page at 1 are still caught — the relaxation did not leak');
+say(plateFloorBreaches('/newly-added', 1).length === 1,
+    'an unlisted route inherits the strict default of 2, so forgetting one fails loudly');
+/* Vacuity, via the injected map: `plateCount >= 0` holds for every page built. */
+say(plateFloorBreaches('/cv', 0, { '/cv': 0 }).some((b) => b.includes('rendered none')),
+    'a plate minimum of 0 is caught inside the check itself');
+say(floorAudit(routes, ROW_FLOOR, { '/cv': 0 }).some((b) => b.includes('plate minimum is 0')),
+    'a plate minimum of 0 is caught by the audit as well — every other route falls back to the strict 2');
+const cv = ROW_FLOOR['/cv']; // D125's row floor, extended to /cv by DEF-58
+say(rowFloorBreaches('/cv', cv.rows, cv.children, cv.stems).length === 0,
+    `/cv's measured row population passes (${cv.rows} rows, ${cv.children} children)`);
+say(rowFloorBreaches('/cv', 1, 3, ['cv/cv-foot#0']).length === 3,
+    "/cv losing its .cv-contact row is caught by identity and both counts");
+
 /* THE PARTNER — per AGENTS.md, a check that counts nothing needs one proving
    the thing counted exists. `rowCount >= floor` is trivially true against a
    floor of 0 or a route the map never heard of, and ROW_FLOOR is hand-typed,
    which is the DEF-10 / DEF-44 shape exactly.
    RED WHEN: a route is added to routes.mjs with no ROW_FLOOR entry, or any
-   floor is edited down to 0. Both proved directly below. */
-const routes = await siteRoutes();
-say(routes.length >= 7, `${routes.length} routes under test — the audit below has a population`);
+   floor is edited down to 0. Both proved directly below. `routes` is the
+   geometry gate's own list, /cv included — auditing siteRoutes() here would
+   leave /cv's floor unaudited while the spec ran it. */
+say(routes.length >= 8, `${routes.length} routes under test — the audit below has a population`);
 const gaps = floorAudit(routes);
 say(gaps.length === 0, `every route under test has a floor${gaps.length ? `:\n    ${gaps.join('\n    ')}` : ''}`);
 /* Isolated to the one route, not `[...routes, '/unfloored']`: a count assertion

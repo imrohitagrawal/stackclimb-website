@@ -28,7 +28,16 @@
       #contact into view; without it they differ by exactly 16px.
 
    This records the settled, fully-revealed page — what a visitor sees once
-   she has scrolled — not a frame of the entrance. */
+   she has scrolled — not a frame of the entrance.
+
+   JS ON vs JS OFF, measured (moved here from geometry.spec.js's header by
+   DEF-58, to sit beside the capture it describes). Plate boxes are IDENTICAL
+   either way. The difference is confined to the contact row, and it is not only
+   the count: with JS off the painted count drops (5 -> 4), the button's own
+   child value becomes "hidden", and the four remaining controls lay out
+   differently because the <=900px grid rule still counts five DOM children. An
+   earlier version of that comment said only the count differs, which was wrong.
+   This file is run with JS ON; contact.spec.js owns the no-JS world. */
 export const NEUTRALIZE_MOTION =
   '*,*::before,*::after{animation:none!important;transition:none!important}' +
   '.plate .plate-grid > *{transform:none!important}';

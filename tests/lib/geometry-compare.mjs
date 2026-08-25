@@ -21,8 +21,12 @@
    two measurements 1.999px apart can round to integers 1 apart. Saying
    "+/-1px" would be unearned precision. It is still an order of magnitude
    under the signal — DEF-55 measured run-to-run noise at exactly 1px on
-   untouched plates while a real change moved plate-top-390 by 40px.
-   Counts get ZERO slack: a count cannot round. */
+   untouched plates (plate-citevyn-390 went 1305 -> 1306) while a real change
+   moved plate-top-390 by 40px.
+   Counts get ZERO slack: a count cannot round. Tag sequences are strings, so
+   they get none either. (geometry.spec.js's header carried a second copy of
+   this paragraph until DEF-58; the plate-citevyn number was the one fact it had
+   that this one did not, and it is carried forward here.) */
 
 export const PX_TOLERANCE = 1;
 

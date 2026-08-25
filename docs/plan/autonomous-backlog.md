@@ -8,7 +8,12 @@ Written 2026-08-25, after four packages shipped in one session (D115 geometry ga
 skills landing, D117 baseline-write guard, D118 the 11px type floor). The rules below are
 not theory — each one is here because something went wrong without it.
 
----
+**Everything between the two banners below is the prompt.** Copy all of it, including the
+queue table and the closing rules — they are instructions, not appendices. Nothing above the
+first banner is part of it.
+
+<!-- ============================ PROMPT BEGINS ============================ -->
+================================ PROMPT BEGINS ================================
 
 ## The prompt
 
@@ -121,7 +126,6 @@ source documents.
 6. **A stale LOCAL baseline is not a broken branch.** The darwin geometry baseline is
    gitignored and certifies nothing. Refresh it before concluding the branch is red.
 
----
 
 ## The queue, in order, with the reason for the order
 
@@ -160,3 +164,6 @@ command · branch deleted local AND remote · everything the session created cle
 End with the closing status block: `Done` / `Verified myself` / `Cleanup` / `Pending` /
 `Next action`. Say explicitly whether work is pushed, merged, and running in production —
 never leave it inferred from silence.
+
+================================= PROMPT ENDS =================================
+<!-- ============================= PROMPT ENDS ============================= -->

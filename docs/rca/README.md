@@ -16,7 +16,7 @@ Naming: `RCA-<nnn>-<slug>.md`, numbered in the order raised.
 | 006 | `PRODUCT.md` lags three rulings the site already honours | Done — part 1 2026-08-26 (D128), part 2 and the six-fact refresh 2026-08-27 on the owner's word (D134) |
 | 007 | Line numbers written into comments — 24 of 42 already point at the wrong line | DEF-67's three fixed 2026-08-27 (D138); the other 21 and the gate await the owner |
 | 008 | `/cv` has no plate-height coverage, and closing it needs three decisions, not one | Blocker 1 fixed 2026-08-27 (D139); the ceiling is a design-system amendment and waits on the owner |
-| 009 | The local baseline set goes stale, and one cause tells two opposite lies | Decided and fixed 2026-08-27 (D140) — option C's trigger, refusal instead of delete |
+| 009 | The local baseline set goes stale, and one cause tells two opposite lies | Fixed 2026-08-27 (D140) — option C's trigger, refusal instead of delete; two further defects found by running it |
 
 *Index brought current 2026-08-26: it listed only 001, as "awaiting approval", nine days after W-20
 marked it done, and none of 002–005. Statuses above are taken from the ledger rows named, not from

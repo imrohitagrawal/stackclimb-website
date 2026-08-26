@@ -210,3 +210,42 @@ is explicit that a rule which must always hold belongs in code, not in a documen
 **Decision recorded as mine and not raised to the owner**, because the standing brief assigns
 it: *"a decision about how a local set is invalidated, then the smallest mechanism that makes
 staleness LOUD."* Nothing here changes a fact or a claim on the site, so P-18 does not reach it.
+
+## What building it changed — two corrections, both found by running it
+
+Recorded here rather than by rewriting the sections above, because the point of
+writing an RCA first is to be able to see what the plan got wrong.
+
+**1. One stamp certified both baseline kinds. That was the design's own failure mode,
+committed by me.** The first working version wrote a single `.git/baseline-stamp.json`
+covering the geometry file and the PNGs together. Running it exposed the consequence
+immediately: refreshing the geometry baseline wrote a stamp that then declared the **pixel** set
+fresh, although those 60 PNGs had never been regenerated. A mechanism whose whole purpose is to
+refuse a set it cannot vouch for was vouching for one. Fixed by giving each kind its own stamp
+**and its own authority** — geometry watches `tests/geometry-baseline.*.json`, pixel watches
+`tests/*.spec.js-snapshots/*.png` — so neither can speak for the other. Proved after the fix:
+with the pixel set repaired and the geometry set not, the two read `fresh` and `stale` at the
+same moment. A self-test case now locks it in.
+
+**2. A freshly seeded set would never have been stamped.** The stamp was keyed on the state
+re-derived at teardown. A `seed` run — no local set, Playwright writes the missing snapshots —
+ends with files on disk and no stamp, which re-derives as `stale`, so the stamp was never
+written and the set stayed refused forever. Fixed by keying on the state the run **started** in.
+That is also the safer rule in the other direction: a run that started `stale` never stamps,
+whatever happened afterwards.
+
+Neither was visible by reading. Both took ten seconds to see by running.
+
+## The result, measured
+
+| | Before | After |
+|---|---|---|
+| `geometry.spec.js` on this Mac | 44 passed, **6 failed** (phantom) | refuses while stale, then **50 passed, 0 skipped** |
+| `visual-baselines.spec.js` | **14 passed** against a stale set | refuses while stale, then **14 passed** and earned |
+| The whole local suite | six permanent reds a handoff had to explain | **511 passed, 0 failed, 3 skipped** |
+| On a CI runner | — | `foreign` — inert, CI behaviour unchanged |
+| On linux | — | `foreign` — the committed set is the authority |
+
+The refusal, on the real tree, both directions: moving the committed PNG authority back one
+generation with `git checkout 5cc9766 -- tests/visual-baselines.spec.js-snapshots` flips pixel
+from `fresh` to `stale`, naming the drift (`1a3af796 -> f60c32d1`); restoring it flips it back.

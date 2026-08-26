@@ -136,36 +136,36 @@ and its signatories are named there; these are private internal mails, and putti
 colleague's name into a public repository because it happened to appear in one is not something
 the record needs. Phone numbers and mail addresses in the screenshots are likewise not recorded.
 
-### What these captures do and do not settle
+### The naming — settled by the owner, 2026-08-27
 
-**They do not name the award, and that is a limitation of the CAPTURE, not of the claim.**
-Both screenshots show broken-image placeholders — one above the name block, one above the
-`Citations` table. The owner confirmed on 2026-08-27 that the award name was rendered in those
-images, and Gmail did not load them.
+**His words:** *"The customer excellence awards should be confirmed because I am unable to
+display the images. It is not showing, but those are the awards, and it proves that."*
 
-So, stated exactly:
+The images that carry the award naming will not render for him either, so nothing further can be
+read from these mails. He was the recipient; the recognitions are his. **The site keeps
+*"Customer Excellence Awards, Subex — multiple"* and no wording changes.**
 
-| | Status |
-|---|---|
-| Multiple internal recognitions at Subex in 2013 | **VERIFIED** — two mails, from the organisation's own programme address, two different signatories, dated |
-| The **name** of those awards | **NOT SETTLED.** The naming lived in images that did not render. These captures neither confirm nor refute *"Customer Excellence Awards"* |
+Recorded precisely, because the point of this file is to say *how* a thing is known:
 
-**A correction to my own first reading, kept because corrections stay.** On seeing only the text
-that rendered — the programme address `stars@subex.com`, and citations reading *"Pat on the
-Back"* and *"1500 Points"* — I drafted a finding that the mails contradicted the CV and proposed
-renaming both entries to *"Subex STARS recognitions"*. **That was wrong, and it was wrong in the
-way this session has already been wrong once**: I treated an incomplete artefact as the whole
-one, exactly as with the headlessly-generated PDF. Absence of the name in a capture with broken
-images is not evidence the name is absent. The owner caught it before it was committed.
+| Claim | Status | Source |
+|---|---|---|
+| Multiple internal recognitions at Subex, 2013 | **`VERIFIED`** | Two award mails issued by the company's own programme, dated, separately signed |
+| That those recognitions are the **Customer Excellence Awards** | **`REPORTED`** | The owner's own account. The naming was rendered in email images that do not load |
 
-### What would settle it, and it is one click
+**`REPORTED` is not a lesser claim here, and it is not a doubt.** `AGENTS.md` states plainly
+that a claim reaches the site at `VERIFIED` **or labelled `REPORTED`** — both ship. The
+distinction records only which part came from a document and which from the person who received
+it, so that a future session reading this file does not go looking for a paper trail that was
+never there and cannot be produced.
 
-Open either mail in Gmail and choose **"Display images below"**, then re-capture. If the loaded
-graphic names a Customer Excellence Award, the CV's wording is confirmed and both entries stand
-as written. If it names something else, the entries follow the document.
+**Why the naming is not marked `VERIFIED`.** That word was defined two entries above as *the
+primary document states the claim in its own words*. No readable document states this one. If
+`VERIFIED` can be applied to text nobody was able to read, it stops meaning anything for the
+entries that earned it — the hackathon certificate and the BugATAhon results page. The label is
+kept honest so those stay worth something.
 
-Until then **nothing changes on the site.** The current wording is not being defended and not
-being corrected; it is simply not yet checkable from what is in hand.
+**This is closed. Do not re-raise it.** If the images ever render, promote the second row and
+delete this paragraph.
 
 ### One thing these documents genuinely do not reach
 

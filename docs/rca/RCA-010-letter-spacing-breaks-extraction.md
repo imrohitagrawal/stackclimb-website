@@ -14,26 +14,40 @@ inserts a space. The rendered page looks correct, so nothing about this is visib
 
 ## The measurement
 
-`/cv` rendered to A4 under print media, then read back with `pypdf`. The lines an extractor
-returns, verbatim:
+`/cv` rendered to A4 under print media, then read back — **with two different extractors, which
+turned out to be the whole point.**
 
-| Extracted | Selector | `letter-spacing` |
-|---|---|---|
-| `'EXPERIENCE'` · `'TECHNICAL'` · `'RECOGNITION'` · `'IN SHORT'` · `'INDEPENDENT SYSTEMS'` | `.cv-section h2` | 0.16em — **clean** |
-| `'J U N E  2 0 1 4  —  A P R I L  2 0 1 5'` | `.cv-dates, .cv-state` | 0.1em — **broken** |
-| `'J U L Y  2 0 1 1  —  J U N E  2 0 1 4'` | same | **broken** |
-| `'T E S T  E N G I N E E R I N G'` · `'A U T O M A T I O N'` · `'P L A T F O R M  A N D  D E V O P S'` · `'L A N G U A G E S'` · `'D A T A  A N D  B A C K E N D'` · `'O B S E R V A B I L I T Y'` | `.cv-row dt` | 0.12em — **broken** |
+**`pdf-parse`, which wraps pdfjs — the engine Chrome's own PDF viewer runs, and therefore what
+the owner was copying from:**
 
-**So the section headings are not the problem — the employment dates and the skill-group labels
-are.** DEF-74's row named the wrong elements, and its example, `EXPE R IE N C E`, is the one
-string that survives this extractor intact.
+```
+"I N  S H O R T"   "E X P E R I E N C E"   "I N D E P E N D E N T  S Y S T E M S"
+"T E C H N I C A L"   "E D U C"   "I O N  A N D  C E R T I F I C"
+```
 
-**Both observations are true, and the reason matters.** The owner produced `EXPE R IE N C E` by
-copying out of a PDF viewer; `pypdf` returns that heading clean. Different extractors use
-different gap thresholds, so the same file mangles different runs depending on what reads it.
-**The severity is not fixed, which is an argument for removing the cause rather than tuning
-around it.** Nothing here should be read as "the headings are safe" — only as "this extractor
-happened to cope with them".
+**19 spaced-out runs, and zero parseable date ranges.** This reproduces the owner's report
+exactly. His `EXPE R IE N C E` and this `E X P E R I E N C E` are the same defect.
+
+**`pypdf`, a different implementation, on the identical file:** the section headings come back
+**clean** — `'EXPERIENCE'`, `'TECHNICAL'` — while the dates and skill labels still break:
+
+```
+'J U N E  2 0 1 4  —  A P R I L  2 0 1 5'      <- .cv-dates,  0.1em
+'T E S T  E N G I N E E R I N G'               <- .cv-row dt, 0.12em
+```
+
+### A correction to this document's own first draft, kept because corrections stay
+
+The first version of this RCA, written after reading **only** the `pypdf` output, concluded that
+*"the section headings are not the problem"* and that DEF-74's row **named the wrong elements**.
+That was wrong. The row was right; I had generalised from one extractor.
+
+**It is the fourth time in this session that a conclusion came from an incomplete or
+unrepresentative sample** — after a headlessly-generated PDF, and twice after captures with
+images that had not loaded. The lesson is not "use pypdf" or "use pdfjs". It is that **severity
+here is a property of the READER, not of the file**, so the gate must remove the cause rather
+than satisfy one extractor. The gate uses pdfjs precisely because that is what a recruiter's
+viewer runs.
 
 ## Why it is MEDIUM and not cosmetic — revised, and it is worse than the row said
 

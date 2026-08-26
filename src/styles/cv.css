@@ -188,63 +188,7 @@
   .cv-job-head { flex-direction: column; }
 }
 
-/* ---------- paper ----------
-   DEF-8. Ink on white, links resolved to their targets, and the site furniture
-   dropped. `print-color-adjust` is deliberately NOT used to force the dark
-   ground onto paper: that would burn a page of toner and read worse than ink
-   on white. The page inverts instead. */
-@media print {
-  /* Every colour here is a design-system token, not a literal.
-     `--ink` (#16213c) is the site's own near-black navy and is what the light
-     #private plate already prints its text in, so a printed CV matches the
-     site rather than inventing a second black. The paper is left to the
-     browser's own white — setting a background would only fight it, and
-     `print-color-adjust` is deliberately NOT used to force the dark ground
-     onto paper: it would burn a page of toner and read worse than ink. */
-  html, body { background: transparent !important; }
-
-  /* global.css:34 paints a fixed, blended paint-grain layer over the whole
-     viewport. On screen it is the point of the design; on paper it printed as
-     grey mottling across every page of the CV — visible in the first print
-     proof and only found by looking at one. A `position: fixed` layer also
-     repeats on every printed sheet. */
-  body::before { display: none !important; }
-
-  .site-nav, .colophon, .skip, .cv-foot .btn, .cv-print-note { display: none !important; } /* .cv-print-note: DEF-72 */
-
-  .cv, .cv * {
-    color: var(--ink) !important;
-    background: transparent !important;
-  }
-
-  .cv {
-    max-width: none;
-    padding: 0;
-    font-size: 10.5pt;
-  }
-
-  .cv-title, .cv-section h2, .cv-state, .cv-gate-k, .cv-job-head .org {
-    color: var(--ink) !important;
-  }
-
-  .cv-section h2 { border-bottom: 1pt solid var(--ink); }
-  .cv-row { border-bottom: 0.5pt solid color-mix(in srgb, var(--ink) 45%, transparent); }
-  .cv-note { border-left: 2pt solid var(--ink); }
-
-  .cv-contact a::after,
-  .cv-proj a::after {
-    /* On paper a link is a dead end unless it says where it goes. */
-    content: ' (' attr(href) ')';
-    font-size: 8.5pt;
-    word-break: break-all;
-  }
-  .cv-contact a[href^='mailto:']::after { content: ''; }
-
-  /* A closed <details> hides its content on paper too — DEF-8 means print stays the complete record. */
-  .cv-proj:not([open]) > *:not(summary) { display: block !important; }
-  .cv-proj > summary::after { display: none !important; }
-
-  /* Keep a job and its first lines together rather than orphaning a heading. */
-  .cv-job, .cv-proj, .cv-row { break-inside: avoid; }
-  .cv-section h2 { break-after: avoid; }
-}
+/* PAPER LIVES IN cv-print.css.
+   The @media print block moved there in D151 (DEF-74): this file sat at exactly
+   its 250-line grandfathered ceiling, and print is its own concern. Nothing was
+   dropped — the reset that DEF-74 needed was ADDED there, not here. */

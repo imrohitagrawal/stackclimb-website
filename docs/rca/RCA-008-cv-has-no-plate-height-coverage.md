@@ -138,3 +138,33 @@ or gets a sign saying *"this doorway is not measured"* — the exemption. Both a
 notices if someone lowers it further.
 
 Silence is not approval. Blocker 1 ships; blocker 2 and the route wait for your answer.
+
+## Answered — the owner ruled on 2026-08-27 (D142)
+
+**His words: "for /cv 'ratchet'"**, and then, on the sequencing: **"Keep the ratchet at the
+current. Do not minimize it."**
+
+**Ceilings, from the measurements above plus the 5% margin the other three carry:**
+`7.30` at 390×844 and `4.55` at 1440×900. Blocker 2 is closed with them — the partner floor is
+now route-shaped (`/` 5, `/cv` 1, everything else 2, asserted with `>=`), which is what admits a
+one-plate route without admitting an empty one.
+
+**The slack, recorded because it is deliberate.** I recommended setting the ratchet *after* the
+three approved shortening changes land — a section index, a collapsible Technical block, and
+four condensed roles, together worth roughly 1.4 viewports — so the ceiling would not be baked
+in for a page that no longer exists. He overruled that: the ratchet stays at today's height. The
+consequence, stated rather than discovered later: once those land, this ceiling carries about
+**1.8 viewports of slack at 390** and will not catch a regression smaller than that. Raised
+before it was set; his call; written into the spec's own header as well as here.
+
+**Proved in both directions, run rather than reasoned:**
+
+| | Result |
+|---|---|
+| Before, `/cv` added with nothing else changed | **4 failures — *"no plates found — this test would be measuring nothing"*.** Blocker 2, exactly as predicted above |
+| After, real tree | **32 passed, 0 failed** — up from 28, because `/cv` adds two widths × two projects |
+| Ratchet bites, on an isolated copy with `#cv { min-height: 6800px }` | **4 failures:** *"/cv #cv is 6800px — 8.06 viewports at 390×844, ceiling 7.3"* and *"7.56 viewports at 1440×900, ceiling 4.55"* |
+
+`geometryRoutes()` was renamed `platedRoutes()` in the same package: the list is "every route
+that renders plates", and a height gate importing something called *geometryRoutes* would have
+been a name that lies — the class DEF-64 and DEF-67 are both about.

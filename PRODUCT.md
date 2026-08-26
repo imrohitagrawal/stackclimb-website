@@ -69,23 +69,30 @@ has not proven. **This honesty is the differentiator, and the site must not viol
 
 ## Operating Context
 
-- **Domain: `stackclimb.com`.** The apex currently serves nothing — verified 2026-08-04,
-  connection fails in ~0.04s. This site takes the apex.
-- Projects are served from subdomains of the same domain. Verified 2026-08-04:
-  - `quorum.stackclimb.com` — HTTP 200, 0.96s
-  - `citevyn.stackclimb.com` — HTTP 200, 6.7s (cold start)
-  - `saafsaans.stackclimb.com` — no response within 45s. Its README documents a 256 MB Fly.io
-    machine in Mumbai scaled to zero when idle, so a slow first request is expected behavior;
-    **the deployment's current health is unverified** and must be re-checked before the site
-    links to it as live.
+- **Domain: `stackclimb.com`.** The apex serves this site from Cloudflare Pages, deployed by CI
+  on every merge to `main` (approach C, D81). Verified 2026-08-27: HTTP 200 in 0.26s. *(Until
+  2026-08-27 this line said the apex "currently serves nothing — verified 2026-08-04"; the
+  site went live on 08-09 and the line was never revisited — RCA-006.)*
+- Projects are served from subdomains of the same domain, on Fly.io, scaled to zero when idle.
+  Verified 2026-08-27:
+  - `quorum.stackclimb.com` — HTTP 200
+  - `citevyn.stackclimb.com` — HTTP 200 (a cold start can take several seconds)
+  - `saafsaans.stackclimb.com` — HTTP 200 in 1.7s. *(This line said "no response within 45s …
+    current health is unverified" from 2026-08-04; the app was down 21 Jul–9 Aug, the owner
+    redeployed it, and DEF-7 verified it answering on 08-09. The site never calls it "live" —
+    it is deployed and sleeps when idle.)*
 - Source is public on GitHub under `imrohitagrawal`.
 - Visitors commonly arrive on a deep link rather than the home page, so every page must work as
   an entry point.
 
 ## Capabilities and Constraints
 
-Confirmed site structure: `home`, `work`, `writing`, `about`, `contact`, and one case study page
-per project.
+Site structure as built (verified against `dist/` 2026-08-27): `/` (the home page, seven plates
+including contact), `/cv`, `/experience`, `/how-i-build`, `/projects/{citevyn,quorum,saafsaans,
+narratwin}`, and `/404`. *(This line read "`home`, `work`, `writing`, `about`, `contact`, and one
+case study page per project" from the first interview; no `writing` or `about` page was ever built,
+contact is a plate on the home page, and the project pages are `/projects/<slug>`, not case
+studies — RCA-006.)*
 
 **Confirmed home page decisions (interview, this session):**
 
@@ -96,12 +103,15 @@ per project.
 - Home shows the four public systems, plus EvalAxis and aegis-contracts named as private work
   with a one-line description and no link.
 
-**Undecided — do not invent:**
+**Decided since the first interview** (each was "undecided — do not invent" until 2026-08-27):
 
-- Whether any writing/articles exist yet. No article content has been located.
-- Résumé/CV availability and whether it is downloadable.
-- Contact mechanism: form, `mailto:`, or scheduling link.
-- Where the site is hosted and how the apex is wired.
+- Writing/articles: none exist; no writing section was built.
+- Résumé/CV: `/cv` is a page, evidence-linked (P-9, D92). It is not downloadable today; no
+  decision about offering a download is recorded.
+- Contact mechanism: labelled `mailto:` links plus a copy-address control (P-13, D112). No form,
+  no scheduling link.
+- Hosting: Cloudflare Pages for the site, Fly.io for the applications (D2, D3, I-1). The apex
+  resolves through Cloudflare's proxy (`dig +short stackclimb.com` returns Cloudflare addresses).
 
 ## Brand Commitments
 
@@ -122,9 +132,16 @@ site copy rather than absent material.
 
 **Four public systems** (descriptions and topics read from the repositories):
 
-1. **CiteVyn** — citation-grounded Q&A over official AI documentation. FastAPI, Postgres 16 +
-   pgvector, Redis, Caddy, Docker. README reports 361 tests passing, a 50/50 golden evaluation
-   suite as a hard release gate, pyright strict, and Playwright E2E. Live.
+1. **CiteVyn** — citation-grounded Q&A over official AI documentation. FastAPI; Postgres 16 with
+   pgvector on Neon and Redis on Upstash — both managed free tiers, per `citevyn/fly.toml`
+   (this line implied self-hosted until 2026-08-27; refuted in `docs/evidence/README.md`);
+   Caddy, Docker. **Counted at `df8cfc3` (DEF-31, `docs/evidence/projects/
+   citevyn.md`): 1,036 backend test functions across 110 files; the recorded golden run passes
+   52 of 52 cases.** The golden suite is deliberately NOT the promotion gate — a separate
+   15-case retrieval suite on the candidate index is (D74). Deployed on Fly.io, cold-starts.
+   *(This line carried the README's "361 tests passing, a 50/50 golden evaluation suite as a
+   hard release gate" until 2026-08-27; both figures were refuted on 08-08 and the gate claim
+   on 08-12 — RCA-006.)*
 2. **Quorum-AI** — one question against four LLMs in parallel, two rounds of mutual critique,
    then a five-field synthesis: consensus, disagreement, source support, uncertainty,
    recommendation. Pre-run cost approval; results are ephemeral by design. Live. 2 stars.
@@ -156,7 +173,8 @@ regression) and `aegis-contracts`.
   `docs/20-architecture.md`, SaafSaans `docs/CASE-STUDY.md`, NarraTwin
   `docs/RELEASE_READINESS_REVIEW.md`.
 
-**Career facts** (self-reported, not independently verified): Oracle Principal Member of Technical
+**Career facts** (`REPORTED` — from his CV; the site marks each figure approximate and attributes
+it to the employer, per P-16): Oracle Principal Member of Technical
 Staff, April 2019 – April 2026; led and mentored 11+ engineers; prior experience across Amazon,
 LimeRoad, Mobileum, Snapdeal, and Subex.
 
@@ -170,7 +188,8 @@ makes authoritative — **never uses the term MTTD.** Its two claims are:
   not cycle time itself.
 
 Both restatements made the claim larger than its source. Four planning documents had inherited
-them. Use the CV's own words, labelled self-reported. See `docs/positioning-phase0.md`.
+them. Use the CV's own words, marked approximate and attributed to the employer (P-16). See
+`docs/positioning-phase0.md`.
 
 **Absences future work must not fill:** no testimonials, no named users or customers, no adoption
 or traffic numbers, no press. None may be fabricated.

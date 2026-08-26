@@ -210,7 +210,7 @@
      repeats on every printed sheet. */
   body::before { display: none !important; }
 
-  .site-nav, .colophon, .skip, .cv-foot .btn { display: none !important; }
+  .site-nav, .colophon, .skip, .cv-foot .btn, .cv-print-note { display: none !important; } /* .cv-print-note: DEF-72 */
 
   .cv, .cv * {
     color: var(--ink) !important;

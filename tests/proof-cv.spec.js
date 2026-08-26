@@ -19,16 +19,42 @@ import { employerRows } from '../src/data/proof.js';
 import { fold } from './lib/fold.mjs';
 import { painted } from './lib/painted.mjs';
 
-test('/cv: approximate note painted and unnegated; every act figure attributed', async ({
+test('/cv: no approximate disclaimer anywhere; every act figure attributed', async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/cv');
-  const note = page.locator('.cv-note');
-  const noteText = fold(await note.first().innerText()).toLowerCase();
-  expect(noteText).toContain('approximate');
-  expect(noteText).not.toMatch(/\b(?:not|never|no)\s+approximate/);
-  expect(await painted(note.first())).toBe(true);
+  /* P-25 (owner's explicit directive, 2026-08-27). This assertion is the
+     REVERSE of the one it replaces, not the deletion of it. Until today this
+     file required /cv to carry an approximate note; he ruled the disclaimers
+     off the route entirely — screen and print — because a caveat boxed beside
+     the achievement it qualifies costs a recruiter's confidence and says
+     nothing a CV reader wants.
+
+     Flipped rather than dropped, so the directive is ENFORCED instead of
+     merely recorded: reinstating either note turns this red.
+
+     SCOPE, deliberately narrow. It matches the DISCLAIMER SENTENCES, not the
+     bare word: the P-9 evidence label on a project card and the site-wide
+     colophon line are different devices with different jobs, and the colophon
+     does not print. P-16's approximate marking still governs the HOME PAGE
+     act, which tests/proof-act.spec.js gates and this change does not touch.
+
+     RED WHEN: put either sentence back on /cv. */
+  const body = fold(await page.locator('main').innerText()).toLowerCase();
+  for (const banned of [
+    'every figure in this section is approximate',
+    'every award naming a figure or a placement is approximate',
+    'cannot be verified from outside them',
+  ]) {
+    expect(body, `/cv still carries the disclaimer "${banned}" — P-25 removed it`).not.toContain(banned);
+  }
+  /* The partner. An empty or unrendered page would satisfy every check above
+     by carrying nothing at all, which certifies sameness rather than the
+     removal. Prove the page is really there and really painted. */
+  expect(body.length, '/cv rendered almost no text — the checks above prove nothing')
+    .toBeGreaterThan(2000);
+  expect(await painted(page.locator('.cv-job').first())).toBe(true);
   // DERIVED per act row: the row's own POINT REGEX must match the rendered
   // job block — proving the exact claimed bullet renders, boundary-anchored
   // by its own phrase. Scoped per job: 'Amazon' in the awards list once

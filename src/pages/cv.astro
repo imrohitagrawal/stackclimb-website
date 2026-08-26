@@ -72,13 +72,15 @@ function evidenceHref(name) {
       {/* Stated once here rather than repeated on every line. The site's voice
           rule is to label what is not proven, and a figure from inside a
           company cannot be checked from outside it. */}
-      {/* RCA-002 ruling 1: "approximate", never "self-reported" — the label
-          keeps the honesty (internal measures, unverifiable from outside)
-          without inviting doubt about the person reporting them. */}
-      <p class="cv-note">
-        Every figure in this section is <strong>approximate</strong> — internal measures
-        from the employers concerned, which cannot be verified from outside them.
-      </p>
+      {/* P-25 (2026-08-27, owner's explicit directive): the approximate
+          disclaimer is GONE from /cv, screen and print alike. His words: "It is
+          not necessary to mention them as approximate on the CV ... these need
+          not be present on the CV page on the website as well as on the
+          downloaded PDF." A recruiter reads a CV, not a methods section, and a
+          caveat boxed beside the achievement it qualifies costs credibility.
+          P-16's approximate marking still governs the HOME PAGE act, which is
+          where the site makes its claim about employer figures; this route no
+          longer repeats it. The figures themselves are unchanged. */}
       {experience.map((job) => (
         <div class="cv-job">
           <div class="cv-job-head">
@@ -171,10 +173,7 @@ function evidenceHref(name) {
           figure or a placement is unverifiable from outside, same category
           as the employer bullets, and gets the same label rather than a
           second link scheme. */}
-      <p class="cv-note">
-        Every award naming a figure or a placement is <strong>approximate</strong> —
-        internal or third-party recognitions, which cannot be verified from outside them.
-      </p>
+      {/* P-25: the Recognition disclaimer is gone for the same reason. */}
       <ul>{awards.map((a) => <li>{a}</li>)}</ul>
     </section>
 

@@ -22,6 +22,16 @@ import { test, expect } from '@playwright/test';
  * `.eng` line back into SystemPlate.astro, or a second entry from `page.body`. Both
  * were measured going red before this file shipped.
  *
+ * AND, since DEF-68: retag one plate `<article class="plate" id>` and push it over its
+ * ceiling. The population is `.plate[id]`, not `section.plate[id]`, because a tag change
+ * must not be able to hide a plate from this gate. It could: measured on an isolated copy
+ * with `#citevyn-record` retagged and set to 2200px, the section-scoped query passed
+ * 28/28 while the widened one failed 4 — "2.61 viewports at 390x844, ceiling 2" and
+ * "2.44 viewports at 1440x900, ceiling 1.1". A partial retag is the dangerous one; a
+ * total retag trips the partner assertion below and fails honestly. Widening is neutral
+ * on every route gated today — all seven carry identical counts under both queries at
+ * both widths — so this closed a hole without moving a single number. RCA-008, D139.
+ *
  * The hero is exempt and says so: it is the one plate the site deliberately lets
  * run long, and D27 records the decision. Exempting it here rather than silently
  * skipping it means the exemption is reviewable.
@@ -73,7 +83,7 @@ for (const { name, width, height, max: homeMax, deep } of LIMITS) {
     await page.goto(route, { waitUntil: 'networkidle' });
 
     const plates = await page.evaluate(() =>
-      [...document.querySelectorAll('section.plate[id]')].map((e) => ({
+      [...document.querySelectorAll('.plate[id]')].map((e) => ({
         id: e.id,
         h: Math.round(e.getBoundingClientRect().height),
       })),

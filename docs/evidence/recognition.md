@@ -16,6 +16,21 @@ same bar is met differently, and it is written out here rather than stretched si
 
 Anything meeting only one of those two is `REPORTED`.
 
+**Amended 2026-08-27, because the bar above cannot be met by an internal award.** A recognition
+given inside a company is never published, so *"independent corroboration"* is impossible by
+construction — applied mechanically, the rule would make every internal award permanently
+`REPORTED`, which is not a judgement about evidence, it is an artefact of a rule written for one
+case. The amendment:
+
+> An **internal** recognition is `VERIFIED` when the primary document was **issued by the
+> awarding organisation rather than written by the claimant** — an award mail from the
+> programme's own address, naming the person and the citation, signed by someone in that
+> organisation. Its limitation is recorded with it: it cannot be checked from outside the
+> company, and the entry on the site must not imply otherwise.
+
+That is the same posture `AGENTS.md` already takes on employer figures — attributed to their
+employer, with the limits of the source stated rather than hidden.
+
 ---
 
 ## `VERIFIED` — Anthropic Claude Community Impact Lab hackathon, Bengaluru, August 2026
@@ -97,11 +112,74 @@ placement, the person and the employer agree across two independent records.
 
 ---
 
-## The three remaining entries — `UNRECORDED`, which is not `UNVERIFIED`
+## `VERIFIED` — Subex internal recognitions, 2013. **But the CV calls them the wrong thing.**
 
-`Oracle Rockstar Award (2024)`, `Amazon D2AS Innovation Finalist` and `Customer Excellence
-Awards, Subex` have **no provenance recorded anywhere**. The owner has confirmed (2026-08-27)
-that he holds no documents for them.
+**As it renders on `/cv` today:**
+
+> Customer Excellence Awards, Subex — multiple
+
+**The documents.** Two award mails supplied by the owner on 2026-08-27, both sent from Subex's
+own recognition programme — sender address `stars@subex.com`, subject *"CONGRATULATIONS! You
+have been awarded!"*, each rendering a citation block headed **Citations** with his name on it:
+
+| Sent | Citation, in the mail's own words | Signed by |
+|---|---|---|
+| 29 January 2013 | **"Pat on the Back"** | an Associate Manager, Support |
+| 8 April 2013 | **"1500 Points"** | a Director, Global Support |
+
+Issued by the organisation, not written by him, which is what meets the amended bar above.
+His role at the time reads *Product Specialist*, matching the CV's own Subex line
+(July 2011 – June 2014).
+
+**Colleagues are recorded by role, not by name.** The hackathon certificate is a public document
+and its signatories are named there; these are private internal mails, and putting a former
+colleague's name into a public repository because it happened to appear in one is not something
+the record needs. Phone numbers and mail addresses in the screenshots are likewise not recorded.
+
+### What these captures do and do not settle
+
+**They do not name the award, and that is a limitation of the CAPTURE, not of the claim.**
+Both screenshots show broken-image placeholders — one above the name block, one above the
+`Citations` table. The owner confirmed on 2026-08-27 that the award name was rendered in those
+images, and Gmail did not load them.
+
+So, stated exactly:
+
+| | Status |
+|---|---|
+| Multiple internal recognitions at Subex in 2013 | **VERIFIED** — two mails, from the organisation's own programme address, two different signatories, dated |
+| The **name** of those awards | **NOT SETTLED.** The naming lived in images that did not render. These captures neither confirm nor refute *"Customer Excellence Awards"* |
+
+**A correction to my own first reading, kept because corrections stay.** On seeing only the text
+that rendered — the programme address `stars@subex.com`, and citations reading *"Pat on the
+Back"* and *"1500 Points"* — I drafted a finding that the mails contradicted the CV and proposed
+renaming both entries to *"Subex STARS recognitions"*. **That was wrong, and it was wrong in the
+way this session has already been wrong once**: I treated an incomplete artefact as the whole
+one, exactly as with the headlessly-generated PDF. Absence of the name in a capture with broken
+images is not evidence the name is absent. The owner caught it before it was committed.
+
+### What would settle it, and it is one click
+
+Open either mail in Gmail and choose **"Display images below"**, then re-capture. If the loaded
+graphic names a Customer Excellence Award, the CV's wording is confirmed and both entries stand
+as written. If it names something else, the entries follow the document.
+
+Until then **nothing changes on the site.** The current wording is not being defended and not
+being corrected; it is simply not yet checkable from what is in hand.
+
+### One thing these documents genuinely do not reach
+
+The Subex role's bullet also carries **"99% SLA adherence"**. No award mail speaks to a service
+level, loaded images or not. That is an employer figure, governed by P-16 and attributed
+accordingly — noted here only so it is not mistaken for something these two documents support.
+
+---
+
+## The two remaining entries — `UNRECORDED`, which is not `UNVERIFIED`
+
+`Oracle Rockstar Award (2024)` and `Amazon D2AS Innovation Finalist` have **no provenance
+recorded anywhere**. The owner has confirmed (2026-08-27) that he holds no documents for them.
+Subex moved out of this group the same day, on the two award mails recorded above.
 
 **This is a gap in the RECORD, not a doubt about the claims.** All three are internal employer
 recognitions, which by their nature are not published — the same category `AGENTS.md` already

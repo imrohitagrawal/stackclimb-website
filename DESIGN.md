@@ -297,6 +297,19 @@ counts as a plate.** The unit the rule protects is the *system*, not the section
 the wording now says so. The ban it exists to enforce — no placeholder where the work
 belongs — is unchanged and now stated explicitly for the empty case.
 
+*Amended 2026-08-27 (D135), by the owner, over my measurement — recorded because a rule the
+pixels quietly break is drift.* **"At a size you can read" yields to "the whole application"
+on the home plates.** DEF-70 measured the CiteVyn and SaafSaans home panels at 0.41 and 0.30 of
+their natural size and D130 cropped both to a strip a reader could read. The owner reviewed the
+renders and ruled: CiteVyn shows its full capture again, because the left rail — the intent
+router and its example questions — is what tells a reader what the application is, and a strip
+without it "does not make sense"; SaafSaans keeps a strip, widened to carry the app's header
+row (wordmark in English and Hindi, the Day/Night and English/हिंदी toggles). Desktop scale is
+now 0.41 and 0.39, and `tests/panel-scale.spec.js` no longer holds a floor — it holds what
+survives the ruling: one panel per system, loaded, painted, never upscaled. My position, kept:
+at 0.41 a 16px line in the capture meets the reader at ~6.6px. His: the picture of the whole
+app is the evidence a recruiter recognises; the words are one click away on the project page.
+
 **The Darkest-Surface Rule.** An accent is measured against the *darkest* surface it
 can land on, not the ground. The light plate's accent cleared 4.92:1 on its ground
 and still failed at 4.21:1, because the state label sits on the frame surface.

@@ -32,12 +32,13 @@ export const projects = {
     ],
     proof: 'Twenty-six answerable questions. It found the right source for <em>every one</em>.',
     shot: 'citevyn-demo',
-    /* citevyn-demo is 1160px wide; at the home plate's 477px column it rendered at
-       0.41 of its size, a 16px line meeting the reader at ~6.6px (DEF-70). The
-       crop is the answer with its two citations — 712x296, cut from the same
-       committed capture, 0.67 at the column — and is the home image at every
-       width. The full capture stays on the project page. Measured, not guessed. */
-    homeCrop: true,
+    /* The FULL capture is the home image at desktop, by the owner's ruling
+       (2026-08-27, D135): a strip that drops the left rail "does not make sense",
+       because the rail — the intent router, the four example questions — is what
+       tells a reader what the application is. It renders at 0.41 of its size in
+       the 477px column (DEF-70 measured a 16px line at ~6.6px); D130's crop ran
+       for one day at 0.67 and was overruled after he looked at both. The crop
+       below is the phone crop again (790x380, served under 700px), as before. */
     crop: 'citevyn-crop',
     alt:
       'CiteVyn answering a question about Claude Code, with two numbered citations to real ' +
@@ -131,10 +132,13 @@ export const projects = {
       'plans, scores <em>64</em>.',
     shot: 'saafsaans-en',
     /* saafsaans-en is 1600px wide; at the 477px column it rendered at 0.30 — the
-       11px mono caps at ~3.3px (DEF-70). The crop is the shared-sky line (the
-       proof says "one sky", the prov says 5:00 PM — both in frame), the persona
-       line, the headline and both score chips — 728x228, cut from the same live
-       capture, 0.65 at the column — and is the home image at every width. */
+       11px mono caps at ~3.3px (DEF-70). The crop is the home image at every
+       width and, by the owner's ruling (2026-08-27, D135), it keeps the app's
+       header row — the SaafSaans wordmark in English and Hindi, the Day/Night
+       and English/हिंदी toggles — above the sky line, the persona line, the
+       headline and both score chips: 1212x388, cut from the same live capture,
+       0.39 at the column. D130's 728x228 strip without the header ran for one
+       day at 0.65; he asked for the header back and accepted the scale. */
     homeCrop: true,
     crop: 'saafsaans-crop',
     alt:

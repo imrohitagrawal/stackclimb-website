@@ -15,6 +15,7 @@ Naming: `RCA-<nnn>-<slug>.md`, numbered in the order raised.
 | 005 | The employer ledger shipped scoped to one tenure while depicting the career | Shipped 2026-08-15 (D87) |
 | 006 | `PRODUCT.md` lags three rulings the site already honours | Done — part 1 2026-08-26 (D128), part 2 and the six-fact refresh 2026-08-27 on the owner's word (D134) |
 | 007 | Line numbers written into comments — 24 of 42 already point at the wrong line | DEF-67's three fixed 2026-08-27 (D138); the other 21 and the gate await the owner |
+| 008 | `/cv` has no plate-height coverage, and closing it needs three decisions, not one | Blocker 1 fixed 2026-08-27 (D139); the ceiling is a design-system amendment and waits on the owner |
 
 *Index brought current 2026-08-26: it listed only 001, as "awaiting approval", nine days after W-20
 marked it done, and none of 002–005. Statuses above are taken from the ledger rows named, not from

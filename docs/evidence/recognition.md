@@ -22,8 +22,8 @@ Anything meeting only one of those two is `REPORTED`.
 
 **As it renders on `/cv`:**
 
-> Anthropic Claude Community Impact Lab hackathon (Bengaluru, August 2026) — runner-up,
-> Superhuman Lab: AI × Hardware for Assistive Tech
+> Anthropic Claude Community Impact Lab hackathon (Bengaluru, August 2026) — AI × hardware for
+> assistive tech, runner-up
 
 **Primary document.** A *Certificate of Achievement · Runner-Up*, dated for the event of
 **August 8–9, 2026**, naming Rohit Agrawal and reading: *"secured runner-up at Superhuman
@@ -59,6 +59,8 @@ and the page I read was the weaker source.** The prefix stands.
 | **"Impact Lab"**, not "Cloud Codes Competition" | The owner first described it that way from memory; the certificate and the event page agree on Impact Lab |
 | **Team name omitted** | The owner's call. The certificate records team *FOF – Fans of Fun*; hackathon placements are understood to be team results, and the name carries no signal a recruiter needs |
 | **No approximate caveat** | P-25 removed the disclaimers from `/cv`. None is needed here: this is a dated certificate with two named signatories, which is exactly what the honesty rule asks for |
+| **Track name "Superhuman Lab" not on the line** | It is a brand a reader outside the event cannot decode. *"AI × hardware for assistive tech"* is the same fact in words that carry meaning. The full title is recorded above, so nothing is lost from the record |
+| **Placement LAST** | This list's own pattern — *"BugATAhon 2016 — regional 2nd runner-up"*. The first version wedged "runner-up" between the event and the track, which split one idea in two |
 
 ---
 

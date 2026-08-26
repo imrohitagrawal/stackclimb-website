@@ -112,9 +112,9 @@ placement, the person and the employer agree across two independent records.
 
 ---
 
-## `VERIFIED` — Subex internal recognitions, 2013. **But the CV calls them the wrong thing.**
+## `VERIFIED` — Customer Excellence Awards, Subex, 2013
 
-**As it renders on `/cv` today:**
+**As it renders on `/cv`, and it is correct as it stands:**
 
 > Customer Excellence Awards, Subex — multiple
 

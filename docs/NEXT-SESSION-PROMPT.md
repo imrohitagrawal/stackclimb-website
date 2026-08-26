@@ -46,7 +46,21 @@ any local red as a defect. CI is the truth; the last PR run before this handoff 
 per-fetch message. Last session: 51 fetched, **0 hashes moved**. `impeccable` is UNLOCKED and
 never appears in that file.
 
-## Three things the owner has to answer — the whole queue now sits behind them
+## Update, 2026-08-27 — all three answers below are IN. Do not re-ask.
+
+- **P-1 part 2:** done on his word (D134). `grep -c self-reported PRODUCT.md` → 0; the six stale
+  facts refreshed with dated corrections. P-1 is DONE.
+- **DEF-52:** he leaves obfuscation on; closed as accepted (D137).
+- **I-4:** done (D136) — ten memory folders in one **private** GitHub repo
+  (`imrohitagrawal/claude-memory`); push routine in this repo's memory note
+  `claude-memory-backup`. Consolidation stays on demand.
+- **Also on 08-27:** he overruled D130's panel crops (D135) — CiteVyn shows its whole capture,
+  SaafSaans' strip carries the app's header row; `tests/panel-scale.spec.js` no longer holds a
+  scale floor. Do not re-crop those panels.
+
+The section that follows is kept as written, for the record of what was asked.
+
+## Three things the owner had to answer — answered 08-27, see above
 
 | # | Item | What is needed from him |
 |---|---|---|

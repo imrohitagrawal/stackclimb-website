@@ -102,3 +102,12 @@ mechanism.
 *Raised, not silently decided:* I-4 asked for dreaming by name. The disagreement is with the
 premise — the feature does not exist and the need has not shown up — not with the goal.
 His word settles it; the register carries the row as decided-pending-confirmation.
+
+## Built — 2026-08-27 (D136)
+
+The owner asked the right question about the decision above — local-only history survives a bad
+edit, not a lost machine — and said "go ahead with the recommendation". `~/.claude/projects/` is
+now one git repository admitting only `*/memory/**`, backed up to the **private** GitHub repo
+`imrohitagrawal/claude-memory` (visibility confirmed by API), gitleaks-scanned before the first
+push (one documented placeholder accepted by fingerprint). This repo's two earlier memory commits
+are grafted in. Transcripts never enter it. Consolidation stays on demand, by hand.

@@ -8,7 +8,7 @@ import { plateFloorBreaches, rowFloorBreaches } from './lib/geometry-floor.mjs';
 /* DEF-54. The blocking gate on this site's layout is now a NUMBER, not a
  * photograph.
  *
- * WHY. visual-baselines.spec.js:24 states its own job as "the nav's layout
+ * WHY. visual-baselines.spec.js states its own job as "the nav's layout
  * shifts, a plate's box moves or resizes, or a seam gap changes". Every one of
  * those is a number, and comparing photographs is a lossy proxy for measuring
  * one. On this site the proxy is dominated by noise that is not layout at all:

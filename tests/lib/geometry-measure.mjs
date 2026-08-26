@@ -58,7 +58,7 @@ export function measureGeometry() {
 
   /* Population derived from the DOM, never a hand-typed list — DEF-10 (routes)
      and DEF-44 (plate ids) are both on this repo's record for a list that
-     quietly narrowed a gate. `.plate[id]` matches visual-baselines.spec.js:62
+     quietly narrowed a gate. `.plate[id]` matches visual-baselines.spec.js
      and boundary-check.mjs, so a `<div class="plate" id>` cannot slip past. */
   const plates = [...document.querySelectorAll('.plate[id]')];
   const boxes = plates.map((el) => {
@@ -71,7 +71,7 @@ export function measureGeometry() {
        A 1px height change in the first plate rewrites the y of every plate
        below it: one real change, nine changed lines, at every width, in both
        projects. Storing the SEAM GAP instead makes it one line, and the gap
-       is itself one of the three things visual-baselines.spec.js:24 says the
+       is itself one of the three things visual-baselines.spec.js says the
        gate exists to watch. Nothing is lost — absolute position is heights
        plus gaps. Rounded once, AFTER the subtraction: rounding both operands
        first turns two half-pixel errors into a whole one before the tolerance

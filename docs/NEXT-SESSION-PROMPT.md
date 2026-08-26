@@ -96,7 +96,8 @@ is single-instance), or anything that generates baselines.
 | Item | What is needed, and what NOT to do |
 |---|---|
 | **"First runner-up"** | `/cv` says *"Runner-up — Anthropic Claude Community Impact Lab hackathon…"*. He reports the event had three prizes and this was FIRST runner-up. The certificate says only *"runner-up"*; the event page carries no results — both checked. One email to **Shubhangi Gupta** or **Rohaan Goswami**, who signed it, upgrades it to VERIFIED. **Do not print "first" on his account alone** unless he directs it, and if he does, mark it `REPORTED` in `docs/evidence/recognition.md`, not `VERIFIED` |
-| **DEF-75** | A **record gap, not work.** Three internal employer recognitions have no provenance and he has confirmed he holds no documents. They are unpublishable by nature. **Never reconstruct a credential from memory** — that is inventing one. Log it only if a citation ever surfaces |
+| **The Subex award NAME** | One click, and it is the highest-value thing he can do. The two 2013 award mails are VERIFIED (D148), but the award's NAME was rendered in email images Gmail did not load, so *"Customer Excellence Awards"* is **neither confirmed nor refuted**. Ask him to open either mail, choose **"Display images below"**, and re-capture. **Until then change NOTHING** — the wording is not being defended and not being corrected. A first reading of those captures as a *contradiction* was wrong and is recorded as a correction in `docs/evidence/recognition.md`; do not repeat it |
+| **DEF-75** | A **record gap, not work.** Two entries remain unrecorded — Oracle Rockstar and Amazon D2AS Finalist — and he holds no documents for either. They are internal and unpublishable by nature. **Never reconstruct a credential from memory** — that is inventing one. Log it only if a citation ever surfaces. BugATAhon (D147) and Subex (D148) are both VERIFIED |
 
 ## Do not reopen — decided, with reasons in the ledger
 
@@ -115,9 +116,12 @@ is single-instance), or anything that generates baselines.
 
 ## Traps that already cost this repo time
 
-1. **Test the artefact the user actually gets, not a proxy you built.** A blank 4th page was
-   reported to the owner; it existed only in a headlessly-generated PDF, not in his real
-   download. He corrected it with his own file. **The most expensive error of the session.**
+1. **Test the artefact the user actually gets, not a proxy you built — and never read an
+   INCOMPLETE artefact as a complete one.** This cost twice in one session. A blank 4th page was
+   reported to the owner from a headlessly-generated PDF, not his real download. Then two Gmail
+   captures with **broken-image placeholders** were read as proving an award had a different
+   name, when the naming was simply in images that had not loaded. **Absence in a partial
+   capture is not evidence of absence.** Both times he corrected it from the real thing.
 2. **When you remove something a gate requires, FLIP the gate, do not delete it.** P-25 removed
    two notes that two specs asserted. Deleting those checks would have removed the only thing
    that could notice a reversal. Inverted instead, each with a partner assertion.

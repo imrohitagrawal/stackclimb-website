@@ -35,7 +35,7 @@ work. Never `--admin` merge to get around it without the owner's explicit word.
 
 Read first, do not restate back: `AGENTS.md` · `docs/STATUS.md` · `docs/OWNER-DIRECTIVES.md` ·
 `PRODUCT.md` · `DESIGN.md`. The ledger is the record; this file only points at it. The last
-decision recorded is **D147**; the next you write is D148.
+decision recorded is **D151**; the next you write is D152.
 
 ## Prove the starting state, and paste the output
 
@@ -82,14 +82,13 @@ is single-instance), or anything that generates baselines.
 
 | # | Package | Why here |
 |---|---|---|
-| 1 | **DEF-74 (MEDIUM)** — `/cv` section labels carry `letter-spacing` 0.10–0.16em with no print reset, so text extracted from the PDF reads `EXPE R IE N C E` | **The only open item that can cost a real job application.** Applicant-tracking systems find sections by heading; a parser looking for `EXPERIENCE` does not match. Invisible to the owner because the PDF *looks* right. Fix: reset `letter-spacing` on labels inside `@media print`; screen keeps the tracked-caps register. **Prove it by EXTRACTING TEXT from a generated PDF, not by looking at one** |
-| 2 | **P-22, both halves — the CV becomes takeable** | *Copy:* clipboard, clean plain text for pasting into an application form. Reuse the shape of `ContactEmail.astro` / `copy-email.js` but scope it to `/cv`, NOT `#contact` — that container does not exist there, which is exactly why the control was missing (D143). *Download:* **the owner ruled "build"** — a build-time PDF generated from the live `/cv` in the deploy pipeline. Not a print-trigger, never a hand-maintained file. Generate it AFTER the gates and BEFORE the wrangler upload, so a browser failure cannot block a good code deploy. **Gate it or it rots** — that is the DEF-65 shape: extend `post-deploy.mjs` to assert the PDF exists, has pages, and its last page is not blank |
-| 3 | **The three `/cv` shortening changes, as ONE package with ONE render shown** | All approved 08-27. (a) a section index at the top — plain fragment links, no JS, the `#systems` pattern already on the home page; (b) `<details>` on the **Technical block only**, with `details[open]` forced in `@media print`; (c) the four oldest roles condensed. Together ~1.4 viewports. **Do NOT re-tighten the `/cv` ratchet afterwards** — the owner ruled it stays at today's height (D142), and its slack is deliberate and recorded |
-| 4 | **DEF-71** — sweep and gate the line-number citations | Sweep **all 42** code citations, not only the 21 wrong ones: if the gate bans line numbers, accurate ones must go too or you need an allowlist — the DEF-10 / DEF-44 trap. Then `tests/cite-audit.mjs`, failing when a comment under `src/` or `tests/` writes `file.ext:NN`. **`docs/` is OUT OF SCOPE** — 303 citations, 274 unaudited, and a plan doc that cited a line when it was written is a historical record |
-| 5 | **D141 records 2 + 3(a)** — `Bodoni Fallback` and the eight missing ground/surface/lit values into `DESIGN.md` front-matter | ONE edit to one block, not two packages. The prose at `DESIGN.md:204` already describes the font; `palette.css` declares ten ground/surface pairs where the front-matter lists six. No pixels move |
-| 6 | **D141 record 3(b)** — `#7a2318`, hard-coded three times in one line at `hero-practice.css` | A real design-system leak: not a token, in no document. Give it a token and name it, or replace it with an existing one. Which of those is a **presentation** call — decide it, build it, and show the RENDER, never an option list |
-| 7 | **The em-dash pass** | Approved 08-27. 40 in body copy on `/`, 34 on `/cv`. It is his voice: do the pass, then **show before/after per line and let him veto individually** before merging. A dash replacing a colon usually earns its place; the ones worth cutting are stacked two to a sentence |
-| 8 | **The queue is empty** | Stop. Write the handoff, close the session, say so. Do not invent work |
+| 1 | **P-22, both halves — the CV becomes takeable** | *Copy:* clipboard, clean plain text for pasting into an application form. Reuse the shape of `ContactEmail.astro` / `copy-email.js` but scope it to `/cv`, NOT `#contact` — that container does not exist there, which is exactly why the control was missing (D143). *Download:* **the owner ruled "build"** — a build-time PDF generated from the live `/cv` in the deploy pipeline. Not a print-trigger, never a hand-maintained file. Generate it AFTER the gates and BEFORE the wrangler upload, so a browser failure cannot block a good code deploy. **Gate it or it rots** — that is the DEF-65 shape: extend `post-deploy.mjs` to assert the PDF exists, has pages, and its last page is not blank |
+| 2 | **The three `/cv` shortening changes, as ONE package with ONE render shown** | All approved 08-27. (a) a section index at the top — plain fragment links, no JS, the `#systems` pattern already on the home page; (b) `<details>` on the **Technical block only**, with `details[open]` forced in `@media print`; (c) the four oldest roles condensed. Together ~1.4 viewports. **Do NOT re-tighten the `/cv` ratchet afterwards** — the owner ruled it stays at today's height (D142), and its slack is deliberate and recorded |
+| 3 | **DEF-71** — sweep and gate the line-number citations | Sweep **all 42** code citations, not only the 21 wrong ones: if the gate bans line numbers, accurate ones must go too or you need an allowlist — the DEF-10 / DEF-44 trap. Then `tests/cite-audit.mjs`, failing when a comment under `src/` or `tests/` writes `file.ext:NN`. **`docs/` is OUT OF SCOPE** — 303 citations, 274 unaudited, and a plan doc that cited a line when it was written is a historical record |
+| 4 | **D141 records 2 + 3(a)** — `Bodoni Fallback` and the eight missing ground/surface/lit values into `DESIGN.md` front-matter | ONE edit to one block, not two packages. The prose at `DESIGN.md:204` already describes the font; `palette.css` declares ten ground/surface pairs where the front-matter lists six. No pixels move |
+| 5 | **D141 record 3(b)** — `#7a2318`, hard-coded three times in one line at `hero-practice.css` | A real design-system leak: not a token, in no document. Give it a token and name it, or replace it with an existing one. Which of those is a **presentation** call — decide it, build it, and show the RENDER, never an option list |
+| 6 | **The em-dash pass** | Approved 08-27. 40 in body copy on `/`, 34 on `/cv`. It is his voice: do the pass, then **show before/after per line and let him veto individually** before merging. A dash replacing a colon usually earns its place; the ones worth cutting are stacked two to a sentence |
+| 7 | **The queue is empty** | Stop. Write the handoff, close the session, say so. Do not invent work |
 
 ## OWNER — raise in the closing block, then continue. Silence is not approval
 
@@ -141,12 +140,17 @@ is single-instance), or anything that generates baselines.
 9. **A mutation run leaves a mutated `dist/`.** Rebuild before any screenshot or probe.
 10. **`astro preview` is single-instance.** Kill scratch previews (`lsof -tiTCP:4321`) first; the
     error blames Playwright and is not Playwright.
-11. **Files sit AT their ceiling.** `geometry.spec.js` and `cv.css` were both at exactly 250.
+11. **An unasserted string replace silently does nothing.** This file told the next session the
+    last decision was **D147** when the ledger was at **D150** — two edits to it used
+    `.replace()` without checking the anchor matched, and both no-opped in silence. The owner
+    found it by reading the file. **Assert the anchor, or read the result back.** Every edit
+    script in this session that asserted caught its own mistakes; the two that did not, shipped.
+12. **Files sit AT their ceiling.** `geometry.spec.js` and `cv.css` were both at exactly 250.
     Pay for the budget by modularizing FIRST; wrap comments, never trim them.
-12. **A substring is not a token.** `arize` matched 27 times, all "summarize"; `data-copy-email`
+13. **A substring is not a token.** `arize` matched 27 times, all "summarize"; `data-copy-email`
     matched `/cv` once and it was the script's own selector string.
-13. **`codex exec` without a TTY waits on stdin.** Always `</dev/null`.
-14. **Numbers are not OS-independent.** darwin and linux differ on 148 of 828 keys at the same
+14. **`codex exec` without a TTY waits on stdin.** Always `</dev/null`.
+15. **Numbers are not OS-independent.** darwin and linux differ on 148 of 828 keys at the same
     commit. Platform-scope anything measured from a render.
 
 ## Rules that bind every package

@@ -1,4 +1,4 @@
-# Next session — the queue is worked down to what needs the owner
+# Next session — the queue is empty; four questions wait on the owner
 
 You are continuing work on stackclimb.com, the owner's personal site.
 `/Users/rohitagrawal/Projects/designing-website`. Astro, static, Cloudflare Pages.
@@ -14,13 +14,14 @@ his practice — see P-18.
 Read first, do not restate back: `AGENTS.md` · `docs/STATUS.md` · `docs/OWNER-DIRECTIVES.md` ·
 `PRODUCT.md` · `DESIGN.md`. The ledger is the record; this file only points at it.
 
-## What the previous session did (2026-08-26, five PRs, all merged and deployed)
+## What the previous session did (2026-08-27, four PRs, all merged and deployed)
 
-D128–D133. Four of the six queue items shipped; the other two are recorded decisions that now
-wait on the owner. Read the rows, not this list: **D128** (P-1 part 1 + RCA-006), **D129**
-(DEF-69, print floor + `tests/print-floor.spec.js`), **D130** (DEF-70, home panel crops +
-`tests/panel-scale.spec.js`), **D131** (`htmlparser2`, detector un-degraded), **D132**
-(DEF-52 → OWNER ACTION), **D133** (I-4 decided, pending his word).
+D138–D141. **The whole four-item queue is worked down.** Read the rows, not this list:
+**D138** (DEF-67 + DEF-71 filed), **D139** (DEF-68 blocker 1), **D140** (DEF-65 fixed),
+**D141** (the critique backlog decided, one record per rule).
+
+Three of the four packages found the recorded scope was wrong and said so before acting:
+DEF-67's "three" was 24, DEF-68's two blockers were three, and DEF-65's one lie was two.
 
 ## Prove the starting state before anything else, and paste the output
 
@@ -29,96 +30,90 @@ git rev-parse --abbrev-ref HEAD && git rev-list --left-right --count origin/main
 git status --porcelain | wc -l
 node tests/file-budget.mjs && node tests/no-pii.mjs
 node tests/geometry-selftest.mjs && node tests/baseline-guard-selftest.mjs
-node tests/post-deploy.mjs --self-test
-node tests/hook-binding-selftest.mjs
+node tests/baseline-stamp-selftest.mjs
+node tests/post-deploy.mjs --self-test && node tests/hook-binding-selftest.mjs
 npm run build && npm run post-deploy
 gh run list --branch main --limit 1
 ```
 
-Expected: level with origin, clean tree, all self-tests pass, production green.
-**Local Playwright on a Mac will show geometry legs red** — the darwin geometry baseline is
-gitignored and stale (DEF-65's shape). Refresh it with
-`UPDATE_GEOMETRY=1 npx playwright test tests/geometry.spec.js --workers=1` before reading
-any local red as a defect. CI is the truth; the last PR run before this handoff was green.
+Expected: level with origin, clean tree, all **seven** self-tests pass, production green.
+
+**The local suite on a Mac is now GREEN — 511 passed, 0 failed, 3 skipped.** The paragraph
+that used to live here warning you that six geometry legs go red locally is gone, because
+DEF-65 fixed the cause (D140). If your local baseline set IS behind, the run now says so
+itself and prints the one command that repairs it. Do not go looking for a prose warning.
 
 **Do the skills-currency check in PLANNING, not later.** `npx skills update`, then diff
 `skills-lock.json`. Only `computedHash` values moving count — "Updated N skill(s)" is a
-per-fetch message. Last session: 51 fetched, **0 hashes moved**. `impeccable` is UNLOCKED and
-never appears in that file.
+per-fetch message. `impeccable` is UNLOCKED and never appears in that file.
 
-## Update, 2026-08-27 — all three answers below are IN. Do not re-ask.
+## The four questions waiting on him — raise, then wait. Silence is not approval
 
-- **P-1 part 2:** done on his word (D134). `grep -c self-reported PRODUCT.md` → 0; the six stale
-  facts refreshed with dated corrections. P-1 is DONE.
-- **DEF-52:** he leaves obfuscation on; closed as accepted (D137).
-- **I-4:** done (D136) — ten memory folders in one **private** GitHub repo
-  (`imrohitagrawal/claude-memory`); push routine in this repo's memory note
-  `claude-memory-backup`. Consolidation stays on demand.
-- **Also on 08-27:** he overruled D130's panel crops (D135) — CiteVyn shows its whole capture,
-  SaafSaans' strip carries the app's header row; `tests/panel-scale.spec.js` no longer holds a
-  scale floor. Do not re-crop those panels.
+Each is written out in the four-part shape in the document named. Do not start any of them
+without his answer.
 
-The section that follows is kept as written, for the record of what was asked.
-
-## Three things the owner had to answer — answered 08-27, see above
-
-| # | Item | What is needed from him |
+| # | Question | Where it is written |
 |---|---|---|
-| 1 | **P-1 part 2** — the two `self-reported` lines in `PRODUCT.md` (found by content: `grep -n 'self-reported' PRODUCT.md`) | RCA-006 §Open questions carries the four-part ask and the exact proposed wording. One word: apply P-16 as written, or his own wording. Then: is the six-item remaining-debt table in RCA-006 refreshed WITHOUT a re-interview, or held for one? |
-| 2 | **DEF-52** | Cloudflare dashboard → Scrape Shield → Email Address Obfuscation → off. Check that closes it: `curl -s https://stackclimb.com/ \| grep -c 'mailto:'` → **2**. Or "leave it on", and the row closes as accepted |
-| 3 | **I-4** | Confirm D133's decision (no consolidation pass; reopen at 25 index entries or a wrong memory), and whether the nine other project memory folders get history too |
+| 1 | **DEF-71** — sweep the other 21 stale `file:line` citations, and add a gate that bans writing a line number into a comment at all? Two sub-questions ride on it: is `docs/` prose in scope (303 citations there, only 3 audited), and are accurate citations grandfathered? | `docs/rca/RCA-007-line-numbers-in-comments.md` §Open question |
+| 2 | **DEF-68 blocker 3** — what should `/cv`'s plate-height ceiling say? It is **6.91 viewports at 390** and **4.32 at 1440**, against deepest ceilings of 2.00 and 1.10. A growth ratchet at 7.30/4.55, or an `EXEMPT` entry? It is a third tier on an unqualified `DESIGN.md` rule, and `plate-height.spec.js`'s own header says that split needs his sign-off | `docs/rca/RCA-008-cv-has-no-plate-height-coverage.md` §Open question |
+| 3 | **The em-dash count** — 40 in body copy on `/`, 34 on `/cv`. Real counts, not artefacts. It is the site's voice, so P-18 reserves it | `docs/decisions/critique-backlog.md` Record 4 |
+| 4 | **DEF-68 blocker 2** — rides with question 2. The partner floor needs a route-shaped value only once `/cv` is actually in the gate | same as 2 |
 
-**Do not start on any of these without his answer.** Each one is either his wording, his
-dashboard, or his directive. Raise, then wait; silence is not approval (AGENTS.md, step 4).
-
-## What can be worked without him, in this order, if he has not answered
+## What can be worked without him, in this order
 
 | # | Item | Notes |
 |---|---|---|
-| 1 | **DEF-67** — three comment cross-references cite stale line numbers into `visual-baselines.spec.js` | Three one-word edits: drop the numbers, cite the file. Locate by content |
-| 2 | **DEF-68** — `plate-height.spec.js` does not cover `/cv` and could not (`section.plate[id]` vs `<article>`) | Needs the selector widened to `.plate[id]` AND a ceiling decision: `/cv` is ~6.9 viewports at 390 against a deepest ceiling of 2.0. Either an EXEMPT entry or a route-shaped ceiling, the way D126 did a route-shaped floor |
-| 3 | **DEF-65** — a regeneration refreshes only the tracked platform's baselines; the darwin set goes stale silently | A decision about how a local set is invalidated (a stamp beside the PNGs, a drain step, or delete-on-regenerate). D124 removed the symptom, not the cause |
-| 4 | **Standing critique backlog** — the detector's 25 pre-existing findings (D131 lists them by rule) | Candidates, not defects. `Bodoni Fallback` and the value-ladder colours are DESIGN.md's own prose not reflected in its front-matter; the em-dash and hierarchy flags are taste calls under P-18. Decide per rule, record, do not chase |
+| 1 | **D141 Record 2** — add `Bodoni Fallback` to `DESIGN.md`'s `typography` front-matter | One line. The prose at `DESIGN.md:204` already describes it; the front-matter, which is the half the detector reads, never listed it. No pixels move |
+| 2 | **D141 Record 3(a)** — add the eight missing ground/surface/lit values to `DESIGN.md`'s colour front-matter | The front-matter lists six ground/surface pairs; `palette.css` declares ten. Locate by content in `src/styles/palette.css`. No pixels move |
+| 3 | **D141 Record 3(b)** — `#7a2318`, hard-coded three times at `hero-practice.css:72` | A genuine leak: not a token, in no document. Give it a token and name it, or replace it with an existing one. **The colour it renders is a claim about the design system, so which of those two is a presentation call — decide it, build it, and show him the RENDER, not an option list** |
+| 4 | **The queue is empty** | Stop. Write the handoff, close the session, and say so. Do not invent work |
 
-## Traps this repo keeps re-teaching — three were re-paid last session
+## Traps this repo keeps re-teaching
 
-1. **Line numbers in the ledger drift.** Locate every site by CONTENT. Re-check any number
-   before writing it into the ledger.
-2. **`tail` and pipes swallow exit codes.** `node tests/file-budget.mjs | tail -1` let an
-   over-budget line get committed AGAIN last session (Corrections table, top row). A gate in
-   a script is its own `&&` step with no pipe. Use `--reporter=json` and read `stats`.
-3. **`git checkout -- <file>` after a mutation erases uncommitted edits.** It did, last
-   session, to the `homeCrop` flags. Commit the GREEN state, THEN mutate.
-4. **Astro 7's `astro preview` is single-instance.** A scratch preview on any port makes
-   Playwright's own server on 4321 fail with "Process from config.webServer was not able to
-   start" — which looks like a Playwright fault and is not. Kill scratch previews before a
-   test run.
-5. **`codex exec` without a TTY waits on stdin.** Run it with `</dev/null` or it hangs
-   silently for the whole time box.
-6. **Baseline regeneration shifts every plate by a sub-pixel between runs.** Two dispatches
-   on the same build moved the hero by 9.69%. Commit the files whose pixels changed for a
-   reason you can name; the rest are noise samples inside the 0.15 net.
+1. **Line numbers in prose go stale.** 24 of 42 in code were already wrong; 303 more sit in
+   `docs/`. Locate every site by CONTENT.
+2. **`tail` and pipes swallow exit codes.** In zsh it is `$pipestatus[1]`, not `$PIPESTATUS[0]` —
+   that cost a silent empty exit code this session. Make a gate its own `&&` step with no pipe,
+   or use `--reporter=json` and read `stats`.
+3. **`git checkout -- <file>` erases uncommitted edits.** Commit GREEN, then mutate. Better
+   still: mutate a COPY — `git archive HEAD | tar -x -C <dir>` never touches your tree, and it
+   is what made both mutation proofs this session safe by construction.
+4. **A mutation run leaves a mutated `dist/`.** Rebuild before any screenshot or probe.
+5. **`astro preview` is single-instance.** Kill scratch previews (`lsof -tiTCP:4321`) before any
+   test run; the error blames Playwright and is not Playwright.
+6. **`codex exec` without a TTY waits on stdin.** Always `</dev/null`.
+7. **A static detector cannot resolve `clamp()`.** It reported a 1.5:1 type ratio on a page that
+   renders **8.4:1**. When the claim is visual, LOOK (D141).
+8. **A substring is not a token.** `arize` matched 27 times; all 27 were "summarize".
+9. **`git ls-tree -r HEAD -- '<glob>'` can return 0 entries and exit 0** where
+   `git ls-files -s` returns 61. A hash built on the first would certify sameness forever (D140).
+10. **Numbers are not OS-independent.** darwin and linux differ on 148 of 828 keys at the same
+    commit. Platform-scope anything measured from a render.
+11. **gitleaks reads "API: `value`" in prose as a key.** Name the command instead.
+12. **`git subtree` cannot handle a path beginning with `-`.**
 
 ## Rules that bind every package
 
 - **Verify before asserting.** Run the cheapest command that settles a question. If you cannot
   verify, say `UNVERIFIED`, name the exact check, and offer it.
+- **Measure the class before fixing the instance.** Three of this session's four packages found
+  the recorded scope was wrong. Enumerate the population first, and correct the row.
 - **Done means merged AND verified running in production.** Confirm the deploy JOB ran — not
-  `skipped`, not `cancelled`. Compare the CSS hash production serves with a `main` build's.
-- **Never hand-generate baselines.** Use `gates.yml`'s `workflow_dispatch`
-  (`update_visual_baselines`, `update_geometry_baseline`). A dispatch run SKIPS the test suite,
-  so a green dispatch proves nothing — get a normal PR run afterwards. Compare DECODED PIXELS.
-- **File budgets are shrink-only.** New modules 250 lines / 32,000 bytes / 120 chars.
+  `skipped`, not `cancelled`.
+- **Never hand-generate committed baselines.** `gates.yml`'s `workflow_dispatch` only. A
+  dispatch run SKIPS the suite, so a green dispatch proves nothing.
+- **File budgets are shrink-only.** 250 lines / 32,000 bytes / 120 chars. **Wrap, never trim
+  comments** — `geometry.spec.js` sat at exactly 250 and had to be modularized before one line
+  could be added.
 - **The ledger is updated in the same change.** Corrections stay. Rejected options carry reasons.
-- **One work package, one PR, merged before the next starts.** Merge `main` into the branch
-  BEFORE starting work on it.
-- **RCA before the fix, as its own commit.** Then the gate RED, then the fix. Every package
-  last session followed that order and it is visible in `git log`.
+- **One work package, one PR, merged before the next starts.** Merge `main` in BEFORE starting.
+- **RCA before the fix, as its own commit.** Then RED, then the fix. All four packages this
+  session did that and it is visible in `git log`.
 
 ## Close the session properly
 
 `docs/practices/session-close.md` is the protocol. Plain-English summary with NUMBERS · branch
 merged and `main` level with origin, proved by command · branch deleted local AND remote ·
-everything the session created cleaned up (report "none" rather than skipping the check) · handoff
-written. End with `Done` / `Verified myself` / `Cleanup` / `Pending` / `Next action`, and say
-explicitly whether work is pushed, merged, and running in production.
+everything the session created cleaned up (report "none" rather than skipping the check) ·
+handoff written. End with `Done` / `Verified myself` / `Cleanup` / `Pending` / `Next action`,
+and say explicitly whether work is pushed, merged, and running in production.

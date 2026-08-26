@@ -26,6 +26,7 @@ One concern per file; no file over 200 lines. A parent indexes and links, it nev
 
 | Path | Covers | State |
 |---|---|---|
+| `recognition.md` | The awards on `/cv` — provenance per entry | **written 08-27**; one `VERIFIED`, four `UNRECORDED` (DEF-75) |
 | `practice/` | Cross-cutting practice — skill library, cross-review, CI discipline, failure-driven engineering | 4 files written |
 | `projects/citevyn.md` | CiteVyn | **written 08-11**, measured at `df8cfc3` |
 | `projects/quorum-ai.md` | Quorum-AI | **written 08-11**, measured at `d3c860c` |

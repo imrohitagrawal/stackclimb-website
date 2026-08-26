@@ -128,5 +128,6 @@ is not a new instruction. I have still not written it, because you asked to see 
 ## Decision line
 
 - Part 1: **approved by D74**, fixed in this change.
-- Part 2: **awaiting the owner** — wording proposed above, nothing written.
-- Remaining debt table: **awaiting the owner** — refresh without re-interview, or hold.
+- Part 2: **approved by the owner 2026-08-27 ("Yes do it")** — written as proposed, D134.
+- Remaining debt table: **approved 2026-08-27 ("refresh them")** — all six refreshed, each
+  re-verified that day and carrying a dated note of what it used to say, D134.

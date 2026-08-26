@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { geometryRoutes } from './lib/routes.mjs';
 import { measureGeometry, NEUTRALIZE_MOTION } from './lib/geometry-measure.mjs';
+import { baselineIntegrityProblems } from './lib/geometry-baseline-assert.mjs';
+import { GEOMETRY_TRUST, refusalMessage, stampIfTrustworthy } from './lib/baseline-stamp-io.mjs';
 import { compareLeg, PX_TOLERANCE } from './lib/geometry-compare.mjs';
 import { BASELINE, UPDATING, readBaseline, writeBaseline, expectedLegs } from './lib/geometry-baseline-io.mjs';
 import { plateFloorBreaches, rowFloorBreaches } from './lib/geometry-floor.mjs';
@@ -104,6 +106,10 @@ const legKey = (project, width, route) => `${project}/w${String(width).padStart(
 
 const baseline = readBaseline(BASELINE);
 
+/* DEF-65, decided once in baseline-stamp-io.mjs. An update run is exempt: it is
+   the run that repairs the set. */
+const REFUSE = GEOMETRY_TRUST.state === 'stale' && !UPDATING;
+
 test.describe('Geometry baselines — DEF-54', () => {
   test('the baseline itself is a real baseline', async ({}, testInfo) => {
     /* RED WHEN: tests/geometry-baseline.<platform>.json is deleted, emptied to
@@ -117,6 +123,7 @@ test.describe('Geometry baselines — DEF-54', () => {
        say "and passes". A cross-model review corrected it against the
        installed 1.62.1 source, expect.js:12486.) */
     test.skip(UPDATING, 'the baseline is being written by this run');
+    expect(REFUSE, refusalMessage(GEOMETRY_TRUST, 'geometry')).toBe(false);
     expect(
       baseline,
       `no ${BASELINE}. On linux, that file is committed and its absence is a real failure. ` +
@@ -124,28 +131,10 @@ test.describe('Geometry baselines — DEF-54', () => {
         'UPDATE_GEOMETRY=1 npx playwright test tests/geometry.spec.js --workers=1',
     ).not.toBeNull();
 
-    /* Derived from the config, not typed as a number: add a third Playwright
-       project and this expects its legs the same day, rather than passing on a
-       matrix that silently lost a third of its coverage. It is also what makes
-       the update path's leg-pruning safe to trust — a route or width removed
-       without regenerating shows up here as a count mismatch. */
-    const nProjects = testInfo.config.projects.length;
-    const legs = Object.keys(baseline);
-    expect(legs.length, `the baseline records ${legs.length} legs, not ${WIDTHS.length * ROUTES.length * nProjects}`)
-      .toBe(WIDTHS.length * ROUTES.length * nProjects);
-
-    const empty = legs.filter((l) => Object.keys(baseline[l]).length === 0);
-    expect(empty, `legs recorded with nothing in them:\n${empty.join('\n')}`).toEqual([]);
-
-    /* A denominator for the denominator: the home page must carry more keys
-       than any other route, or the baseline was captured against a page that
-       did not render. */
-    const home = legs.filter((l) => l.endsWith('//'));
-    expect(home.length, 'no home-page legs in the baseline').toBe(WIDTHS.length * nProjects);
-    for (const leg of home) {
-      expect(Object.keys(baseline[leg]).length, `${leg} records too little to be the home page`)
-        .toBeGreaterThan(20);
-    }
+    const problems = baselineIntegrityProblems(baseline, {
+      widths: WIDTHS, routes: ROUTES, nProjects: testInfo.config.projects.length,
+    });
+    expect(problems, `the baseline is not a real baseline:\n${problems.join('\n')}`).toEqual([]);
   });
 
   for (const width of WIDTHS) {
@@ -154,6 +143,7 @@ test.describe('Geometry baselines — DEF-54', () => {
         /* RED WHEN: any plate, nav height, seam gap or CTA row on this route at
            this width moves, resizes, gains a child, loses a child, or has its
            children reordered. */
+        test.skip(REFUSE, 'the local baseline set is stale — see the refusal above');
         if (UPDATING && testInfo.config.workers !== 1) {
           throw new Error(
             'UPDATE_GEOMETRY needs --workers=1. Parallel workers are separate processes and ' +
@@ -244,7 +234,9 @@ test.describe('Geometry baselines — DEF-54', () => {
   }
 
   test.afterAll(({}, testInfo) => {
-    if (!UPDATING || Object.keys(collected).length === 0) return;
-    writeBaseline(BASELINE, collected, expectedLegs(testInfo.config.projects, WIDTHS, ROUTES, legKey));
+    if (UPDATING && Object.keys(collected).length > 0) {
+      writeBaseline(BASELINE, collected, expectedLegs(testInfo.config.projects, WIDTHS, ROUTES, legKey));
+    }
+    stampIfTrustworthy('geometry', { updating: UPDATING, startedAs: GEOMETRY_TRUST.state }); // DEF-65
   });
 });

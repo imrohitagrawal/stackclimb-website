@@ -54,6 +54,7 @@ without his answer.
 
 | # | Question | Where it is written |
 |---|---|---|
+| 0 | **P-22, the DOWNLOAD half** — a committed PDF is a second source of truth that drifts from the page. Honest alternatives: a button that triggers `window.print()` and says so, or a build-time PDF with a gate proving it matches. The COPY half needs no ruling and is in the queue below | `docs/OWNER-DIRECTIVES.md` P-22 · D143 |
 | 1 | **DEF-71** — sweep the other 21 stale `file:line` citations, and add a gate that bans writing a line number into a comment at all? Two sub-questions ride on it: is `docs/` prose in scope (303 citations there, only 3 audited), and are accurate citations grandfathered? | `docs/rca/RCA-007-line-numbers-in-comments.md` §Open question |
 | 2 | **DEF-68 blocker 3** — what should `/cv`'s plate-height ceiling say? It is **6.91 viewports at 390** and **4.32 at 1440**, against deepest ceilings of 2.00 and 1.10. A growth ratchet at 7.30/4.55, or an `EXEMPT` entry? It is a third tier on an unqualified `DESIGN.md` rule, and `plate-height.spec.js`'s own header says that split needs his sign-off | `docs/rca/RCA-008-cv-has-no-plate-height-coverage.md` §Open question |
 | 3 | **The em-dash count** — 40 in body copy on `/`, 34 on `/cv`. Real counts, not artefacts. It is the site's voice, so P-18 reserves it | `docs/decisions/critique-backlog.md` Record 4 |
@@ -66,7 +67,8 @@ without his answer.
 | 1 | **D141 Record 2** — add `Bodoni Fallback` to `DESIGN.md`'s `typography` front-matter | One line. The prose at `DESIGN.md:204` already describes it; the front-matter, which is the half the detector reads, never listed it. No pixels move |
 | 2 | **D141 Record 3(a)** — add the eight missing ground/surface/lit values to `DESIGN.md`'s colour front-matter | The front-matter lists six ground/surface pairs; `palette.css` declares ten. Locate by content in `src/styles/palette.css`. No pixels move |
 | 3 | **D141 Record 3(b)** — `#7a2318`, hard-coded three times at `hero-practice.css:72` | A genuine leak: not a token, in no document. Give it a token and name it, or replace it with an existing one. **The colour it renders is a claim about the design system, so which of those two is a presentation call — decide it, build it, and show him the RENDER, not an option list** |
-| 4 | **The queue is empty** | Stop. Write the handoff, close the session, and say so. Do not invent work |
+| 4 | **P-22 COPY half** — `/cv` puts the CV on the clipboard as clean plain text | Owner-requested 08-27 (D143). Reuse the shape of `ContactEmail.astro` / `copy-email.js`, but scoped to `/cv`, not `#contact`. What a recruiter needs is ATS-pasteable text, not the email. The DOWNLOAD half is a separate question and is waiting on him — do not build it |
+| 5 | **The queue is empty** | Stop. Write the handoff, close the session, and say so. Do not invent work |
 
 ## Traps this repo keeps re-teaching
 

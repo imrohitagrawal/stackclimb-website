@@ -96,7 +96,7 @@ is single-instance), or anything that generates baselines.
 | Item | What is needed, and what NOT to do |
 |---|---|
 | **"First runner-up"** | `/cv` says *"Runner-up — Anthropic Claude Community Impact Lab hackathon…"*. He reports the event had three prizes and this was FIRST runner-up. The certificate says only *"runner-up"*; the event page carries no results — both checked. One email to **Shubhangi Gupta** or **Rohaan Goswami**, who signed it, upgrades it to VERIFIED. **Do not print "first" on his account alone** unless he directs it, and if he does, mark it `REPORTED` in `docs/evidence/recognition.md`, not `VERIFIED` |
-| ~~The Subex award name~~ | **CLOSED 08-27 (D149) — do not re-raise.** The recognitions are `VERIFIED`; the NAME is `REPORTED` on the owner's account, because the images carrying it will not render for him either. `/cv` wording is unchanged and correct. Promote the row in `docs/evidence/recognition.md` only if those images ever load |
+| ~~The Subex award name~~ | **CLOSED 08-27 (D150) — `VERIFIED`, both the recognitions and the naming. Do not re-raise it and do NOT downgrade it.** The naming is in the award mails, in embedded images the mail client will not draw; a rendering limitation is not an evidentiary one. `/cv` wording is correct as it stands |
 | **DEF-75** | A **record gap, not work.** Two entries remain unrecorded — Oracle Rockstar and Amazon D2AS Finalist — and he holds no documents for either. They are internal and unpublishable by nature. **Never reconstruct a credential from memory** — that is inventing one. Log it only if a citation ever surfaces. BugATAhon (D147) and Subex (D148) are both VERIFIED |
 
 ## Do not reopen — decided, with reasons in the ledger
@@ -117,7 +117,8 @@ is single-instance), or anything that generates baselines.
 ## Traps that already cost this repo time
 
 1. **Test the artefact the user actually gets, not a proxy you built — and never read an
-   INCOMPLETE artefact as a complete one.** This cost twice in one session. A blank 4th page was
+   INCOMPLETE artefact as a complete one.** This cost THREE times in one session, and it is the
+   single most repeated error on this repo's record (D144, D148, D150). A blank 4th page was
    reported to the owner from a headlessly-generated PDF, not his real download. Then two Gmail
    captures with **broken-image placeholders** were read as proving an award had a different
    name, when the naming was simply in images that had not loaded. **Absence in a partial

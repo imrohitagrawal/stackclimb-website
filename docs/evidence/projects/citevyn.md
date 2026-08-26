@@ -125,8 +125,9 @@ the left rail as `USAGE` / `EXACT LOOKUP` / `HOW-TO` / `OUT OF SCOPE`.
 
 Unlike the golden-suite fixtures, these citation URLs are real. Verified by reading the image.
 
-`src/assets/projects/citevyn-crop.webp` — the answer with its two citations, 712×296, cut from
-the capture above. **Re-cut 2026-08-26 (DEF-70):** it was a 790×380 phone crop served below
-700px; the home plate now shows it at every width (`homeCrop`), because the full capture rendered
-at 0.41 of its size in the desktop column — a 16px line at ~6.6px. The left rail with the intent
-router is out of the crop's frame and stays on the project page, which shows the full capture.
+`src/assets/projects/citevyn-crop.webp` — the 790×380 phone crop, served below 700px, as it was
+before 2026-08-26. **History:** on 08-26 (DEF-70, D130) it was re-cut to the answer with its two
+citations (712×296) and made the home image at every width, because the full capture rendered at
+0.41 of its size in the desktop column. On 08-27 the owner overruled that (D135): the left rail
+with the intent router is what shows a reader what the application is, so the full capture is
+the desktop home image again at 0.41, and this file is the phone crop it always was.

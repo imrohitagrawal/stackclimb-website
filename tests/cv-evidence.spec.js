@@ -104,14 +104,21 @@ test('/cv: every project claim links to its OWN evidence, reachably, or is label
   }
 });
 
-test('/cv: the Recognition section carries its own, unnegated Approximate note', async ({
+test('/cv: the Recognition section carries NO approximate disclaimer — P-25', async ({
   page,
 }) => {
   await page.goto('/cv');
-  const note = page.locator('#s-awards ~ .cv-note, section:has(#s-awards) .cv-note');
-  const text = fold(await note.first().innerText()).toLowerCase();
-  expect(text).toContain('approximate');
-  expect(text).not.toMatch(NEGATED);
+  /* Flipped on 2026-08-27 by the owner's explicit directive. This test used to
+     require the note; it now refuses it. The awards themselves are untouched —
+     what left is the sentence disclaiming them. RED WHEN: the note comes back.
+     Partnered below, because "no note" is satisfied by an empty section. */
+  const section = page.locator('section:has(#s-awards)');
+  const text = fold(await section.innerText()).toLowerCase();
+  expect(text).not.toContain('approximate');
+  expect(text).not.toContain('cannot be verified');
+  const awards = section.locator('li');
+  expect(await awards.count(), 'no awards render — the check above proves nothing')
+    .toBeGreaterThan(2);
 });
 
 test('/cv: project cards are collapsed by default with an accurate, unlabelled control', async ({

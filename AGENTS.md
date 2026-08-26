@@ -175,8 +175,8 @@ thesis, so this is a correctness rule, not a style preference.
 
 - No invented metrics, testimonials, users, adoption, or press. None exist.
 - Employer figures are **marked approximate and attributed to their employer** — never
-  rendered as "self-reported" (owner's ruling, 2026-08-14, RCA-002: the word reads as
-  *doubt me* rather than honest precision; "approximate" plus attribution keeps the same
+  rendered as "self-reported" (owner's ruling, 2026-08-14, RCA-002: the word works against
+  him rather than reading as honest precision; "approximate" plus attribution keeps the same
   honesty). Counted figures name their version. The word "self-reported" is now a barred
   string on every built page, gated in `tests/proof-act.spec.js`.
 - Never call SaafSaans "live" — it is deployed and sleeps when idle.

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { geometryRoutes } from './lib/routes.mjs';
+import { platedRoutes } from './lib/routes.mjs';
 import { measureGeometry, NEUTRALIZE_MOTION } from './lib/geometry-measure.mjs';
 import { baselineIntegrityProblems } from './lib/geometry-baseline-assert.mjs';
 import { GEOMETRY_TRUST, refusalMessage, stampIfTrustworthy } from './lib/baseline-stamp-io.mjs';
@@ -71,7 +71,7 @@ import { plateFloorBreaches, rowFloorBreaches } from './lib/geometry-floor.mjs';
  * writing happens — moved by DEF-58, which also fixed the dangling reference to
  * "the 42px measurement above" that was never in this file.
  *
- * WHICH ROUTES: tests/lib/routes.mjs's geometryRoutes() — the plate routes plus
+ * WHICH ROUTES: tests/lib/routes.mjs's platedRoutes() — the plate routes plus
  * /cv. Read the note there before touching it.
  *
  * /cv's TWO `<details>` PANELS ARE MEASURED SHUT — a decision, not an oversight.
@@ -90,7 +90,7 @@ import { plateFloorBreaches, rowFloorBreaches } from './lib/geometry-floor.mjs';
 
 const WIDTHS = [390, 768, 1440];
 
-const ROUTES = await geometryRoutes();
+const ROUTES = await platedRoutes();
 
 /* Accumulated across every test in this run. writeBaseline() merges these WHOLE
    LEGS onto what is already on disk, so a filtered run refreshes what it

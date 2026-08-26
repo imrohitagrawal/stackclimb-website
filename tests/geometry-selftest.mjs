@@ -19,7 +19,7 @@
 import { readFileSync } from 'node:fs';
 import { compare } from './lib/geometry-compare.mjs';
 import { ROW_FLOOR, floorAudit, minPlates, plateFloorBreaches, rowFloorBreaches } from './lib/geometry-floor.mjs';
-import { geometryRoutes } from './lib/routes.mjs';
+import { platedRoutes } from './lib/routes.mjs';
 
 /* NO --self-test FLAG, and that is a deliberate deviation from the plan's
    acceptance item 2, which asked for "the repo's existing idiom (--self-test,
@@ -187,7 +187,7 @@ say(rowFloorBreaches('/', home.rows + 1, home.children + 4, [...all, 'top/extra#
    its single plate. The first two cases are the promise of a route-shaped
    denominator: /cv is relaxed and NOTHING ELSE IS. RED WHEN: any MIN_PLATES
    value drops below 1, or DEFAULT_MIN_PLATES stops being the strict 2. */
-const routes = await geometryRoutes();
+const routes = await platedRoutes();
 const wasStrict = (r) => (r === '/' ? 4 : 1) + 1; // the old `> floor`, as `>= min`
 say(routes.filter((r) => r !== '/cv').every((r) => minPlates(r) === wasStrict(r)),
     'every route gated before DEF-58 keeps its old strictness exactly');

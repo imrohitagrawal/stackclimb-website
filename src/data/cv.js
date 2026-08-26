@@ -193,6 +193,24 @@ export const certifications = [
 ];
 
 export const awards = [
+  /* Added 2026-08-27 (D146) on the owner's word. Provenance: a dated certificate of achievement
+     signed by Shubhangi Gupta (Claude Code Ambassador) and Rohaan Goswami (Founder, Elseplay),
+     plus the public event page at https://luma.com/claude-54qf — "Impact Lab | Bengaluru -
+     Superhuman Lab", presented by Claude Community Events, described there as "a 2-day
+     interdisciplinary hackathon". THE "ANTHROPIC" PREFIX IS EVIDENCED, not assumed: the event's
+     own confirmation mail carries a reply-to on the anthropic.com domain, so Claude Community
+     Events is Anthropic's community programme even where an individual event is ambassador-run.
+     I queried the prefix on the Luma page alone and was wrong to; the mail header settled it.
+     The certificate's own word is "runner-up"; it is used here
+     rather than "second prize", which the certificate does not say. The team name on the
+     certificate (FOF) is deliberately not printed — the owner's call, and it carries no signal
+     a recruiter needs. The TRACK NAME "Superhuman Lab" is not printed either: it is a brand a
+     reader outside the event cannot decode, whereas "AI × hardware for assistive tech" is the
+     same fact in words that mean something. The full title is kept in the evidence file.
+     Order follows this list's own pattern — event, then what it was, then the placement LAST,
+     the way "BugATAhon 2016 — regional 2nd runner-up" already reads. The certificate itself is NOT committed: this repository is public and
+     that is a personal document. */
+  'Runner-up — Anthropic Claude Community Impact Lab hackathon, Bengaluru (August 2026): AI × hardware for assistive tech',
   'Oracle Rockstar Award (2024) — for API automation coverage and the drop in production issues',
   'Amazon D2AS Innovation Finalist — top five',
   'Customer Excellence Awards, Subex — multiple',

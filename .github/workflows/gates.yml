@@ -166,6 +166,17 @@ jobs:
       - name: baselines cannot be written outside CI (DEF-59)
         run: node tests/baseline-guard-selftest.mjs
 
+      # DEF-65: the mirror of the guard above. That one refuses to WRITE a
+      # tracked baseline from a laptop; this one refuses to TRUST an untracked
+      # one that is a generation behind the committed set. Same reason it is a
+      # self-test rather than a gate: the decision is inert on a runner and on
+      # any platform whose baselines are committed, so a runner can never
+      # exercise it in anger — only drive it with injected answers. Left
+      # unproved it would be DEF-57 a third time. No build, no browser, no
+      # network.
+      - name: a stale local baseline set is refused, not trusted (DEF-65)
+        run: node tests/baseline-stamp-selftest.mjs
+
       # DEF-62: `core.hooksPath` was an ABSOLUTE path in `.git/config`, a file
       # git never clones. The pre-commit hook therefore ran on exactly one
       # laptop and in exactly one working tree, while `docs/STATUS.md` row M4

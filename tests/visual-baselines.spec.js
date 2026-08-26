@@ -7,6 +7,7 @@ import {
   expectVisible,
   openHomePage,
 } from './lib/viewport-clip.mjs';
+import { PIXEL_TRUST, refusalMessage, stampIfTrustworthy } from './lib/baseline-stamp-io.mjs';
 
 // DEF-4. No visual regression baselines existed anywhere in the suite.
 // dod.spec.js's "Evidence capture" block produces screenshots for a HUMAN to
@@ -195,6 +196,7 @@ test.describe('Visual baselines — home page nav and plate boundaries', () => {
   // RED WHEN: empty WIDTHS, or change the `.plate[id]` selector to one the
   // page has none of — proved on this branch with `.plate-does-not-exist[id]`.
   test('widths and plate ids under test are non-empty', async ({ page }) => {
+    expect(PIXEL_TRUST.state === 'stale', refusalMessage(PIXEL_TRUST, 'pixel')).toBe(false);
     expect(WIDTHS.length, 'no viewport widths configured').toBeGreaterThan(0);
     await page.goto('/', { waitUntil: 'networkidle' });
     const plateIds = await page.$$eval('.plate[id]', (els) => els.map((e) => e.id));
@@ -205,6 +207,7 @@ test.describe('Visual baselines — home page nav and plate boundaries', () => {
     // RED WHEN: the nav bar loses its ground, its wordmark, or its links; or
     // NAV_BAND_HEIGHT drops below the bar's height so part of it leaves frame.
     test(`nav at ${width}px`, async ({ page }) => {
+      test.skip(PIXEL_TRUST.state === 'stale', 'the local baseline set is stale — see the refusal above');
       await openHomePage(page, width);
       await assertClipFits(page, width, NAV_BAND_HEIGHT);
       await expectVisible(page, '.site-nav');
@@ -218,6 +221,7 @@ test.describe('Visual baselines — home page nav and plate boundaries', () => {
     // `.plate-figure { display: none }` (the last one at 768 and 1440 only —
     // that gap is stated in the coverage block above, not hidden).
     test(`plate boundaries at ${width}px`, async ({ page }) => {
+      test.skip(PIXEL_TRUST.state === 'stale', 'the local baseline set is stale — see the refusal above');
       await openHomePage(page, width);
       await assertClipFits(page, width, CLIP_HEIGHT);
 
@@ -239,3 +243,5 @@ test.describe('Visual baselines — home page nav and plate boundaries', () => {
     });
   }
 });
+
+test.afterAll(() => stampIfTrustworthy('pixel', { startedAs: PIXEL_TRUST.state })); // DEF-65

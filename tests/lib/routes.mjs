@@ -13,7 +13,15 @@ export async function siteRoutes() {
   ];
 }
 
-/* DEF-58. The GEOMETRY gate's routes: every plate route above, plus /cv.
+/* Every route that RENDERS PLATES: siteRoutes() above, plus /cv.
+
+   Named for what it is, not for one of its callers. It was `geometryRoutes`
+   until D142, when the plate-height gate needed the same list — and a second
+   gate importing something called "geometryRoutes" would have been a name that
+   lied, which is the class DEF-64 and DEF-67 are both about. Consumers:
+   geometry.spec.js, geometry-selftest.mjs, plate-height.spec.js.
+
+   DEF-58.
    dist/cv.html carries exactly one plate — `<article class="cv plate" id="cv">`
    — so the note that excluded it ("it carries zero .plate[id]") was simply
    wrong. What actually kept it out was geometry.spec.js's old constant
@@ -33,6 +41,6 @@ export async function siteRoutes() {
    route" independently is exactly the DEF-10 / DEF-44 shape this file exists to
    refuse — the selftest's floorAudit() must audit the routes the spec runs, or
    a route can be added to one and stay ungated in the other. */
-export async function geometryRoutes() {
+export async function platedRoutes() {
   return [...(await siteRoutes()), '/cv'];
 }

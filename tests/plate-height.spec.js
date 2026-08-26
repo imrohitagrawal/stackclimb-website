@@ -64,20 +64,54 @@ const EXEMPT = new Set(['top']);
  * a 5% margin, matching the 3-7% the other three carry.
  */
 const LIMITS = [
-  { name: 'desktop', width: 1440, height: 900, max: 1.0, deep: 1.1 },
-  { name: 'mobile', width: 390, height: 844, max: 1.75, deep: 2.0 },
+  { name: 'desktop', width: 1440, height: 900, max: 1.0, deep: 1.1, cv: 4.55 },
+  { name: 'mobile', width: 390, height: 844, max: 1.75, deep: 2.0, cv: 7.3 },
 ];
+
+/* THE /cv CEILING IS A RATCHET, NOT A DESIGN BAR — owner's ruling, 2026-08-27
+   (D142). /cv is ONE plate and a CV is a document, so the One-Plate-One-Viewport
+   Rule is not met there and this number does not pretend it is. Measured on the
+   ec6c881 build: 5835px = 6.91 viewports at 390x844, and 3884px = 4.32 at
+   1440x900. The ceilings are those plus 5%, the same margin the other three
+   carry. What it buys is the only thing it claims: the page cannot grow without
+   someone deciding that it should.
+
+   RECORDED SLACK, because it is deliberate and not an accident. Three changes
+   that SHORTEN /cv are approved and not yet built — a section index, a
+   collapsible Technical block, and four condensed roles, together worth roughly
+   1.4 viewports. The owner ruled that the ratchet stays at today's height rather
+   than being re-tightened afterwards ("keep the ratchet at the current, do not
+   minimize it"). So once those land this ceiling will carry about 1.8 viewports
+   of slack at 390 and will not catch a regression smaller than that. That was
+   raised before it was set; it is his call, and it is written here rather than
+   discovered later.
+
+   /cv IS NOT IN siteRoutes() — see the Rejected table (D126) and routes.mjs. It
+   arrives through platedRoutes(), which is the list the geometry gate already
+   uses. */
+const ceilingFor = (route, limits) =>
+  (route === '/' ? limits.max : route === '/cv' ? limits.cv : limits.deep);
+
+/* Route-shaped, the way D126 made the geometry floor route-shaped. NOT a
+   constant: /cv renders exactly ONE plate, and the old `> 1` refused it — that
+   is blocker 2, and the reason widening the selector alone left /cv red.
+   Asserted with >= so each number reads as the real minimum rather than one
+   less than it. No entry may be 0: a floor of 0 certifies sameness rather than
+   coverage, and the audit below refuses one. */
+const PLATE_FLOOR = { '/': 5, '/cv': 1 };
+const DEFAULT_PLATE_FLOOR = 2;
+const floorFor = (route) => PLATE_FLOOR[route] ?? DEFAULT_PLATE_FLOOR;
 
 /* Every route with plates on it, derived from the data — not just `/`. The first
    version of this file checked the home page alone and the project pages shipped at
    1.21 viewports underneath it, which is the same blind spot the gate exists to
    close, one level down. */
-import { siteRoutes } from './lib/routes.mjs';
-const ROUTES = await siteRoutes();
+import { platedRoutes } from './lib/routes.mjs';
+const ROUTES = await platedRoutes();
 
-for (const { name, width, height, max: homeMax, deep } of LIMITS) {
+for (const { name, width, height, max: homeMax, deep, cv } of LIMITS) {
   for (const route of ROUTES) {
-  const max = route === '/' ? homeMax : deep;
+  const max = ceilingFor(route, { max: homeMax, deep, cv });
   test(`${name} ${route} — every plate is composed to be seen whole`, async ({ page }) => {
     await page.setViewportSize({ width, height });
     await page.goto(route, { waitUntil: 'networkidle' });
@@ -93,8 +127,10 @@ for (const { name, width, height, max: homeMax, deep } of LIMITS) {
        all, which is the same result an empty test gives — the hole a mutation
        audit found in contact.spec.js, and the reason AGENTS.md requires a check
        that counts nothing to prove the thing counted exists. */
-    const floor = route === '/' ? 4 : 1;
-    expect(plates.length, 'no plates found — this test would be measuring nothing').toBeGreaterThan(floor);
+    const floor = floorFor(route);
+    expect(floor, `${route} has a plate floor of 0 — that certifies sameness, not coverage`).toBeGreaterThan(0);
+    expect(plates.length, `${route}: ${plates.length} plate(s), floor ${floor} — this test would be measuring nothing`)
+      .toBeGreaterThanOrEqual(floor);
 
     /* Counting NODES is not counting PLATES. `.plate { display: none }` leaves every
        node in the DOM at 0px, so a height ceiling passes while the page renders

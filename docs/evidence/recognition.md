@@ -64,10 +64,50 @@ and the page I read was the weaker source.** The prefix stands.
 
 ---
 
-## The four earlier entries — `UNRECORDED`, not unverified
+## `VERIFIED` — BugATAhon 2016, regional 2nd runner-up
 
-`Oracle Rockstar Award (2024)`, `Amazon D2AS Innovation Finalist`, `Customer Excellence Awards,
-Subex` and `BugATAhon 2016` predate this file and have **no provenance recorded anywhere**.
-That is a gap in the record, not a judgement on the claims — they may well be documented in the
-owner's own files. Filed as **DEF-75** rather than repaired here, because reconstructing four
-credentials is its own package and needs the owner's documents.
+**As it renders on `/cv`:**
+
+> BugATAhon 2016 — regional 2nd runner-up
+
+**Primary source, and it is a third party's, which is the strongest kind.** The organiser's own
+results page — Agile Testing Alliance, <http://bugatahon.agiletestingalliance.org/> → *Winners* →
+the **NOIDA** tab — lists under *Winners List*:
+
+| Rank | Name | Company |
+|---|---|---|
+| 3 | **Rohit Agrawal** | LimeRoad |
+
+Read 2026-08-27. **The page is still live**: `curl -o /dev/null -w '%{http_code}'` returns
+**200** over HTTP. It is HTTP-only — HTTPS does not resolve — so cite it as `http://`, and treat
+its long-term availability as unguaranteed; a screenshot is held by the owner as the fallback.
+
+Only the owner's own row is recorded here. The page names other participants and they have no
+business in this repository.
+
+**Why "2nd runner-up" is the right words for rank 3.** Winner → 1st runner-up → 2nd runner-up.
+Rank 3 is the second runner-up, so the entry neither inflates nor understates.
+
+**Why "regional" is right.** The results page carries a tab per city — Pune, Mumbai, Bangalore,
+Vadodara, Noida — so this is the placement in the Noida edition, not a national final.
+
+**Corroboration of identity.** The row gives the company as **LimeRoad**, which matches the CV's
+own employment line for that period (Senior SDET · LimeRoad, October 2015 – May 2017). The
+placement, the person and the employer agree across two independent records.
+
+---
+
+## The three remaining entries — `UNRECORDED`, which is not `UNVERIFIED`
+
+`Oracle Rockstar Award (2024)`, `Amazon D2AS Innovation Finalist` and `Customer Excellence
+Awards, Subex` have **no provenance recorded anywhere**. The owner has confirmed (2026-08-27)
+that he holds no documents for them.
+
+**This is a gap in the RECORD, not a doubt about the claims.** All three are internal employer
+recognitions, which by their nature are not published — the same category `AGENTS.md` already
+handles by marking employer figures approximate and attributing them. They stay on the site as
+they are.
+
+**DEF-75 stays open as a record gap, not as a defect to chase.** If an internal citation, award
+mail or announcement ever surfaces, log it here to the bar above. Do not go looking for
+substitutes, and never reconstruct a credential from memory — that would be inventing one.

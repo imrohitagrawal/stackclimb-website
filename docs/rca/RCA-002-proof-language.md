@@ -9,8 +9,8 @@ the cause before work starts.**
 Package 4 shipped the two-ledger act with row content that answers the wrong question. The
 independent ledger carried test counts and commit stamps ("1,036 backend test functions
 @df8cfc3") — figures that prove *re-derivability to the site's own tooling* but say nothing
-a hiring manager can use. The employer ledger's label said "self-reported", which reads as
-*doubt me* rather than honest precision. The hero strip has the same defect one plate up:
+a hiring manager can use. The employer ledger's label said "self-reported", which the owner
+ruled against as working against him rather than reading as honest precision. The hero strip has the same defect one plate up:
 "Golden cases passed 52 / 52" and "Release gates 4" are tokens a cold reader cannot finish
 a sentence with. The owner caught all three on production, as the site's intended audience
 would have.
@@ -52,8 +52,8 @@ a dropped instruction, the register's named failure pattern.
 
 ## The owner's rulings (2026-08-14, recorded here and in the ledger row for this package)
 
-1. The employer ledger reads **APPROXIMATE** only — never "self-reported" ("this is like
-   you are hitting an axe on my own legs"). `AGENTS.md`'s voice-rule line is amended in the
+1. The employer ledger reads **APPROXIMATE** only — never "self-reported", which the owner
+   ruled against on 2026-08-14. `AGENTS.md`'s voice-rule line is amended in the
    same change so rule and site do not disagree; D62's own kept sentence ("marked
    approximate") already agrees.
 2. **No per-row employer naming.** Attribution once, at ledger level; rows carry the work

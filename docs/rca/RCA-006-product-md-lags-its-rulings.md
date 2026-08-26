@@ -21,7 +21,7 @@ are quoted only as measured today (`grep -n`) and will drift.
 | Site (by content) | Says today | Ruled otherwise by |
 |---|---|---|
 | Positioning bullet on SaafSaans (line 58) | *"labels whether a reading is live, deterministic, or sample"* | **D74**: `saafsaans/web/presenters.py:570-572` — the `sample` state was deleted; the real states are `LIVE` / `CACHED` / `NO READING`. The site and `/cv` were fixed on 08-12 |
-| Evidence on Hand, *Career facts* (line 157) | *"(self-reported, not independently verified)"* | **RCA-002 ruling 1, P-16** (08-14): the word reads as *doubt me*; figures are marked **approximate** and attributed to their employer. `AGENTS.md`'s voice rule was amended the same day and `self-reported` is a barred string on every built page |
+| Evidence on Hand, *Career facts* (line 157) | *"(self-reported, not independently verified)"* | **RCA-002 ruling 1, P-16** (08-14): the owner ruled the word works against him; figures are marked **approximate** and attributed to their employer. `AGENTS.md`'s voice rule was amended the same day and `self-reported` is a barred string on every built page |
 | Same section, the MTTD correction paragraph (line 171) | *"Use the CV's own words, labelled self-reported."* | Same ruling. This is an instruction to future copy, and it instructs the barred word |
 
 Measured today, on the build at `54e6340`:

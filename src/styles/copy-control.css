@@ -1,0 +1,33 @@
+/* stackclimb.com — the copy controls.
+ *
+ * ONE definition for TWO controls: the contact plate's copy-EMAIL button and
+ * /cv's copy-as-text (P-22). Its own file rather than global.css, which stands
+ * at 494 lines against a grandfathered ceiling of 500 it may never pass, and
+ * rather than a second copy inside each component, which would drift the first
+ * time one was edited.
+ *
+ * WHY IT IS NOT IN A COMPONENT'S <style>. Astro scopes a component stylesheet
+ * to that component. The rules below started inside ContactEmail.astro and the
+ * CV's button therefore inherited neither, which is how it shipped rendering as
+ * a grey Arial system button.
+ *
+ * `.btn[hidden]` IS NOT TIDY-UP. `.btn` sets display:inline-block, and an
+ * author rule beats the UA stylesheet's `[hidden] { display: none }` — so a
+ * control that JS never revealed PAINTS ANYWAY. That is the dead surface DEF-1
+ * and DEF-2 are both on this site's record for. Measured on /cv before this
+ * file existed: 168x45px, with JavaScript off, doing nothing.
+ *
+ * RED WHEN: delete `.btn[hidden]` and tests/contact.spec.js fails on the
+ * contact plate; tests/cv-copy.spec.js fails on /cv.
+ */
+
+/* The one .btn that is a <button>, so it needs the resets an <a> never did:
+   a button inherits neither font-family nor background. */
+.btn-copy {
+  font-family: inherit;
+  line-height: inherit;
+  background: none;
+  cursor: pointer;
+}
+
+.btn[hidden] { display: none; }

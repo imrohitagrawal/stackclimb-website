@@ -17,19 +17,7 @@ const address = 'rohit.ra.agrawal@gmail.com';
   <span data-copy-label aria-live="polite">Copy email</span>
 </button>
 
-<style>
-  /* The one .btn that is a <button>, so it needs the resets an <a> never did:
-     a button inherits neither font-family nor background. */
-  .btn-copy {
-    font-family: inherit;
-    line-height: inherit;
-    background: none;
-    cursor: pointer;
-  }
-
-  /* NOT tidy-up. `.btn` sets `display: inline-block`, and an author rule beats
-     the UA stylesheet's `[hidden] { display: none }` — without this the copy
-     control paints for visitors with JS off, which is the dead surface it was
-     built to avoid. tests/contact.spec.js goes red if this is deleted. */
-  .btn[hidden] { display: none; }
-</style>
+<!-- The .btn-copy reset and .btn[hidden] moved to global.css when /cv gained
+     its own copy control (P-22): two components needed the same two rules, and
+     Astro scopes a component <style> to that component, so the CV's button
+     inherited neither. Superseded here, not deleted, so the reason survives. -->

@@ -181,6 +181,13 @@ function evidenceHref(name) {
     <footer class="cv-foot">
       <a class="btn primary" href={`mailto:${identity.email}`}>Email me</a>
       <a class="btn ghost" href="/">The systems</a>
+      {/* P-22. Ships hidden and is revealed by src/scripts/copy-cv.js only once
+          the clipboard is actually reachable, so with JS off it never appears
+          and the footer reads exactly as it did — the same rule the contact
+          plate's copy control follows, and for the same DEF-1 / DEF-2 reason. */}
+      <button type="button" class="btn ghost btn-copy" data-copy-cv hidden>
+        <span data-copy-label aria-live="polite">Copy as text</span>
+      </button>
       <p class="cv-print-note">
         This page is the current version. Printing it produces a PDF you can forward.
       </p>

@@ -89,3 +89,85 @@ test('/cv: the employment dates parse as dates', async ({ page }) => {
   expect(ranges.length, `no parseable date range found in the PDF; got ${ranges.length}`)
     .toBeGreaterThan(4);
 });
+
+/* RCA-011. The two tests above prove the PDF's text is well-formed. Neither ever asserted it was
+ * COMPLETE: both anchor on 'Rohit Agrawal', 'Oracle', 'Bengaluru' — all outside any <details> — so
+ * a closed <details>'s content could vanish entirely and both would stay green. It did: Chrome
+ * hides a closed <details>'s body via `content-visibility` on the internal `::details-content`
+ * box, a mechanism `cv-print.css`'s `display: block` override does not reach, so Independent
+ * Systems prints as six bare name/status rows with no description, no Gate/Rule, no Visit or
+ * Evidence link — and 'NarraTwin AI — PHASE 1 — NO-GO' prints with nothing around it to explain
+ * what NarraTwin is.
+ *
+ * MARGIN MATTERS. Both tests above call `page.pdf()` with no `margin`, which Playwright defaults
+ * to 0 on every side. Chrome's own default when a person actually prints is 0.4in — measured
+ * page-1 ink fill is 78% at Playwright's default and 38% at Chrome's real one, because the extra
+ * 0.4in on every side leaves less room to absorb the padding/min-height defect below. This test
+ * prints at 0.4in so it sees what a recruiter's own "Print" dialog produces.
+ *
+ * RED WHEN: `.cv-proj:not([open])::details-content` loses its `content-visibility: visible`
+ * override (the presence probes fail); `.cv.plate`'s padding/min-height/display reset loses
+ * enough specificity for `global.css`'s `.plate` rule to win again (the page-1 floor fails). */
+test('/cv: the printed PDF carries Independent Systems — description, Gate, Evidence, not just name', async ({
+  page,
+}) => {
+  await page.goto('/cv', { waitUntil: 'networkidle' });
+  await page.emulateMedia({ media: 'print' });
+
+  // The root cause of the page-1 defect, asserted directly: the screen plate's
+  // vertical centring must not survive into print.
+  const style = await page.locator('.cv').evaluate((el) => {
+    const cs = getComputedStyle(el);
+    return { paddingTop: cs.paddingTop, minHeight: cs.minHeight, display: cs.display };
+  });
+  expect(style.paddingTop, '.cv still carries the screen plate\'s padding under print media').toBe('0px');
+  expect(style.minHeight, '.cv still carries the screen plate\'s min-height under print media').toBe('0px');
+  expect(style.display, '.cv still renders as the screen plate\'s grid under print media').not.toBe('grid');
+
+  const pdf = await page.pdf({
+    format: 'A4',
+    printBackground: true,
+    margin: { top: '0.4in', bottom: '0.4in', left: '0.4in', right: '0.4in' },
+  });
+  const { PDFParse } = require('pdf-parse');
+  const result = await new PDFParse({ data: new Uint8Array(pdf) }).getText();
+
+  expect(result.text.length, 'the PDF extracted almost no text — the checks below prove nothing')
+    .toBeGreaterThan(2000);
+  // Anchors from four of the six project cards, not one or two — a fix scoped narrowly enough to
+  // restore some cards but not others (e.g. a selector that only matches the first `<details>`)
+  // must not read as complete. Delhi-NCR/SaafSaans, citevyn.stackclimb.com/CiteVyn's Visit link,
+  // 'Grounded walkthrough generation'/NarraTwin's own body (the card whose bare NO-GO this fix
+  // exists for), 'faithfulness, answer relevancy'/EvalAxis.
+  for (const anchor of [
+    'Delhi-NCR',
+    'citevyn.stackclimb.com',
+    'Grounded walkthrough generation',
+    'faithfulness, answer relevancy',
+  ]) {
+    expect(result.text, `"${anchor}" missing — Independent Systems' body content did not print`).toContain(anchor);
+  }
+  // Substring, not token — the same trap docs/evidence/README.md already records: a prior probe
+  // reported this label PRESENT by matching 'gates' inside an unrelated summary paragraph. Counted,
+  // not just present: four projects carry a Gate claim (CiteVyn, Quorum-AI, NarraTwin, EvalAxis), so
+  // a fix that restores only one card's Gate line must not pass as complete.
+  const gateHits = result.text.match(/\bGATE\b/g) ?? [];
+  expect(
+    gateHits.length,
+    `expected 4 Gate labels, found ${gateHits.length} — some project cards are still not printing their claim`,
+  ).toBeGreaterThanOrEqual(4);
+  // SaafSaans is the one card with a Rule instead of a Gate — a fix that only restores `.cv-gate`
+  // paragraphs sharing markup with the Gate label could still miss this one.
+  expect(/\bRULE\b/.test(result.text), 'no Rule label printed — SaafSaans\' disclosure rule did not print').toBe(true);
+
+  // The page-1 fill floor. Measured before the fix: page 1 carries 946 characters against page 2's
+  // 2183. Measured after, on both the desktop (1440x900) and mobile (412x915) Playwright projects —
+  // page.pdf() renders print layout independently of viewport, so both give the same figure: 2122.
+  // 1500 sits with margin on both sides of that gap, so a regression that only partially restores
+  // the fix still fails this.
+  const page1 = result.pages.find((p) => p.num === 1)?.text ?? '';
+  expect(
+    page1.length,
+    `page 1 carries only ${page1.length} chars — the screen plate's dead space is still eating the top of the page`,
+  ).toBeGreaterThan(1500);
+});

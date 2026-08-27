@@ -209,7 +209,7 @@
       "source": "addyosmani/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/performance-optimization/SKILL.md",
-      "computedHash": "cd729dc7d35b5c2d17fd574dd08f765f0a2775117f01da2f65a6b25c21e879bb"
+      "computedHash": "a8c03c9169c0ea60340b0257294ce80e1a8e8f942146b8642a25b890e324b1e0"
     },
     "pick-ui-library": {
       "source": "emilkowalski/skills",

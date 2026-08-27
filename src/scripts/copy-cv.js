@@ -47,6 +47,11 @@ if (plate && button && navigator.clipboard) {
     const copy = plate.cloneNode(true);
     copy.querySelectorAll('.cv-foot .btn, .cv-print-note, .skip, [data-copy-cv]').forEach((n) => n.remove());
 
+    // RCA-011. innerText reports only what actually renders, and a closed <details>'s body does
+    // not — same cause as the PDF's missing Independent Systems section. Opening every <details>
+    // on the CLONE (never the live page) restores it without touching what the visitor sees.
+    copy.querySelectorAll('details').forEach((d) => { d.open = true; });
+
     // A profile link reads as its label alone once the markup is gone, so the
     // destination goes back in beside it. mailto is skipped: the address is
     // already the link's own text on this page.

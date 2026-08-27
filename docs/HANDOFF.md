@@ -34,6 +34,25 @@ You are continuing work on stackclimb.com, the owner's personal site, in
 /Users/rohitagrawal/Projects/designing-website. Astro 5, static output,
 Cloudflare Pages, deployed by CI on merge to main (approach C, D81).
 
+FIRST, BEFORE READING ANYTHING ELSE - find out where this plan lives. It
+was committed on a branch and may or may not have been merged since:
+
+  git status -sb
+  git log --oneline -3
+  ls docs/plan/critique-three-pages.md
+
+  - If that file exists on your current branch: nothing to do, carry on.
+  - If it does not: the work is on `critique-three-pages` (commit c020260,
+    docs only, no code, no deploy). Merge it into main, or check it out,
+    before you start. Do not re-derive the plan - it took a five-agent
+    critique to produce and every finding in it is verified by command.
+
+  git branch -a | grep critique-three-pages   # is it local, remote, both?
+
+Whatever you find, say it out loud in your first reply rather than
+assuming. The last session left this unmerged deliberately, because
+pushing is the owner's call, not the agent's.
+
 READ FIRST, IN THIS ORDER:
   AGENTS.md                        the rules (CLAUDE.md only imports it)
   docs/OWNER-DIRECTIVES.md         every instruction, with status

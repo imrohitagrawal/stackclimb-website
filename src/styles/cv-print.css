@@ -50,9 +50,18 @@
     background: transparent !important;
   }
 
-  .cv {
+  /* RCA-011. `.cv` alone ties `.plate` (global.css:81-84) on specificity — one
+     class each — and `.plate`'s min-height/display/padding are defined later in
+     source order, so they win regardless of what this rule says: measured under
+     print media, `.cv` computed `padding-top: 88px`, `min-height: 720px`,
+     `display: grid`, and page 1 of the PDF rendered mostly blank as a result
+     (page-1 ink fill 38% at Chrome's real print margins). `.cv.plate` (two
+     classes) beats `.plate` (one) regardless of source order. */
+  .cv.plate {
     max-width: none;
-    padding: 0;
+    padding: 0 !important;
+    min-height: 0;
+    display: block;
     font-size: 10.5pt;
   }
 
@@ -73,7 +82,14 @@
   }
   .cv-contact a[href^='mailto:']::after { content: ''; }
 
-  /* A closed <details> hides its content on paper too — DEF-8 means print stays the complete record. */
+  /* RCA-011. A closed <details> must not hide its content on paper — DEF-8 means print stays the
+     complete record. `display: block` alone does not do this any more: Chrome now hides a closed
+     <details>'s body by setting `content-visibility: hidden` on the internal ::details-content
+     box, a UA-stylesheet mechanism this `display` override never reached. Measured before this
+     rule: Independent Systems printed as six bare name/status rows, with no description, no
+     Gate/Rule, no Visit or Evidence link. Both rules are kept — `display` for engines that still
+     gate on it, `content-visibility` for the one that actually hides the content here. */
+  .cv-proj:not([open])::details-content { content-visibility: visible !important; }
   .cv-proj:not([open]) > *:not(summary) { display: block !important; }
   .cv-proj > summary::after { display: none !important; }
 

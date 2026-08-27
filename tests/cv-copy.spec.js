@@ -61,6 +61,21 @@ test.describe('/cv: copy as text', () => {
     expect(text, 'the LinkedIn URL is missing from the paste').toContain('linkedin.com/in/');
     expect(text, 'the GitHub URL is missing from the paste').toContain('github.com/');
 
+    /* RCA-011. innerText reports only what actually renders, and a closed <details>'s body does
+       not — same UA mechanism as the PDF case in pdf-text.spec.js. Without opening the clone's
+       <details> elements first, Independent Systems pastes as six bare name/status rows. Four
+       anchors, not one, so a fix that only opens some cards (e.g. the first <details>) cannot
+       pass as complete — same reasoning as pdf-text.spec.js's four-anchor check.
+       RED WHEN: the `d.open = true` loop in copy-cv.js is removed. */
+    for (const anchor of [
+      'Delhi-NCR',
+      'citevyn.stackclimb.com',
+      'Grounded walkthrough generation',
+      'faithfulness, answer relevancy',
+    ]) {
+      expect(text, `"${anchor}" missing from the paste — Independent Systems' content did not copy`).toContain(anchor);
+    }
+
     /* And the exclusions, which are the reason this is not just select-all. */
     const leaked = CHROME.filter((c) => text.includes(c));
     expect(leaked, `page chrome leaked into the paste:\n${leaked.join('\n')}`).toEqual([]);

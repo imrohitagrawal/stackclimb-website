@@ -1,29 +1,21 @@
 # Handoff — for the next session
 
-Written 2026-08-28, superseding the 2026-08-12 handoff (which had gone stale in three
-ways: it said Astro 7, described deploys as manual, and stopped at D75). Paste the fenced
-block into a fresh Claude Code session in `/Users/rohitagrawal/Projects/designing-website`.
+Written 2026-08-28, superseding the 2026-08-28 (critique/plan) handoff. Paste the fenced block
+into a fresh Claude Code session in `/Users/rohitagrawal/Projects/designing-website`.
 
-**This session shipped no code.** It ran the first `$impeccable critique` of `/experience`,
-`/how-i-build` and `/cv` — three routes that had never had one — and produced a six-package
-plan. Everything is written down: **D153** (the critique and the plan), **D154** (the skill
-refresh), and `docs/plan/critique-three-pages.md`. Nothing is half-done and no branch is open.
+**This session shipped P1** — the highest-value package from D153's six-package plan — and it is
+merged, deployed, and verified live. `docs/rca/RCA-011-cv-details-vanish-on-export.md` and
+`docs/STATUS.md` D155 carry the full record; do not re-derive it.
 
-**The session ends here for a rule reason, not a context reason.** `npx skills update` moved
-one of 51 hashes, and AGENTS.md's phase table is Plan → Refresh → **Restart** → Implement.
+**One thing the next session must not repeat**, caught inside this session:
 
-**Three things the next session must not repeat**, all of them mistakes made and caught
-*inside* this session:
-
-1. **A `fullPage` Playwright capture renders scroll-revealed plates blank.** It is a capture
-   artifact. Before calling anything invisible, scroll it into a real viewport and read
-   `getComputedStyle` — the first read here said "defect", the second said `opacity: 1`.
-2. **Substring is not token, again.** A PDF probe reported the `Gate` label PRESENT because
-   `gates` appears in the summary paragraph. This is the third recorded instance of that
-   exact error in this repository.
-3. **Playwright's default PDF margins hide a real defect.** `page.pdf({format:'A4'})` with no
-   margin gives 78% page-1 fill; Chrome's actual default (0.4in) gives 38%. `pdf-text.spec.js`
-   uses the former, which is one of two reasons it cannot see the hole in the CV.
+- **A geometry baseline pinned to old copy will go red the moment that copy legitimately
+  changes.** Editing `/experience`'s text (dropping a now-false clause) shifted a CTA row by
+  13–14px at 390px width and failed CI's `geometry.spec.js` — correctly, not a false positive.
+  Fixed by dispatching `gates.yml` with `update_geometry_baseline: true` on the branch,
+  downloading the `geometry-baseline` artifact, diffing it against the committed one (confirm
+  ONLY the intended rows changed), committing it, then re-pushing. `UPDATE_GEOMETRY=1` on a
+  laptop cannot do this — DEF-59's guard refuses a darwin-written baseline outright.
 
 ---
 
@@ -34,121 +26,77 @@ You are continuing work on stackclimb.com, the owner's personal site, in
 /Users/rohitagrawal/Projects/designing-website. Astro 5, static output,
 Cloudflare Pages, deployed by CI on merge to main (approach C, D81).
 
-FIRST, BEFORE READING ANYTHING ELSE - find out where this plan lives. It
-was committed on a branch and may or may not have been merged since:
-
-  git status -sb
-  git log --oneline -3
-  ls docs/plan/critique-three-pages.md
-
-  - If that file exists on your current branch: nothing to do, carry on.
-  - If it does not: the work is on `critique-three-pages` (commit c020260,
-    docs only, no code, no deploy). Merge it into main, or check it out,
-    before you start. Do not re-derive the plan - it took a five-agent
-    critique to produce and every finding in it is verified by command.
-
-  git branch -a | grep critique-three-pages   # is it local, remote, both?
-
-Whatever you find, say it out loud in your first reply rather than
-assuming. The last session left this unmerged deliberately, because
-pushing is the owner's call, not the agent's.
-
 READ FIRST, IN THIS ORDER:
-  AGENTS.md                        the rules (CLAUDE.md only imports it)
-  docs/OWNER-DIRECTIVES.md         every instruction, with status
-  docs/STATUS.md                   D1-D154, defects, open items, rejected options
-  docs/plan/critique-three-pages.md   the plan you are here to execute
+  AGENTS.md                  the rules (CLAUDE.md only imports it)
+  docs/OWNER-DIRECTIVES.md   every instruction, with status
+  docs/STATUS.md             D1-D155, defects, open items, rejected options
+  docs/plan/critique-three-pages.md   the six-package plan; P1 is DONE (D155),
+                              P2-P6 are still planned and unapproved for execution
 
-Then stop trusting them. Every one of those files has been wrong in both
-directions. Verify by running the thing, not by reading about it.
+Then stop trusting them. Verify by running the thing, not by reading about it.
 
-WHAT THE LAST SESSION DID: the first critique of /experience, /how-i-build
-and /cv. Scores 23/40, 16/28, 24/40 against the home page's 22/32. Six
-packages planned, none started, nothing executed against the repo.
+WHAT THIS SESSION DID: shipped P1 (D155) — /cv's printed PDF and clipboard
+copy both now carry the Independent Systems section in full (description,
+Gate/Rule, Visit, Evidence), where before they silently dropped every closed
+<details>'s content. Also fixed /experience's now-false "every approximate
+figure marked as such" claim. Merged via PR #113, deployed through CI, and
+independently re-verified against the LIVE site (not just the deploy log).
 
-YOUR TASK: execute package P1 unless the owner says otherwise. It is the
-only package that changes the artefact a hiring manager actually receives,
-both of its fixes are already proven by execution, and it is the smallest
-diff of the six.
+A conflict between D153's plan (strip the colophon's "approximate" wording)
+and P-26's prior ruling (leave it) was raised to the owner before touching
+anything. His ruling: leave the colophon alone. Only the /experience half of
+that plan item shipped.
 
-BEFORE YOU WRITE ANY CODE:
-  1. Write the RCA. AGENTS.md's order is Investigate -> RCA -> state the
-     need -> get approval -> then work. Investigating is not working.
-  2. Branch. One work package, one PR, merged before the next starts.
-     Merge main into the branch before starting, not after.
-  3. Write the gate RED first and prove it bites.
+YOUR TASK: the owner has not said which package comes next. Ask, or if he
+says "continue the plan," the plan's own ordering is undecided beyond P1 —
+read docs/plan/critique-three-pages.md's package list (P2-P6) and confirm
+with him rather than assuming P2 is next by number. P3 (the dead grid
+classes) needs a runner-side geometry baseline regeneration the same way
+this session did for P1 — see the note above and D155's own record of doing
+it, before you start, not after you discover the gate goes red.
 
-P1 IN ONE PARAGRAPH: /cv's printed PDF is missing the section the CV exists
-for. Independent Systems prints as six names and six statuses - no
-descriptions, no GATE/RULE statements, no Visit or Evidence URLs, and
-"stackclimb" appears zero times in the whole file. "NarraTwin AI - PHASE 1
-- NO-GO" prints naked, so the site's best honesty move reads as a failed
-project. The same content is missing from Copy as text. Both fixes were
-already written by a previous session and both lose: cv-print.css:77
-overrides `display` but Chrome now hides closed <details> via
-`content-visibility` on ::details-content; cv-print.css:55 sets
-.cv{padding:0} and global.css:84's .plate beats it on source order.
+COMMANDS THAT PROVE THE CURRENT STATE — run these, do not trust the above:
 
-COMMANDS THAT PROVE THE CURRENT STATE - run these, do not trust the above:
+  git status -sb                        # expect: clean, main level with origin/main
+  git log --oneline -5                  # expect: c406993 (merge #113) at or near HEAD
+  npx playwright test                   # darwin: ~475 pass, 2 unexpected (D140's
+                                         #   local-baseline guard, expected on darwin),
+                                         #   51 skipped. Linux CI measured 525/0/3 after
+                                         #   this session's geometry regeneration.
+  node tests/file-budget.mjs            # expect: green
+  node tests/no-pii.mjs                 # expect: green
+  npm run post-deploy                   # expect: green, hits the LIVE site
 
-  # the details content is missing from the PDF (expect: all MISSING)
-  npm run build
-  node -e "..." # serve dist/, then:
-  #   page.pdf({format:'A4', margin:{top:'0.4in',bottom:'0.4in',
-  #             left:'0.4in',right:'0.4in'}})
-  #   extract with node_modules/pdfjs-dist/legacy/build/pdf.mjs
-  #   probe for: Delhi-NCR, citevyn.stackclimb.com, Evidence, stackclimb
-  # USE 0.4in MARGINS. Playwright's defaults hide the second defect.
-
-  # the print padding survives (expect: 88px, 720px, grid)
-  #   page.emulateMedia({media:'print'}) then getComputedStyle('.cv')
-  #   -> paddingTop, minHeight, display
-
-  # the dead grid classes, P3 (expect: "551.672px 499.125px" on both)
-  #   getComputedStyle('.plate-grid') at 1440 on /experience and
-  #   /how-i-build; compare /projects/citevyn, which gives "1122.81px"
-
-  # what is green, MEASURED on darwin 2026-08-28, not inherited
-  npx playwright test          # 473 expected, 2 unexpected, 51 skipped
-  node tests/file-budget.mjs   # 131 files within the D8 budget
-  node tests/no-pii.mjs        # 221 files scanned, clean
-
-  # THE 2 FAILURES ARE EXPECTED ON A LAPTOP AND ARE NOT A DEFECT.
-  # Both are "the baseline itself is a real baseline" (desktop + mobile),
-  # which is D140/DEF-65's guard REFUSING a local darwin baseline that is a
-  # generation behind the committed linux one - by design, rather than
-  # silently trusting it. tests/geometry-baseline.darwin.json is gitignored
-  # (.gitignore:114) and has never been committed; the linux one was
-  # regenerated at the current HEAD. The 51 skips are the geometry
-  # comparisons that guard gates. To clear it locally:
-  #   UPDATE_GEOMETRY=1 npx playwright test tests/geometry.spec.js --workers=1
-  # CI on linux is the authority. Do NOT read the 2 as a regression, and do
-  # NOT quote D126's "492 expected, 0 unexpected, 2 skipped" as a local
-  # baseline - that number was measured in CI, on linux.
+  # confirm P1 is actually live, not just deployed — direct production check:
+  #   goto https://stackclimb.com/cv, emulateMedia print, page.pdf at
+  #   0.4in margins, extract with pdf-parse, expect Delhi-NCR and
+  #   citevyn.stackclimb.com PRESENT (this session measured them present)
 
 CONSTRAINTS THAT WILL BITE:
-  - P3 needs a runner-side geometry baseline regeneration. The baseline
-    recorded the DEFECTIVE 544px width, so fixing the layout turns the gate
-    red, and DEF-59's guard refuses a laptop.
+  - Any package that changes VISIBLE COPY on a page geometry.spec.js covers
+    (currently /, /experience, /how-i-build — check geometry.spec.js's own
+    list before assuming a page is or isn't covered) needs the CI-dispatch
+    baseline regeneration described above. Budget time for it; it is not
+    optional and cannot be done locally.
   - Every gate change needs two adversarial reviewers, at least one from a
-    different model family. A subagent of your session is context
-    isolation, not model decorrelation. Use codex.
-  - work-package-protocol is NOT in this repository. It resolves through
-    ~/.claude/skills/ to ~/stackclimb-skills/. See D154.
-  - Each package owes a docs/STATUS.md row in the same change.
+    different model family. `codex exec --sandbox read-only "<prompt>"`
+    works but CANNOT run build/test commands itself (EPERM in its sandbox)
+    — it reviews by reading, not executing, and its verdict should be
+    labelled as such, not treated as equivalent to an executing reviewer.
+  - Each package owes a docs/STATUS.md row and an RCA, written BEFORE the
+    fix, in the same change as the fix.
+  - work-package-protocol is global and NOT in this repository (D154).
 
 SETTLED - do not reopen:
-  - P-25: /cv carries NO approximate disclaimers, screen or print. Do not
-    restore them. proof-cv.spec.js enforces their absence.
-  - D31: the CV is a page that prints, not a PDF upload.
-  - D38: no phone number, and every workaround is banned by name.
-  - D30: light/dark theme deferred. D153 adds the argument that the Value
-    Ladder is built on darkness. Owner's call, still open.
-  - DEF-52: Cloudflare email obfuscation, closed as accepted 08-27.
-  - D123: the two impeccable trees are two builds for two runtimes.
-    Symlinking them is in the rejected table.
-  - /experience renders eras oldest -> newest on purpose (D57 clause 8),
-    and era lines carry zero digits, gated in experience.spec.js.
+  - P-26: the colophon's "and marked approximate" line stays, on every page,
+    screen only (it does not print). Confirmed again this session after a
+    conflict with D153's plan was raised and the owner ruled explicitly.
+  - P-25: /cv carries NO approximate disclaimers, screen or print.
+  - D31 the CV is a page that prints, not a PDF upload. D38 no phone
+    number. DEF-52 Cloudflare email obfuscation, closed as accepted.
+    D123 the two impeccable trees are two builds for two runtimes.
+  - D30 light/dark deferred, D153 adds the Value-Ladder-is-built-on-darkness
+    argument. STILL OPEN, owner's call — do not build it either way.
 ```
 
 ---
@@ -157,21 +105,21 @@ SETTLED - do not reopen:
 
 | Check | Command | Result |
 |---|---|---|
-| Branch | `git rev-parse --abbrev-ref HEAD` | `main`, level with `origin/main` |
-| Tree | `git status --short` | clean after this session's commit |
-| Build | `npm run build` | 9 pages, clean |
-| Suite | `npx playwright test` | **473 expected, 2 unexpected, 51 skipped** — the 2 are D140's local-baseline refusal, expected on darwin, explained in the block above |
-| Budget | `node tests/file-budget.mjs` | 131 files within the D8 budget |
-| PII | `node tests/no-pii.mjs` | 221 files scanned, clean |
-| Production | `curl -w` on the four routes | HTTP 200, TTFB 0.19–0.27s |
-| Skills | `npx skills update -y -p` | 51 updated, **1 hash moved** (`performance-optimization`) |
-| Critique archive | `ls .impeccable/critique/` | 8 snapshots — 5 prior, 3 from this session |
+| Branch | `git rev-parse --abbrev-ref HEAD` | `main`, level with `origin/main` (`git log --oneline main..origin/main` empty) |
+| Tree | `git status --short` | clean |
+| Merged | `gh pr view 113 --json state,mergedAt` | `MERGED`, `2026-08-27T21:20:45Z` |
+| Deploy | `gh run view 33117712890` | gates job pass, secrets job pass, deploy-then-verify job pass — all three, not skipped |
+| Post-deploy | `npm run post-deploy` | green, against the live origin |
+| Production, directly | PDF pulled from `https://stackclimb.com/cv` itself | `Delhi-NCR`, `citevyn.stackclimb.com`, 4× `GATE`, `RULE` all present; page-1 2122 chars |
+| Suite (darwin, local) | `npx playwright test` | 475 pass, 2 unexpected (D140, expected), 51 skipped |
+| Suite (linux, CI) | `gh run view 33116901949` | 525 pass, 0 fail, 3 skipped |
+| Budget / PII | `node tests/file-budget.mjs` · `node tests/no-pii.mjs` | both green |
+| Branch cleanup | `git branch -a` | only `main` and `origin/main` — `p1-cv-output-integrity` deleted both sides |
+| Orphaned processes | `ps aux \| grep -E 'astro\|playwright'` | none |
+| Dependencies | `git diff origin/main~5 origin/main -- package.json` | empty — none added |
 
 ## What this session did NOT do
 
-- No code changed. No branch opened. No deploy.
-- No package started. P1 through P6 are planned and unapproved for execution.
-- The `og.png` regeneration (P6) needs Pillow, which this Node-only CI does not carry —
-  see `tests/og-watermark.spec.js` for the manual procedure and why it stays manual.
-- The light/dark position is **recorded, not decided**. D153 carries the recommendation;
-  the owner has not ruled.
+- P2–P6 of D153's plan remain planned and unapproved for execution.
+- The owner has not been asked which package to take next; do not assume P2 by number.
+- The light/dark position (D30/D153) is recorded, not decided.

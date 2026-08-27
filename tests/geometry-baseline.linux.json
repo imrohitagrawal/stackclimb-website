@@ -60,7 +60,7 @@
   },
   "desktop/w0390//cv": {
     "nav": [0,390,81],
-    "plate.cv": [0,390,5839,0],
+    "plate.cv": [0,390,5902,0],
     "row.cv/cv-contact#0.box": [20,218,350,105],
     "row.cv/cv-contact#0.child.0": [0,0,168,22],
     "row.cv/cv-contact#0.child.1": [186,0,52,22],
@@ -70,12 +70,13 @@
     "row.cv/cv-contact#0.child.5": [0,84,350,22],
     "row.cv/cv-contact#0.count": [6,6],
     "row.cv/cv-contact#0.tags": "li,li,li,li,li,li",
-    "row.cv/cv-foot#0.box": [20,5671,350,104],
+    "row.cv/cv-foot#0.box": [20,5671,350,168],
     "row.cv/cv-foot#0.child.0": [0,0,128,51],
     "row.cv/cv-foot#0.child.1": [141,0,160,51],
-    "row.cv/cv-foot#0.child.2": [0,64,350,41],
-    "row.cv/cv-foot#0.count": [3,3],
-    "row.cv/cv-foot#0.tags": "a,a,p"
+    "row.cv/cv-foot#0.child.2": [0,64,166,51],
+    "row.cv/cv-foot#0.child.3": [0,127,350,41],
+    "row.cv/cv-foot#0.count": [4,4],
+    "row.cv/cv-foot#0.tags": "a,a,button,p"
   },
   "desktop/w0390//experience": {
     "nav": [0,390,81],
@@ -244,9 +245,10 @@
     "row.cv/cv-foot#0.box": [35,3568,699,84],
     "row.cv/cv-foot#0.child.0": [0,0,128,51],
     "row.cv/cv-foot#0.child.1": [141,0,160,51],
-    "row.cv/cv-foot#0.child.2": [0,64,699,20],
-    "row.cv/cv-foot#0.count": [3,3],
-    "row.cv/cv-foot#0.tags": "a,a,p"
+    "row.cv/cv-foot#0.child.2": [313,0,166,51],
+    "row.cv/cv-foot#0.child.3": [0,64,699,20],
+    "row.cv/cv-foot#0.count": [4,4],
+    "row.cv/cv-foot#0.tags": "a,a,button,p"
   },
   "desktop/w0768//experience": {
     "nav": [0,768,81],
@@ -412,12 +414,13 @@
     "row.cv/cv-contact#0.child.5": [350,28,350,22],
     "row.cv/cv-contact#0.count": [6,6],
     "row.cv/cv-contact#0.tags": "li,li,li,li,li,li",
-    "row.cv/cv-foot#0.box": [349,3673,742,84],
+    "row.cv/cv-foot#0.box": [259,3673,921,84],
     "row.cv/cv-foot#0.child.0": [0,0,128,51],
     "row.cv/cv-foot#0.child.1": [141,0,160,51],
-    "row.cv/cv-foot#0.child.2": [0,64,742,20],
-    "row.cv/cv-foot#0.count": [3,3],
-    "row.cv/cv-foot#0.tags": "a,a,p"
+    "row.cv/cv-foot#0.child.2": [313,0,166,51],
+    "row.cv/cv-foot#0.child.3": [0,64,921,20],
+    "row.cv/cv-foot#0.count": [4,4],
+    "row.cv/cv-foot#0.tags": "a,a,button,p"
   },
   "desktop/w1440//experience": {
     "nav": [0,1440,68],
@@ -573,7 +576,7 @@
   },
   "mobile/w0390//cv": {
     "nav": [0,390,81],
-    "plate.cv": [0,390,5850,0],
+    "plate.cv": [0,390,5914,0],
     "row.cv/cv-contact#0.box": [20,211,350,128],
     "row.cv/cv-contact#0.child.0": [0,0,168,44],
     "row.cv/cv-contact#0.child.1": [186,0,52,44],
@@ -583,12 +586,13 @@
     "row.cv/cv-contact#0.child.5": [0,106,350,22],
     "row.cv/cv-contact#0.count": [6,6],
     "row.cv/cv-contact#0.tags": "li,li,li,li,li,li",
-    "row.cv/cv-foot#0.box": [20,5687,350,104],
+    "row.cv/cv-foot#0.box": [20,5687,350,168],
     "row.cv/cv-foot#0.child.0": [0,0,128,51],
     "row.cv/cv-foot#0.child.1": [141,0,160,51],
-    "row.cv/cv-foot#0.child.2": [0,64,350,41],
-    "row.cv/cv-foot#0.count": [3,3],
-    "row.cv/cv-foot#0.tags": "a,a,p"
+    "row.cv/cv-foot#0.child.2": [0,64,166,51],
+    "row.cv/cv-foot#0.child.3": [0,127,350,41],
+    "row.cv/cv-foot#0.count": [4,4],
+    "row.cv/cv-foot#0.tags": "a,a,button,p"
   },
   "mobile/w0390//experience": {
     "nav": [0,390,81],
@@ -757,9 +761,10 @@
     "row.cv/cv-foot#0.box": [35,3584,699,84],
     "row.cv/cv-foot#0.child.0": [0,0,128,51],
     "row.cv/cv-foot#0.child.1": [141,0,160,51],
-    "row.cv/cv-foot#0.child.2": [0,64,699,20],
-    "row.cv/cv-foot#0.count": [3,3],
-    "row.cv/cv-foot#0.tags": "a,a,p"
+    "row.cv/cv-foot#0.child.2": [313,0,166,51],
+    "row.cv/cv-foot#0.child.3": [0,64,699,20],
+    "row.cv/cv-foot#0.count": [4,4],
+    "row.cv/cv-foot#0.tags": "a,a,button,p"
   },
   "mobile/w0768//experience": {
     "nav": [0,768,81],
@@ -925,12 +930,13 @@
     "row.cv/cv-contact#0.child.5": [350,50,350,22],
     "row.cv/cv-contact#0.count": [6,6],
     "row.cv/cv-contact#0.tags": "li,li,li,li,li,li",
-    "row.cv/cv-foot#0.box": [349,3689,742,84],
+    "row.cv/cv-foot#0.box": [259,3689,921,84],
     "row.cv/cv-foot#0.child.0": [0,0,128,51],
     "row.cv/cv-foot#0.child.1": [141,0,160,51],
-    "row.cv/cv-foot#0.child.2": [0,64,742,20],
-    "row.cv/cv-foot#0.count": [3,3],
-    "row.cv/cv-foot#0.tags": "a,a,p"
+    "row.cv/cv-foot#0.child.2": [313,0,166,51],
+    "row.cv/cv-foot#0.child.3": [0,64,921,20],
+    "row.cv/cv-foot#0.count": [4,4],
+    "row.cv/cv-foot#0.tags": "a,a,button,p"
   },
   "mobile/w1440//experience": {
     "nav": [0,1440,76],

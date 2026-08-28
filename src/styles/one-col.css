@@ -1,0 +1,26 @@
+/* `.plate-grid.one-col` / `.plate-copy.wide` — the single full-width column a
+   plate uses instead of the standard copy/figure pair.
+
+   RCA-013 (P3). Authored once, in project.css, for the project-detail record
+   plate — and picked up by /experience and /how-i-build's markup without
+   either page importing that file, so the classes rendered and did nothing:
+   .plate-copy fell back to its 34rem measure, filling 48.4% of the frame
+   (measured live, RCA-013's "The measurement"). Promoted here, to a shared
+   partial imported by all three page families, rather than into either
+   project.css (scoped to the project-detail template; leaking .record,
+   .rec-*, .proj-note, .proj-back into two pages that use none of them) or
+   global.css (already at its grandfathered 500-line ceiling — AGENTS.md's
+   "index, don't inline" for a rule now used outside its original owner).
+
+   WHICH CHANGE TURNS THIS RED: removing an import of this file from
+   experience.astro, how-i-build.astro, or projects/[slug].astro — the
+   `.plate-grid.one-col` fill assertion in tests/one-col-grid.spec.js
+   reproduces the 48.4%-fill measurement above. */
+
+.plate-grid.one-col {
+  grid-template-columns: 1fr;
+}
+
+.plate-copy.wide {
+  max-width: none;
+}

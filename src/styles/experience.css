@@ -27,7 +27,7 @@
 
 .era-list .era-dates {
   font-weight: 500;
-  /* NOT opacity: the parent <p> matches global.css's `.plate-copy p` rule,
+  /* NOT opacity: this <p> also matches global.css's `.plate-copy p` rule,
      which already sets color to a bone/transparent color-mix — an opacity
      property here would COMPOUND on top of that baked-in translucency
      (0.88 x 0.62 ≈ 0.55), the exact axe color-contrast miss (4.08 vs 4.5)
@@ -35,7 +35,13 @@
      inherited alpha entirely. */
   color: color-mix(in srgb, var(--bone) 78%, transparent);
   font-size: 0.78rem;
-  margin-left: 0.5rem;
+  /* RCA-013 (P3): was margin-left, sized for an inline <span> that ran on
+     from era-org's text. Now a sibling block <p> — margin-top separates it
+     from the line above instead of indenting a line that no longer follows
+     inline. `.plate-copy p + p` (global.css) already adds 0.8rem above every
+     paragraph after the first; this trims that down for two lines that read
+     as one unit (role, then its dates), not as two unrelated paragraphs. */
+  margin-top: 0.15rem;
 }
 
 .era-list .era-line {

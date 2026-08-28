@@ -140,7 +140,10 @@ body::before {
   align-items: center;
 }
 
-.plate-copy { max-width: 34rem; }
+/* min-width: 0 matches .plate-figure's rule below, same grid, same failure
+   mode: an unbreakable token could force this track past its column and the
+   page past the viewport — RCA-013, 320/360px overflow (63px/23px). */
+.plate-copy { max-width: 34rem; min-width: 0; }
 
 .plate-title.tight { font-size: clamp(2.2rem, 4.1vw, 3.8rem); }
 
@@ -153,6 +156,9 @@ body::before {
   text-transform: uppercase;
   text-wrap: balance;
   margin-bottom: 1.1rem;
+  /* RCA-013 addendum: an unbreakable title word overflowed the narrowed
+     .plate-copy track (34px/6px at 320px) — this closes it, verified 0px. */
+  overflow-wrap: anywhere;
 }
 
 .q {

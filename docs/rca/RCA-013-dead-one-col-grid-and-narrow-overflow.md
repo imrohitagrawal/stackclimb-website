@@ -162,6 +162,35 @@ update_visual_baselines=false` (visual baselines don't cover these routes — co
 download the artifact, diff it programmatically against the committed file, confirm only
 `/experience` and `/how-i-build` rows changed, before committing it in.
 
+## Addendum — item 2's fix needed a second piece (found during the fix, per
+## this repo's own "re-verify every number as you fix it" standard)
+
+`min-width: 0` alone (item 2) did not fully close the 320/360px overflow it
+targets. Measured on the branch after applying it: /how-i-build's 360px
+overflow closed exactly as predicted (23px → 0), but 320px only dropped from
+63px to 34px. Traced with a `Range`-based text-overflow scan (not
+`getBoundingClientRect` on elements — the offending boxes never grow past
+the viewport, only the text painted inside them does): the residual 34px is
+`h2.plate-title`'s own text ("Evals and observability, specifically.") — an
+unbreakable uppercase word forced past its now-narrower `.plate-copy` track,
+`overflow: visible` by default. Same failure-mode class this RCA already
+names for item 2 ("unbreakable content... pushing the whole page wider than
+the viewport"), surfacing on the title element instead of the track once the
+track itself stopped absorbing it. The home page's own "Two ledgers,
+deliberately kept apart." title carried the identical defect, independently
+(6px at 320px) — `.plate-title` is used site-wide, RCA-013 never touched it.
+
+Fix: `overflow-wrap: anywhere` on the shared `.plate-title` rule
+(`global.css`). Verified live: 0px overflow at 320/360 on every built route,
+not just the two this package touches. Isolated by testing each candidate
+selector alone before landing on this one — `.plate-title` alone fully
+closes it; `.model-band .band-lead`/`.band-support` (also considered)
+contribute nothing to this specific overflow and were not touched.
+
+**WHICH CHANGE TURNS THIS RED:** revert `overflow-wrap: anywhere` from
+`.plate-title` — `tests/dod.spec.js`'s widened overflow check (320/360/390/
+768/1440) reproduces 34px on /how-i-build and 6px on `/`.
+
 ## Conflicts checked against settled directives
 
 Checked P-25, P-26, D30, D31, D38, DEF-52, D123 (the settled items this loop's instructions name).

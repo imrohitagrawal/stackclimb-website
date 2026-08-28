@@ -7,10 +7,10 @@
 // P2 (RCA-012) added the tests below the original two: a skill count DERIVED
 // from skill-library.md rather than hand-typed, .github's removal from the
 // "skills" framing, the two-vs-three OTel/Prometheus system count, the
-// restored artefact-panel parenthetical/PROXY/34m31s content, its footer
-// link to a pinned real file, and the evidence file's own second blockquote
-// checked as a real (possibly elided) substring of the LIVE quorum-ai
-// workflow file read fresh off disk — never a second hand-typed copy here.
+// restored artefact-panel parenthetical/PROXY/34m31s content, and its footer
+// link's format/SHA-shape. The quote-VERBATIM and SHA-authenticity checks
+// live in how-i-build-quote-fidelity.spec.js — split out so this file stays
+// under the 250-line budget (Codex review round found it at 254).
 //
 // WHICH CHANGE TURNS EACH RED:
 //   term missing           — a rendered term deleted from its VERIFIED span
@@ -23,13 +23,9 @@
 //   three systems          — the OTel/Prometheus line reverts to three
 //   PROXY/34m31s dropped   — the artefact panel loses either clause
 //   footer link missing    — the artefact panel's citation loses its link
-//   evidence quote fused   — failure-driven.md's blockquote stops being a
-//                            real (marked-elision) substring of the live file
 
 import { test, expect } from '@playwright/test';
-import { readFileSync, existsSync } from 'node:fs';
-import { homedir } from 'node:os';
-import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { painted } from './lib/painted.mjs';
 
 const norm = (s) => s.replace(/\s+/g, ' ').trim();
@@ -184,71 +180,7 @@ test('the artefact panel links to the real workflow file at a pinned SHA', async
     + '([0-9a-f]{40})/\\.github/workflows/deploy-drift-watchdog\\.yml';
   const match = href.match(new RegExp(`^${expected}$`));
   expect(match, `${href} doesn't look like a pinned quorum-ai blob URL`).not.toBeNull();
-
-  // Format alone (40 hex chars) accepts a SHA that never existed — Codex's
-  // review round found this. Skippable, like the other cross-repo checks
-  // above: dereference the SHA against the real local checkout when present.
-  const QUORUM_REPO = `${homedir()}/Projects/quorum-ai`;
-  test.skip(!existsSync(QUORUM_REPO), 'quorum-ai checkout not present at ' + QUORUM_REPO);
-  const sha = match[1];
-  expect(() => execFileSync('git', ['-C', QUORUM_REPO, 'cat-file', '-e', `${sha}^{commit}`]),
-    `${sha} is not a real commit in the local quorum-ai checkout`).not.toThrow();
-});
-
-// The real, live source of truth — read fresh off disk, not a second
-// hand-typed copy inside this test (that would just move the drift RCA-012
-// found from the page to the test). Skips, rather than fails, when the
-// quorum-ai checkout isn't present — this is a cross-repo integrity check,
-// not something a CI runner without that sibling checkout can settle.
-const QUORUM_WORKFLOW = `${homedir()}/Projects/quorum-ai/.github/workflows/deploy-drift-watchdog.yml`;
-
-/** A "[...]"-elided quote is honest only if every segment BETWEEN the
- * elision markers is a real, in-order, contiguous span of the source —
- * never a paraphrase or invented wording wearing quotation marks. Round 1
- * of review (Codex, static-analysis) caught exactly that: the astro page's
- * artefact quote had been rewritten with invented text ("Added later:",
- * a restructured question) after a later trim for plate-height, while a
- * fragment-only containment check let it pass. This is the general form of
- * that check, shared by both the evidence file's blockquote and the page's
- * own rendered quote below — one root cause, one fix, not two. */
-function assertRealElidedQuote(quoteText, realText, label) {
-  const clean = (s) => norm(s.replace(/[`*"'‘’“”]/g, '')).toLowerCase();
-  const real = clean(realText);
-  const segments = clean(quoteText).split('[...]').map((s) => s.trim()).filter(Boolean);
-  expect(segments.length, `${label}: no real (non-elided) text found`).toBeGreaterThan(1);
-  let cursor = 0;
-  for (const segment of segments) {
-    const idx = real.indexOf(segment, cursor);
-    expect(
-      idx,
-      `${label}: segment is not a real, IN-ORDER, contiguous span of the source: "${segment}"`,
-    ).toBeGreaterThanOrEqual(0);
-    cursor = idx + segment.length;
-  }
-}
-
-test("failure-driven.md's second blockquote is a real, marked-elision quote of the live "
-  + 'quorum-ai workflow file', () => {
-  test.skip(!existsSync(QUORUM_WORKFLOW), 'quorum-ai checkout not present at ' + QUORUM_WORKFLOW);
-  const real = readFileSync(QUORUM_WORKFLOW, 'utf8').replace(/^#\s?/gm, '');
-
-  const doc = readFileSync('docs/evidence/practice/failure-driven.md', 'utf8');
-  const quoteMatch = doc.match(/> "WHAT IT CHECKS[\s\S]*?stayed green\."/);
-  expect(quoteMatch, 'the second blockquote was not found in failure-driven.md').not.toBeNull();
-  const quote = quoteMatch[0].replace(/^>\s?/gm, '');
-
-  assertRealElidedQuote(quote, real, 'failure-driven.md');
-});
-
-test("the artefact panel's second quote is a real, marked-elision quote of the live "
-  + 'quorum-ai workflow file, not a paraphrase in quotation marks', async ({ page }) => {
-  test.skip(!existsSync(QUORUM_WORKFLOW), 'quorum-ai checkout not present at ' + QUORUM_WORKFLOW);
-  const real = readFileSync(QUORUM_WORKFLOW, 'utf8').replace(/^#\s?/gm, '');
-
-  await page.goto('/how-i-build');
-  const paragraphs = await page.locator('.artefact p').allInnerTexts();
-  const secondQuote = deQuote(norm(paragraphs[1] || ''));
-  expect(secondQuote, 'the artefact panel does not carry a second paragraph').not.toBe('');
-
-  assertRealElidedQuote(secondQuote, real, "the artefact panel's second quote");
+  // The rest of the SHA/quote authenticity chain — real commit, real content
+  // at that commit — lives in how-i-build-quote-fidelity.spec.js, which
+  // always runs against a committed fixture (never skips in CI).
 });

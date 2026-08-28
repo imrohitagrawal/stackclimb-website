@@ -32,6 +32,18 @@
 This is the compounding loop: work yields lessons, lessons become skills, and other skills route
 between them, detect conflicts, audit contracts, and security-review anything adopted externally.
 
+## `.github` — the shared template source, not a skill
+
+`VERIFIED` — `gh api repos/imrohitagrawal/<repo>/community/profile` (2026-08-28) against all four
+project repos this site links to — quorum-ai, citevyn, saaf-saans, narratwin-ai — reports every
+one of them serving `code_of_conduct_file` from `imrohitagrawal/.github/blob/main/
+CODE_OF_CONDUCT.md`, not from its own tree. quorum-ai and saaf-saans also inherit
+`CONTRIBUTING.md` this way (neither has its own); citevyn and narratwin-ai inherit
+`PULL_REQUEST_TEMPLATE.md` or `CONTRIBUTING.md` respectively while supplying some files of their
+own — not all-or-nothing, but every repo inherits at least one. `.github` itself holds no
+`SKILL.md` anywhere (`find ~/Projects/dot-github -iname SKILL.md` — no output) — it is GitHub's
+community-health-file mechanism, not a skill.
+
 ## Why it matters for the site
 
 Clearest available evidence for full-lifecycle enterprise thinking. Most portfolios show

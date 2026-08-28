@@ -152,30 +152,28 @@ test('/cv: project cards are collapsed by default with an accurate, unlabelled c
 
 // RCA-012, item 4: /cv's cv.js and /'s projects.js each carry the same
 // system's availability `state` independently, and CiteVyn had drifted —
-// 'Live' on /cv, 'Live — cold-starts' on /. Generalized to any project
-// name appearing in both files, not just CiteVyn, so a future drift on a
-// different system is caught the same way. Names are normalized because
-// projects.js spells some with a Unicode non-breaking hyphen (Quorum‑AI)
-// where cv.js uses a plain one (Quorum-AI) — a real, harmless typographic
-// difference this parity check must not mistake for two different systems.
+// 'Live' on /cv, 'Live — cold-starts' on /. Joined by EXPECTED_SLUGS (the
+// same stable slug map the evidence test above uses), NOT by display name —
+// Codex's review round found a name-keyed join lets a rename in either file
+// silently drop that system from the check while an aggregate "checked > 0"
+// count stays green. A slug is the stable identifier; a display name is
+// copy and can change without meaning anything shifted underneath it.
 //
-// RED WHEN: any shared system's state string differs between the two files.
+// RED WHEN: any of the four named systems' state string differs between
+// the two files, OR one of the four is missing from either file (a rename
+// or deletion this check must not silently stop covering).
 test("/cv and / describe every project they both list with the SAME state string", () => {
-  const normName = (s) => s.replace(/[-‑–—]/g, '-').toLowerCase().trim();
-  const siteByName = new Map(
-    Object.values(siteProjects).map((p) => [normName(p.name), p.state]),
-  );
-
-  let checked = 0;
-  for (const p of projects) {
-    const key = normName(p.name);
-    if (!siteByName.has(key)) continue;
-    checked += 1;
+  for (const [cvName, slug] of Object.entries(EXPECTED_SLUGS)) {
+    const cvProject = projects.find((p) => p.name === cvName);
+    expect(cvProject, `${cvName} (slug "${slug}") is expected in cv.js but was not found`)
+      .toBeTruthy();
+    const siteProject = siteProjects[slug];
+    expect(siteProject, `slug "${slug}" is expected in projects.js but was not found`)
+      .toBeTruthy();
     expect(
-      p.state,
-      `${p.name}: /cv says "${p.state}" but / says "${siteByName.get(key)}" for the same system`,
-    ).toBe(siteByName.get(key));
+      cvProject.state,
+      `${cvName}: /cv says "${cvProject.state}" but / says "${siteProject.state}" for the `
+      + `same system (slug "${slug}")`,
+    ).toBe(siteProject.state);
   }
-  expect(checked, 'no project name is shared between cv.js and projects.js — this check '
-    + 'verified nothing').toBeGreaterThan(0);
 });

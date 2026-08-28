@@ -4,18 +4,32 @@
 // the same file (cross-review.md holds both; the reworded-cross-review-claim
 // mutation this file watches red exists because of that exact gap).
 //
+// P2 (RCA-012) added the tests below the original two: a skill count DERIVED
+// from skill-library.md rather than hand-typed, .github's removal from the
+// "skills" framing, the two-vs-three OTel/Prometheus system count, the
+// restored artefact-panel parenthetical/PROXY/34m31s content, and its footer
+// link's format/SHA-shape. The quote-VERBATIM and SHA-authenticity checks
+// live in how-i-build-quote-fidelity.spec.js — split out so this file stays
+// under the 250-line budget (Codex review round found it at 254).
+//
 // WHICH CHANGE TURNS EACH RED:
-//   term missing        — a rendered term deleted from its VERIFIED span
+//   term missing           — a rendered term deleted from its VERIFIED span
 //   term moved to REPORTED — the term's evidence-file line loses its
-//                          VERIFIED marker (simulates a status downgrade)
-//   cross-review leaks  — the barred phrase appears on the built page
-//   quote drifts        — the artefact panel no longer matches its source
+//                            VERIFIED marker (simulates a status downgrade)
+//   cross-review leaks     — the barred phrase appears on the built page
+//   quote drifts           — the artefact panel no longer matches its source
+//   skill count stale      — page's digit no longer equals skill-library.md's
+//   .github re-listed      — .github appears back in the public-skills list
+//   three systems          — the OTel/Prometheus line reverts to three
+//   PROXY/34m31s dropped   — the artefact panel loses either clause
+//   footer link missing    — the artefact panel's citation loses its link
 
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { painted } from './lib/painted.mjs';
 
 const norm = (s) => s.replace(/\s+/g, ' ').trim();
+const deQuote = (s) => s.replace(/[‘’]/g, "'").replace(/[“”]/g, '"');
 
 /** Every line-range that follows a `VERIFIED` marker, up to the next
  *  status marker or heading. Anchoring, not a file-wide contains-check.
@@ -81,7 +95,6 @@ test('the page renders every term, bars cross-review, and quotes verbatim', asyn
   const artefactText = norm(await page.locator('.artefact').innerText());
   // The two load-bearing sentences, checked against the source verbatim
   // (curly quotes normalised — the page renders typographic quotes).
-  const deQuote = (s) => s.replace(/[‘’]/g, "'").replace(/[“”]/g, '"');
   expect(watchdogFile).toContain(
     'main got a new commit but no deploy fired',
   );
@@ -89,4 +102,89 @@ test('the page renders every term, bars cross-review, and quotes verbatim', asyn
   expect(deQuote(artefactText)).toContain('the deploy JOB');
 
   expect(await painted(page.locator('.artefact'))).toBe(true);
+});
+
+test("the skill count on the page is DERIVED from skill-library.md, not hand-typed here", async ({
+  page,
+}) => {
+  const evidence = readFileSync('docs/evidence/practice/skill-library.md', 'utf8');
+  const match = evidence.match(/holds \*\*(\d+)\*\* authored skill directories/);
+  expect(match, "skill-library.md's own count sentence not found — cannot derive a number")
+    .not.toBeNull();
+  const count = match[1];
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/how-i-build');
+  const whole = norm(await page.locator('body').innerText());
+  expect(whole, `page does not render the derived count of ${count}`).toContain(
+    `${count} authored skill`,
+  );
+});
+
+test('.github is not characterized as a skill on the page', async ({ page }) => {
+  await page.goto('/how-i-build');
+  // .github stays a second <li> in the same list (DEF-60's geometry floor
+  // covers .skill-repos's row/child count) — it just may not be CALLED a
+  // skill anywhere in that row's text.
+  const repoItems = await page.locator('.skill-repos li').allInnerTexts();
+  expect(repoItems.length, 'expected both list items — project-doc-skills and .github')
+    .toBe(2);
+  const githubItem = repoItems.find((t) => t.includes('.github'));
+  expect(githubItem, '.github item not found in .skill-repos').toBeTruthy();
+  expect(githubItem.toLowerCase()).toContain('not a skill');
+  const whole = norm(await page.locator('body').innerText()).toLowerCase();
+  expect(whole).toContain('one of the skills above is a public repository');
+  expect(whole).not.toContain('two of the skills above are public repositories');
+});
+
+test('the OTel/Prometheus claim says two systems, matching evals-observability.md', async ({
+  page,
+}) => {
+  const evidence = norm(readFileSync('docs/evidence/practice/evals-observability.md', 'utf8'));
+  const paragraph = evidence.match(
+    /narratwin-ai emits OpenTelemetry.*?with a matching Kibana dashboard defined in-repo/,
+  );
+  expect(paragraph, 'tracing paragraph not found in evals-observability.md').not.toBeNull();
+  // The evidence file's own ground truth names two OTel/Prometheus systems
+  // (narratwin-ai, evalaxis-ai) and one Elasticsearch/Kibana system
+  // (saaf-saans) in the SAME paragraph — the red-herring this page's claim
+  // must not be conflated with.
+  expect(paragraph[0]).toContain('narratwin-ai emits OpenTelemetry');
+  expect(paragraph[0]).toContain('evalaxis-ai runs the same OpenTelemetry/Prometheus');
+  expect(paragraph[0]).toContain('saaf-saans logs model interactions to Elasticsearch');
+
+  await page.goto('/how-i-build');
+  const whole = norm(await page.locator('body').innerText()).toLowerCase();
+  expect(whole).toContain('across two systems');
+  expect(whole).not.toContain('across three systems');
+});
+
+test('the artefact panel restores the PROXY caveat, the 34m31s incident, and the dropped '
+  + 'parenthetical', async ({ page }) => {
+  await page.goto('/how-i-build');
+  const artefactText = deQuote(norm(await page.locator('.artefact').innerText()));
+  expect(artefactText).toContain(
+    'a dropped Actions event / skipped-or-failed deploy gate / a flake',
+  );
+  expect(artefactText).toContain(
+    'This is a PROXY: it cannot see a Deploy run that reported success while production did '
+    + 'not actually roll',
+  );
+  expect(artefactText).toContain(
+    'left production 34m31s behind while every passive probe stayed green',
+  );
+});
+
+test('the artefact panel links to the real workflow file at a pinned SHA', async ({ page }) => {
+  await page.goto('/how-i-build');
+  const link = page.locator('.artefact footer a');
+  await expect(link).toHaveCount(1);
+  const href = await link.getAttribute('href');
+  const expected = 'https://github.com/imrohitagrawal/quorum-ai/blob/'
+    + '([0-9a-f]{40})/\\.github/workflows/deploy-drift-watchdog\\.yml';
+  const match = href.match(new RegExp(`^${expected}$`));
+  expect(match, `${href} doesn't look like a pinned quorum-ai blob URL`).not.toBeNull();
+  // The rest of the SHA/quote authenticity chain — real commit, real content
+  // at that commit — lives in how-i-build-quote-fidelity.spec.js, which
+  // always runs against a committed fixture (never skips in CI).
 });

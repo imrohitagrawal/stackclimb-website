@@ -36,6 +36,7 @@
 
 import { test, expect } from '@playwright/test';
 import { projects } from '../src/data/cv.js';
+import { projects as siteProjects } from '../src/data/projects.js';
 import { pages as projectPages } from '../src/data/project-pages.js';
 import { fold } from './lib/fold.mjs';
 
@@ -146,5 +147,33 @@ test('/cv: project cards are collapsed by default with an accurate, unlabelled c
     const summaryText = fold(await summary.innerText());
     const name = fold(projects[i].name);
     expect(summaryText, `card ${i}'s summary doesn't name its own project`).toContain(name);
+  }
+});
+
+// RCA-012, item 4: /cv's cv.js and /'s projects.js each carry the same
+// system's availability `state` independently, and CiteVyn had drifted —
+// 'Live' on /cv, 'Live — cold-starts' on /. Joined by EXPECTED_SLUGS (the
+// same stable slug map the evidence test above uses), NOT by display name —
+// Codex's review round found a name-keyed join lets a rename in either file
+// silently drop that system from the check while an aggregate "checked > 0"
+// count stays green. A slug is the stable identifier; a display name is
+// copy and can change without meaning anything shifted underneath it.
+//
+// RED WHEN: any of the four named systems' state string differs between
+// the two files, OR one of the four is missing from either file (a rename
+// or deletion this check must not silently stop covering).
+test("/cv and / describe every project they both list with the SAME state string", () => {
+  for (const [cvName, slug] of Object.entries(EXPECTED_SLUGS)) {
+    const cvProject = projects.find((p) => p.name === cvName);
+    expect(cvProject, `${cvName} (slug "${slug}") is expected in cv.js but was not found`)
+      .toBeTruthy();
+    const siteProject = siteProjects[slug];
+    expect(siteProject, `slug "${slug}" is expected in projects.js but was not found`)
+      .toBeTruthy();
+    expect(
+      cvProject.state,
+      `${cvName}: /cv says "${cvProject.state}" but / says "${siteProject.state}" for the `
+      + `same system (slug "${slug}")`,
+    ).toBe(siteProject.state);
   }
 });

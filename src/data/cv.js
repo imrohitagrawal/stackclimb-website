@@ -140,7 +140,7 @@ export const projects = [
       'to the audit trail with the measured rate. The larger 52-case golden suite is ' +
       'deliberately NOT the gate: it measures a fixture corpus, so passing it would ' +
       'certify an index that was never tested.',
-    state: 'Live',
+    state: 'Live — cold-starts',
     href: 'https://citevyn.stackclimb.com',
   },
   {

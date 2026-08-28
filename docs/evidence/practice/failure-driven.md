@@ -8,9 +8,16 @@ caused it:
 
 Then bounds its own honesty:
 
-> "WHAT IT CHECKS (honest scope): whether main HEAD has a SUCCESSFUL 'Deploy to Fly.io' run — the
-> deploy JOB, not a `/health` 200 (per the deploy-job-skip-vs-health lesson). It does NOT track an
-> out-of-band local `flyctl deploy`."
+> "WHAT IT CHECKS (honest scope), two independent questions:
+>
+> 1. Does main HEAD have a SUCCESSFUL "Deploy to Fly.io" run — the deploy JOB, not a `/health`
+>    200 (per the deploy-job-skip-vs-health lesson)? This is a PROXY: it cannot see a Deploy run
+>    that reported success while production did not actually roll, and it does not track an
+>    out-of-band local `flyctl deploy` (if one happened it re-triggers a pipeline that just
+>    redeploys the same code — idempotent, harmless).
+> 2. Does `/status.build_sha` actually EQUAL main's tip? [...] This is the direct question, and
+>    the only one that catches a merge which triggered no workflow at all — on 2026-08-07 that
+>    left production 34m31s behind while every passive probe stayed green."
 
 Three things at once: a real incident named, a transferable lesson encoded (*a healthy `/health`
 does not prove the deploy ran*), and an explicit statement of what the tool does **not** cover.

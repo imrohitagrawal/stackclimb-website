@@ -46,6 +46,20 @@
      DoD axe gate. 75% clears it with margin (recomputed, not guessed). */
   color: color-mix(in srgb, var(--ink) 75%, transparent);
 }
+/* The footer citation link: full --ink (13.9:1 on --lit), not --ochre
+   (~2.2:1 on --lit, fails WCAG AA for text). Scoped tightly to this one
+   link so no other citation styling on the site is touched. The site-wide
+   :focus-visible ring is --ochre, which also fails 1.4.11's 3:1 non-text
+   floor on this near-white panel — the only lit surface with a focusable
+   element — so the ring is overridden here to --ink as well. */
+.artefact footer a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.artefact footer a:focus-visible {
+  outline-color: var(--ink);
+}
 
 .skill-repos {
   list-style: none;
@@ -56,6 +70,13 @@
 }
 .skill-repos a { font-weight: 700; color: var(--ochre); text-underline-offset: 2px; }
 .skill-repos a:hover { color: var(--bone); }
+
+/* .skill-note's own link (.github) — same treatment as .skill-repos a, on
+   the same --surface ground (6.08:1, measured). Without this it fell back
+   to the UA default link blue, 1.64:1 against --surface — axe-caught, not
+   eyeballed. */
+.skill-note a { font-weight: 700; color: var(--ochre); text-underline-offset: 2px; }
+.skill-note a:hover { color: var(--bone); }
 
 @media (max-width: 900px) {
   .artefact { padding: 1.2rem 1.3rem; }

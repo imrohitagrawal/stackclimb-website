@@ -1,11 +1,11 @@
 # An authored engineering practice library
 
-`VERIFIED` — `~/Projects/quorum-ai/.agents/skills/` holds **112** authored skill directories;
+`VERIFIED` — `~/Projects/quorum-ai/.agents/skills/` holds **113** authored skill directories;
 `.claude/skills/` holds a further **10**. Counts per repo:
 
 | Repo | `.agents/skills` | `.claude/skills` |
 |---|---|---|
-| quorum-ai | 112 | 10 |
+| quorum-ai | 113 | 10 |
 | citevyn | 3 | 4 |
 | saaf-saans | 0 | 0 |
 | narratwin | 0 | 0 |

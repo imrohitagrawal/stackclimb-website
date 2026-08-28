@@ -36,6 +36,7 @@
 
 import { test, expect } from '@playwright/test';
 import { projects } from '../src/data/cv.js';
+import { projects as siteProjects } from '../src/data/projects.js';
 import { pages as projectPages } from '../src/data/project-pages.js';
 import { fold } from './lib/fold.mjs';
 
@@ -147,4 +148,34 @@ test('/cv: project cards are collapsed by default with an accurate, unlabelled c
     const name = fold(projects[i].name);
     expect(summaryText, `card ${i}'s summary doesn't name its own project`).toContain(name);
   }
+});
+
+// RCA-012, item 4: /cv's cv.js and /'s projects.js each carry the same
+// system's availability `state` independently, and CiteVyn had drifted —
+// 'Live' on /cv, 'Live — cold-starts' on /. Generalized to any project
+// name appearing in both files, not just CiteVyn, so a future drift on a
+// different system is caught the same way. Names are normalized because
+// projects.js spells some with a Unicode non-breaking hyphen (Quorum‑AI)
+// where cv.js uses a plain one (Quorum-AI) — a real, harmless typographic
+// difference this parity check must not mistake for two different systems.
+//
+// RED WHEN: any shared system's state string differs between the two files.
+test("/cv and / describe every project they both list with the SAME state string", () => {
+  const normName = (s) => s.replace(/[-‑–—]/g, '-').toLowerCase().trim();
+  const siteByName = new Map(
+    Object.values(siteProjects).map((p) => [normName(p.name), p.state]),
+  );
+
+  let checked = 0;
+  for (const p of projects) {
+    const key = normName(p.name);
+    if (!siteByName.has(key)) continue;
+    checked += 1;
+    expect(
+      p.state,
+      `${p.name}: /cv says "${p.state}" but / says "${siteByName.get(key)}" for the same system`,
+    ).toBe(siteByName.get(key));
+  }
+  expect(checked, 'no project name is shared between cv.js and projects.js — this check '
+    + 'verified nothing').toBeGreaterThan(0);
 });

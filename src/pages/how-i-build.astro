@@ -12,6 +12,13 @@
 import Layout from '../layouts/Layout.astro';
 import Plate from '../components/Plate.astro';
 import '../styles/how-i-build.css';
+
+/* Pinned at quorum-ai's main HEAD when this citation was added (RCA-012).
+   A const keeps the URL under the 120-char line ceiling — file-budget.mjs
+   has no exception recorded for this file, so the line is split instead. */
+const WATCHDOG_SHA = 'ec4a4b987b22214b74bd11d03d4c682aed317271';
+const WATCHDOG_URL = `https://github.com/imrohitagrawal/quorum-ai/blob/${WATCHDOG_SHA}`
+  + '/.github/workflows/deploy-drift-watchdog.yml';
 ---
 
 <Layout
@@ -30,7 +37,7 @@ import '../styles/how-i-build.css';
             Reusable, versioned instructions — for requirements and security, not only code.
           </p>
           <p class="band-support">
-            112 <span class="band-term">authored skill</span> directories, including skills
+            113 <span class="band-term">authored skill</span> directories, including skills
             that route between the others and audit anything adopted from outside.
           </p>
         </div>
@@ -57,13 +64,20 @@ import '../styles/how-i-build.css';
         <blockquote class="artefact">
           <p>
             &ldquo;It fixes the failure mode we hit on #54: main got a new commit but no
-            deploy fired, leaving prod stale with no one watching.&rdquo;
+            deploy fired (a dropped Actions event / skipped-or-failed deploy gate / a
+            flake), leaving prod stale with no one watching.&rdquo;
           </p>
           <p>
-            &ldquo;WHAT IT CHECKS (honest scope): whether main HEAD has a SUCCESSFUL
-            &lsquo;Deploy to Fly.io&rsquo; run — the deploy JOB, not a /health 200.&rdquo;
+            &ldquo;WHAT IT CHECKS (honest scope): a SUCCESSFUL &lsquo;Deploy to
+            Fly.io&rsquo; run — the deploy JOB, not a /health 200. This is a PROXY: it
+            cannot see a Deploy run that reported success while production did not
+            actually roll. Added later: on 2026-08-07 it left production 34m31s behind
+            while every passive probe stayed green.&rdquo;
           </p>
-          <footer>deploy-drift-watchdog.yml, quorum-ai</footer>
+          <footer>
+            <a href={WATCHDOG_URL} target="_blank" rel="noopener"
+            >deploy-drift-watchdog.yml, quorum-ai</a>
+          </footer>
         </blockquote>
       </div>
     </div>
@@ -93,7 +107,7 @@ import '../styles/how-i-build.css';
             an advisory one.
           </p>
           <p class="band-support">
-            OpenTelemetry and Prometheus across three systems, secrets removed <span
+            OpenTelemetry and Prometheus across two systems, secrets removed <span
               class="band-term"
             >before it leaves the process</span>. One repo's judged eval only runs on a pull
             request <span class="band-term">labelled full-eval</span>, since it costs real
@@ -110,7 +124,7 @@ import '../styles/how-i-build.css';
       <div class="plate-copy wide">
         <h2 class="plate-title tight">Published, not just practiced.</h2>
         <p>
-          Two of the skills above are public repositories — the instructions themselves,
+          One of the skills above is a public repository — the instructions themselves,
           not a description of them.
         </p>
         <ul class="skill-repos">
@@ -123,16 +137,16 @@ import '../styles/how-i-build.css';
             — architecture-and-decisions and doc-critic, the two skills behind this
             site's own documentation practice.
           </li>
-          <li>
-            <a
-              href="https://github.com/imrohitagrawal/.github"
-              target="_blank"
-              rel="noopener"
-            >.github</a>
-            — the contribution and security templates every other repository here
-            inherits from.
-          </li>
         </ul>
+        <p class="skill-note">
+          <a
+            href="https://github.com/imrohitagrawal/.github"
+            target="_blank"
+            rel="noopener"
+          >.github</a>
+          — holds the contribution and security templates every other repository here
+          inherits from, not a skill.
+        </p>
         <div class="ctas">
           <a class="btn ghost" href="/experience">Career evolution</a>
           <a class="btn primary" href="mailto:rohit.ra.agrawal@gmail.com">Email me</a>

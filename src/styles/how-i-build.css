@@ -71,13 +71,6 @@
 .skill-repos a { font-weight: 700; color: var(--ochre); text-underline-offset: 2px; }
 .skill-repos a:hover { color: var(--bone); }
 
-/* .skill-note's own link (.github) — same treatment as .skill-repos a, on
-   the same --surface ground (6.08:1, measured). Without this it fell back
-   to the UA default link blue, 1.64:1 against --surface — axe-caught, not
-   eyeballed. */
-.skill-note a { font-weight: 700; color: var(--ochre); text-underline-offset: 2px; }
-.skill-note a:hover { color: var(--bone); }
-
 @media (max-width: 900px) {
   .artefact { padding: 1.2rem 1.3rem; }
 }

@@ -123,11 +123,15 @@ test("the skill count on the page is DERIVED from skill-library.md, not hand-typ
 
 test('.github is not characterized as a skill on the page', async ({ page }) => {
   await page.goto('/how-i-build');
+  // .github stays a second <li> in the same list (DEF-60's geometry floor
+  // covers .skill-repos's row/child count) — it just may not be CALLED a
+  // skill anywhere in that row's text.
   const repoItems = await page.locator('.skill-repos li').allInnerTexts();
-  expect(repoItems.length, 'expected exactly one public skill repository listed').toBe(1);
-  for (const item of repoItems) {
-    expect(item).not.toContain('.github');
-  }
+  expect(repoItems.length, 'expected both list items — project-doc-skills and .github')
+    .toBe(2);
+  const githubItem = repoItems.find((t) => t.includes('.github'));
+  expect(githubItem, '.github item not found in .skill-repos').toBeTruthy();
+  expect(githubItem.toLowerCase()).toContain('not a skill');
   const whole = norm(await page.locator('body').innerText()).toLowerCase();
   expect(whole).toContain('one of the skills above is a public repository');
   expect(whole).not.toContain('two of the skills above are public repositories');

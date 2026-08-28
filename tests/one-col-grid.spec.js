@@ -68,11 +68,19 @@ test.describe('.plate-copy min-width — RCA-013', () => {
     test(`${route}: .plate-copy has min-width: 0, matching .plate-figure`, async ({ page }) => {
       // Direct property check, not a behavioral scrollWidth check — see the
       // header note on why a page-overflow assertion can't isolate this
-      // fix's own contribution on this page's current content.
+      // fix's own contribution on this page's current content. EVERY
+      // .plate-copy on the route, not just the first — both pages carry
+      // more than one, and the rule is a single global class: checking one
+      // instance would miss a regression scoped to another (self-review
+      // finding, caught before it shipped).
       await page.goto(route, { waitUntil: 'networkidle' });
-      const copy = page.locator('.plate-copy').first();
-      const minWidth = await copy.evaluate((el) => getComputedStyle(el).minWidth);
-      expect(minWidth, `${route}: .plate-copy's min-width is ${minWidth}, not 0px`).toBe('0px');
+      const copies = page.locator('.plate-copy');
+      const count = await copies.count();
+      expect(count, `${route}: no .plate-copy element found`).toBeGreaterThan(0);
+      for (let i = 0; i < count; i++) {
+        const minWidth = await copies.nth(i).evaluate((el) => getComputedStyle(el).minWidth);
+        expect(minWidth, `${route} .plate-copy #${i}: min-width is ${minWidth}, not 0px`).toBe('0px');
+      }
     });
   }
 });

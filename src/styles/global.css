@@ -156,10 +156,10 @@ body::before {
   text-transform: uppercase;
   text-wrap: balance;
   margin-bottom: 1.1rem;
-  /* RCA-013 addendum: an unbreakable title word overflowed the narrowed
-     .plate-copy track (34px/6px at 320px) — this closes it, verified 0px. */
-  overflow-wrap: anywhere;
 }
+/* RCA-013: scoped, not on the base rule — text-wrap: balance splits an
+   otherwise-fitting word once splitting is allowed at any width (measured). */
+@media (max-width: 360px) { .plate-title { overflow-wrap: anywhere; } }
 
 .q {
   font-family: var(--serif);

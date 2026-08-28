@@ -180,16 +180,32 @@ track itself stopped absorbing it. The home page's own "Two ledgers,
 deliberately kept apart." title carried the identical defect, independently
 (6px at 320px) — `.plate-title` is used site-wide, RCA-013 never touched it.
 
-Fix: `overflow-wrap: anywhere` on the shared `.plate-title` rule
-(`global.css`). Verified live: 0px overflow at 320/360 on every built route,
-not just the two this package touches. Isolated by testing each candidate
-selector alone before landing on this one — `.plate-title` alone fully
-closes it; `.model-band .band-lead`/`.band-support` (also considered)
-contribute nothing to this specific overflow and were not touched.
+Fix: `overflow-wrap: anywhere` on `.plate-title`. First attempt put it on
+the base rule (applying at every width) — caught by the Definition of Done's
+own "look at the render" rule, not by any gate: at 390px, screenshotting
+/how-i-build showed "OBSERVABILITY" split mid-word ("OBSERVABILIT" / "Y,")
+where the UNCHANGED page had wrapped it whole. Measured directly (a
+`Range`-per-character scan of rendered line positions): baseline renders
+three whole-word lines with zero overflow at 390px; adding the unscoped
+property produces four lines with the same word split, at a width where no
+break was ever needed. Cause: `text-wrap: balance` re-evaluates its
+line-break choice once word-splitting is permitted at all, and prefers a
+"more balanced" split layout even where the whole word already fit —
+confirmed by testing `overflow-wrap: break-word` too (same split at 390).
+Fixed by scoping the property to `@media (max-width: 360px)` — the widest
+point this RCA measured a genuine, un-splittable overflow (23px at exactly
+360px pre-fix) — so wider viewports keep `text-wrap: balance`'s original,
+unsplit behavior untouched, and only the widths that truly cannot fit the
+word on one line get permission to break it. Verified live: 0px overflow at
+320/360 on every built route, 390px+ render byte-identical to before this
+addendum (same three whole-word lines).
 
-**WHICH CHANGE TURNS THIS RED:** revert `overflow-wrap: anywhere` from
-`.plate-title` — `tests/dod.spec.js`'s widened overflow check (320/360/390/
-768/1440) reproduces 34px on /how-i-build and 6px on `/`.
+**WHICH CHANGE TURNS THIS RED:** remove the `@media (max-width: 360px)`
+block from `global.css` — `tests/dod.spec.js`'s widened overflow check
+(320/360/390/768/1440) reproduces 34px on /how-i-build and 6px on `/`, both
+at 320px only (360px alone would not catch a regression to the pre-scoped,
+unconditional-but-broken state, since 360px's own overflow was already
+closed either way — 320px is the width that actually exercises this fix).
 
 ## Conflicts checked against settled directives
 

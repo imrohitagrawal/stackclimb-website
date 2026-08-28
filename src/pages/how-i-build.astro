@@ -68,11 +68,11 @@ const WATCHDOG_URL = `https://github.com/imrohitagrawal/quorum-ai/blob/${WATCHDO
             flake), leaving prod stale with no one watching.&rdquo;
           </p>
           <p>
-            &ldquo;WHAT IT CHECKS (honest scope): a SUCCESSFUL &lsquo;Deploy to
-            Fly.io&rsquo; run — the deploy JOB, not a /health 200. This is a PROXY: it
-            cannot see a Deploy run that reported success while production did not
-            actually roll. Added later: on 2026-08-07 it left production 34m31s behind
-            while every passive probe stayed green.&rdquo;
+            &ldquo;WHAT IT CHECKS (honest scope) [...] the deploy JOB, not a /health
+            200 [...] This is a PROXY: it cannot see a Deploy run that reported
+            success while production did not actually roll [...] on 2026-08-07 that
+            left production 34m31s behind while every passive probe stayed
+            green.&rdquo;
           </p>
           <footer>
             <a href={WATCHDOG_URL} target="_blank" rel="noopener"

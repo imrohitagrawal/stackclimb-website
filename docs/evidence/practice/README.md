@@ -5,7 +5,7 @@ them. Four findings, one file each.
 
 | File | Finding | Strongest status |
 |---|---|---|
-| `skill-library.md` | 112 authored lifecycle skills, including skills that govern skills | `VERIFIED` |
+| `skill-library.md` | 113 authored lifecycle skills, including skills that govern skills | `VERIFIED` |
 | `cross-review.md` | Codex and Claude Code configured in the same repos to review each other | `REPORTED` |
 | `ci-discipline.md` | CI separates blocking gates from advisory ones, and watches production | `VERIFIED` |
 | `failure-driven.md` | Tooling built from named incidents, stating its own blind spots | `VERIFIED` |

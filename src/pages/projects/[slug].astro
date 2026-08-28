@@ -29,6 +29,10 @@ import { pages } from '../../data/project-pages.js';
 import '../../styles/project.css';
 /* .sys-gate and .sys-nc — the two cells plate 1 gained in package B. */
 import '../../styles/systems.css';
+/* .plate-grid.one-col / .plate-copy.wide — RCA-013 moved these out of
+   project.css into a shared partial all three .one-col page families
+   import (see one-col.css's own header for why). */
+import '../../styles/one-col.css';
 
 export function getStaticPaths() {
   return Object.keys(projects).map((slug) => ({ params: { slug } }));

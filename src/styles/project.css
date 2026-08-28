@@ -11,20 +11,14 @@
  * project page in its own livery with no rule added here.
  */
 
-/* Recovered from overview.css when that file was deleted with its component. These
-   two rules are what let a plate hold ONE full-width column instead of the standard
-   copy/figure pair, and the record plate is now their only user. Without them
-   .plate-copy falls back to its 34rem measure and the three columns squeeze into the
-   left half of the frame with a dead third beside them — which is exactly what
-   shipped for one build, and was caught by looking at the render rather than by any
-   gate. */
-.plate-grid.one-col {
-  grid-template-columns: 1fr;
-}
-
-.plate-copy.wide {
-  max-width: none;
-}
+/* `.plate-grid.one-col` / `.plate-copy.wide` moved to styles/one-col.css
+   (RCA-013, P3): this page imported them, but /experience and /how-i-build
+   carried the same class names without importing this file, so the classes
+   were dead there — 48.4% frame fill instead of the full width the class
+   names promise. Now a shared partial all three page families import,
+   instead of a rule that only worked for whichever page happened to import
+   project.css. This file's own record plate still uses them, via that
+   import (see the top of this file). */
 
 /* Two columns. Row 1 is the two parallel five-item lists; row 2 pairs the two
    short elements — what the system refuses, and how it works. See Record.astro

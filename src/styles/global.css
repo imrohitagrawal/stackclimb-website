@@ -140,7 +140,10 @@ body::before {
   align-items: center;
 }
 
-.plate-copy { max-width: 34rem; }
+/* min-width: 0 matches .plate-figure's rule below, same grid, same failure
+   mode: an unbreakable token could force this track past its column and the
+   page past the viewport — RCA-013, 320/360px overflow (63px/23px). */
+.plate-copy { max-width: 34rem; min-width: 0; }
 
 .plate-title.tight { font-size: clamp(2.2rem, 4.1vw, 3.8rem); }
 
@@ -154,6 +157,9 @@ body::before {
   text-wrap: balance;
   margin-bottom: 1.1rem;
 }
+/* RCA-013: scoped, not on the base rule — text-wrap: balance splits an
+   otherwise-fitting word once splitting is allowed at any width (measured). */
+@media (max-width: 360px) { .plate-title { overflow-wrap: anywhere; } }
 
 .q {
   font-family: var(--serif);

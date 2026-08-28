@@ -10,6 +10,12 @@ import Layout from '../layouts/Layout.astro';
 import Plate from '../components/Plate.astro';
 import { eras, closing } from '../data/eras.js';
 import '../styles/experience.css';
+/* .plate-grid.one-col / .plate-copy.wide — RCA-013: this page's markup
+   carried both classes with neither styled, since only project.css defined
+   them and this page never imported it. Fixed by importing the shared
+   partial rather than project.css itself, which also carries .record and
+   .proj-* rules scoped to the project-detail template. */
+import '../styles/one-col.css';
 ---
 
 <Layout
@@ -25,10 +31,14 @@ import '../styles/experience.css';
         <ol class="era-list">
           {eras.map((e) => (
             <li class="era">
-              <p class="era-org">
-                {e.job.org} — {e.job.role}
-                <span class="era-dates">{e.job.from} – {e.job.to}</span>
-              </p>
+              {/* RCA-013 (P3): era-dates used to be an inline <span> inside
+                  era-org's own <p>, inheriting global.css's 52ch cap and
+                  inline flow — at narrow widths the combined org+role+dates
+                  text wrapped mid-phrase, orphaning the date range with
+                  nothing to anchor it. A sibling <p> is its own block, so it
+                  never shares a wrapped run with era-org, at any width. */}
+              <p class="era-org">{e.job.org} — {e.job.role}</p>
+              <p class="era-dates">{e.job.from} – {e.job.to}</p>
               <p class="era-line">{e.line}</p>
             </li>
           ))}

@@ -12,6 +12,9 @@
 import Layout from '../layouts/Layout.astro';
 import Plate from '../components/Plate.astro';
 import '../styles/how-i-build.css';
+/* .plate-grid.one-col / .plate-copy.wide — RCA-013: same dead-class defect
+   as /experience, same fix (see that page's comment and one-col.css). */
+import '../styles/one-col.css';
 
 /* Pinned at quorum-ai's main HEAD when this citation was added (RCA-012).
    A const keeps the URL under the 120-char line ceiling — file-budget.mjs

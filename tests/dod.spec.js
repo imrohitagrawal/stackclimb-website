@@ -120,7 +120,13 @@ test.describe('Definition of Done', () => {
     test(`${route} — no horizontal scroll at any viewport`, async ({ page }) => {
       // RED WHEN: any element overflows the viewport width — a fixed width, an
       // unbroken long string, or a grid that does not collapse.
-      const widths = [390, 768, 1440];
+      //
+      // RCA-013 (P3): 390/768/1440 alone missed /how-i-build's overflow —
+      // 383px scrollWidth against 320 and 360, clean at 390 (63px and 23px
+      // overflow respectively, both from .plate-copy's missing min-width: 0).
+      // 320 and 360 are both named-mainstream phone widths narrower than 390,
+      // the width this repo's own Definition of Done had checked exclusively.
+      const widths = [320, 360, 390, 768, 1440];
       const overflowing = [];
 
       for (const width of widths) {
@@ -136,7 +142,7 @@ test.describe('Definition of Done', () => {
       // not an equality — the old `.toBe(3)` went red when a FOURTH viewport
       // was added, failing "no viewports checked" while four were checked.
       // DEF-15: never write a check that goes red when coverage improves.
-      expect(widths.length, 'fewer than three viewports checked').toBeGreaterThanOrEqual(3);
+      expect(widths.length, 'fewer than five viewports checked').toBeGreaterThanOrEqual(5);
       expect(overflowing, 'page scrolls horizontally').toEqual([]);
     });
 

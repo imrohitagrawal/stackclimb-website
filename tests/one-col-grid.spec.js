@@ -15,15 +15,22 @@
 // check below bites on exactly this property, independent of content.
 //
 // WHICH CHANGE TURNS EACH RED:
-//   fill        revert the one-col.css import on either page (or delete
-//               one-col.css's rules) — .plate-copy falls back to 34rem,
-//               reproducing the 48.4% measurement in RCA-013.
+//   fill        revert the one-col.css import on any of the three importers
+//               (experience.astro, how-i-build.astro, projects/[slug].astro
+//               — one project route stands in for all four, same template)
+//               or delete one-col.css's rules — .plate-copy falls back to
+//               34rem, reproducing the 48.4% measurement in RCA-013.
 //   min-width   remove `min-width: 0` from global.css's `.plate-copy` rule.
 //   era-org     revert era-dates from a sibling <p> back to an inline <span>
 //               inside era-org's own <p> — the nesting check goes red.
+//
+// A project route (Codex review finding, round 2): one-col.css's own header
+// claimed all three importers were covered by this file when only the first
+// two were — /projects/citevyn stands in for all four project routes, which
+// share one template ([slug].astro), so one is sufficient.
 import { test, expect } from '@playwright/test';
 
-const ONE_COL_ROUTES = ['/experience', '/how-i-build'];
+const ONE_COL_ROUTES = ['/experience', '/how-i-build', '/projects/citevyn'];
 
 test.describe('one-col grid fill — RCA-013', () => {
   for (const route of ONE_COL_ROUTES) {

@@ -109,3 +109,51 @@ test('every palette ground rule lands on a real plate', async ({ page }) => {
     `home renders ${rendered.size} distinct grounds; it declares ${homeDeclaredCount} plus the default`,
   ).toBeGreaterThanOrEqual(homeDeclaredCount + 1);
 });
+
+// RCA-014 item 1. The two rules above only check declared rules that EXIST —
+// a plate id that was never added to palette.css is invisible to them, which
+// is exactly how #evolution-record, #evals-observability and
+// #published-skills fell back to the base #0e1322 ground for as long as they
+// did (nobody added their palette entry when the pages grew from one plate to
+// several). This checks the other direction: every plate actually rendered on
+// these two multi-plate pages must have its OWN ground, distinct from its
+// immediate neighbor and from the unstyled fallback.
+//
+// WHICH CHANGE TURNS IT RED: deleting any of the three palette.css rules this
+// package adds; giving #evals-observability and #published-skills — adjacent
+// on /how-i-build — the same hex.
+test('every plate on /experience and /how-i-build has its own ground (RCA-014)', async ({ page }) => {
+  const BASE_GROUND = 'rgb(14, 19, 34)'; // .plate's unstyled --ground: #0e1322
+  const pages = {
+    '/experience': ['evolution', 'evolution-record'],
+    '/how-i-build': ['how-i-build', 'evals-observability', 'published-skills'],
+  };
+
+  const faults = [];
+  for (const [route, ids] of Object.entries(pages)) {
+    await page.goto(route);
+    const grounds = await page.evaluate(
+      (plateIds) =>
+        Object.fromEntries(
+          plateIds.map((id) => {
+            const el = document.getElementById(id);
+            return [id, el ? getComputedStyle(el).backgroundColor : null];
+          }),
+        ),
+      ids,
+    );
+
+    for (const id of ids) {
+      if (!grounds[id]) faults.push(`${route}#${id}: plate not found`);
+      else if (grounds[id] === BASE_GROUND) {
+        faults.push(`${route}#${id}: falls back to the base ground ${BASE_GROUND}`);
+      }
+    }
+    for (let i = 1; i < ids.length; i += 1) {
+      if (grounds[ids[i]] && grounds[ids[i]] === grounds[ids[i - 1]]) {
+        faults.push(`${route}: #${ids[i - 1]} and #${ids[i]} share ground ${grounds[ids[i]]}`);
+      }
+    }
+  }
+  expect(faults, faults.join(' · ')).toEqual([]);
+});

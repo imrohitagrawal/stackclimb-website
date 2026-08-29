@@ -97,6 +97,57 @@
   --surface: #402b19;
 }
 
+/* RCA-014 item 1. These three plate ids existed in markup with no matching
+   palette rule — /experience and /how-i-build both grew from one plate to
+   several after the ladder above was written, and nobody extended the map to
+   match. All three fell back to .plate's base #0e1322; evals-observability
+   and published-skills are adjacent on /how-i-build, so a visitor scrolling
+   crossed two consecutive plates with the identical ground.
+
+   Hues follow the same method as every rule above: L 9.5%/17.5%, S 44%,
+   picked from the open bands between the nine already-occupied hues (the
+   file's running total is now roughly 29/46/77/109/139/169/206/225/256/284/
+   314/344 — an even ~30-degree spacing, the same gap the file already
+   tolerates between how-i-build/29 and overview/46, 17 degrees apart).
+
+   #evolution-record answers only to /experience's #evolution (green, hue
+   109) — no other plate sits between them. #evals-observability and
+   #published-skills answer to each other AND to #how-i-build (amber, hue 29)
+   on the same page.
+
+   Computed against GROUND (WCAG 2.1, this commit):
+     #evolution-record      hue 314 (plum)        bone 15.35:1 · ochre 7.15:1
+     #evals-observability   hue 139 (spring green) bone 13.95:1 · ochre 6.50:1
+     #published-skills      hue  77 (chartreuse)   bone 13.63:1 · ochre 6.35:1
+   All clear the ladder's established 13.6-15.6:1 (bone) / 6.35-7.27:1 (ochre)
+   range against ground.
+
+   axe's live scan (dod.spec.js, scrolled + settled, not a static check) found
+   more: `.skill-repos a` renders ochre-on-SURFACE, not ground —
+   #published-skills's first-pass surface (#354019, the same L 17.5% every
+   other surface uses) measured only 4.34:1, under the 4.5:1 AA floor, because
+   this hue happens to read lighter than the others at the same L/S. Lowered
+   to L 15% (#2e3715) for 4.93:1 — checked, not assumed, since #evals-
+   observability's surface at the standard 17.5% already sits at 4.58:1,
+   inside the same thin margin this repo's existing #quorum ships at (4.55:1)
+   — accepted, not touched, matching that precedent rather than inventing a
+   new floor. Declared HERE ONLY, same rule as every other plate in this
+   file. */
+#evolution-record {
+  --ground: #230e1e;
+  --surface: #401937;
+}
+
+#evals-observability {
+  --ground: #0e2314;
+  --surface: #194025;
+}
+
+#published-skills {
+  --ground: #1d230e;
+  --surface: #2e3715;
+}
+
 #citevyn {
   --ground: #230d13;
   --surface: #3f1a25;

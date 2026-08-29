@@ -121,31 +121,30 @@ test('every palette ground rule lands on a real plate', async ({ page }) => {
 //
 // WHICH CHANGE TURNS IT RED: deleting any of the three palette.css rules this
 // package adds; giving #evals-observability and #published-skills — adjacent
-// on /how-i-build — the same hex.
+// on /how-i-build — the same hex; adding a FUTURE plate to either page
+// without giving it a palette.css rule (Codex review round: the first
+// version hardcoded the three known ids, so a newly added, undeclared plate
+// would pass unseen — the id list is now read from the rendered DOM itself).
 test('every plate on /experience and /how-i-build has its own ground (RCA-014)', async ({ page }) => {
   const BASE_GROUND = 'rgb(14, 19, 34)'; // .plate's unstyled --ground: #0e1322
-  const pages = {
-    '/experience': ['evolution', 'evolution-record'],
-    '/how-i-build': ['how-i-build', 'evals-observability', 'published-skills'],
-  };
+  const routes = ['/experience', '/how-i-build'];
 
   const faults = [];
-  for (const [route, ids] of Object.entries(pages)) {
+  for (const route of routes) {
     await page.goto(route);
-    const grounds = await page.evaluate(
-      (plateIds) =>
-        Object.fromEntries(
-          plateIds.map((id) => {
-            const el = document.getElementById(id);
-            return [id, el ? getComputedStyle(el).backgroundColor : null];
-          }),
-        ),
-      ids,
-    );
+    const { ids, grounds } = await page.evaluate(() => {
+      const plateIds = [...document.querySelectorAll('.plate[id]')].map((el) => el.id);
+      const map = Object.fromEntries(
+        plateIds.map((id) => [id, getComputedStyle(document.getElementById(id)).backgroundColor]),
+      );
+      return { ids: plateIds, grounds: map };
+    });
+
+    expect(ids.length, `${route}: no plates found — this route's own plate structure changed, `
+      + 'or the selector broke').toBeGreaterThan(0);
 
     for (const id of ids) {
-      if (!grounds[id]) faults.push(`${route}#${id}: plate not found`);
-      else if (grounds[id] === BASE_GROUND) {
+      if (grounds[id] === BASE_GROUND) {
         faults.push(`${route}#${id}: falls back to the base ground ${BASE_GROUND}`);
       }
     }

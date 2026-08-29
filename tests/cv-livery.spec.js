@@ -47,18 +47,28 @@ test('employer names on /cv no longer masquerade as real links (RCA-014)', async
   }
 
   // Generalized net: nothing outside <a> should render the exact real-link
-  // color together with the real-link underline — that specific pairing is
-  // what let .org pass as a link with no other signal.
-  const impostors = await page.evaluate((linkColor) => {
+  // color paired with EITHER of the two ways this codebase draws an
+  // underline — text-decoration (what .cv a itself uses) or a border-bottom
+  // fake (Codex review round: the original version checked only
+  // text-decoration, so a same-color border-bottom mimic would have passed
+  // unnoticed; also uses the real link's font-weight as a second axis, since
+  // a mimic matching color + a real underline technique but at a visibly
+  // different weight reads as less convincing).
+  const impostors = await page.evaluate((link) => {
     const bad = [];
     document.querySelectorAll('.cv *:not(a)').forEach((el) => {
       const cs = getComputedStyle(el);
-      if (cs.color === linkColor && cs.textDecorationLine === 'underline') {
+      const hasRealUnderline = cs.textDecorationLine === 'underline';
+      const hasBorderMimic = cs.borderBottomStyle !== 'none'
+        && parseFloat(cs.borderBottomWidth) > 0
+        && cs.borderBottomColor === link.color;
+      const sameWeight = Number(cs.fontWeight) === link.weight;
+      if (cs.color === link.color && sameWeight && (hasRealUnderline || hasBorderMimic)) {
         bad.push(el.className || el.tagName);
       }
     });
     return bad;
-  }, link.color);
+  }, link);
   expect(impostors, `non-link elements rendering as links: ${impostors.join(', ')}`).toEqual([]);
 });
 
@@ -73,6 +83,17 @@ test('/cv type scale is not overwhelmingly clustered into one band (RCA-014)', a
     });
     return [...set].sort((a, b) => a - b);
   });
+
+  // DENOMINATOR (Codex review round): the worst-3px-band metric alone
+  // rewards total flattening — one shared size everywhere yields worst=1,
+  // an empty selector yields 0, and both would pass a bare `<= 4` check
+  // despite being LESS differentiated than today, the opposite of this
+  // gate's purpose. A floor on the total distinct-size count means the
+  // page must still be measuring a real, varied scale, not a flattened or
+  // empty one.
+  const MIN_DISTINCT_SIZES = 8;
+  expect(sizes.length, `only ${sizes.length} distinct sizes found — too few to prove a real, `
+    + 'varied scale is being measured').toBeGreaterThanOrEqual(MIN_DISTINCT_SIZES);
 
   // Slide a 3px window across every measured size; the worst (most crowded)
   // count is the metric. Fresh measurement here (not copied from the RCA)

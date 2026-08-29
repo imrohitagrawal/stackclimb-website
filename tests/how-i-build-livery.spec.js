@@ -9,8 +9,8 @@
 //
 // WHICH CHANGE TURNS IT RED: reverting the `.band-lead .band-term`
 // font-weight override back to the bare `.band-term` value (700) reproduces
-// the exact 100-unit gap this test measures against the other four
-// instances' 300-unit gap.
+// the exact 100-unit gap this test measures against the other six
+// `.band-support`-nested instances' 300-unit gap.
 
 import { test, expect } from '@playwright/test';
 
@@ -19,27 +19,31 @@ test('the how-i-build plate\'s lead-nested band-term matches the other instances
 }) => {
   await page.goto('/how-i-build');
 
+  // Codex review round: two of the five bands carry TWO .band-term spans in
+  // the same .band-support paragraph ("explicitly not blind human labels"
+  // AND "alert on a floor breach" in one; "before it leaves the process" AND
+  // "labelled full-eval" in another) — querySelector() on the band only
+  // checked the first of each pair, silently leaving 2 of 7 real instances
+  // unverified. querySelectorAll() checks every instance in every band.
   const bands = await page.evaluate(() =>
-    [...document.querySelectorAll('.model-band')].map((band) => {
-      const lead = band.querySelector('.band-lead');
-      const term = band.querySelector('.band-term');
-      if (!term) return null;
-      const parent = term.parentElement;
-      return {
-        parentClass: parent.className,
-        parentWeight: Number(getComputedStyle(parent).fontWeight),
-        termWeight: Number(getComputedStyle(term).fontWeight),
-        leadWeight: lead ? Number(getComputedStyle(lead).fontWeight) : null,
-      };
-    }).filter(Boolean),
+    [...document.querySelectorAll('.model-band')].flatMap((band) =>
+      [...band.querySelectorAll('.band-term')].map((term) => {
+        const parent = term.parentElement;
+        return {
+          parentClass: parent.className,
+          parentWeight: Number(getComputedStyle(parent).fontWeight),
+          termWeight: Number(getComputedStyle(term).fontWeight),
+        };
+      }),
+    ),
   );
 
-  expect(bands.length, 'expected at least 5 band-term instances on /how-i-build').toBeGreaterThanOrEqual(5);
+  expect(bands.length, 'expected all 7 band-term instances on /how-i-build').toBe(7);
 
-  const MIN_JUMP = 250; // RCA-014's own floor: "at least 250-300 units above its
-  // immediate parent's computed weight" — the four band-support instances
-  // clear 300 (400 -> 700); this floor catches a regression to the 100-unit
-  // defect without demanding every instance hit exactly 300.
+  const MIN_JUMP = 300; // RCA-014's own floor, exact: "at least 300 units above
+  // its immediate parent's computed weight" — every .band-support instance
+  // clears exactly 300 (400 -> 700), so 300 catches a regression to the
+  // 100-unit defect without loosening the floor below what already ships.
   const faults = [];
   for (const b of bands) {
     const jump = b.termWeight - b.parentWeight;

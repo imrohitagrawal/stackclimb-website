@@ -9,9 +9,10 @@
 //    employer-name-looks-like-a-link defect (link-vs-fact test)
 //  - removing text-transform:uppercase from .cv-state or .cv-gate-k removes
 //    the one signal that still separates them from prose links (label test)
-//  - reverting the three type-scale rules this package moved (.cv-print-note,
-//    .cv-contact, .cv-note/.cv-scope/.cv-gate/.cv-row dd) back to their
-//    original sizes re-crowds the band past this test's floor
+//  - reverting any of the six type-scale rules this package consolidated
+//    (.cv-print-note, .cv-contact, .cv-note, .cv-scope, .cv-gate,
+//    .cv-row dd) back to its original size re-crowds the band past this
+//    test's floor
 
 import { test, expect } from '@playwright/test';
 

@@ -109,3 +109,50 @@ test('every palette ground rule lands on a real plate', async ({ page }) => {
     `home renders ${rendered.size} distinct grounds; it declares ${homeDeclaredCount} plus the default`,
   ).toBeGreaterThanOrEqual(homeDeclaredCount + 1);
 });
+
+// RCA-014 item 1. The two rules above only check declared rules that EXIST —
+// a plate id that was never added to palette.css is invisible to them, which
+// is exactly how #evolution-record, #evals-observability and
+// #published-skills fell back to the base #0e1322 ground for as long as they
+// did (nobody added their palette entry when the pages grew from one plate to
+// several). This checks the other direction: every plate actually rendered on
+// these two multi-plate pages must have its OWN ground, distinct from its
+// immediate neighbor and from the unstyled fallback.
+//
+// WHICH CHANGE TURNS IT RED: deleting any of the three palette.css rules this
+// package adds; giving #evals-observability and #published-skills — adjacent
+// on /how-i-build — the same hex; adding a FUTURE plate to either page
+// without giving it a palette.css rule (Codex review round: the first
+// version hardcoded the three known ids, so a newly added, undeclared plate
+// would pass unseen — the id list is now read from the rendered DOM itself).
+test('every plate on /experience and /how-i-build has its own ground (RCA-014)', async ({ page }) => {
+  const BASE_GROUND = 'rgb(14, 19, 34)'; // .plate's unstyled --ground: #0e1322
+  const routes = ['/experience', '/how-i-build'];
+
+  const faults = [];
+  for (const route of routes) {
+    await page.goto(route);
+    const { ids, grounds } = await page.evaluate(() => {
+      const plateIds = [...document.querySelectorAll('.plate[id]')].map((el) => el.id);
+      const map = Object.fromEntries(
+        plateIds.map((id) => [id, getComputedStyle(document.getElementById(id)).backgroundColor]),
+      );
+      return { ids: plateIds, grounds: map };
+    });
+
+    expect(ids.length, `${route}: no plates found — this route's own plate structure changed, `
+      + 'or the selector broke').toBeGreaterThan(0);
+
+    for (const id of ids) {
+      if (grounds[id] === BASE_GROUND) {
+        faults.push(`${route}#${id}: falls back to the base ground ${BASE_GROUND}`);
+      }
+    }
+    for (let i = 1; i < ids.length; i += 1) {
+      if (grounds[ids[i]] && grounds[ids[i]] === grounds[ids[i - 1]]) {
+        faults.push(`${route}: #${ids[i - 1]} and #${ids[i]} share ground ${grounds[ids[i]]}`);
+      }
+    }
+  }
+  expect(faults, faults.join(' · ')).toEqual([]);
+});

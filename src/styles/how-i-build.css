@@ -27,6 +27,18 @@
 
 .band-term { font-weight: 700; }
 
+/* RCA-014 item 3. The third model-band nests .band-term straight inside
+   .band-lead (weight 600), not .band-support (uninherited, weight 400) like
+   the other four instances — so it only got a 100-unit jump to 700 instead
+   of the 300-unit jump the other four get. Archivo Variable (weight axis
+   100-900, confirmed genuinely loaded — checked and ruled out as a red
+   herring) renders both jumps distinctly; the 100-unit one just isn't a big
+   enough step next to text that already reads semi-bold. Raised to 900 —
+   the axis's own top end — so this instance clears the same ~300-unit gap
+   the others already have (600 -> 900), without restructuring the markup or
+   adding a second signal it doesn't need. */
+.band-lead .band-term { font-weight: 900; }
+
 /* The Lit-Surface panel (D61/D62): ONE near-white surface holding real
    operational content — a verbatim quote, never test-suite output. */
 .artefact {

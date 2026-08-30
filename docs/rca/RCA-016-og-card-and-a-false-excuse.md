@@ -16,36 +16,45 @@ site.
 
 `public/og.png` is 1200×630, last written 2026-08-17, 74,348 bytes.
 
-## 2. `docs/brand/README.md:65` is wrong in both directions, not one
+## 2. CORRECTED TWICE — the palette is current; the CONTENT is a version of the site that no longer exists
 
-The row reads:
+**This section's first two drafts were both wrong, and the corrections stay because the method
+matters more than the result.**
 
-> `og.png` | 1200×630, and **not regenerated since the value ladder**. It shows the old palette
-> and, almost certainly, the deleted mannequin.
+**Draft 1** sampled the pixels with a hand-written PNG reader that reported `channels=1` and
+returned `#f5f5f5`, `#d8d8d8`, `#161616` — nonsense, because the file is palette-indexed and the
+reader was returning palette *indices* as grey levels. Caught only because the numbers matched no
+colour the site uses. Re-measured through a canvas, which decodes properly.
 
-D153 already refuted the mannequin half by looking at the image. Sampling the actual pixels
-refines the other half too — the first attempt at this measurement was itself wrong and is
-recorded below, because the method matters more than the result.
+**Draft 2** then compared the card against `#overview`'s ground (`#231e0d`) and concluded the hero
+plate ground was stale. **Wrong plate.** The card depicts the HERO, `#top`. Measured live:
 
-| Element | `og.png` | live site | verdict |
+| Token on `#top` | live | og.png | verdict |
 |---|---|---|---|
-| Outer ground | `#0e1322` | `#0e1322` (base plate ground) | **current** |
-| Hero plate ground | `#1a233f` | **`#231e0d`** (`palette.css:63`, confirmed live as `rgb(35,30,13)`) | **stale** |
-| Lit surface | `#f4efe4` | `--lit: #f4efe4` (`palette.css:29`) | **current** |
-| Headline copy | "AI systems that show their work and refuse to fake it" | identical | **current** |
-| Portrait | the real photograph | the real photograph | **not a mannequin** |
+| `--ground` | `#0e1322` | `#0e1322` | **current** |
+| `--surface` | `#1a233f` | `#1a233f` (the plate face) | **current** |
+| `--lit` | `#f4efe4` | `#f4efe4` | **current** |
+| headline copy | "AI systems that show their work and refuse to fake it" | identical | **current** |
 
-So "shows the old palette" is too broad: three of four sampled colours are current. **Exactly one
-thing is stale — the hero plate's ground, navy where the site is now `#231e0d`** — and one thing
-is simply false. The conclusion (regenerate it) survives; both stated reasons need correcting, and
-corrections stay rather than get deleted.
+**So `docs/brand/README.md:65` is wrong on BOTH of its stated reasons.** There is no "old palette"
+— every colour on the card is the one the site paints today. And the "deleted mannequin" is the
+real photograph. Two claims, both false, one of which had already been refuted once by D153.
 
-**A method failure worth recording.** The first pixel sample was taken with a hand-written PNG
-reader that reported `channels=1` and produced `#f5f5f5`, `#d8d8d8`, `#161616` — nonsense, because
-the file is palette-indexed and the reader was returning palette *indices* as if they were grey
-levels. Caught only because the numbers did not resemble any colour the site uses. Re-measured
-through a canvas, which decodes properly. A measurement that disagrees with everything you know is
-a bug in the measurement until proved otherwise.
+**But the row's conclusion is righter than its reasons, and for a bigger cause than the label.**
+Screenshotting the live hero at 1200×630 and comparing shows the card carries an entire pitch the
+site has replaced:
+
+| | `og.png` | live hero today |
+|---|---|---|
+| Label | `PLATE Nº 00 — THE RECORD` | **0 occurrences site-wide** |
+| Bio | "…fourteen years deciding whether software was safe to release, now building AI systems… Citation, disclosed uncertainty, honest refusal, and evaluation gates that can block a release." | "From understanding the requirement to what's actually running in production — and feeding what I learn back into the next release. Fourteen years deciding…" |
+| First CTA | **"WHAT HE BUILT"** — third person | **"WHAT I BUILT"** — first person |
+| Second CTA | "CV" | "CAREER EVOLUTION" |
+| Evidence device | a single CiteVyn golden case: `REFUSED`, "What is the capital of France?", citations 0 / confidence none | a six-row practice table with `ENFORCED` states and per-project figures |
+
+The third-to-first-person CTA shift is a **voice** change, not a cosmetic one. So the card does not
+need a label removed. It shows a different bio, different calls to action, and a different
+evidence device — the site's argument as it stood some versions ago.
 
 ## 3. `tests/viewport-reach.spec.js` excuses `/` with a reason that is false — and I shipped it today
 
@@ -100,17 +109,21 @@ by the owner (D137) — not a new finding.
 
 ## The cost
 
-Low and reputational, not functional. The share card is the first thing anyone sees when a link to
-this site is posted anywhere, and it currently shows a label the site does not use. The false
-excuse costs a future session an hour and a wrong plan.
+Reputational, not functional — and higher than the first draft of this line said. The share card is
+the first thing anyone sees when a link to this site is posted anywhere, and it shows a pitch the
+site has replaced: a different bio, calls to action in the third person where the site now speaks in
+the first, and an evidence device that no longer exists. Someone who clicks through from a shared
+link arrives at a different argument than the one that brought them. The false excuse costs a future
+session an hour and a wrong plan.
 
 ## The proposed fix — needs approval before any of it is written
 
-1. **Regenerate `og.png`** without the `PLATE Nº 00 — THE RECORD` label and with the hero plate's
-   current `#231e0d` ground. Keep what is already current: the outer ground, the lit REFUSED panel,
-   the real photograph, the headline copy.
-2. **Correct `docs/brand/README.md:65` in place**, keeping the wrong text visible as a correction:
-   the mannequin claim was false, and "the old palette" was true of exactly one colour.
+1. **Regenerate `og.png`** — and this is NOT a label removal. The palette needs no change at all.
+   What is stale is the bio, both CTA labels, and the whole right-hand evidence device. **How to
+   regenerate it is a real decision and is put to the owner below, not assumed here.**
+2. **Correct `docs/brand/README.md:65` in place**, keeping the wrong text visible: BOTH its stated
+   reasons are false — there is no old palette and no mannequin — while its conclusion holds for a
+   different and larger reason.
 3. **Fix the false excuse** in `tests/viewport-reach.spec.js:101` to state what is actually true —
    that the hero is D27-exempt from `plate-height.spec.js` as well, so nothing gates it, and that
    this is a recorded decision rather than an oversight.
@@ -128,6 +141,28 @@ excuse costs a future session an hour and a wrong plan.
   question about how small this site is willing to set a fact. Owner's call.
 - **The `#private` plate's bordered `span.seal`**, which DESIGN.md bans for status. One line,
   low cost, but out of this package's scope — recorded so it is not lost.
+
+## The decision this RCA cannot make — how the card gets regenerated
+
+`og.png` has **no generator in this repo.** `package.json` has four scripts and none of them build
+it. `tests/og-watermark.spec.js:1-16` records what it is: a static asset, watermarked ONCE BY HAND
+via `apply_watermark.py` in `~/Projects/project-doc-skills`, which needs Pillow — and DEF-37
+records why adding a Python dependency to this Node-only repo for a one-time asset is the wrong
+trade. It is pinned by SHA-256, so any regeneration also updates that pin.
+
+There is also no source file for the card's composition. It is not a screenshot of the current
+hero: the live hero at 1200×630 carries the nav bar and cuts through the practice table, because
+that plate is composed for a full viewport, not for a 1.9:1 card.
+
+So regenerating means choosing one of three, and it is the owner's call:
+
+- **Build a dedicated card source** — a small HTML page rendered headless at 1200×630 by the
+  Playwright this repo already has, then watermarked by the existing skill. Makes the card
+  reproducible and gateable for the first time, and never drifts again. Costs a new artifact and a
+  composition decision about what the card should say.
+- **Owner supplies the card**, per `docs/brand/README.md`'s own protocol: candidates go to the
+  untracked `assets/inbox/brand/`, chosen deliberately after review. It is his face and his pitch.
+- **Leave it** and record the drift knowingly, with its reason.
 
 ## What will bite
 

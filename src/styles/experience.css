@@ -61,3 +61,44 @@
 @media (max-width: 900px) {
   .era-list { gap: 0.85rem; }
 }
+
+/* RCA-015 (P5) — on a phone the closing sentence sat 70.6px BELOW the fold
+   (bottom 1034.3 against an 844px screen), so six employers read as a list
+   with the sentence supplying its point one scroll away. Owner's ruling
+   P-29: lift it above the era list, mobile only, era list not trimmed.
+
+   WHY A DISPLAY CHANGE AND NOT `order` ALONE. `.plate-copy` is display:block
+   (global.css:146 sets only max-width/min-width) and `order` applies solely
+   to flex/grid children. The first draft of RCA-015 specified `order` by
+   itself; injecting it moved nothing — the sentence stayed at 914.6-1034.3,
+   byte-identical. Recorded because a rule that lands and does nothing is
+   worse than no rule: the gate stays red and the next reader blames the fix.
+
+   WHY ALL THREE CHILDREN GET AN ORDER. `order: -1` on the sentence alone
+   puts it before EVERY sibling including the <h1> — measured, the title fell
+   from 121.8 to 255.9 and the visitor met the conclusion before the page
+   title. Naming all three is the only way the outcome is the approved one.
+
+   WHY SCOPED TO #evolution. Unscoped, `.plate-copy { display: flex }` makes
+   it a geometry structural row on other routes — / goes 7->8 rows at 390 and
+   768 but not 1440, /how-i-build 2->3 — which makes row population
+   width-dependent and contradicts geometry-floor.mjs:33-38's stated
+   invariant that no media query moves a row in or out of the predicate.
+
+   WHY 700px AND NOT THE SITE'S USUAL 900px. Measured: at 768x900 the
+   sentence is ALREADY above the fold (bottom 793.8), so a 900px breakpoint
+   would restyle a viewport that has no problem. 700px covers the phones that
+   do (390x844, 412x839) and excludes the one that does not.
+
+   THE KNOWN TRADE, disclosed rather than left silent (owner's ruling,
+   2026-08-30): below 700px the visual order is title, conclusion, list while
+   the DOM order stays title, list, conclusion. Both sequences read
+   correctly, so this is not a WCAG 2.1 SC 1.3.2 failure — but axe has no
+   rule for reorder, so no gate can see it, which is exactly why it is
+   written down here. */
+@media (max-width: 700px) {
+  #evolution .plate-copy { display: flex; flex-direction: column; }
+  #evolution .plate-title { order: 1; }
+  #evolution .era-closing { order: 2; }
+  #evolution .era-list { order: 3; }
+}

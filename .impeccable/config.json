@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font-size",
+        "value": "9px",
+        "createdAt": "2026-08-30T19:23:10.136Z",
+        "reason": "test fixture: rendered-text-selftest mutates font-size in-page to prove the extractor does NOT register styling as text drift; not a site type step"
+      }
+    ]
+  }
+}

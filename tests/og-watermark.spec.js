@@ -1,3 +1,12 @@
+// RCA-016 (P6), 2026-08-30: the card this pin guards is now GENERATED from the
+// built home page by scripts/og-card.mjs, then watermarked by the same hand
+// step as before. The previous card drifted for weeks — it shipped a bio, two
+// CTA labels ("WHAT HE BUILT", "CV") and an evidence device the site had
+// replaced, because nothing connected the asset to the page. Generation makes
+// that class of drift impossible; tests/og-card-contract.spec.js gates it.
+// The pin below still guards the SHIPPED BYTES, which the watermark step
+// produces by hand and which no generator writes.
+//
 // public/og.png must carry the credit watermark applied once, by hand, via
 // project-doc-skills' watermark skill (W-20/RCA-001) — never regenerated at
 // build time (og.png is a static asset; the skill needs Pillow, which this
@@ -22,7 +31,7 @@ import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 
-const EXPECTED_SHA256 = '66bca9ba927a0efc390b4d4d01603e71cbc71bc217ba5c9cf152da1a9e3a55bd';
+const EXPECTED_SHA256 = '2dc4ca3164240b3b6241eba0d59b5437b519c20c310cea60ba5a592fe7ecc7a5';
 
 test('public/og.png is the visually-verified watermarked file, byte for byte', () => {
   const buf = readFileSync('public/og.png');

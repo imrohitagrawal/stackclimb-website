@@ -98,7 +98,20 @@ const REACH = {
 /* Routes with no reach requirement, each with its reason. Being listed here
    is a DECISION; being absent from both maps is a breach. */
 const NO_REQUIREMENT = {
-  '/': 'the home page is a seven-plate scroll; its hero is already gated by plate-height.spec.js',
+  // CORRECTED 2026-08-30 (RCA-016). This read "its hero is already gated by
+  // plate-height.spec.js" — which is FALSE, and it shipped. plate-height.spec.js:40
+  // is `const EXEMPT = new Set(['top'])` and #top IS the hero: it is the one
+  // plate that spec deliberately does not measure, per D27. So the excuse
+  // cited as proof the single gate that exempts the thing it was excusing.
+  // Nothing gates the home hero, and that is a recorded decision (D27 lets it
+  // run long), not an oversight — but it must be stated as a decision, not
+  // dressed up as coverage. Measured 2026-08-30 at 390x844: the hero is
+  // 2483px = 2.94 viewports and .practice-panel runs y=815 to y=1914, entirely
+  // below the fold. Whether that should change is the owner's call and is
+  // recorded in RCA-016, not silently fixed here.
+  '/':
+    'D27 deliberately lets the home hero run long, and plate-height.spec.js EXEMPTS it, ' +
+    'so nothing gates its reach. That is a decision, not coverage — see RCA-016.',
   '/cv': 'a document that prints, not a page with a fold (D31)',
   '/projects/citevyn':
     'a project page leads with its figure and states its claim in the opening plate; ' +

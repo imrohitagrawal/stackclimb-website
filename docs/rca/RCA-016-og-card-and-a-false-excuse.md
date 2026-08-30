@@ -1,8 +1,9 @@
 # RCA-016 — the share card advertises a deleted element, and a gate I shipped excuses a page for a false reason
 
 **Status: written before the fix, per AGENTS.md's order, on 2026-08-30.**
-**Approval gate: NOT YET APPROVED.** No `src/`, `tests/` or `public/` file has been touched for
-this package. W-25 makes the RCA approval a hard stop, per package, no exceptions.
+**APPROVED by the owner 2026-08-30**, after he chose the regeneration route from the three put to
+him and signed off on the rendered card before it shipped. **BUILT — see D162.** The card is now
+generated from the built home page; the drift of this class cannot recur.
 
 This is P6, the last of D153's six packages. Its scope in the plan is three items; investigation
 found a fourth, and it is in code merged earlier today.
@@ -116,7 +117,7 @@ the first, and an evidence device that no longer exists. Someone who clicks thro
 link arrives at a different argument than the one that brought them. The false excuse costs a future
 session an hour and a wrong plan.
 
-## The proposed fix — needs approval before any of it is written
+## The fix, as built (approved 2026-08-30, shipped in D162)
 
 1. **Regenerate `og.png`** — and this is NOT a label removal. The palette needs no change at all.
    What is stale is the bio, both CTA labels, and the whole right-hand evidence device. **How to

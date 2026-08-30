@@ -183,11 +183,14 @@ reported all three bands going below; re-measured, that is wrong — band 1 stay
 The plate grows 1176.2 → 1190.6px (+14.4px), because `.artefact` has no bottom margin for band 3's
 trailing 0.9rem to collapse into.
 
-### 2. `/experience` — mechanism RESERVED, see "The open question" below.
+### 2. `/experience` — mechanism RULED 2026-08-30 (P-31). BUILT.
 
-The approved outcome is unchanged: lift the closing sentence above the era list, mobile only.
-Every CSS-only mechanism that achieves it has a consequence the ruling did not cover, so the
-mechanism goes back to the owner before anything is written. Detail below.
+The trade was put to him and he chose to keep mobile-only and desktop-unchanged, accepting that
+below 700px the visual order differs from the DOM order. Built as a `max-width: 700px` block in
+`experience.css` making `#evolution .plate-copy` a column flex container with explicit orders on
+all three children, scoped to `#evolution` so no other route's geometry row population moves. The
+divergence is disclosed in that file's own comment rather than left silent — his ruling, and the
+site's thesis applied to itself.
 
 ### 3. The three surface briefs — ALREADY DONE, not gated on this RCA.
 
@@ -267,6 +270,45 @@ mechanism delivers all three of *mobile-only*, *desktop-unchanged* and *DOM-orde
   nor `.era-closing` produces a geometry key. But it changes desktop too, which the ruling excluded.
 
 Owner's call. Recorded here rather than settled.
+
+## What the build then hit, which this RCA did not predict
+
+**A plate-height ceiling breach, caught by the existing suite.** The hoist left the last
+`.model-band`'s 14.4px bottom margin as the final thing in `.plate-copy` with nothing to collapse
+into, taking `#how-i-build` to 999.8px = 1.11 viewports against `plate-height.spec.js`'s 1.1
+desktop ceiling. A reviewer predicted the +14.4px growth; neither the reviewer nor this RCA
+predicted it would cross a ceiling. Fixed at the cause — `> .model-band:last-child { margin-bottom: 0 }`, scoped by plate id,
+returning the plate to 985.5px = 1.095 — not by raising the ceiling, which was available and
+refused. A trailing margin at the end of a container is dead space, not rhythm.
+
+## What the adversarial review then broke, after the build
+
+**The gate was purely positional and would have certified the fix P-28 forbids.** As first
+written it asserted only `bottom < viewportHeight`. A reviewer measured it GREEN on `height: 1px;
+overflow: hidden` (bottom 279.3 against 844), `font-size: 1px`, `transform: scale(0.02)` and
+`content-visibility: hidden` — `painted()` rejects none of those, having no size floor. Since
+P-28's whole content is that the quote is NOT shortened, the gate would have passed the one change
+the owner refused. Closed with a per-route height floor and a `toContainText` on the words the
+element exists to keep visible; both mutation-proved RED.
+
+**Two audit blind spots**, also closed and mutation-proved: a route listed in BOTH maps (required
+and excused at once) passed, and a stale excuse for a route that no longer exists passed.
+
+**`:last-of-type` was the wrong selector** for "the last thing in the container" — it matches the
+last element of its TYPE, which is the last band only by coincidence. The replacement took two
+goes: `> *:last-child` fixed the semantics but would silently zero any future trailing element's
+margin, so the shipped rule is `> .model-band:last-child`, which fails loud instead. A first draft
+of the explanatory comment also had the two failure cases exactly reversed — caught by the
+different-model reviewer, corrected in place.
+
+**A measured number in the new CSS comment was wrong.** It said the unscoped flex rule moves `/`'s
+row count at 390 and 768; re-measured at the 700px breakpoint that actually shipped, only 390
+moves. The figure came from an earlier draft's 900px breakpoint. The conclusion was right, the
+number was not.
+
+**The local suite could not have caught the baseline breach.** 48 of the 51 skips are the geometry
+comparisons, skipped under D140's darwin staleness refusal — so a local green cannot clear the
+geometry gate. CI found it; the runner regenerated it.
 
 ## What will bite
 

@@ -35,6 +35,34 @@ const WATCHDOG_URL = `https://github.com/imrohitagrawal/quorum-ai/blob/${WATCHDO
       <div class="plate-copy wide">
         <h1 class="plate-title tight">How I build.</h1>
 
+        {/* RCA-015 (P5): the artefact sits ABOVE the claim bands, not after
+            them. It used to arrive fourth, and P2's own accuracy fix — making
+            this quote genuinely verbatim — made it taller, pushing its most
+            important line past the fold: at 390x844 the fold landed ON the
+            words "This is a PROXY", so a phone reader got the watchdog's claim
+            and none of its stated limit. Hoisted, the whole panel clears the
+            fold with 167.2px to spare. Owner's ruling P-28: the quote is NOT
+            shortened — that would reverse P2 — the panel moves instead.
+            Gated by tests/viewport-reach.spec.js. */}
+        <blockquote class="artefact">
+          <p>
+            &ldquo;It fixes the failure mode we hit on #54: main got a new commit but no
+            deploy fired (a dropped Actions event / skipped-or-failed deploy gate / a
+            flake), leaving prod stale with no one watching.&rdquo;
+          </p>
+          <p>
+            &ldquo;WHAT IT CHECKS (honest scope) [...] the deploy JOB, not a /health
+            200 [...] This is a PROXY: it cannot see a Deploy run that reported
+            success while production did not actually roll [...] on 2026-08-07 that
+            left production 34m31s behind while every passive probe stayed
+            green.&rdquo;
+          </p>
+          <footer>
+            <a href={WATCHDOG_URL} target="_blank" rel="noopener"
+            >deploy-drift-watchdog.yml, quorum-ai</a>
+          </footer>
+        </blockquote>
+
         <div class="model-band">
           <p class="band-lead">
             Reusable, versioned instructions — for requirements and security, not only code.
@@ -64,24 +92,6 @@ const WATCHDOG_URL = `https://github.com/imrohitagrawal/quorum-ai/blob/${WATCHDO
           </p>
         </div>
 
-        <blockquote class="artefact">
-          <p>
-            &ldquo;It fixes the failure mode we hit on #54: main got a new commit but no
-            deploy fired (a dropped Actions event / skipped-or-failed deploy gate / a
-            flake), leaving prod stale with no one watching.&rdquo;
-          </p>
-          <p>
-            &ldquo;WHAT IT CHECKS (honest scope) [...] the deploy JOB, not a /health
-            200 [...] This is a PROXY: it cannot see a Deploy run that reported
-            success while production did not actually roll [...] on 2026-08-07 that
-            left production 34m31s behind while every passive probe stayed
-            green.&rdquo;
-          </p>
-          <footer>
-            <a href={WATCHDOG_URL} target="_blank" rel="noopener"
-            >deploy-drift-watchdog.yml, quorum-ai</a>
-          </footer>
-        </blockquote>
       </div>
     </div>
   </Plate>

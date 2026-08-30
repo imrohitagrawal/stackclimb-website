@@ -12,6 +12,34 @@
 }
 .model-band:first-of-type { border-top: none; padding-top: 0; margin-top: 1.2rem; }
 
+/* RCA-015 (P5): with the artefact hoisted above the bands, the last band's
+   trailing margin became the last thing in .plate-copy with nothing to
+   collapse into — 14.4px of dead space that pushed #how-i-build to 999.8px,
+   1.11 viewports against plate-height.spec.js's 1.1 desktop ceiling. Caught
+   by that gate, fixed here rather than by raising the ceiling: a trailing
+   margin at the end of a container is dead space, not rhythm.
+
+   WHY :last-child AND NOT :last-of-type, which is what this rule said first.
+   :last-of-type matches the last element of its TYPE, so it selected the last
+   <div> — the last band only by coincidence. Add a non-band <div> after the
+   bands and it matches NOTHING and the 14.4px returns; add a non-div (a <p>,
+   say) and it still matches band 3, silently zeroing an element that is no
+   longer last. A first draft of this comment had those two cases the wrong
+   way round; a different-model reviewer caught it, and the correction stays.
+
+   WHY `> .model-band:last-child` AND NOT `> *:last-child`, which was the
+   second draft. `*` would also zero the margin of any future CTA or paragraph
+   that ends up last — broader than the problem, and silent when wrong.
+   Requiring it to BE a band means a future trailing element leaves the 14.4px
+   in place, which trips plate-height.spec.js loudly rather than quietly
+   restyling something nobody asked about. Fail loud beats fail broad.
+
+   Scoped to the two plates that have bands, by id, so it cannot reach another
+   page. #published-skills is excluded and unaffected either way — its last
+   child (.ctas) sets only margin-top, checked. */
+#how-i-build .plate-copy > .model-band:last-child,
+#evals-observability .plate-copy > .model-band:last-child { margin-bottom: 0; }
+
 .model-band .band-lead {
   font-weight: 600;
   max-width: 52ch;

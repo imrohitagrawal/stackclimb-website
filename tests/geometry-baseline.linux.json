@@ -80,7 +80,7 @@
   },
   "desktop/w0390//experience": {
     "nav": [0,390,81],
-    "plate.evolution": [0,390,1132,0],
+    "plate.evolution": [0,390,1163,0],
     "plate.evolution-record": [0,390,900,0],
     "row.evolution-record/ctas#0.box": [49,490,292,114],
     "row.evolution-record/ctas#0.child.0": [0,0,237,51],
@@ -90,7 +90,7 @@
   },
   "desktop/w0390//how-i-build": {
     "nav": [0,390,81],
-    "plate.evals-observability": [0,390,917,0],
+    "plate.evals-observability": [0,390,903,0],
     "plate.how-i-build": [0,390,1186,0],
     "plate.published-skills": [0,390,900,0],
     "row.published-skills/ctas#0.box": [49,650,292,114],
@@ -596,7 +596,7 @@
   },
   "mobile/w0390//experience": {
     "nav": [0,390,81],
-    "plate.evolution": [0,390,1121,0],
+    "plate.evolution": [0,390,1152,0],
     "plate.evolution-record": [0,390,839,0],
     "row.evolution-record/ctas#0.box": [49,458,292,114],
     "row.evolution-record/ctas#0.child.0": [0,0,237,51],
@@ -606,7 +606,7 @@
   },
   "mobile/w0390//how-i-build": {
     "nav": [0,390,81],
-    "plate.evals-observability": [0,390,906,0],
+    "plate.evals-observability": [0,390,892,0],
     "plate.how-i-build": [0,390,1175,0],
     "plate.published-skills": [0,390,839,0],
     "row.published-skills/ctas#0.box": [49,618,292,114],

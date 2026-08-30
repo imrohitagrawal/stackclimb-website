@@ -20,6 +20,18 @@
 // (boundary-check.mjs:97) but only as a filter for finding a visible node
 // inside a seam-contrast probe; nothing ASSERTS where content sits.
 //
+// WHAT THIS GATE STILL DOES NOT CATCH, named because an unstated limit is
+// the thing this site exists to argue against. The position, paint, height
+// and text assertions together reject a deleted, hidden, blurred, clipped,
+// off-screen, scaled, or shrunk target — all mutation-proved. They do NOT
+// reject: an opaque element positioned over the target (needs hit-testing),
+// `text-indent: -9999px` with the box intact, or transparent 1px descendant
+// text inside a padded container that keeps the outer height. `mustSay` is
+// also a PHRASE check, not a token one — the repo's own arize/summarize
+// lesson applies, and `PROXYING` would satisfy it. Those are covered, if at
+// all, by how-i-build.spec.js's content assertions and the visual baselines,
+// not here.
+//
 // RED WHEN: revert either fix and this file fails.
 //   - move `.artefact` back below the three .model-band blocks in
 //     src/pages/how-i-build.astro -> the panel bottom returns to 1088.1px
@@ -39,10 +51,17 @@ import { platedRoutes } from './lib/routes.mjs';
    deliberate choice and checked at BOTH, because a fix that only clears the
    more generous of the two has not cleared the real device. 844 is also the
    URL-bar-HIDDEN height; a phone showing its chrome gives ~745px, which is
-   why .plate uses min-height:100svh. Both targets clear 745 too. */
+   why .plate uses min-height:100svh.
+
+   745 IS ASSERTED, NOT ASSUMED. A first draft claimed in this comment that
+   both targets clear 745 while only testing 844 and 839 — a stated fact no
+   test enforced, which a different-model reviewer flagged as exactly the kind
+   of claim this repo bars. It is now a third row, so the claim and the check
+   are the same thing. */
 const PHONES = [
   { name: 'reference-390', width: 390, height: 844 },
   { name: 'pixel7-412', width: 412, height: 839 },
+  { name: 'url-bar-shown-390', width: 390, height: 745 },
 ];
 
 /* Route -> what must reach above the fold on a phone. The default for a
@@ -56,12 +75,21 @@ const REACH = {
     why: 'the verbatim watchdog quote, its PROXY limit and its citation',
     // Measured 501.3px at 390x844 after the hoist. The floor is deliberately
     // well under that: it must reject a shrunk panel, not pin a layout.
+    //
+    // KNOWN LIMIT, stated rather than implied: this is a tripwire, not a
+    // correctness threshold. `min-height: 301px` around truncated content
+    // would still pass, and a legitimately shorter quote would false-red.
+    // The false red is acceptable because it is LOUD and self-announcing —
+    // whoever shortens the text is the person who sees it — whereas the
+    // silent version, a panel shrunk to fit, is the failure P-28 forbids.
     minHeight: 300,
     mustSay: 'This is a PROXY',
   },
   '/experience': {
     selector: '.era-closing',
     why: 'the sentence stating the throughline the six employers are evidence for',
+    // 119.7px measured at 390x844. Same tripwire caveat as above; a much
+    // terser rewrite could false-red, and that is the tolerable direction.
     minHeight: 80,
     mustSay: 'The thread through all six',
   },

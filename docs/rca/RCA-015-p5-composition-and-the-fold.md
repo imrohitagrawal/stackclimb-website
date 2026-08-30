@@ -277,7 +277,7 @@ Owner's call. Recorded here rather than settled.
 `.model-band`'s 14.4px bottom margin as the final thing in `.plate-copy` with nothing to collapse
 into, taking `#how-i-build` to 999.8px = 1.11 viewports against `plate-height.spec.js`'s 1.1
 desktop ceiling. A reviewer predicted the +14.4px growth; neither the reviewer nor this RCA
-predicted it would cross a ceiling. Fixed at the cause — `.model-band:last-of-type { margin-bottom: 0 }`,
+predicted it would cross a ceiling. Fixed at the cause — `> .model-band:last-child { margin-bottom: 0 }`, scoped by plate id,
 returning the plate to 985.5px = 1.095 — not by raising the ceiling, which was available and
 refused. A trailing margin at the end of a container is dead space, not rhythm.
 
@@ -295,8 +295,11 @@ element exists to keep visible; both mutation-proved RED.
 and excused at once) passed, and a stale excuse for a route that no longer exists passed.
 
 **`:last-of-type` was the wrong selector** for "the last thing in the container" — it matches the
-last element of its TYPE, which is the last band only by coincidence. Replaced with an explicit
-`:last-child` scoped by plate id.
+last element of its TYPE, which is the last band only by coincidence. The replacement took two
+goes: `> *:last-child` fixed the semantics but would silently zero any future trailing element's
+margin, so the shipped rule is `> .model-band:last-child`, which fails loud instead. A first draft
+of the explanatory comment also had the two failure cases exactly reversed — caught by the
+different-model reviewer, corrected in place.
 
 **A measured number in the new CSS comment was wrong.** It said the unscoped flex rule moves `/`'s
 row count at 390 and 768; re-measured at the 700px breakpoint that actually shipped, only 390

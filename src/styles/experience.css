@@ -62,9 +62,12 @@
   .era-list { gap: 0.85rem; }
 }
 
-/* RCA-015 (P5) — on a phone the closing sentence sat 70.6px BELOW the fold
-   (bottom 1034.3 against an 844px screen), so six employers read as a list
-   with the sentence supplying its point one scroll away. Owner's ruling
+/* RCA-015 (P5) — on a phone the closing sentence STARTED 70.6px below the
+   fold (top 914.6 against an 844px screen) and ended at 1034.3, so none of it
+   was visible and six employers read as a list with the sentence supplying
+   its point one scroll away. A first draft of this comment gave 70.6 and
+   1034.3 as if they described the same edge; they do not — 70.6 is the top's
+   overshoot, 1034.3 is the bottom. Owner's ruling
    P-29: lift it above the era list, mobile only, era list not trimmed.
 
    WHY A DISPLAY CHANGE AND NOT `order` ALONE. `.plate-copy` is display:block

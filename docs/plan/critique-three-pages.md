@@ -165,6 +165,12 @@ headline on one line and closes the 690px inter-plate void, but the right ~45% s
   viewport, so the argument falls below the fold
 - Decide whether `/cv`'s Independent Systems stays a disclosure at all
 
+**Numbers in this P5 section are PRE-P2/P3 and have been superseded.** Re-measured live
+2026-08-30: the `/how-i-build` artefact bottom is 852.9px (not 772px), 840.0px (not 759px) and
+1088.1px (not 927px); `/experience`'s plate 1 is 1,122.3px (not 1,075px). Both moved because
+P2's verbatim fix and P3's `.era-org` fix legitimately added height. See D159 and
+`docs/rca/RCA-015-p5-composition-and-the-fold.md`. Kept, not rewritten, per supersede-don't-delete.
+
 ### P6 — `og.png` and the home page · `critique` on `/` first
 
 - Regenerate the share card without the deleted `Plate Nº`; correct `brand/README.md:65`'s refuted

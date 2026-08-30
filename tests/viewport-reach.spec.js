@@ -106,9 +106,13 @@ const NO_REQUIREMENT = {
   // Nothing gates the home hero, and that is a recorded decision (D27 lets it
   // run long), not an oversight — but it must be stated as a decision, not
   // dressed up as coverage. Measured 2026-08-30 at 390x844: the hero is
-  // 2483px = 2.94 viewports and .practice-panel runs y=815 to y=1914, entirely
-  // below the fold. Whether that should change is the owner's call and is
-  // recorded in RCA-016, not silently fixed here.
+  // 2483px = 2.94 viewports and .practice-panel runs y=814.9 to y=1914.2. A
+  // first version of this comment said "entirely below the fold" — wrong by
+  // 29px, and wrong in a comment whose whole subject is excuse strings that
+  // overstate. Accurately: the panel's top edge crosses the fold, its head is
+  // cut by it, and no practice ROW is above it (the first starts at y=917).
+  // Whether that should change is the owner's call and is recorded in
+  // RCA-016, not silently fixed here.
   '/':
     'D27 deliberately lets the home hero run long, and plate-height.spec.js EXEMPTS it, ' +
     'so nothing gates its reach. That is a decision, not coverage — see RCA-016.',

@@ -1,12 +1,17 @@
-/* Renders public/og.png from the BUILT home page, so the share card can never
+/* Renders the share card from the BUILT home page — to a DRAFT file, which is
+ * watermarked by hand and copied to public/og.png. Nothing here writes the
+ * shipped bytes. Generated so the card can never
  * again disagree with the site it advertises.
  *
  * WHY GENERATED, NOT HAND-MADE. The card shipped 2026-08-17 carried a bio, two
  * CTA labels ("WHAT HE BUILT", "CV") and an evidence device the site had since
  * replaced — a third-to-first-person voice change went out on every shared link
  * for weeks because nothing connected the asset to the page. Generating it from
- * dist/index.html makes that class of drift impossible: the strings on the card
- * are the strings in the build, by construction.
+ * dist/index.html closes that gap: the strings on the card are the strings in
+ * the build at render time. That is not the same as "drift is impossible" — a
+ * card not regenerated after a copy change is still stale until
+ * tests/og-card-contract.spec.js catches it, which is why that gate exists and
+ * why this script refuses to emit a partial card.
  *
  * WHY IT IS NOT A PLAIN SCREENSHOT. The hero is composed for a full viewport.
  * At 1200x630 it carries the nav and cuts through the practice table. The
@@ -22,9 +27,10 @@
  *   node scripts/og-card.mjs --check    # renders and diffs, writes nothing
  */
 import { chromium } from 'playwright';
-import { createServer } from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
+import { serve } from './lib/static-server.mjs';
+import { compose } from './lib/og-compose.mjs';
 
 const W = 1200;
 const H = 630;
@@ -33,73 +39,19 @@ const H = 630;
    reviewed. The reviewed card is promoted to public/og.png by hand, after the
    watermark step. */
 const OUT = process.env.OG_OUT || 'og-card.draft.png';
+if (path.resolve(OUT) === path.resolve('public/og.png')) {
+  // og-watermark.spec.js states that no generator writes the shipped bytes —
+  // they come from the hand watermark step. OG_OUT=public/og.png would make
+  // that false and silently replace the approved card with an unwatermarked
+  // draft, which the SHA pin would then report as corruption.
+  console.error('refusing OG_OUT=public/og.png — that file is the WATERMARKED card.');
+  console.error('render a draft, watermark it, then copy it into place by hand.');
+  process.exit(1);
+}
 const ROOT = 'dist';
 
-/* Recomposition only: hide chrome, fit the hero to 1.9:1. No text is added,
-   moved between elements, or reworded here. */
-const COMPOSE = `
-  header, nav, .skip, .plate-index, footer { display: none !important; }
-  *, *::before, *::after { animation: none !important; transition: none !important; }
-  html, body { overflow: hidden !important; }
-  #top { min-height: ${H}px !important; height: ${H}px !important; padding: 0 !important; }
-  /* The top band is NOT decorative slack. apply_watermark.py refuses to place
-     the credit line if no corner is quiet enough — it will not overlap content
-     by guessing — so the card must leave it somewhere to land. The card that
-     shipped in 2026-08 carried its credit in exactly this strip; an 18px
-     margin all round was refused, and so was 42px. The number is derived, not
-     guessed: the skill sizes its font at min(w,h)//28 = 22px here and probes a
-     corner box of text_h + 2*MARGIN, about 50px tall, so the quiet band must
-     exceed that. 62px clears it. Shrink this and the watermark step fails
-     LOUDLY rather than stamping over content — which is the behaviour we
-     want, and is why this comment records the arithmetic. */
-  #top .plate-frame { margin: 62px 18px 18px !important; height: ${H - 80}px !important; overflow: hidden !important; }
-  #top .plate-grid { padding: 18px 32px !important; gap: 22px !important; align-items: start !important; }
-  #top h1 { font-size: 39px !important; line-height: 1.02 !important; margin-bottom: 10px !important; }
-  #top .plate-copy p { font-size: 14.5px !important; line-height: 1.48 !important; }
-  #top .ctas { margin-top: 14px !important; gap: 9px !important; }
-  #top .ctas .btn { font-size: 10.5px !important; padding: 8px 13px !important; }
-  #top .hero-ledger { margin-top: 14px !important; padding-top: 10px !important; }
 
-  /* The practice table is the hero's evidence device and belongs on the card,
-     but it has six rows and the card has room for four. Trim by WHOLE rows —
-     a half-row reads as a rendering fault, and this card is the site's first
-     impression. Hiding rows removes no claim: every row is still on the page
-     the card links to, and the gate asserts the card says nothing the site
-     does not. */
-  #top .practice-row:nth-of-type(n+4) { display: none !important; }
-  #top .practice-foot { display: none !important; }
-  #top .practice-panel { overflow: hidden !important; }
-  /* .caps sits below the panel and does not fit; the hero-ledger below the
-     copy carries the same kind of credential line and does fit. */
-  #top .caps { display: none !important; }
-  #top .hero-ledger .ledger { font-size: 10.5px !important; line-height: 1.45 !important; }
-  /* The ledger's rows are div.row wrappers, not bare dt/dd — a first attempt
-     used dt:nth-of-type and silently matched nothing.
-     Keeping THREE, and the cut is deliberate rather than a fit decision: row 5
-     is "Seeking — Senior / Principal ...". The site is allowed to state
-     availability as plain fact, but a share card that leads with what he wants
-     rather than what he has done reads as a campaign, which AGENTS.md's voice
-     rule bars. The card carries the record; the page carries the ask. */
-  #top .hero-ledger .ledger .row:nth-of-type(n+4) { display: none !important; }
-`;
 ;
-
-function serve(root, port) {
-  const srv = createServer((q, r) => {
-    let f = decodeURIComponent(q.url.split('?')[0]);
-    let p = path.join(root, f);
-    if (fs.existsSync(p) && fs.statSync(p).isDirectory()) p = path.join(p, 'index.html');
-    if (!fs.existsSync(p)) p = path.join(root, f + '.html');
-    if (!fs.existsSync(p)) { r.writeHead(404); return r.end('not found'); }
-    const e = path.extname(p);
-    const ct = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript',
-                 '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml',
-                 '.woff2': 'font/woff2', '.woff': 'font/woff' }[e] || 'application/octet-stream';
-    r.writeHead(200, { 'content-type': ct });
-    fs.createReadStream(p).pipe(r);
-  });
-  return new Promise((res) => srv.listen(port, () => res(srv)));
-}
 
 const check = process.argv.includes('--check');
 if (!fs.existsSync(path.join(ROOT, 'index.html'))) {
@@ -110,7 +62,20 @@ const srv = await serve(ROOT, 4407);
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
 await page.goto('http://localhost:4407/', { waitUntil: 'networkidle' });
-await page.addStyleTag({ content: COMPOSE });
+/* Mark the rows the card has no room for, by walking the CLASS-MATCHED list
+   rather than trusting a CSS nth-of-type over div siblings. Keeping three of
+   each is a composition decision recorded in lib/og-compose.mjs; the ledger's
+   4th and 5th rows are "Led" and "Seeking — Senior / Principal", and dropping
+   the latter is deliberate (owner's ruling, 2026-08-30): a share card leading
+   with what he wants rather than what he has done reads as a campaign, which
+   the voice rule bars. The card carries the record; the page carries the ask. */
+await page.evaluate(() => {
+  const top = document.getElementById('top');
+  for (const sel of ['.practice-row', '.hero-ledger .ledger .row']) {
+    [...top.querySelectorAll(sel)].slice(3).forEach((el) => el.setAttribute('data-og-hide', ''));
+  }
+});
+await page.addStyleTag({ content: compose(H) });
 await page.evaluate(() => document.fonts.ready);
 await page.waitForTimeout(1200);
 const buf = await page.screenshot({ clip: { x: 0, y: 0, width: W, height: H } });
@@ -121,41 +86,118 @@ const buf = await page.screenshot({ clip: { x: 0, y: 0, width: W, height: H } })
    in dist/index.html, so a copy change on the home page turns the gate red and
    says "regenerate the card" instead of letting the two drift apart for weeks,
    which is exactly what happened to the card this replaces. */
-const strings = await page.evaluate(() => {
+const card = await page.evaluate(() => {
+  const top = document.getElementById('top');
+  const visible = (el) => {
+    if (!el) return false;
+    if (!el.checkVisibility({ opacityProperty: true, visibilityProperty: true })) return false;
+    const r = el.getBoundingClientRect();
+    return r.width > 0 && r.height > 0 && r.top < 630 && r.bottom > 0;
+  };
+  const text = (el) => (el?.textContent || '').replace(/\s+/g, ' ').trim();
+  const many = (sel) => [...top.querySelectorAll(sel)].filter(visible).map(text).filter(Boolean);
+
+  /* STRUCTURED, not a flat scrape — and that is the whole point. A flat list
+     regenerated by this same script is circular: hide the CTAs and their
+     strings simply leave the manifest, so a gate checking only "every listed
+     string still exists" would still pass while the card lost its buttons.
+     Naming the regions lets the gate assert HOW MANY of each the card must
+     show, which is a claim the generator cannot quietly weaken. */
+  const regions = {
+    headline: text(top.querySelector('h1')),
+    /* Same trap: the bio paragraph nests a <strong> for the name, so its
+       textContent runs "Rohit Agrawal— principal engineer" with no space where
+       the flattened HTML has one. Harvest the paragraph's own first text node
+       instead, which is what actually reads as prose on the card. */
+    bio: (() => {
+      const el = [...top.querySelectorAll('.plate-copy p')].filter(visible)[0];
+      if (!el) return '';
+      const tn = [...el.childNodes].find((n) => n.nodeType === 3 && n.textContent.trim().length > 12);
+      return tn ? tn.textContent.replace(/\s+/g, ' ').trim() : '';
+    })(),
+    ctas: many('.ctas .btn'),
+    ledgerRows: [...top.querySelectorAll('.hero-ledger .ledger .row')].filter(visible).map((r) => ({
+      term: text(r.querySelector('dt')), value: text(r.querySelector('dd')),
+    })),
+    /* The row TITLE, not the row's textContent. textContent concatenates the
+       title straight onto the description — "…before promotionA retrieval
+       suite…" — which the gate's flattened HTML never matches, because
+       stripping a tag leaves a space where textContent leaves nothing. Caught
+       by running the gate, not by reading it. */
+    practiceRows: [...top.querySelectorAll('.practice-row')]
+      .filter(visible)
+      .map((r) => text(r.querySelector('.practice-row-title'))),
+    thesis: many('.hero-thesis'),
+    /* Recorded so the guard below can refuse a card caught mid-animation. */
+    pendingVisible: [...top.querySelectorAll('.chip-pending, .state-pending')].some(visible),
+    resolvedVisible: [...top.querySelectorAll('.chip-resolved, .state-done')].some(visible),
+  };
+
+  /* The flat list stays as a secondary check — every visible string, with NO
+     length floor. A first version skipped strings under 3 characters, which
+     would have missed "CV" — one of the exact stale labels this gate exists to
+     catch. */
   const seen = new Set();
-  const out = [];
-  const walk = document.createTreeWalker(document.getElementById('top'), NodeFilter.SHOW_TEXT);
+  const strings = [];
+  const walk = document.createTreeWalker(top, NodeFilter.SHOW_TEXT);
   let n;
   while ((n = walk.nextNode())) {
-    const el = n.parentElement;
-    if (!el || !el.checkVisibility({ opacityProperty: true, visibilityProperty: true })) continue;
-    const r = el.getBoundingClientRect();
-    if (r.width === 0 || r.height === 0 || r.top >= 630 || r.bottom <= 0) continue;
+    if (!visible(n.parentElement)) continue;
     const s = n.textContent.replace(/\s+/g, ' ').trim();
-    if (s.length < 3 || seen.has(s)) continue;
+    if (!s || seen.has(s)) continue;
     seen.add(s);
-    out.push(s);
+    strings.push(s);
   }
-  return out;
+  return { regions, strings };
 });
+
+/* Refuse to write a partial card rather than record one. Without this the
+   script exits 0 having produced an image missing its evidence device and a
+   manifest that honestly describes the wreck. */
+const R = card.regions;
+const shortfall = [];
+if (!R.headline) shortfall.push('headline');
+if (R.ctas.length < 3) shortfall.push(`ctas (${R.ctas.length}, need 3)`);
+if (R.ledgerRows.length < 3) shortfall.push(`ledgerRows (${R.ledgerRows.length}, need 3)`);
+if (R.practiceRows.length < 3) shortfall.push(`practiceRows (${R.practiceRows.length}, need 3)`);
+// The panel must be captured in its RESTED state, not mid-flight. See the
+// fast-forward note in COMPOSE: getting this wrong put "CHECKING" on a card
+// whose every row said "ENFORCED".
+if (R.pendingVisible) shortfall.push('panel is still showing its PENDING state');
+if (!R.resolvedVisible) shortfall.push('panel is not showing its RESOLVED state');
+if (shortfall.length) {
+  console.error(`refusing to write a partial card — missing: ${shortfall.join(', ')}`);
+  console.error('the composition CSS is hiding something it should not, or the markup moved.');
+  process.exit(1);
+}
+
 await browser.close();
 srv.close();
 
+/* `--check` used to diff the render against OUT, which defaults to a
+   GITIGNORED draft — so on any clean checkout it could never pass, and no CI
+   job called it. Removed rather than left as dead code that always fails:
+   tests/og-card-contract.spec.js is the real check, and it runs in CI. */
 if (check) {
-  const same = fs.existsSync(OUT) && Buffer.compare(fs.readFileSync(OUT), buf) === 0;
-  console.log(same ? `✓ ${OUT} matches a fresh render` : `✗ ${OUT} differs from a fresh render`);
-  process.exit(same ? 0 : 1);
+  console.error('--check was removed; tests/og-card-contract.spec.js is the gate.');
+  process.exit(2);
 }
+
 fs.writeFileSync(OUT, buf);
 fs.writeFileSync('tests/og-card.manifest.json', JSON.stringify({
   note:
     'Generated by scripts/og-card.mjs. Every string here is visible on ' +
     'public/og.png and must still exist in the built home page — gated by ' +
     'tests/og-card-contract.spec.js.',
-  width: W, height: H, strings,
+  width: W, height: H,
+  // Always null here. Only scripts/og-promote.mjs stamps it, when the
+  // watermarked card is actually copied into public/og.png — so a manifest
+  // regenerated without promoting the image stays RED. See the contract spec.
+  pngSha256: null,
+  regions: card.regions, strings: card.strings,
 }, null, 2) + '\n');
 console.log(
   `✓ wrote ${OUT} (${W}x${H}, ${buf.length} bytes) and ` +
-    `tests/og-card.manifest.json (${strings.length} strings)`,
+    `tests/og-card.manifest.json (${card.strings.length} strings)`,
 );
 console.log('  LOOK AT IT before promoting to public/og.png, then re-apply the watermark.');

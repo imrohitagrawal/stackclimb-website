@@ -2,8 +2,12 @@
 // built home page by scripts/og-card.mjs, then watermarked by the same hand
 // step as before. The previous card drifted for weeks — it shipped a bio, two
 // CTA labels ("WHAT HE BUILT", "CV") and an evidence device the site had
-// replaced, because nothing connected the asset to the page. Generation makes
-// that class of drift impossible; tests/og-card-contract.spec.js gates it.
+// replaced, because nothing connected the asset to the page. Generation removes the
+// gap that allowed it: the card's strings are the build's strings when it is
+// rendered, and tests/og-card-contract.spec.js fails the moment a string it
+// recorded stops appearing in the built page. It does NOT make every kind of
+// staleness impossible — a card never regenerated after a copy change still
+// ships until that gate is run, which is why the gate runs in CI.
 // The pin below still guards the SHIPPED BYTES, which the watermark step
 // produces by hand and which no generator writes.
 //
@@ -31,7 +35,7 @@ import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 
-const EXPECTED_SHA256 = '2dc4ca3164240b3b6241eba0d59b5437b519c20c310cea60ba5a592fe7ecc7a5';
+const EXPECTED_SHA256 = '88a9e848fde02436bca1a396307978915cce89dc0ab308c774fb7e294246b785';
 
 test('public/og.png is the visually-verified watermarked file, byte for byte', () => {
   const buf = readFileSync('public/og.png');

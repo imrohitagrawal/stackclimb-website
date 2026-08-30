@@ -9,7 +9,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "post-deploy": "node tests/post-deploy.mjs",
-    "og-card": "node scripts/og-card.mjs"
+    "og-card": "node scripts/og-card.mjs",
+    "og-card:promote": "node scripts/og-promote.mjs"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.2.0",

@@ -128,7 +128,7 @@ session an hour and a wrong plan.
 3. **Fix the false excuse** in `tests/viewport-reach.spec.js:101` to state what is actually true —
    that the hero is D27-exempt from `plate-height.spec.js` as well, so nothing gates it, and that
    this is a recorded decision rather than an oversight.
-4. **The gate.** `og.png` has no test at all today. Add one asserting the card carries no string
+4. **The gate.** `og.png` has a BYTE pin today (`og-watermark.spec.js`) and no CONTENT check — the distinction that let it drift. An earlier draft of this line said "no test at all", which is wrong. Add one asserting the card carries no string
    absent from the built site — which is the general form of this defect, not a hardcoded
    `Plate Nº` check that would miss the next stale label. Written RED against the current
    `og.png` first.
@@ -145,8 +145,7 @@ session an hour and a wrong plan.
 
 ## The decision this RCA cannot make — how the card gets regenerated
 
-`og.png` has **no generator in this repo.** `package.json` has four scripts and none of them build
-it. `tests/og-watermark.spec.js:1-16` records what it is: a static asset, watermarked ONCE BY HAND
+`og.png` has **no generator in this repo.** `package.json`'s five scripts do not build it. `tests/og-watermark.spec.js:1-16` records what it is: a static asset, watermarked ONCE BY HAND
 via `apply_watermark.py` in `~/Projects/project-doc-skills`, which needs Pillow — and DEF-37
 records why adding a Python dependency to this Node-only repo for a one-time asset is the wrong
 trade. It is pinned by SHA-256, so any regeneration also updates that pin.

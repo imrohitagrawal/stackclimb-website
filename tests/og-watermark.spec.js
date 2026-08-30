@@ -1,3 +1,16 @@
+// RCA-016 (P6), 2026-08-30: the card this pin guards is now GENERATED from the
+// built home page by scripts/og-card.mjs, then watermarked by the same hand
+// step as before. The previous card drifted for weeks — it shipped a bio, two
+// CTA labels ("WHAT HE BUILT", "CV") and an evidence device the site had
+// replaced, because nothing connected the asset to the page. Generation removes the
+// gap that allowed it: the card's strings are the build's strings when it is
+// rendered, and tests/og-card-contract.spec.js fails the moment a string it
+// recorded stops appearing in the built page. It does NOT make every kind of
+// staleness impossible — a card never regenerated after a copy change still
+// ships until that gate is run, which is why the gate runs in CI.
+// The pin below still guards the SHIPPED BYTES, which the watermark step
+// produces by hand and which no generator writes.
+//
 // public/og.png must carry the credit watermark applied once, by hand, via
 // project-doc-skills' watermark skill (W-20/RCA-001) — never regenerated at
 // build time (og.png is a static asset; the skill needs Pillow, which this
@@ -22,7 +35,7 @@ import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 
-const EXPECTED_SHA256 = '66bca9ba927a0efc390b4d4d01603e71cbc71bc217ba5c9cf152da1a9e3a55bd';
+const EXPECTED_SHA256 = '88a9e848fde02436bca1a396307978915cce89dc0ab308c774fb7e294246b785';
 
 test('public/og.png is the visually-verified watermarked file, byte for byte', () => {
   const buf = readFileSync('public/og.png');

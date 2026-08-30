@@ -113,3 +113,5 @@ tests/visual-baselines.spec.js-snapshots/*.png
 # linux file may be committed.
 tests/geometry-baseline.*.json
 !tests/geometry-baseline.linux.json
+og-card.draft.png
+og-card.watermarked.png

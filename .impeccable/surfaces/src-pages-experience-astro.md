@@ -7,9 +7,10 @@ related_targets: []
 
 # Career evolution — surface brief
 
-**CONFIRMED by the owner, 2026-08-30** (D159). Was a P5 draft; the visitor mode below is now a
-pinned decision, not a proposal. D153/P5 named the absence of this brief as the root cause of
-what P1–P4 had to fix — the page was built to a design system and never measured against a
+**VISITOR MODE CONFIRMED by the owner, 2026-08-30** (D159, P-30). Was a P5 draft. He confirmed the
+MODE only — the audience, job, action and proof lines below remain this brief's own inference and
+are not owner-pinned. D153 named the absence of these briefs as "the root cause of most
+of what follows" (its P1–P6 findings) — the page was built to a design system and never measured against a
 stated purpose.
 
 Scope: `/experience` (src/pages/experience.astro). Visitor mode: **Prove**, not Persuade — the
@@ -44,5 +45,6 @@ list one scroll away. That directly contradicts this brief's **Prove** mode: the
 before the thing it proves.
 
 **Owner's ruling, 2026-08-30:** lift the closing sentence above the era list **at mobile widths
-only**. Trimming the era list was rejected — the one-line descriptions are what make the arc read
-as deliberate rather than a job list. Fix scoped in `docs/rca/RCA-015-p5-composition-and-the-fold.md`.
+only**. Trimming the era list was offered and not chosen; he gave no reason. The rationale often
+attached to it — that the one-line descriptions are what make the arc read as deliberate rather
+than a job list — is this brief's own, not his. Fix scoped in `docs/rca/RCA-015-p5-composition-and-the-fold.md`.

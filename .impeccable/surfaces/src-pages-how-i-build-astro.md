@@ -7,8 +7,9 @@ related_targets: []
 
 # How I build — surface brief
 
-**CONFIRMED by the owner, 2026-08-30** (D159). Was a P5 draft; the visitor mode below is now a
-pinned decision, not a proposal.
+**VISITOR MODE CONFIRMED by the owner, 2026-08-30** (D159, P-30). Was a P5 draft. He confirmed the
+MODE only — the audience, job, action and proof lines below remain this brief's own inference and
+are not owner-pinned.
 
 Scope: `/how-i-build` (src/pages/how-i-build.astro). Visitor mode: **Prove**, specifically
 proving engineering PRACTICE (process, discipline, real artifacts) rather than project outcomes —
@@ -21,7 +22,7 @@ artifact (the deploy-watchdog quote) that could not have been written for show.
 Action: same terminal actions (Career evolution / Email me) — this page's own job is credibility,
 not conversion.
 
-Proof: the artefact quote (genuinely verbatim after P2's fix, cited to the real workflow file),
+Proof: the artefact quote (genuinely verbatim after P2's fix, pinned to a real commit SHA — `WATCHDOG_SHA` at `src/pages/how-i-build.astro:22`, gated by `tests/how-i-build.spec.js:178`),
 113 authored skills (P2-corrected), the two-systems OTel/Prometheus claim (P2-corrected).
 
 Chosen direction: same portrait-plate world, three plates each carrying a distinct ground

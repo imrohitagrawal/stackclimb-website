@@ -7,8 +7,9 @@ related_targets: []
 
 # CV — surface brief
 
-**CONFIRMED by the owner, 2026-08-30** (D159). Was a P5 draft; the visitor mode below is now a
-pinned decision, not a proposal. P5's fourth item — "decide whether `/cv`'s Independent Systems
+**VISITOR MODE CONFIRMED by the owner, 2026-08-30** (D159, P-30). Was a P5 draft. He confirmed the
+MODE only — the audience, job, action and proof lines below remain this brief's own inference and
+are not owner-pinned. P5's fourth item — "decide whether `/cv`'s Independent Systems
 stays a disclosure at all" — was also ruled on and is recorded below.
 
 Scope: `/cv` (src/pages/cv.astro). Visitor mode: **Take away** — the one page on the site built
@@ -48,4 +49,3 @@ project at all.
 disclose their own limits; a No-Go shown deliberately, with its reason attached, is that thesis
 working. Splitting into "Deployed"/"In development" groups, and dropping the three from `/cv`,
 were both rejected. **No code change.** Closed the way P-24 closed — raised, checked, kept.
-Do not re-raise.

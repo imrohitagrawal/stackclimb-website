@@ -281,6 +281,32 @@ predicted it would cross a ceiling. Fixed at the cause — `.model-band:last-of-
 returning the plate to 985.5px = 1.095 — not by raising the ceiling, which was available and
 refused. A trailing margin at the end of a container is dead space, not rhythm.
 
+## What the adversarial review then broke, after the build
+
+**The gate was purely positional and would have certified the fix P-28 forbids.** As first
+written it asserted only `bottom < viewportHeight`. A reviewer measured it GREEN on `height: 1px;
+overflow: hidden` (bottom 279.3 against 844), `font-size: 1px`, `transform: scale(0.02)` and
+`content-visibility: hidden` — `painted()` rejects none of those, having no size floor. Since
+P-28's whole content is that the quote is NOT shortened, the gate would have passed the one change
+the owner refused. Closed with a per-route height floor and a `toContainText` on the words the
+element exists to keep visible; both mutation-proved RED.
+
+**Two audit blind spots**, also closed and mutation-proved: a route listed in BOTH maps (required
+and excused at once) passed, and a stale excuse for a route that no longer exists passed.
+
+**`:last-of-type` was the wrong selector** for "the last thing in the container" — it matches the
+last element of its TYPE, which is the last band only by coincidence. Replaced with an explicit
+`:last-child` scoped by plate id.
+
+**A measured number in the new CSS comment was wrong.** It said the unscoped flex rule moves `/`'s
+row count at 390 and 768; re-measured at the 700px breakpoint that actually shipped, only 390
+moves. The figure came from an earlier draft's 900px breakpoint. The conclusion was right, the
+number was not.
+
+**The local suite could not have caught the baseline breach.** 48 of the 51 skips are the geometry
+comparisons, skipped under D140's darwin staleness refusal — so a local green cannot clear the
+geometry gate. CI found it; the runner regenerated it.
+
 ## What will bite
 
 - **A geometry baseline regeneration is likely for `/experience`, and probably NOT for

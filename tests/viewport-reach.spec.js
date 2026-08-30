@@ -54,10 +54,16 @@ const REACH = {
   '/how-i-build': {
     selector: '.artefact',
     why: 'the verbatim watchdog quote, its PROXY limit and its citation',
+    // Measured 501.3px at 390x844 after the hoist. The floor is deliberately
+    // well under that: it must reject a shrunk panel, not pin a layout.
+    minHeight: 300,
+    mustSay: 'This is a PROXY',
   },
   '/experience': {
     selector: '.era-closing',
     why: 'the sentence stating the throughline the six employers are evidence for',
+    minHeight: 80,
+    mustSay: 'The thread through all six',
   },
 };
 
@@ -78,10 +84,13 @@ const NO_REQUIREMENT = {
 
 /* The audit's first run was RED and it was right: this map was typed with
    /projects/quorum-ai, /projects/saaf-saans and a /contact route, none of
-   which exist. Three guesses, three breaches, caught before merge. That is
-   the whole argument for defaulting an unmapped route to breach. */
+   which exist. Precisely: it fired because the three REAL routes then had no
+   entry, not because the three bogus keys were rejected — the stale-key check
+   in the audit was added afterwards, when a reviewer pointed that out. That
+   is the argument for defaulting an unmapped route to breach. */
 
-async function reachOf(page, route, selector, width, height) {
+async function reachOf(page, route, spec, width, height) {
+  const { selector, minHeight, mustSay } = spec;
   await page.setViewportSize({ width, height });
   await page.goto(route, { waitUntil: 'networkidle' });
   await page.addStyleTag({ content: NEUTRALIZE_MOTION });
@@ -96,6 +105,27 @@ async function reachOf(page, route, selector, width, height) {
   expect(await painted(loc), `${selector} must be painted on ${route}`).toBe(true);
   const box = await loc.boundingBox();
   expect(box, `${selector} must have a box on ${route}`).not.toBeNull();
+
+  // THE SHRINK-TO-FIT PARTNER, and it is the whole reason this file is not
+  // just `bottom < height`. A purely positional assertion passes on an
+  // element made to fit by being unreadable: measured, `height: 1px;
+  // overflow: hidden` on .artefact puts its bottom at 279.3px against an
+  // 844px screen and the position check goes GREEN, as do `font-size: 1px`,
+  // `transform: scale(0.02)` and `content-visibility: hidden` — none of
+  // which painted() rejects, because it has no size floor.
+  //
+  // That is not a theoretical hole. Owner ruling P-28 is that the quote is
+  // NOT shortened — the panel moves instead. Without these two assertions
+  // this gate would go green on exactly the fix he refused.
+  expect(
+    box.height,
+    `${route}: ${selector} is only ${box.height.toFixed(1)}px tall. It is not above the fold ` +
+      `because it was composed to fit — it is above the fold because it was shrunk.`,
+  ).toBeGreaterThan(minHeight);
+  await expect(
+    loc,
+    `${route}: ${selector} must still carry "${mustSay}" — the words this gate exists to keep visible`,
+  ).toContainText(mustSay);
   return box;
 }
 
@@ -105,7 +135,7 @@ test.describe('viewport reach — the passage that carries the argument is visib
       test(`${route} — ${selector} reaches above ${phone.width}x${phone.height} (${phone.name})`, async ({
         page,
       }) => {
-        const box = await reachOf(page, route, selector, phone.width, phone.height);
+        const box = await reachOf(page, route, REACH[route], phone.width, phone.height);
         expect(
           box.y + box.height,
           `${route}: ${selector} holds ${why}. Its bottom is ${(box.y + box.height).toFixed(1)}px ` +
@@ -130,5 +160,21 @@ test.describe('viewport reach — the passage that carries the argument is visib
     for (const [route, reason] of Object.entries(NO_REQUIREMENT)) {
       expect(reason.length, `${route}'s excuse must state a reason`).toBeGreaterThan(20);
     }
+    // Two ways the audit above still passed while being wrong, both found by
+    // an adversarial reviewer running the maps through it: a route listed in
+    // BOTH maps (a contradiction — required and excused at once), and a stale
+    // excuse for a route that no longer exists, which lets dead entries
+    // accumulate unnoticed. Neither is caught by the unaccounted-for check,
+    // because that only looks at real routes missing from both maps.
+    const contradictory = Object.keys(NO_REQUIREMENT).filter((r) => r in REACH);
+    expect(
+      contradictory,
+      `these routes are both required to reach and excused: ${contradictory.join(', ')}`,
+    ).toEqual([]);
+    const stale = Object.keys(NO_REQUIREMENT).filter((r) => !routes.includes(r));
+    expect(
+      stale,
+      `these excused routes do not exist: ${stale.join(', ')}. A dead excuse is not a decision.`,
+    ).toEqual([]);
   });
 });

@@ -80,10 +80,14 @@
    title. Naming all three is the only way the outcome is the approved one.
 
    WHY SCOPED TO #evolution. Unscoped, `.plate-copy { display: flex }` makes
-   it a geometry structural row on other routes — / goes 7->8 rows at 390 and
-   768 but not 1440, /how-i-build 2->3 — which makes row population
-   width-dependent and contradicts geometry-floor.mjs:33-38's stated
+   it a geometry structural row on other routes, and row population then
+   varies by width — which contradicts geometry-floor.mjs:33-38's stated
    invariant that no media query moves a row in or out of the predicate.
+   Re-measured at THIS rule's 700px breakpoint: / goes 7->8 rows at 390 only
+   (768 and 1440 are unaffected, because the query does not match there). An
+   earlier draft of this comment said "390 and 768", which was measured
+   against a 900px breakpoint that is not what shipped — a reviewer caught
+   it. The conclusion was right; the number was from the wrong draft.
 
    WHY 700px AND NOT THE SITE'S USUAL 900px. Measured: at 768x900 the
    sentence is ALREADY above the fold (bottom 793.8), so a 900px breakpoint

@@ -7,37 +7,49 @@ related_targets: []
 
 # How I build — surface brief
 
-**DRAFT — P5 groundwork, not owner-approved.** Visitor mode below is a proposal, not a
-pinned decision.
+**CONFIRMED by the owner, 2026-08-30** (D159). Was a P5 draft; the visitor mode below is now a
+pinned decision, not a proposal.
 
-Scope: `/how-i-build` (src/pages/how-i-build.astro). Visitor mode (proposed): **Prove**,
-specifically proving engineering PRACTICE (process, discipline, real artifacts) rather than
-project outcomes — the complement to `/experience` (career arc) and `/` (product outcomes).
+Scope: `/how-i-build` (src/pages/how-i-build.astro). Visitor mode: **Prove**, specifically
+proving engineering PRACTICE (process, discipline, real artifacts) rather than project outcomes —
+the complement to `/experience` (career arc) and `/` (product outcomes).
 
-Audience & job (proposed): a technical evaluator — an engineering manager or senior engineer
-deciding whether the practice behind the projects is real or performative. Job: find one real,
-citable artifact (the deploy-watchdog quote) that could not have been written for show.
+Audience & job: a technical evaluator — an engineering manager or senior engineer deciding
+whether the practice behind the projects is real or performative. Job: find one real, citable
+artifact (the deploy-watchdog quote) that could not have been written for show.
 
-Action (proposed): same terminal actions (Career evolution / Email me) — this page's own job
-is credibility, not conversion.
+Action: same terminal actions (Career evolution / Email me) — this page's own job is credibility,
+not conversion.
 
-Proof: the artefact quote (now genuinely verbatim after P2's fix, pinned to a real commit SHA),
+Proof: the artefact quote (genuinely verbatim after P2's fix, cited to the real workflow file),
 113 authored skills (P2-corrected), the two-systems OTel/Prometheus claim (P2-corrected).
 
-Chosen direction: same portrait-plate world, three plates now each carrying a distinct ground
+Chosen direction: same portrait-plate world, three plates each carrying a distinct ground
 (P4-fixed — the second and third plates used to render on the identical fallback color).
 
-**Open, needs the owner:**
-- Confirm or correct the "Prove practice" mode above.
-- P5's own flagged defect, re-measured fresh 2026-08-30 (worse than D153's original numbers,
-  because P2's own fix legitimately EXPANDED the artefact quote — adding the PROXY sentence,
-  the 34m31s incident clause, and a footer citation link — which is more honest but also
-  taller): the artefact panel's bottom now sits at **852.9px at 1440×768** (D153 cited 772px),
-  **840.0px at 1280×720** (D153 cited 759px), and **1088.1px at 390×844** (D153 cited 927px).
-  It was already the fourth thing on the page per D153; it is now further below the fold at
-  every one of the three cited viewports, not closer to visible.
-- Given the quote is now BOTH more accurate (P2) and further from view (the accuracy fix's own
-  side effect), "hoist the artefact above the claim bands" (P5's proposed fix) needs the
-  owner's call on the tradeoff: shortening the now-verbatim quote back down fights P2's own
-  accuracy fix; restructuring the page (moving the artefact earlier, condensing the claim
-  bands above it) is a bigger, `shape`-class change P5 itself named as needing this session.
+## Open defect this brief exists to catch
+
+Measured live 2026-08-30. The bounding box alone gives the **wrong** conclusion — the artefact
+panel opens *above* the fold at every viewport (560.8px at 1440×768, 547.9px at 1280×720,
+586.8px at 390×844). Measuring the text blocks inside it, and looking at the render, gives the
+real finding:
+
+- **On a phone (390×844) the fold lands directly on the words "This is a PROXY."** The reader
+  sees the watchdog's claim and none of its stated limit.
+- On desktop the PROXY sentence survives, but the `34m31s` incident clause and the citation link
+  (`deploy-drift-watchdog.yml, quorum-ai`) — the two things that make the quote checkable — do
+  not.
+
+The panel also arrives **fourth**, after the title and three claim bands, so the page asserts
+three times before showing the artifact any of it rests on. That contradicts this brief's
+**Prove the practice** mode.
+
+**Why it got worse, not better:** P2 (D156) made the quote genuinely verbatim, which *added* the
+PROXY sentence, the `34m31s` clause and the citation. More honest, and taller — D153 measured the
+panel bottom at 772px/1440×768; it is now 852.9px. The accuracy fix is what pushed its own most
+important line under the fold.
+
+**Owner's ruling, 2026-08-30:** keep the quote verbatim, byte for byte, and hoist the artefact
+above the claim bands. Shortening was rejected — it would reverse P2's own accuracy fix, and the
+words that would go are the self-limiting ones. Fix scoped in
+`docs/rca/RCA-015-p5-composition-and-the-fold.md`.

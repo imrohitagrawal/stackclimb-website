@@ -29,6 +29,12 @@ writes its state, and queues it for the owner. No exceptions, no overrides, no "
 1. **Rendered text is byte-identical.** Build `main`, extract the visible text of every route in
    `siteRoutes()`; build the candidate, extract again; the two must match exactly. One changed
    character a visitor can read means P-18 is engaged and a human must rule.
+   **The helper is `tests/lib/rendered-text.mjs` and it EXISTS and is MUTATION-PROVED** —
+   `tests/rendered-text-selftest.spec.js`, 14 assertions, built under supervision on 2026-08-31
+   before any autonomous run, because a gate that has never failed proves nothing. It catches a
+   reworded CTA, catches hidden text becoming shown, ignores colour/size/transform changes so
+   gate work can still self-merge, and excludes `<script>`/`<style>`. Adding a visibility filter
+   to it, or scoping it to one element, turns the self-test red — both proved by mutation.
 2. **No file under `docs/evidence/` changed**, and no existing claim or number in any doc changed
    — appended records only.
 3. **No `src/data/` file changed.** That is where the CV, projects and figures live.

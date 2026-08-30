@@ -122,6 +122,11 @@ async function reachOf(page, route, spec, width, height) {
     `${route}: ${selector} is only ${box.height.toFixed(1)}px tall. It is not above the fold ` +
       `because it was composed to fit — it is above the fold because it was shrunk.`,
   ).toBeGreaterThan(minHeight);
+  // toContainText reads textContent, which INCLUDES hidden text — so this
+  // assertion alone cannot catch a hidden paragraph. Measured: hiding the
+  // PROXY paragraph leaves toContainText green and is caught only by the
+  // height floor above (246.7px < 300). The two are partners, not
+  // alternatives; neither is redundant, and removing either opens a hole.
   await expect(
     loc,
     `${route}: ${selector} must still carry "${mustSay}" — the words this gate exists to keep visible`,

@@ -10,12 +10,16 @@ D164 and DEF-77. Do not re-derive it.
 
 ## What went wrong, because that is what you can act on
 
-- **The same defect class appeared in BOTH packages, independently: a claim whose scope is wider
+- **The same defect class appeared in BOTH packages: a claim whose scope is wider
   than the measurement backing it.** Package A measured `painted()` on leaf-shaped fixtures and
   stated it of all call sites. Package B measured citations under one regex form and stated the
   population under another, and restated an inherited figure as freshly measured. Two unrelated
-  packages, two independent agents, one class — so it is a property of how the work is planned,
-  not of either package. It is also this repo's oldest recorded defect wearing new clothes.
+  packages, one class. The two builders were subagents sharing this session's model family —
+  **context isolation, not model-weight decorrelation** — so I am not entitled to call them
+  independent, and AGENTS.md says so in terms. What IS a different model family is the
+  codex exec pass, and it is what found the CRITICAL_BLOCKERs both same-model lenses missed on
+  both packages. The evidence points upstream of coding; it does not prove coding was never a
+  factor.
 - **It caught the orchestrator three times too.** A single-line `grep` concluded a phrase existed
   nowhere when it was wrapped across a line break — package B refuted that, correctly, having
   nearly written the wrong diagnosis into a comment first. `grep -c PASS` counted a summary line
@@ -40,11 +44,18 @@ D164 and DEF-77. Do not re-derive it.
 ## The state, in commands
 
 ```
-git status -sb                       # main, clean, level with origin/main
-git branch -a                        # harden-painted and cite-audit are LOCAL ONLY, unpushed
-git log --oneline main..harden-painted   # 4 commits, package A
-git log --oneline main..cite-audit       # 4 commits, package B
+git status -sb                                 # main, clean, level with origin/main
+git branch --list harden-painted cite-audit    # both exist, LOCAL ONLY, never pushed
+git log --oneline main..harden-painted         # 4 commits, package A, ends 9b9eecb
+git log --oneline main..cite-audit             # 4 commits, package B, ends fc7d84a
+git worktree list                              # one entry - session worktrees were removed
 ```
+
+The two agent worktrees were deleted as session residue; **the branches were deliberately
+kept, because they are the queued deliverable.** The run doc's closing instruction says to
+delete every branch and worktree, which contradicts its own rule that a queued package is a
+success - deleting a queued branch destroys the work. AGENTS.md scopes deletion to *merged*
+branches; the run doc is missing that word.
 
 Both branches are complete, self-documenting work with their own RCAs (RCA-017, RCA-018) and
 their own ledger rows. **Neither has ever been through CI.**
@@ -63,7 +74,8 @@ one further without answering its question will reproduce the same shape.
   that the scanner throws the path away? And **what makes this gate capable of failing,** with a
   partner that proves it?
 
-**Renumber both branches' ledger ids before merging either** — `main` now uses D164 and DEF-77.
+**Renumber both branches' ledger ids before merging either** - once this record is merged,
+`main` uses D164 and DEF-77, and both branches currently claim those same ids for other things.
 
 ## What is worth keeping from each, so you do not rebuild it
 
@@ -82,7 +94,10 @@ one further without answering its question will reproduce the same shape.
 packages at every head: **7 routes, 24,578 characters, byte-identical every time.** It never
 blocked anything, which is correct — neither package changed a character a visitor can read, and
 B proved it the hard way by editing comments in eleven `src/` files. The comparison harness lives
-in the session scratchpad and is **not committed**; promoting it to a real script is the obvious
+in the session scratchpad and is **not committed**. That is a real limitation, not a footnote:
+the 7-route / 24,578-character figures, the 557/51/2 suite result and the 102 importer tests
+were executed in-session and **cannot be reproduced from this repository as it stands**.
+Promoting the harness to a real script is therefore the obvious
 next package, and it should ship with the three-direction self-test it was given here (identical →
 exit 0; one reworded string → exit 1 naming route and line; a vacuous capture → REFUSED, not
 "identical").

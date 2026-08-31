@@ -62,7 +62,7 @@ html.hero-anim .hero .caps { animation: hero-rise 0.5s var(--ease-out) 0.28s bot
 /* ---------- Scroll-linked plate entry (improve-animations plan 001) ---------- */
 
 :root {
-  /* Already this repo's entrance curve — nav.css:130 uses it for the mobile
+  /* Already this repo's entrance curve — nav.css uses it for the mobile
      menu panel's @starting-style entrance. Reused, not reinvented. Also
      carries the stamp's landing: a first pass used a back-ease overshoot
      (easeOutBack) for a springy impact, and was reverted — the emil-design-eng

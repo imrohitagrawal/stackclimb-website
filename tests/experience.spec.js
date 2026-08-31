@@ -46,7 +46,7 @@ test('the page renders, links to /cv exactly once IN THE BODY, and is painted', 
   page,
 }) => {
   // Reduced motion: plate 2 sits below the fold and the scroll-linked
-  // entrance (motion.css:72) starts every non-hero plate child at
+  // entrance (motion.css) starts every non-hero plate child at
   // opacity:0 until an IntersectionObserver reveals it — reduced-motion
   // is the repo's own way of asserting painted() without a real scroll
   // (every other spec's `gotoReduced` does the same).

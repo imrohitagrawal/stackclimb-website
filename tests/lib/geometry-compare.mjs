@@ -1,6 +1,6 @@
 /* The DEF-54 geometry gate's comparison, kept pure so it can be self-tested
-   without a browser — the `audit(files, read)` seam file-budget.mjs:61 uses,
-   and the same split post-deploy.mjs:141 makes for the same reason.
+   without a browser — the `audit(files, read)` seam file-budget.mjs uses,
+   and the same split post-deploy.mjs makes for the same reason.
    No DOM, no fs, no @playwright/test import: feed it two plain objects.
 
    SHAPE. A baseline is { leg: { key: value } }. A leg is

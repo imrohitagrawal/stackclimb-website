@@ -99,7 +99,7 @@ try {
 
   const inboxUnbound = attemptCommit(CLONE, 'assets/inbox/planted.md', CLEAN);
   /* The second half of the reproduction, and the partner that pins the
-     `.gitignore:81` trap: an inbox path must be genuinely stageable with -f,
+     `.gitignore` trap: an inbox path must be genuinely stageable with -f,
      or "refused" below would only ever mean "git had nothing to commit". */
   check(
     'and an inbox file commits cleanly there too',
@@ -130,7 +130,7 @@ try {
      a hook that is simply ignored produces a git hint instead of this line.
      The pattern must be the scanner's OWN failure line. An earlier version
      also accepted `commit blocked`, which is the hook's closing banner at
-     .githooks/pre-commit:36 and is printed for all four rules — so it
+     .githooks/pre-commit and is printed for all four rules — so it
      certified "the hook printed its banner", not "rule 1 fired". Proved by a
      cross-checking reviewer: renaming `node` to `nodeXYZ` in the hook left
      this check GREEN while its own detail column read `command not found`. */

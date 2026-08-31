@@ -71,7 +71,7 @@
    P-29: lift it above the era list, mobile only, era list not trimmed.
 
    WHY A DISPLAY CHANGE AND NOT `order` ALONE. `.plate-copy` is display:block
-   (global.css:146 sets only max-width/min-width) and `order` applies solely
+   (global.css sets only max-width/min-width) and `order` applies solely
    to flex/grid children. The first draft of RCA-015 specified `order` by
    itself; injecting it moved nothing — the sentence stayed at 914.6-1034.3,
    byte-identical. Recorded because a rule that lands and does nothing is
@@ -84,7 +84,7 @@
 
    WHY SCOPED TO #evolution. Unscoped, `.plate-copy { display: flex }` makes
    it a geometry structural row on other routes, and row population then
-   varies by width — which contradicts geometry-floor.mjs:33-38's stated
+   varies by width — which contradicts geometry-floor.mjs's stated
    invariant that no media query moves a row in or out of the predicate.
    Re-measured at THIS rule's 700px breakpoint: / goes 7->8 rows at 390 only
    (768 and 1440 are unaffected, because the query does not match there). An

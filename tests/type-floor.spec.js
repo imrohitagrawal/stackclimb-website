@@ -69,7 +69,7 @@ const ROUTES = [...(await siteRoutes()), '/cv', '/404'];
 /* The population floor. A count of violations that reads 0 against a page that
    rendered nothing is not a pass, it is a measurement of nothing — the ["",""]
    hole a cross-model review found in contact.spec.js. Route-shaped, the same
-   way plate-height.spec.js:80 is, because the home page carries five times the
+   way plate-height.spec.js is, because the home page carries five times the
    text of a project page and one number would be either unmeetable there or
    meaningless here. Measured 2026-08-25: home 242 at 390 / 246 at 1440; the
    thinnest plate route, /how-i-build, 36 at 390. The floors sit well under

@@ -22,7 +22,7 @@ import { PIXEL_TRUST, refusalMessage, stampIfTrustworthy } from './lib/baseline-
 // `projects` (desktop/mobile).
 //
 // Plate ids are derived from the DOM (DEF-10's pattern, not a hand-typed
-// list) — see dod.spec.js:79 and boundary-check.mjs:64 for the same derivation.
+// list) — see dod.spec.js and boundary-check.mjs for the same derivation.
 //
 // Baselines are NOT hand-generated on a laptop: they are produced by a CI run
 // on the same ubuntu-latest/chromium image gates.yml uses, and only that run's

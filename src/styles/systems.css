@@ -4,10 +4,10 @@
  * column docs/positioning-phase0.md calls the unclaimed territory — "a list of
  * projects says he is busy; a list of refusals says he is trustworthy" — and it would
  * have been lost with the list it lived in. `Not claimed` was already a caption cell;
- * here it becomes a labelled row, which is what projects.js:11 has been asking for.
+ * here it becomes a labelled row, which is what projects.js has been asking for.
  *
  * Its own file, not global.css, which stands at 451 lines against a grandfathered
- * ceiling of 500. Same reasoning as shot.css:1-10.
+ * ceiling of 500. Same reasoning as shot.css.
  */
 
 .sys-gate {
@@ -18,7 +18,7 @@
 }
 
 /* Ochre label, sentence-case value — the caption-cell register, not a badge.
-   DESIGN.md:354: state belongs in a ruled cell, never in a pill. */
+   DESIGN.md: state belongs in a ruled cell, never in a pill. */
 .sys-gate .k {
   font-size: 0.6875rem;
   letter-spacing: 0.16em;

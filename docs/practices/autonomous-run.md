@@ -72,7 +72,7 @@ Classified from `docs/STATUS.md` and `docs/OWNER-DIRECTIVES.md` on 2026-08-31.
 
 | # | Package | Touches | Why eligible |
 |---|---|---|---|
-| A | Harden `painted()` — font-size floor, `content-visibility`, ancestor-overflow clipping, contrast against the resolved backdrop | `tests/lib/painted.mjs` (+ importers only if assertions tighten) | 20 spec files import it; today's reviewers proved white-on-white and a 1px-tall element both pass it |
+| A | Harden `painted()` — font-size floor, `content-visibility`, ancestor-overflow clipping, contrast against the resolved backdrop | `tests/lib/painted.mjs` (+ importers only if assertions tighten) | **Corrected 2026-08-31 (D164/D166): 5 spec files import it, 20 is the call-site count across 7 files, of which 17 assert.** Today's reviewers proved white-on-white and a 1px-tall element both pass it |
 | B | DEF-71 — a gate that resolves every `file.ext:NN` citation in a comment and fails when the target moved | new spec file; read-only over the repo | 21 known-wrong citations, and this session added dozens more, ungated |
 | C | DEF-76 — diagnose the `hero-motion.spec.js:20` flake under full-suite load | `tests/hero-motion.spec.js`, `playwright.config.js` | seen 3×, passes 3/3 isolated; `retries: 0` makes a load-dependent gate broken by the repo's own standard |
 
@@ -89,7 +89,7 @@ An orchestrator that "helpfully" drafts one of these has failed, not helped.
 
 Collision map, verified 2026-08-31 by `grep`:
 
-- **A** touches `tests/lib/painted.mjs`; 20 spec files import it.
+- **A** touches `tests/lib/painted.mjs`; **5 spec files import it** (corrected 2026-08-31 — 20 was the call-site count, not the importer count).
 - **B** adds a new spec file and writes nothing else.
 - **C** touches `tests/hero-motion.spec.js`, which does **not** import `painted()`.
 
@@ -105,6 +105,39 @@ branch built on a stale base is not evidence.
 workflow size guideline here is medium (under 15 agents); three streams at a 3-lens planning fan
 plus 2 reviewers each reaches ~21 and blows it. Run C after A merges, or fold its diagnosis into
 B as a read-only task.
+
+## Phase 0 — pre-allocate ledger ids, before any package branches
+
+Read the current max `D` and `DEF` numbers off `docs/STATUS.md` on `main` **before** any package
+branches, and hand each package a reserved block (e.g. package A gets D170-D174, package B gets
+D175-D179). Do not let a package compute "next free" for itself once it has branched — DEF-77 is
+what happens when two parallel worktrees both compute the same "next free" number from the same
+base and both claim it for different things. This step is a phase, not an aside: it happens once,
+centrally, before parallel work starts, and its output (the two reserved ranges) is written down
+where both packages can read it.
+
+## Phase 1a — the contract, before the fix
+
+Before "what is the smallest correct fix", write what the thing being changed actually PROMISES,
+over what input space, with the shapes of that space enumerated. A plan that jumps straight to a
+fix is planning around a contract nobody wrote, and every blocker in the run that produced this
+document had that same shape: correct for the input shapes someone enumerated, wrong for a shape
+nobody had. The contract gets reviewed — at least one different-model-family pass whose only job
+is "name an input that fits no cell" — before any code. Fixtures are then derived FROM the
+enumerated matrix, not hand-picked from the bugs found so far; a fixture set built one shape deep
+cannot see a scope weakening one level out.
+
+## Every gate ships a failability partner
+
+A check that has never gone red proves nothing about its own ability to fail, independent of
+whether it currently passes. Alongside the usual mutation proof (revert the fix, show the gate
+red, restore), every new or changed gate needs one more assertion: something that breaks the
+gate's OWN exit decision — a typo in the condition it checks (`breaches.length` vs
+`breaches.lenght`), a hard-wired `true`, a scan root pointed outside the code it is meant to
+cover — and shows the gate still prints green with a real, live breach present. If nothing catches
+that, the gate's self-test can certify a property the gate does not actually have, which happened
+here: 18 assertions all printed "the scanner bites" while a one-character typo in the exit
+condition let a live breach through green.
 
 ## Known agent failure modes — encode these or repeat them
 
@@ -239,8 +272,11 @@ TELL EVERY AGENT YOU SPAWN:
 
 WHEN EVERYTHING IS DONE OR QUEUED
   Rewrite docs/HANDOFF.md. Lead with what went WRONG, because that is the part
-  the next session can act on. Delete every branch and worktree both sides,
-  kill orphaned processes, remove scratch files BY NAME (never `git clean`),
+  the next session can act on. Delete every MERGED branch and worktree both
+  sides — a queued package's branch is the deliverable, not residue, and
+  deleting it contradicts this same document's "a queued package is a
+  success" (Phase 7). Kill orphaned processes, remove scratch files BY NAME
+  (never `git clean`),
   and close with: what is Done, what you Verified yourself with its output,
   what was Cleaned up, what is Pending, and the Next action.
 ```

@@ -5,9 +5,17 @@ history; this file is replaced each session by convention.
 
 **D163's autonomous run ran, both packages were QUEUED, and then each was SPLIT at its risk
 boundary and its safe half shipped.** On `main`: the run record (D164, DEF-77), the citation sweep
-(D165, DEF-78) and the `painted()` alpha fix (D166, DEF-79). **Two halves remain queued, and each
-is blocked on a written contract, not on more code.** Full account in `docs/STATUS.md`; do not
-re-derive it.
+(D165, DEF-78), the `painted()` alpha fix (D166, DEF-79), the owner-queue clearance (D167) and the
+em-dash pass (D168). **Two halves remain queued, and each is blocked on a written contract, not on
+more code. Nothing is pending on the owner.** Full account in `docs/STATUS.md`; do not re-derive it.
+
+**The sharpest lesson of the run, and it landed on the orchestrator.** D168's copy change was
+measured as geometry-neutral on darwin at 1440 and 390 — paragraph height, plate height and link
+position all byte-identical — and CI still caught a **23px reflow at 768px on linux**, because the
+same self-hosted fonts rasterize to different advance widths and the text wraps elsewhere. *A local
+green cannot clear the geometry gate* is the warning this repo already carried, and it caught the
+very session that kept repeating it. Recovery is CI-dispatched only, then diffed programmatically
+by flattened key path: 3,096 keys compared, exactly 2 changed.
 
 ## What went wrong, because that is what you can act on
 
@@ -58,8 +66,8 @@ git log --oneline main..cite-audit            # 4 commits, ends fc7d84a
 git worktree list                             # one entry
 ```
 
-**Renumber both branches' ledger ids before merging either.** `main` now uses D164–D166 and
-DEF-77–DEF-79; both branches claim overlapping ids for different things.
+**Renumber both branches' ledger ids before merging either.** `main` now uses **D164–D168** and
+**DEF-77–DEF-79**; both queued branches claim overlapping ids for different things.
 
 ## The two queued halves, and the question each is blocked on
 
@@ -98,13 +106,14 @@ Neither is blocked on code. Patching either without answering its question repro
 - **DEF-77** — ledger-id allocation collides across parallel packages.
 - **DEF-76** — the `hero-motion` flake, still uninvestigated, load-dependent.
 
-## Local machine state worth fixing
+## Local machine state — FIXED 2026-08-31, nothing outstanding
 
-`node tests/hook-binding-selftest.mjs` **fails on `main` on this laptop**: *"this checkout is not
-bound to an absolute path — core.hooksPath = /Users/.../.githooks"*. That is DEF-62's exact defect
-living in this checkout's `.git/config`. CI passes because `npm ci` runs `prepare` and sets the
-relative form on the runner. **`npm run prepare` fixes it locally**; it was not run because it
-changes your git config.
+`node tests/hook-binding-selftest.mjs` used to fail on `main` on this laptop: *"this checkout is not
+bound to an absolute path — core.hooksPath = /Users/.../.githooks"*, DEF-62's exact defect living in
+this checkout's `.git/config`. **The owner ran `npm run prepare` on 2026-08-31 and it is fixed.**
+Verified after: `core.hooksPath` is now the relative `.githooks`, and the self-test passes **29 of
+29** — *"every clone and every worktree binds the hook"* — where it previously failed 1 of 29.
+That also proves DEF-62's remedy works on a real machine, not only on a runner.
 
 ## Traps that cost real time
 

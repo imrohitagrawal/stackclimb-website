@@ -38,7 +38,7 @@ export const identity = {
 };
 
 export const summary = [
-  `Fourteen years deciding whether software was safe to release — and since April 2026,
+  `Fourteen years deciding whether software was safe to release. Since April 2026,
    building AI systems that make that decision about themselves.`,
   `Quality engineering, test architecture and release governance across Oracle, Amazon,
    LimeRoad, Mobileum, Snapdeal and Subex, and most recently seven years at Oracle as a

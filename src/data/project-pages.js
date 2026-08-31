@@ -33,7 +33,7 @@ export const pages = {
          silent on the panel size of the recorded 4.63 run: UNVERIFIED there. */
       'The judge that grades its answers is built not to flatter. Each answer is scored by a panel — ' +
         'the same model asked with three differently worded rubrics at temperature zero, so every ' +
-        'score is reproducible — and the median is taken; a fourth, skeptic judge argues why the ' +
+        'score is reproducible, and the median is taken; a fourth, skeptic judge argues why the ' +
         'answer is wrong, and its score applies as a <b>floor</b>, because one low vote can never ' +
         'move a three-member median. A run where fewer than 90% of cases produce a usable score ' +
         'fails outright, rather than passing on a flattering average over the lucky survivors.',
@@ -157,11 +157,11 @@ export const pages = {
          leads BY RULE (the audit's "say it before an interviewer does",
          recorded in D79): the grounding guarantees are proved against a mock
          provider, and the copy says so where the techniques are named. */
-      'It is shown anyway, because the machinery is the point — and that machinery is proved ' +
+      'It is shown anyway, because the machinery is the point, and that machinery is proved ' +
         'against a harness, not a model: no real language model is wired in yet, so every ' +
         'guarantee here is about the system around one. The grounding check reads both directions ' +
         'and fails closed — an answer with no checkable claims fails rather than passing empty. ' +
-        'Consent is bound by checksum — a fingerprint of the exact evaluation it covers — and ' +
+        'Consent is bound by checksum — a fingerprint of the exact evaluation it covers, and ' +
         'spends itself once used. And nothing in the pipeline, the model included, has the authority to mark its own ' +
         'output publishable; that denial is written as code, not policy.',
     ],

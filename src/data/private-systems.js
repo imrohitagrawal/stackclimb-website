@@ -22,7 +22,7 @@ export const privateSystems = {
       '“Why can a failing test stop a release, when a measured drop in answer quality ' +
       'cannot?”',
     desc:
-      'Evaluates LLM, RAG, and agent changes with evidence — and blocks CI on a quality ' +
+      'Evaluates LLM, RAG, and agent changes with evidence, and blocks CI on a quality ' +
       'regression.',
     line: 'Blocks a release when answer quality drops, the way a failing test would.',
     figure: '12,978 lines · 388 test functions',

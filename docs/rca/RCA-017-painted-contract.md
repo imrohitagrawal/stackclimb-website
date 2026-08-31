@@ -50,7 +50,7 @@ nobody wrote down the input space the function is meant to cover.
   of finding in round 2) in the same run, for the same underlying reason — no written
   contract before the fix — corroborating that the lesson generalises rather than being a
   one-off.
-- `docs/contracts/painted.md` itself: 62 matrix rows, 7 rounds of
+- `docs/contracts/painted.md` itself: 63 matrix rows (numbered 1-62, plus 43b), 7 rounds of
   `codex exec --sandbox read-only`, run foreground and blocking each time, converged —
   rounds 5, 6 and 7 each produced exactly one finding, and each was a restatement of an
   already-declared root cause rather than a new one.
@@ -59,19 +59,32 @@ nobody wrote down the input space the function is meant to cover.
 
 Verify `tests/lib/painted.mjs` against `docs/contracts/painted.md`'s converged matrix,
 row by row — not against a hand-picked fixture set, and not against the next idiom a
-reviewer happens to think of. The existing two-walk implementation (at-least-one semantics,
-container-aware, canvas-alpha colour read) already satisfies every row in the matrix that
-carries a concrete `true`/`false` verdict; verified directly, not assumed, by running the
-self-test (`tests/painted-selftest.spec.js`, 3 tests, all green) and by two independent
-mutation checks run in this session:
+reviewer happens to think of. **CORRECTED 2026-09-01, review round on #137:** the first
+draft of this section claimed the self-test "verified directly... every row with a concrete
+verdict." That overreached. A different-model-family review (`codex exec`) found the
+self-test's 27 fixtures did not map one-to-one against every concrete-verdict row — several,
+including `filter`/`clip-path` on `el`, off-screen-negative, `display:none`,
+`visibility:collapse`, and one restated multi-layer-backdrop case, had no dedicated fixture
+at all. Fixed by adding fixtures for each (now 33 HOLES, 16 KEEPERS, self-test still green),
+restoring three regression-protection fixtures the branch's old self-test carried and this
+one had dropped (`lab(0 0 0 / 0)`, opaque `rgb(0,0,0)`, near-zero fill alpha), and by not
+repeating the overclaim: this row now states what was actually run, not what a matrix
+implies should have been. The existing two-walk implementation (at-least-one semantics,
+container-aware, canvas-alpha colour read) satisfies every row in the matrix that carries a
+concrete `true`/`false` verdict that this expanded self-test actually exercises; verified by
+running the self-test (`tests/painted-selftest.spec.js`, 3 tests, all green) and by two
+independent mutation checks run in this session:
 
 1. Narrowing the descendant walk from `el.querySelectorAll('*')` to `:scope > *` (the exact
-   regression DEF-80 warns a future narrowing could ship) turns exactly 1 of 27 HOLES red —
-   the new **GRANDCHILD** fixture this package adds, closing the gap the contract's row 5
-   named as missing from the branch's fixture set.
+   regression DEF-80 warns a future narrowing could ship) turned exactly 1 of the then-27
+   HOLES red — the new **GRANDCHILD** fixture this package adds, closing the gap the
+   contract's row 5 named as missing from the branch's fixture set. Run against the 27/12
+   population, before the round-2 review expanded the table to 33/16; the mechanism it
+   exercises (the descendant walk) is untouched by that expansion, so the result still
+   stands as evidence for the GRANDCHILD fixture specifically.
 2. Deleting the abandon guard (`if (backgroundImage !== 'none' || mixBlendMode !== 'normal')
-   return true`) false-reds exactly 1 of 12 KEEPERS — the background-image gradient case,
-   matching DEF-46's lesson and the mutation table's own documented count.
+   return true`) false-redded exactly 1 of the then-12 KEEPERS — the background-image
+   gradient case, matching DEF-46's lesson. Same population caveat as above.
 
 Both mutations were restored immediately after, confirmed by `git diff --stat` clean and a
 fresh green run of the full self-test.
@@ -83,7 +96,7 @@ invisible again undetected. The new fixture closes that.
 
 ## What will bite — stated plainly, not by oversight
 
-The contract declares roughly half its 62 rows `UNDEFINED` on purpose, not as an omission.
+The contract declares roughly half its 63 rows `UNDEFINED` on purpose, not as an omission.
 These remain true after this package, by design, and this package does not attempt to close
 them:
 
@@ -91,9 +104,14 @@ them:
   `#ffffff` passes. Real contrast is `tests/lib/rendered-contrast.mjs`'s job.
 - **No font-size floor above exactly zero.** `opacity: 0.01` and a near-zero fill alpha both
   pass. A minimum-size ruling is `DESIGN.md`'s, under P-18 — this function does not make it.
-- **The abandon guard is a real, ever-widening exemption** (DEF-78): one `background-image`
-  or `mix-blend-mode` anywhere up a text node's chain unconditionally returns `true` for
-  that node. Filed as a known accepted risk, not reopened here.
+- **The abandon guard is a real, ever-widening exemption on the backdrop-identity check**
+  (DEF-78), not an unconditional override: it fires only for a node that has already passed
+  its own font-size, visibility and fill-alpha checks — `color: transparent` over a
+  background-image still correctly returns `false`, never reaching the guard. Past that
+  point, one `background-image` or `mix-blend-mode` anywhere up a text node's chain does
+  drop colour-identity checking for that node. Filed as a known accepted risk, not reopened
+  here. (Corrected 2026-09-01 — the first draft of this bullet said "unconditionally," which
+  a review round found and disproved by reading `inked()`'s actual check order.)
 - **Off-screen-positive elements pass**: `left: 99999px` expands `scrollWidth` to contain
   itself, so the bounds check never rejects it. A real fix needs a viewport-relative check
   (`tests/lib/viewport-clip.mjs`), a different tool, not wired in here.

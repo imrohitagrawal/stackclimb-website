@@ -31,7 +31,7 @@
 
    THIS FILE IS BUILT AGAINST docs/contracts/painted.md, not against the next
    idiom a reviewer happens to think of. That contract's promise, dimensions,
-   and 62-row matrix were written and adversarially converged (7 rounds,
+   and 63-row matrix were written and adversarially converged (7 rounds,
    codex exec --sandbox read-only) BEFORE this file was verified against it,
    per docs/practices/autonomous-run.md's Phase 1a. Roughly half the matrix's
    rows are declared UNDEFINED on purpose — a real, accepted limitation with a

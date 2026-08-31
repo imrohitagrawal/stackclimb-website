@@ -99,7 +99,7 @@ try {
 
   const inboxUnbound = attemptCommit(CLONE, 'assets/inbox/planted.md', CLEAN);
   /* The second half of the reproduction, and the partner that pins the
-     `.gitignore:81` trap: an inbox path must be genuinely stageable with -f,
+     `.gitignore` trap: an inbox path must be genuinely stageable with -f,
      or "refused" below would only ever mean "git had nothing to commit". */
   check(
     'and an inbox file commits cleanly there too',

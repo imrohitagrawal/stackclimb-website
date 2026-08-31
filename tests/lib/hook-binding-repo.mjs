@@ -71,7 +71,7 @@ export function buildFreshClone(repo, root) {
 }
 
 /* `staged` is not bookkeeping, it is the trap this harness already fell into.
-   `.gitignore:81` ignores `assets/inbox/**`, so a plain `git add` stages
+   `.gitignore` ignores `assets/inbox/**`, so a plain `git add` stages
    nothing and `git commit` exits 1 with "nothing to commit" — the inbox check
    passed on an UNBOUND repo, certifying the wrong cause. `refused` therefore
    means the file reached the index AND the commit was rejected, which "git

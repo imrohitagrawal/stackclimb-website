@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 /* One system, one screen — enforced.
  *
- * WHY THIS EXISTS. The One-Plate-One-Viewport Rule (DESIGN.md:228) is the oldest
+ * WHY THIS EXISTS. The One-Plate-One-Viewport Rule (DESIGN.md) is the oldest
  * rule in the design system and nothing has ever measured it. On 2026-08-12 the
  * home page shipped 7 of 8 plates over one viewport at 390px, and every gate was
  * green: contrast gates assert a floor, link gates assert resolution, and a plate
@@ -42,7 +42,7 @@ const EXEMPT = new Set(['top']);
 /* Two ceilings per width, because the two surfaces are read differently and one
  * number for both would be either unmeetable or meaningless.
  *
- *   HOME is the scan. PRODUCT.md:190 gives it "a two-minute skim", and the
+ *   HOME is the scan. PRODUCT.md gives it "a two-minute skim", and the
  *   composed-whole rule is what makes a skim possible. 1.00 at desktop is met
  *   exactly — every project plate lands at 900px.
  *
@@ -50,7 +50,7 @@ const EXEMPT = new Set(['top']);
  *   record carries five items in each of three columns, and splitting that across
  *   two plates would break the parallel comparison that is the whole device.
  *
- * DESIGN.md:228 is written without qualification, so THIS SPLIT IS A DESIGN-SYSTEM
+ * The rule in DESIGN.md is written without qualification, so THIS SPLIT IS A DESIGN-SYSTEM
  * AMENDMENT AND NEEDS THE OWNER'S SIGN-OFF, recorded in DESIGN.md and STATUS.md.
  * It is written here as an explicit number with its reason rather than by quietly
  * scoping the gate to `/`, which is how the rule went unmeasured for a month.

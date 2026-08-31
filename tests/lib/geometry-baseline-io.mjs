@@ -1,7 +1,7 @@
 /* Reading and writing the DEF-54 geometry baseline. Split out of
    geometry.spec.js because it is a separate concern and because the spec hit
    252 lines against D8's 250 ceiling — the rule is modularize, never trim the
-   comments (file-budget.mjs:120). The same split post-deploy-selftest.mjs made,
+   comments (file-budget.mjs). The same split post-deploy-selftest.mjs made,
    for the same reason.
 
    PLATFORM-SCOPED, and this was MEASURED rather than assumed — the plan's

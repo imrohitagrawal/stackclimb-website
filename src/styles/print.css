@@ -29,7 +29,7 @@
     background: transparent !important;
   }
 
-  /* .links and .ctas are flex ROWS on screen (global.css:188, :298) — fine
+  /* .links and .ctas are flex ROWS on screen (global.css) — fine
      for short button-style labels, but the hrefs revealed below can run to
      full GitHub blob URLs with a commit hash. Left as a flex row, one long
      revealed URL wraps inside its own item and the rest wrap to new flex
@@ -43,7 +43,7 @@
      cv.css's .cv-contact/.cv-proj treatment. mailto: is skipped: a mail
      address in the margin duplicates ledger text already on the page.
      Every property here carries !important: .links a[target='_blank']::after
-     (global.css:201) already claims this pseudo-element for the external-
+     (global.css) already claims this pseudo-element for the external-
      link icon, at higher specificity, with a fixed 0.58em box and an SVG
      mask. Without overriding EVERY property that rule sets — not just
      content — the href text this rule adds renders but is clipped to a

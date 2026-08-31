@@ -1,7 +1,7 @@
 /* /projects/<slug> — the two surfaces the home plate cannot hold.
  *
  * Imported by the page, not by Layout.astro. Two reasons, both precedent:
- * cv.astro:23 imports its own stylesheet the same way, and global.css stands at 451
+ * cv.astro imports its own stylesheet the same way, and global.css stands at 451
  * lines against a grandfathered ceiling of 500. Shipping this to `/`, `/cv` and
  * `/404` would cost every one of them bytes they never use.
  *

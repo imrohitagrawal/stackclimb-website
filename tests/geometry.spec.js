@@ -154,7 +154,7 @@ test.describe('Geometry baselines — DEF-54', () => {
 
         /* Sweep the width, keep the project's own height. Height is not
            cosmetic here: global.css gives .plate `min-height: 100svh`, so every
-           plate's height is a direct function of it. plate-height.spec.js:72
+           plate's height is a direct function of it. plate-height.spec.js
            pins both axes for the same reason. Derived from the project rather
            than a hand-typed map, so a third project is measured the day it is
            added instead of crashing on a missing entry. */
@@ -205,7 +205,7 @@ test.describe('Geometry baselines — DEF-54', () => {
         /* Counting NODES is not counting PLATES: `body { display: none }` leaves
            every plate in the DOM, still enumerable, still reporting its children,
            with every box at 0. Measured, not reasoned. Note this deliberately
-           does NOT skip zero-sized elements the way tap-targets.spec.js:47 does —
+           does NOT skip zero-sized elements the way tap-targets.spec.js does —
            that line is correct there and fatal here, because under
            `body { display: none }` everything is zero-sized, everything would be
            skipped, and the gate would find no faults in a blank page. */

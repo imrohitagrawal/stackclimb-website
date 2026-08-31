@@ -17,7 +17,7 @@
 // overflow gate compares scrollWidth with clientWidth: horizontal only. axe
 // reports 0 violations, because reading order below the fold is not an
 // accessibility violation. The bottom<innerHeight IDIOM does exist here
-// (boundary-check.mjs:97) but only as a filter for finding a visible node
+// (boundary-check.mjs) but only as a filter for finding a visible node
 // inside a seam-contrast probe; nothing ASSERTS where content sits.
 //
 // WHAT THIS GATE STILL DOES NOT CATCH, named because an unstated limit is
@@ -67,8 +67,8 @@ const PHONES = [
 /* Route -> what must reach above the fold on a phone. The default for a
    plated route with no entry is BREACH, not skip (see the audit below): a
    hand-typed map that silently passes for anything it forgot is the exact
-   shape that failed twice here, recorded at routes.mjs:1-5 and
-   geometry-floor.mjs:77-81. */
+   shape that failed twice here, recorded at routes.mjs and
+   geometry-floor.mjs. */
 const REACH = {
   '/how-i-build': {
     selector: '.artefact',
@@ -99,8 +99,8 @@ const REACH = {
    is a DECISION; being absent from both maps is a breach. */
 const NO_REQUIREMENT = {
   // CORRECTED 2026-08-30 (RCA-016). This read "its hero is already gated by
-  // plate-height.spec.js" — which is FALSE, and it shipped. plate-height.spec.js:40
-  // is `const EXEMPT = new Set(['top'])` and #top IS the hero: it is the one
+  // plate-height.spec.js" — which is FALSE, and it shipped. plate-height.spec.js's
+  // `EXEMPT` set is `new Set(['top'])` and #top IS the hero: it is the one
   // plate that spec deliberately does not measure, per D27. So the excuse
   // cited as proof the single gate that exempts the thing it was excusing.
   // Nothing gates the home hero, and that is a recorded decision (D27 lets it

@@ -13,14 +13,14 @@
  *   defers   the engineering paragraph, the remaining body paragraphs, and the
  *            three-column record — all of which are what the click buys
  *
- * The rule that decides the split is measured, not aesthetic: DESIGN.md:228 says
+ * The rule that decides the split is measured, not aesthetic: DESIGN.md says
  * content that cannot fit becomes another plate, and every plate is min-height:100svh
- * (global.css:82). Cutting MORE than this does not shorten the plate — it empties it.
+ * (global.css). Cutting MORE than this does not shorten the plate — it empties it.
  * Trimmed to the bone, these four plates held 256px of true void with the page still
  * 8.3 screens long. Take what is needed to reach one screen and stop.
  *
  * `Not claimed` is a labelled row of its own rather than the last cell of the caption
- * strip. projects.js:11 records that it "must never be dropped for space — it is the
+ * strip. projects.js records that it "must never be dropped for space — it is the
  * site's argument, not decoration", and a row states that where a cell buried it.
  */
 import Plate from './Plate.astro';

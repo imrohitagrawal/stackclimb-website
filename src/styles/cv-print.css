@@ -28,7 +28,7 @@
      onto paper: it would burn a page of toner and read worse than ink. */
   html, body { background: transparent !important; }
 
-  /* global.css:34 paints a fixed, blended paint-grain layer over the whole
+  /* global.css paints a fixed, blended paint-grain layer over the whole
      viewport. On screen it is the point of the design; on paper it printed as
      grey mottling across every page of the CV — visible in the first print
      proof and only found by looking at one. A `position: fixed` layer also
@@ -50,7 +50,7 @@
     background: transparent !important;
   }
 
-  /* RCA-011. `.cv` alone ties `.plate` (global.css:81-84) on specificity — one
+  /* RCA-011. `.cv` alone ties `.plate` (global.css) on specificity — one
      class each — and `.plate`'s min-height/display/padding are defined later in
      source order, so they win regardless of what this rule says: measured under
      print media, `.cv` computed `padding-top: 88px`, `min-height: 720px`,

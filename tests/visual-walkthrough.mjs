@@ -13,10 +13,10 @@ const BASE = `http://localhost:${PORT}`;
 const OUT = new URL('./shots/', import.meta.url).pathname;
 // DEF-10 (second file). This used to be a hand-typed
 //   const PLATES = ['top', 'work', 'quorum', 'saafsaans', 'narratwin', 'private', 'contact'];
-// — the exact defect dod.spec.js:9-21 already fixed once, in a sibling file
+// — the exact defect dod.spec.js already fixed once, in a sibling file
 // the 08-09 fix never touched. It was already wrong when read: 'overview'
 // does not appear (zero coverage, no error), and 'work' does not exist as a
-// plate id (renamed to 'citevyn' — see boundary-check.mjs:58-59) so every
+// plate id (renamed to 'citevyn' — see boundary-check.mjs) so every
 // `?at=work` screenshot silently showed whatever the query string fell back
 // to instead of the plate it claimed to capture.
 //

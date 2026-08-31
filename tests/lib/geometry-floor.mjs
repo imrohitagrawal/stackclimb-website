@@ -20,7 +20,7 @@
    `plateCount` and `docHeight`. Regenerate under `display: block` and the keys
    vanish as before, but the floor is still 7 and the gate still fails.
 
-   ZERO HEADROOM, DELIBERATELY. type-floor.spec.js:77 sets its floors well under
+   ZERO HEADROOM, DELIBERATELY. type-floor.spec.js sets its floors well under
    the measured value because it counts TEXT, and an ordinary copy edit moves
    that number. This counts STRUCTURE. Losing one row is precisely the event the
    floor exists to catch, so a floor of 5 against a measured 7 would sit through
@@ -33,7 +33,7 @@
    MEASURED 2026-08-25 against the built site, all three widths (390, 768, 1440)
    and both Playwright projects — identical in all six combinations, because
    `kids.length` is DOM children, not painted children, and no media query moves
-   a row in or out of the predicate. The earlier note at geometry-measure.mjs:78
+   a row in or out of the predicate. The earlier note in geometry-measure.mjs
    said "7 rows, 26 children" for the home page; re-measured, it is still
    exactly that.
 
@@ -68,7 +68,7 @@
    `plateCount > (route === '/' ? 4 : 1)`. /cv carries exactly ONE plate, so it
    failed that by construction — and that, not "no plates", is why the geometry
    gate never covered /cv. Route-shaped the way type-floor.spec.js's
-   `minTextOwners` and plate-height.spec.js:80 already are.
+   `minTextOwners` and plate-height.spec.js already are.
 
    NOBODY ELSE GOT WEAKER. The old check was `>` a floor, this one is `>=` a
    minimum, and each number is the old one translated exactly: `/` was `> 4` and
@@ -76,7 +76,7 @@
 
    THE DEFAULT IS THE STRICT ONE, deliberately. A route added with no entry here
    gets 2, so forgetting a single-plate route fails LOUDLY instead of passing
-   blindly — file-budget.mjs:12's property, the opposite of the DEF-10 / DEF-44
+   blindly — file-budget.mjs's property, the opposite of the DEF-10 / DEF-44
    allowlist trap. A route that legitimately carries one plate is one line here,
    in the pull request that adds it.
 
@@ -154,7 +154,7 @@ export const ROW_FLOOR = {
    page matches it.
 
    The map is a PARAMETER with ROW_FLOOR as its default — the injected-reader
-   seam file-budget.mjs:61 uses — so geometry-selftest.mjs can drive a broken
+   seam file-budget.mjs uses — so geometry-selftest.mjs can drive a broken
    map in memory instead of editing this file and putting it back.
 
    RED WHEN: a route is added to tests/lib/routes.mjs and not given a floor

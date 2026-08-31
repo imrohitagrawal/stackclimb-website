@@ -78,7 +78,7 @@ test('every rendered term traces to a VERIFIED span in its evidence file', () =>
 });
 
 test('the page renders every term, bars cross-review, and quotes verbatim', async ({ page }) => {
-  // Reduced motion: the scroll-linked entrance (motion.css:72) starts every
+  // Reduced motion: the scroll-linked entrance (motion.css) starts every
   // non-hero plate child at opacity:0 until scrolled into view.
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/how-i-build');

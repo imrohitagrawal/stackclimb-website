@@ -1,5 +1,5 @@
 // Proves the DEF-54 geometry gate BITES, in both directions, without a
-// browser and without touching the tree — the file-budget.mjs:95 idiom, using
+// browser and without touching the tree — the file-budget.mjs idiom, using
 // the pure `compare` seam in tests/lib/geometry-compare.mjs the same way
 // `audit(files, read)` takes an injected reader.
 //
@@ -13,8 +13,8 @@
 //              sameness instead of correctness.
 //
 // Real-tree mutation that turns the gate itself red:
-//   revert the @media block at src/styles/global.css:436 and run
-//   `npx playwright test tests/geometry.spec.js` — 390px goes red.
+//   revert the two-column `.contact .ctas` @media block in src/styles/global.css
+//   and run `npx playwright test tests/geometry.spec.js` — 390px goes red.
 
 import { readFileSync } from 'node:fs';
 import { compare } from './lib/geometry-compare.mjs';

@@ -12,7 +12,11 @@ import { pages } from '../src/data/project-pages.js';
  *   3. the strip stamp equals the evidence file's authoritative sha (part 4)
  *   4. the record note renders p.eng (part 5 — previously NO gate covered it:
  *      deleting note={p.eng} built green, the round-1 fan's BLOCK finding)
- *   5. limits stay on the record plate (line 63: "never above the fold")
+ *   5. limits stay on the record plate — the content model's "never above
+ *      the fold" clause. It read "line 63" until DEF-71 (RCA-018): that is
+ *      line 63 of the model's SOURCE document, which is not in this repo,
+ *      so no reader here could ever resolve it. docs/plan/package-c.md
+ *      quotes the clause in full and names the source; cite that instead
  *
  * Hardened after the R-7 Codex pass found nine holes in the first version —
  * the same lesson as contact.spec.js: assert PAINTED and EXACT, not declared.

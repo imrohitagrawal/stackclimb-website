@@ -72,7 +72,7 @@ const ROUTES = [...(await siteRoutes()), '/cv', '/404'];
 const A4 = { width: 794, height: 1123 };
 
 /* Two populations, two partners. The element floor proves the page rendered
-   (type-floor.spec.js:77 reasoning, same numbers). The REVEALS floor proves
+   (type-floor.spec.js reasoning, same numbers). The REVEALS floor proves
    the revealed hrefs exist — counted as an ::after on a link whose text
    contains that link's href, so nothing but a real reveal can satisfy it;
    without it, deleting the reveal rule would leave an empty `under` list

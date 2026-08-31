@@ -17,7 +17,7 @@
 
    1. Animations and transitions — the same injection visual-baselines.spec.js
       already uses, so a measurement can never land mid-transition.
-   2. motion.css:81 gives every `.plate:not(.hero) .plate-grid > *` a resting
+   2. motion.css gives every `.plate:not(.hero) .plate-grid > *` a resting
       `transform: translateY(16px)`, removed per plate only when reveal.js's
       IntersectionObserver sees it cross 15%. A transform does not change
       layout, so plate boxes never feel it — but getBoundingClientRect() DOES

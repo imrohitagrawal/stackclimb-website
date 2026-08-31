@@ -542,6 +542,14 @@ Open and MINE: DEF-71's sweep + gate; the `/cv` section index; `<details>` on
 the Technical block; four condensed roles; the em-dash pass; and D141's two documentation-lag
 fixes plus the one hard-coded colour; and P-22's COPY half. Waiting on him: P-22's DOWNLOAD half only.
 
+**CORRECTED 2026-08-31 — the line above was a true snapshot of 08-27 and is now STALE. Nothing in it is
+pending on the owner.** He ruled P-22's download half **"Build"** the same day it was raised, so the
+download half is MINE and unbuilt, not awaiting him. The em-dash pass was already ruled his-to-me on
+08-27 (*"em-dashes are to be thinned"*) and he reconfirmed it on 08-31. The stale line is kept because
+corrections stay; read `docs/OWNER-DIRECTIVES.md` P-22 for the current status. Two register cells were
+stale in the same way and are corrected there: P-28 and P-29 both read *"NOT yet approved to build"*
+months after D160 shipped and gated them.
+
 ## Open — mine to do
 
 | # | Open item | Note |

@@ -12,8 +12,10 @@ Source read: `tests/lib/painted.mjs` on `main` (canvas-alpha fix only, no contai
 on branch `harden-painted` (two-walk, at-least-one, container-aware version — this contract is
 written against the branch version, since that is the code under review). Importers read:
 `tests/viewport-reach.spec.js`, `tests/how-i-build.spec.js`, `tests/proof-cv.spec.js`,
-`tests/proof-act.spec.js`, `tests/experience.spec.js`, `tests/painted-alpha-selftest.spec.js` (5
+`tests/proof-act.spec.js`, `tests/experience.spec.js`, `tests/painted-selftest.spec.js` (5
 files import it; the earlier "20 spec files" figure was a call-site count, corrected in D169).
+Renamed from `tests/painted-alpha-selftest.spec.js` during Phase 3/4 build (this package) to drop
+the now-inaccurate "alpha" qualifier — the file covers far more than the alpha/transparency guard.
 Note `tests/content-model.spec.js` does **not** import this file — it defines its own local
 `painted` helper with different, narrower semantics (leaf-shaped, `expect()`-internal). This
 contract governs `tests/lib/painted.mjs` only.

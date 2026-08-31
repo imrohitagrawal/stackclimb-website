@@ -1,122 +1,151 @@
 # Handoff — for the next session
 
-Written 2026-08-31, superseding the 2026-08-31 (D153-complete) handoff. That one is in git
-history; this file is replaced each session by convention, which is the one place this run
-departed from append-only, and it did so on `docs/practices/autonomous-run.md`'s own instruction.
+Written 2026-08-31, superseding the earlier 2026-08-31 (run-record) handoff. That one is in git
+history; this file is replaced each session by convention.
 
-**D163's autonomous run RAN. Both packages were built, reviewed twice, and BOTH QUEUED.
-Nothing was merged. `main` is unchanged except this record.** Full account: `docs/STATUS.md`
-D164 and DEF-77. Do not re-derive it.
+**D163's autonomous run ran, both packages were QUEUED, and then each was SPLIT at its risk
+boundary and its safe half shipped.** On `main`: the run record (D164, DEF-77), the citation sweep
+(D165, DEF-78) and the `painted()` alpha fix (D166, DEF-79). **Two halves remain queued, and each
+is blocked on a written contract, not on more code.** Full account in `docs/STATUS.md`; do not
+re-derive it.
 
 ## What went wrong, because that is what you can act on
 
-- **The same defect class appeared in BOTH packages: a claim whose scope is wider
-  than the measurement backing it.** Package A measured `painted()` on leaf-shaped fixtures and
-  stated it of all call sites. Package B measured citations under one regex form and stated the
-  population under another, and restated an inherited figure as freshly measured. Two unrelated
-  packages, one class. The two builders were subagents sharing this session's model family —
-  **context isolation, not model-weight decorrelation** — so I am not entitled to call them
-  independent, and AGENTS.md says so in terms. What IS a different model family is the
-  codex exec pass, and it is what found the CRITICAL_BLOCKERs both same-model lenses missed on
-  both packages. The evidence points upstream of coding; it does not prove coding was never a
-  factor.
-- **It caught the orchestrator three times too.** A single-line `grep` concluded a phrase existed
-  nowhere when it was wrapped across a line break — package B refuted that, correctly, having
-  nearly written the wrong diagnosis into a comment first. `grep -c PASS` counted a summary line
-  and reported 19 assertions where there are 18 — B refuted that too. And a mutation probe was
-  seeded OUTSIDE the gate's scan roots, giving an invalid control, caught only because the control
-  disagreed with itself. **Every one was found by something disagreeing, never by reading.**
+- **One defect class ran through the whole session: a claim whose scope is wider than the
+  measurement behind it.** Package A measured `painted()` on leaf-shaped fixtures and stated it of
+  all call sites. Package B measured citations under one regex form and stated the population under
+  another. It then caught the orchestrator **five** times: a single-line `grep` that "proved" a
+  phrase did not exist when it wrapped across a line; `grep -c PASS` counting a summary line as an
+  assertion; a mutation probe seeded outside the gate's scan roots; a grep for the JS property
+  `webkitTextFillColor` that missed the CSS property `-webkit-text-fill-color`; and a `color-mix`
+  figure describing 15 stylesheets when only 8 set a text colour.
+  **Every one was caught by something disagreeing — a reviewer, a control run, a second grep —
+  and none by reading.**
+- **Plans planned the FIX, not the CONTRACT.** That single omission produced every blocker. Nothing
+  stated what each thing promises over what input space, so reviewers discovered the contract by
+  counterexample, one shape at a time, and each new shape read as a new bug.
 - **A gate's self-test can certify a property the gate does not have.** Package B's 18 assertions
-  all printed `SELF-TEST PASS — the scanner bites` while a one-character typo (`breaches.length` →
-  `breaches.lenght`) made the gate print green with a live breach present. The partners tested what
-  `audit()` finds; nothing drove the executable's own exit decision. **Ask of every gate: which
-  assertion fails if the gate becomes incapable of failing?**
-- **A fixture set one level too shallow hides a real weakening.** Package A added fixtures
-  specifically to close a scope-narrowing miss, and the fixtures it added were themselves one level
-  too shallow: changing `querySelectorAll('*')` to `querySelectorAll(':scope > *')` opens a genuine
-  hole on nested text and leaves all 26 HOLES and 12 KEEPERS green.
-- **Two fixes at the same boundary can both leave the hole open.** B's exemption went from
-  `(file,line)` to `(file,line,basename+span)` and a new breach still hid behind an exempted one,
-  because the scanner normalises the path away before the table ever sees it.
-- **Worktree isolation does not prevent ledger-ID collision.** Both packages claimed D164, D165 and
-  DEF-77 for different things, because both computed "next free" from the same base. DEF-77.
+  all printed `SELF-TEST PASS — the scanner bites` while a one-character typo
+  (`breaches.length` → `breaches.lenght`) made the gate print green with a live breach present.
+  Nothing drove the executable's own exit decision. **Ask of every gate: which assertion fails if
+  the gate becomes incapable of failing?**
+- **A fixture set one shape deep cannot see a scope weakening.** It bit twice: package A's
+  `querySelectorAll('*')` → `':scope > *'` left all 38 fixtures green, and the D166 self-test had
+  the same flaw until review caught it. The fix both times is a fixture **pair** differing on the
+  axis the guard uses.
+- **Worktree isolation does not prevent ledger-ID collision.** Both packages independently claimed
+  D164, D165 and DEF-77 for different things. DEF-77.
+
+## The rule that replaces "find a bug, fix a bug"
+
+When a reviewer produces a counterexample, ask which of three it is:
+
+1. **Fits an enumerated shape, and a fixture covers it** → not a finding. Close it.
+2. **Fits an enumerated shape, no fixture** → one missing fixture. Add it, keep going.
+3. **Fits no enumerated shape** → the *enumeration* is wrong. **That is the stop.** Fix the
+   enumeration once; the fixtures regenerate from it.
+
+Neither package had an enumeration, so every counterexample was case 3 and the loop looked
+endless. Both merged slices got through because their scope was small enough to enumerate.
 
 ## The state, in commands
 
 ```
-git status -sb                                 # main, clean, level with origin/main
-git branch --list harden-painted cite-audit    # both exist, LOCAL ONLY, never pushed
-git log --oneline main..harden-painted         # 4 commits, package A, ends 9b9eecb
-git log --oneline main..cite-audit             # 4 commits, package B, ends fc7d84a
-git worktree list                              # one entry - session worktrees were removed
+git status -sb                                # main, clean, level with origin/main
+git branch --list harden-painted cite-audit   # both exist, LOCAL ONLY, never pushed
+git log --oneline main..harden-painted        # 4 commits, ends 9b9eecb
+git log --oneline main..cite-audit            # 4 commits, ends fc7d84a
+git worktree list                             # one entry
 ```
 
-The two agent worktrees were deleted as session residue; **the branches were deliberately
-kept, because they are the queued deliverable.** The run doc's closing instruction says to
-delete every branch and worktree, which contradicts its own rule that a queued package is a
-success - deleting a queued branch destroys the work. AGENTS.md scopes deletion to *merged*
-branches; the run doc is missing that word.
+**Renumber both branches' ledger ids before merging either.** `main` now uses D164–D166 and
+DEF-77–DEF-79; both branches claim overlapping ids for different things.
 
-Both branches are complete, self-documenting work with their own RCAs (RCA-017, RCA-018) and
-their own ledger rows. **Neither has ever been through CI.**
+## The two queued halves, and the question each is blocked on
 
-## If you pick either package up, the contract question comes FIRST
+Neither is blocked on code. Patching either without answering its question reproduces the shape.
 
-Both stopped for the same reason: a missing written contract, not a coding error. Patching either
-one further without answering its question will reproduce the same shape.
+- **`harden-painted` — what does `painted()` promise?** Is it about an element's *text* or its
+  *paint*? A sized empty `<div>` and a `::before`-only element cannot both correctly return `true`,
+  and no amount of patching that line decides it. Open blockers, all reproduced: a container whose
+  only text is off-screen is certified painted; a real weakening of the descendant walk leaves all
+  38 fixtures green; the empty-node branch returns `true` unconditionally. Write the contract and a
+  failure matrix, get **that** reviewed, then derive the fixtures from it.
+- **`cite-audit` — what uniquely identifies a citation for exemption purposes,** given the scanner
+  normalises the path away? And **what makes the gate capable of failing,** with a partner proving
+  it? Until both are answered `main` has the sweep but no gate, so **nothing stops the citation form
+  coming back.** That is the known, accepted cost of shipping the sweep alone.
 
-- **Package A (`harden-painted`) — what does `painted()` promise?** Concretely: is it about an
-  element's *text* or an element's *paint*? A sized empty `<div>` and a `::before`-only element
-  cannot both correctly return `true`, and no amount of patching that line decides it. Write the
-  contract and a failure matrix, get THAT reviewed, then derive the fixtures from it — the current
-  fixtures define the meaning retroactively, which is why every review round finds a new shape.
-- **Package B (`cite-audit`) — what uniquely identifies a citation for exemption purposes,** given
-  that the scanner throws the path away? And **what makes this gate capable of failing,** with a
-  partner that proves it?
+## What is already on `main` and must not be rebuilt
 
-**Renumber both branches' ledger ids before merging either** - once this record is merged,
-`main` uses D164 and DEF-77, and both branches currently claim those same ids for other things.
+- **The sweep (D165).** 49 citations gone from code, comments only, proved by a comment-region state
+  machine that was mutation-proved first. Four remain by design: two in `src/data/projects.js`
+  (invariant 3 forbids touching it) and two pointing at untracked Playwright internals.
+- **The alpha fix (D166).** `painted()`'s transparency guard was dead code against `color-mix`; a
+  1×1 canvas read replaces it. Restoring the old parse flips 6 of 8 holes. Two keepers are receipts,
+  not coverage: `11px type [THE REFUSED FLOOR]` proves the owner's reserved type-floor ruling was
+  not enacted, and `opaque rgb() black` guards a historical false-red.
+- **Container blindness is still open and unchanged from before the run.** D166 is strictly better,
+  not a regression, and its header says so.
 
-## What is worth keeping from each, so you do not rebuild it
+## Known-open, filed and deliberately not fixed
 
-- **A:** the container fix and its at-least-one semantics (independently verified: six container
-  idioms now false, a hidden or zero-sized sibling beside visible text correctly stays true); the
-  executable receipt G8 that reds only `11px type [THE REFUSED FLOOR]` when the refused floor is
-  enacted; the finding that the old transparency guard was dead code against `color-mix`.
-- **B:** the 47-citation sweep across 25 files; the three rewrites that avoided leaving false
-  sentences (especially the RED-WHEN instruction that pointed at a blank line); the scan-set floor
-  and named-file partners; the corrected population numbers (53 code, 451 docs, 309 distinct,
-  80 files) and the 303 figure attributed to DEF-71 rather than restated as current.
+- **DEF-79** — three `content-model.spec.js` calls do `await painted(x);` and discard the result, so
+  they assert nothing while reading as coverage. Fix by wrapping each in `expect(...)` **and**
+  confirming each turns red under a hard-wired-false `painted()`.
+- **DEF-78** — `global.css` described as 451 lines when it is 500; `print-floor` claiming the "same
+  numbers" as `type-floor` when they differ on `/404`.
+- **DEF-77** — ledger-id allocation collides across parallel packages.
+- **DEF-76** — the `hero-motion` flake, still uninvestigated, load-dependent.
 
-## The boundary itself worked, and is the one thing to trust
+## Local machine state worth fixing
 
-`tests/lib/rendered-text.mjs` was driven over a built `main` and a built candidate for both
-packages at every head: **7 routes, 24,578 characters, byte-identical every time.** It never
-blocked anything, which is correct — neither package changed a character a visitor can read, and
-B proved it the hard way by editing comments in eleven `src/` files. The comparison harness lives
-in the session scratchpad and is **not committed**. That is a real limitation, not a footnote:
-the 7-route / 24,578-character figures, the 557/51/2 suite result and the 102 importer tests
-were executed in-session and **cannot be reproduced from this repository as it stands**.
-Promoting the harness to a real script is therefore the obvious
-next package, and it should ship with the three-direction self-test it was given here (identical →
-exit 0; one reworded string → exit 1 naming route and line; a vacuous capture → REFUSED, not
-"identical").
+`node tests/hook-binding-selftest.mjs` **fails on `main` on this laptop**: *"this checkout is not
+bound to an absolute path — core.hooksPath = /Users/.../.githooks"*. That is DEF-62's exact defect
+living in this checkout's `.git/config`. CI passes because `npm ci` runs `prepare` and sets the
+relative form on the runner. **`npm run prepare` fixes it locally**; it was not run because it
+changes your git config.
 
-## Traps that cost real time this run
+## Traps that cost real time
 
 - A fresh worktree has none of the gitignored darwin baselines, so its first full suite reports
   **51 phantom failures**. Copy `tests/geometry-baseline.darwin.json` in from the main checkout.
 - `codex exec` backgrounded without `< /dev/null` stalls forever reading stdin.
-- Codex's read-only sandbox cannot launch Chromium or run `npx playwright`. It is genuinely
-  static-analysis-only — label it so. It still found two CRITICAL_BLOCKERs per package that the
-  same-model lenses missed, which is the argument for keeping it.
-- Both packages contend for port 4321; Astro preview is effectively single-instance. Poll
-  `until ! lsof -ti tcp:4321 >/dev/null 2>&1; do sleep 10; done` before a suite run.
+- Codex's read-only sandbox cannot launch Chromium or run `npx playwright` — genuinely
+  static-analysis-only. It still found the CRITICAL_BLOCKERs the same-model lenses missed on both
+  packages and both slices. It is the highest-value reviewer in this setup; keep it.
+- Port 4321 is effectively single-instance. Poll before a suite run.
 - A local green cannot clear the geometry gate. 48 of the 51 skips ARE the geometry comparisons.
+
+## The rendered-text boundary
+
+It held every time it ran — 7 routes, 24,578 characters, byte-identical, on both queued packages,
+both merged slices, and against the **live** site after each deploy. It never blocked anything,
+which is correct: nothing shipped changed a character a visitor can read.
+
+**The harness is still not committed.** It lives in the session scratchpad, so those figures cannot
+be reproduced from this repository. Promoting it to a real script is the obvious next package, and
+it should ship with the three-direction self-test it was given here: identical → exit 0; one
+reworded string → exit 1 naming route and line; a vacuous capture → **REFUSED**, not "identical".
+
+## The run doc needs four edits, and they are the real fix
+
+`docs/practices/autonomous-run.md` was followed literally and is where the process defects live.
+Not edited during the run, because rewriting the contract you are being judged against is marking
+your own homework.
+
+1. **Add a contract phase before build.** Phase 1 converges on "the smallest correct fix"; it must
+   first produce what the thing promises, over what input space, with the shapes enumerated — and
+   **that** gets reviewed. Fixtures derive from the enumeration.
+2. **Every gate ships a partner that fails if the gate becomes incapable of failing.**
+3. **The orchestrator pre-allocates ledger-id blocks.** DEF-77.
+4. **Line 242's "Delete every branch and worktree" needs the word *merged*.** As written it destroys
+   queued work and contradicts its own "a queued package is a success".
+
+Its package-A row also still says "20 spec files import it" — five do; twenty is the call count, of
+which seventeen assert. Corrected in D164 and D166, left standing there on purpose.
 
 ## Still open, still the owner's — do not build these
 
-**P-32** (the 52ch measure cap), **D30** (light/dark), **the home hero's height** (D27), **the
-11px type floor**. Unchanged by this run; all four were refused to the machine by design and none
-was touched. **DEF-76** (`hero-motion` flake) reproduced once more under full-suite load and passed
-in isolation, consistent with being load-dependent; still uninvestigated.
+**P-32** (the 52ch measure cap), **D30** (light/dark), **the home hero's height** (D27), **the 11px
+type floor**. Untouched by this run; all four were refused to the machine by design.

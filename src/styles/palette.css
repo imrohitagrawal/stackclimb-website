@@ -140,18 +140,27 @@
 
 /* New route section: the eight-stage engineering-model tabs, inserted
    between #how-i-build (hue 29, amber) and #evals-observability (hue 139,
-   spring green). Hue 90 (yellow-green) sits roughly 61 degrees from each
-   neighbour — well clear of the 17-degree minimum this file already
-   tolerates. Same formula as every rule above: L 9.5%/17.5%, S 44% —
-   EXCEPT surface, lowered to L 15% (same fix as #published-skills below,
-   same reason: this hue's ochre-on-surface reads under the 4.5:1 AA floor
-   at the standard 17.5%, measured 4.43:1; L 15% clears it at 5.03:1).
-   Computed (WCAG 2.1, this commit): bone on ground 13.77:1 · ochre on
-   ground 6.41:1 · ochre on surface 5.03:1 · bone on surface 10.80:1. All
-   inside or above the ladder's established range. Declared HERE ONLY. */
+   spring green). CORRECTED TWICE, 2026-09-01. Draft 1 picked hue 90
+   (yellow-green) — technically clear of both immediate neighbours, but it
+   sat between #evals-observability (139) and #published-skills (77, two
+   plates down): three consecutive yellow-green-to-green plates reading as
+   one repeated colour, a real gap in what the ladder gate checks (per-page
+   adjacency only), caught by eye, not by any gate. Draft 2 moved to hue
+   220 (blue) — genuinely distinct from every plate ON THIS PAGE, but a
+   sitewide hue audit found 206/220/225 all within 19° of each other
+   across three OTHER routes' plates: not distinctive at the site level
+   even though it read fine in isolation. Settled on hue 355 (crimson) —
+   the widest open gap in the sitewide hue map (citevyn's 344 to
+   how-i-build's own 29, wrapping through 0), and it doubles as the
+   emphasis this section asked for: a warm, attention-holding colour
+   against the ambers and greens around it, still at the ladder's own
+   S44%/L9.5-17.5% (muted, not a loud saturated red). Computed (WCAG 2.1,
+   this commit): bone on ground 15.51:1 · ochre on ground 7.22:1 · ochre
+   on surface 6.00:1 · bone on surface 12.89:1. All inside or above the
+   ladder's established range. Declared HERE ONLY. */
 #engineering-model {
-  --ground: #18230e;
-  --surface: #263715;
+  --ground: #230e0f;
+  --surface: #40191c;
 }
 
 #evals-observability {

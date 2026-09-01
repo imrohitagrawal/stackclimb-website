@@ -134,15 +134,18 @@ export const stages = [
     body:
       'Telemetry, canaries, alarms and runbooks decide how quickly a bad day ends. In AI ' +
       'systems the same instinct becomes visible mode labelling: the user should be able to ' +
-      'tell whether an answer is live, deterministic, or a sample.',
+      'tell whether what they are seeing is current, held, or absent — never a fallback ' +
+      'disguised as the real thing.',
     employer:
       'MTTD reduced by approximately 35% through telemetry and dashboards; production ' +
       'incidents reduced by approximately 20%.',
     system:
-      'SaafSaans labels every answer live, deterministic or sample. Quorum-AI discloses a ' +
-      'degraded run — forced into local simulation rather than spending against an ' +
-      'untrustworthy cost ledger — and estimates cost before a run starts, not after.',
-    terms: ['live', 'deterministic', 'sample', 'degraded'],
+      'SaafSaans labels every reading live, held (shown as CACHED — a real earlier ' +
+      'measurement re-served because the upstream failed, not stale data), or none (shown ' +
+      'as NO READING, never disguised as a fallback). Quorum-AI discloses a degraded run — ' +
+      'forced into local simulation rather than spending against an untrustworthy cost ' +
+      'ledger — and estimates cost before a run starts, not after.',
+    terms: ['live', 'held / cached', 'no reading', 'degraded'],
   },
   {
     num: '08',

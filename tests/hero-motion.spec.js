@@ -99,14 +99,65 @@ test.describe('hero entrance — 4B', () => {
     // none !important }`) — deleting its animation line turns this red
     // (watched; motion.css's own no-anim hero selectors were proven
     // redundant by mutation, M4, and removed rather than kept as dead code).
+    // DEF-76 (RCA-019): the original test raced a real 400ms wall-clock
+    // window (plates.js's `setTimeout(..., 400)`) against a Node<->browser
+    // roundtrip: it navigated, then took ONE evaluate() snapshot afterward,
+    // hoping the snapshot landed inside the window. Under CPU contention
+    // from parallel workers that roundtrip can take longer than 400ms, so
+    // the snapshot lands after the window already closed, even though the
+    // window was real. Two fixes were tried and measured NOT to remove it:
+    // `page.waitForFunction` polling (still 14-16/30 failures under load —
+    // the browser's own JS thread can be starved past the poll's own
+    // timeout) and `page.clock.install()` (does nothing by itself: per
+    // Playwright's docs timers keep running in real time after install()
+    // until `pauseAt()` is called, which just moves the same race to a
+    // different line).
+    // The fix that actually works: stop trying to CATCH the transient state
+    // with a well-timed read, and instead RECORD it permanently, in-page,
+    // the instant it happens. A MutationObserver installed before navigation
+    // fires at the next microtask checkpoint after plates.js's
+    // classList.add/remove — no external roundtrip sits between the state
+    // change and the observation, so no amount of Node-side or scheduling
+    // delay can make the read miss it (Codex review, RCA-019: this only
+    // needs to beat the 400ms setTimeout, not run synchronously with it).
+    // The recorded result can then be read at any later, unhurried time.
+    // `addInitScript` runs at document-start, BEFORE `<html>` itself exists
+    // (measured: `document.documentElement` is `null` there) — the observer
+    // has to wait for it via a second MutationObserver on `document`, which
+    // fires the instant the parser inserts `<html>`, well before plates.js's
+    // module script can run.
+    await page.addInitScript(() => {
+      window.__noAnimRecord = null;
+      const attach = (el) => {
+        new MutationObserver(() => {
+          if (window.__noAnimRecord || !el.classList.contains('no-anim')) return;
+          window.__noAnimRecord = {
+            noAnim: true,
+            heroAnim: el.classList.contains('hero-anim'),
+            // Codex review: `getComputedStyle(null)` throws BEFORE `?.` can
+            // guard it — a bare optional-chain here does nothing. Guard the
+            // element itself instead.
+            anims: ['.hero .hero-ledger', '.hero .caps'].map((s) => {
+              const found = document.querySelector(s);
+              return found ? getComputedStyle(found).animationName : null;
+            }),
+          };
+        }).observe(el, { attributes: true, attributeFilter: ['class'] });
+      };
+      if (document.documentElement) {
+        attach(document.documentElement);
+      } else {
+        new MutationObserver((_muts, obs) => {
+          if (!document.documentElement) return;
+          obs.disconnect();
+          attach(document.documentElement);
+        }).observe(document, { childList: true });
+      }
+    });
     await page.goto('/#contact', { waitUntil: 'domcontentloaded' });
-    const state = await page.evaluate(() => ({
-      noAnim: document.documentElement.classList.contains('no-anim'),
-      heroAnim: document.documentElement.classList.contains('hero-anim'),
-      anims: ['.hero .hero-ledger', '.hero .caps'].map(
-        (s) => getComputedStyle(document.querySelector(s)).animationName,
-      ),
-    }));
+    const state = await page.evaluate(
+      () => window.__noAnimRecord || { noAnim: false, heroAnim: false, anims: [] },
+    );
     // Partner: the window must actually have been observed — no-anim holds
     // for ~400ms after the pre-paint scripts, far longer than DCL-to-here.
     expect(state.noAnim, 'no-anim window missed — test observed nothing').toBe(true);

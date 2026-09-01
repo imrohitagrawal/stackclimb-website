@@ -1,160 +1,128 @@
 # Handoff — for the next session
 
-Written 2026-08-31, superseding the earlier 2026-08-31 (run-record) handoff. That one is in git
-history; this file is replaced each session by convention.
+Written 2026-09-01, superseding the 2026-08-31 handoff (that one is in git history).
 
-**D163's autonomous run ran, both packages were QUEUED, and then each was SPLIT at its risk
-boundary and its safe half shipped.** On `main`: the run record (D164, DEF-77), the citation sweep
-(D165, DEF-78), the `painted()` alpha fix (D166, DEF-79), the owner-queue clearance (D167) and the
-em-dash pass (D168). **Two halves remain queued, and each is blocked on a written contract, not on
-more code. Nothing is pending on the owner.** Full account in `docs/STATUS.md`; do not re-derive it.
-
-**The sharpest lesson of the run, and it landed on the orchestrator.** D168's copy change was
-measured as geometry-neutral on darwin at 1440 and 390 — paragraph height, plate height and link
-position all byte-identical — and CI still caught a **23px reflow at 768px on linux**, because the
-same self-hosted fonts rasterize to different advance widths and the text wraps elsewhere. *A local
-green cannot clear the geometry gate* is the warning this repo already carried, and it caught the
-very session that kept repeating it. Recovery is CI-dispatched only, then diffed programmatically
-by flattened key path: 3,096 keys compared, exactly 2 changed.
+**ULTRACODE v3 ran to completion. All three eligible packages from the D163 autonomous run are
+now on `main`, deployed, and independently re-verified in production: `harden-painted` (D171,
+merged before this session), `cite-audit-v2` (D173, PR #139), and the `hero-motion-flake`
+diagnosis (D174, PR #141). A small ledger-hygiene fix also merged (PR #140). Nothing is pending
+on the owner from this run. Full detail in `docs/STATUS.md`; do not re-derive it here.**
 
 ## What went wrong, because that is what you can act on
 
-- **One defect class ran through the whole session: a claim whose scope is wider than the
-  measurement behind it.** Package A measured `painted()` on leaf-shaped fixtures and stated it of
-  all call sites. Package B measured citations under one regex form and stated the population under
-  another. It then caught the orchestrator **five** times: a single-line `grep` that "proved" a
-  phrase did not exist when it wrapped across a line; `grep -c PASS` counting a summary line as an
-  assertion; a mutation probe seeded outside the gate's scan roots; a grep for the JS property
-  `webkitTextFillColor` that missed the CSS property `-webkit-text-fill-color`; and a `color-mix`
-  figure describing 15 stylesheets when only 8 set a text colour.
-  **Every one was caught by something disagreeing — a reviewer, a control run, a second grep —
-  and none by reading.**
-- **Plans planned the FIX, not the CONTRACT.** That single omission produced every blocker. Nothing
-  stated what each thing promises over what input space, so reviewers discovered the contract by
-  counterexample, one shape at a time, and each new shape read as a new bug.
-- **A gate's self-test can certify a property the gate does not have.** Package B's 18 assertions
-  all printed `SELF-TEST PASS — the scanner bites` while a one-character typo
-  (`breaches.length` → `breaches.lenght`) made the gate print green with a live breach present.
-  Nothing drove the executable's own exit decision. **Ask of every gate: which assertion fails if
-  the gate becomes incapable of failing?**
-- **A fixture set one shape deep cannot see a scope weakening.** It bit twice: package A's
-  `querySelectorAll('*')` → `':scope > *'` left all 38 fixtures green, and the D166 self-test had
-  the same flaw until review caught it. The fix both times is a fixture **pair** differing on the
-  axis the guard uses.
-- **Worktree isolation does not prevent ledger-ID collision.** Both packages independently claimed
-  D164, D165 and DEF-77 for different things. DEF-77.
+- **A spawned subagent backgrounding a long command and stopping to "wait for a notification" is
+  not a one-off — it happened TWICE in this exact session, to two different agents, despite an
+  explicit, capitalized instruction against it in both prompts.** The first agent (package B,
+  `cite-audit-v2`) backgrounded `codex exec` and a full Playwright run, then ended its turn citing
+  "monitors set up." The second agent (package C, `hero-motion-flake`) was told about the FIRST
+  agent's exact failure by name in its own brief — and did the same thing anyway, ending its turn
+  saying "I'll stop polling and wait for the Monitor task's notification." Neither was
+  auto-resumed; both had to be manually restarted by the orchestrator via `SendMessage`, costing
+  real wall-clock time each time. **This is not fixed by writing the warning more emphatically —
+  it was already in capitals and named the prior incident by ID.** Filed as product/model-behavior
+  feedback this session (queued locally, not sent — the owner can review via `/feedback`). Until
+  the harness or model behavior changes, budget for this: after dispatching ANY agent whose brief
+  includes a long foreground command, read its final report for phrases like "waiting for",
+  "monitor", or "will notify me" before assuming it actually finished, and be ready to resume it.
+- **The orchestrator made one process slip of its own, caught immediately.** After the first
+  agent's premature stop, the correct recovery is `SendMessage` to the SAME agent ID to resume it
+  with its context intact. Instead, a fresh `Agent` call was made by mistake — a new agent with no
+  memory of the worktree, the commits, or what had run. Caught before the stray agent did any
+  work (killed via `TaskStop` in the same turn), then the correct `SendMessage` resume was issued.
+  No damage done, but it is exactly the trap `docs/practices/autonomous-run.md`'s "known agent
+  failure modes" section exists to prevent for the AGENTS it spawns — worth remembering it applies
+  to the orchestrator's own tool choice too.
+- **`Agent`'s `isolation: "worktree"` param silently creates its OWN worktree, ignoring a path
+  named in the prompt text.** The orchestrator manually pre-created a worktree at
+  `../scw-cite-audit-b` on a branch named exactly as the prompt instructed, then passed
+  `isolation: "worktree"` on the same call — the tool created a second, different worktree at
+  `.claude/worktrees/agent-<id>` and the agent worked there instead, never touching the one
+  pre-built for it. Wasted one worktree-creation and had to be cleaned up as unused residue after
+  the fact (it was — confirmed identical to `main`, zero commits, deleted). **Fix for next time:
+  either let `isolation: "worktree"` provision the worktree itself and reference
+  `<worktree>.worktreePath` in the report back, or skip the `isolation` param and manually `cd` the
+  agent into a pre-built worktree via the prompt — never both.** The second package (`hero-motion-
+  flake`) used the manual-`cd`-only approach and it worked as instructed.
 
-## The rule that replaces "find a bug, fix a bug"
+## What went right, worth repeating
 
-When a reviewer produces a counterexample, ask which of three it is:
-
-1. **Fits an enumerated shape, and a fixture covers it** → not a finding. Close it.
-2. **Fits an enumerated shape, no fixture** → one missing fixture. Add it, keep going.
-3. **Fits no enumerated shape** → the *enumeration* is wrong. **That is the stop.** Fix the
-   enumeration once; the fixtures regenerate from it.
-
-Neither package had an enumeration, so every counterexample was case 3 and the loop looked
-endless. Both merged slices got through because their scope was small enough to enumerate.
+- **The orchestrator independently re-verified every package before merging, not just trusted the
+  agent's report.** For `cite-audit-v2`: re-ran the self-test, re-ran the gate, and personally
+  reproduced the mutation proof (flipped `breaches.length` → `breaches.lenght` in the actual file,
+  confirmed the self-test genuinely failed, reverted). For `hero-motion-flake`: read the actual
+  diff, re-ran the fixed spec file 5x under repeat, confirmed 60/60 clean. Neither verification was
+  rubber-stamped from the subagent's own claim.
+- **Real CI was watched to completion every time**, not assumed from a queued run — three separate
+  pushes to `main` (PR #139, #140, #141), each confirmed with `gh run watch --exit-status` and a
+  per-job status check that the **deploy job specifically ran and succeeded**, not skipped.
+- **Production was independently re-verified with `npm run post-deploy` after every single
+  merge** (three times), not just once at the end.
+- **The ledger was updated in the same commit as the code every time** (D173, D174), and a
+  pre-existing staleness in `STATUS.md`'s own top-of-file summary line (still read D164 after
+  D165-D173 had landed) was caught and fixed as its own small PR rather than left for the next
+  reader to trip over.
+- **Every merged branch and worktree was deleted, both local and remote, confirmed by command**
+  (`git worktree list`, `git branch -a`, `git ls-remote --heads origin`) after each package — not
+  claimed, checked. The old superseded `cite-audit` branch (replaced by the from-scratch rebuild in
+  `cite-audit-v2`, never pushed) was also cleaned up once its replacement had merged.
+- **A new defect found mid-package (DEF-82, `nav-reach.spec.js:92` reproducing unstressed) was
+  filed and QUEUED rather than chased** — it was out of the package's authorized scope
+  (`docs/practices/autonomous-run.md`'s eligible list named only A/B/C), and scope discipline held.
 
 ## The state, in commands
 
 ```
-git status -sb                                # main, clean, level with origin/main
-git branch --list harden-painted cite-audit   # both exist, LOCAL ONLY, never pushed
-git log --oneline main..harden-painted        # 4 commits, ends 9b9eecb
-git log --oneline main..cite-audit            # 4 commits, ends fc7d84a
-git worktree list                             # one entry
+git status -sb                     # main, clean, level with origin/main
+git worktree list                  # one entry — no stray worktrees
+git branch -a                      # main only, local and remote
+gh pr list --state merged --limit 5   # #141, #140, #139 (this session), #138, #137 (prior)
+npm run post-deploy                # green, independently re-verified 2026-09-01
 ```
 
-**Renumber both branches' ledger ids before merging either.** `main` now uses **D164–D168** and
-**DEF-77–DEF-79**; both queued branches claim overlapping ids for different things.
+## What is open, not done by this run
 
-## The two queued halves, and the question each is blocked on
+- **DEF-82 (LOW), filed this run, not investigated.** `nav-reach.spec.js:92` reproduced its own
+  failure with no synthetic stress at all, during `hero-motion-flake`'s verification — different
+  mechanism from DEF-76's race, different file. D168's "one cause, three specs" theory is not
+  fully closed by this run: two of the three named specs (`hero-motion.spec.js:95`, `nav-
+  reach.spec.js:92`) have real, distinct root causes; `hero-motion.spec.js:20` itself, the
+  original citation, never reproduced under any load tested.
+- **`docs/contracts/cite-audit.md`'s own prose is stale against what actually shipped** — flagged
+  as a DUPLICATE finding in `cite-audit-v2`'s round-2 review, not fixed in that PR (a separately-
+  reviewed D170 artifact; correcting it was deliberately left for a future pass rather than folded
+  into an unrelated diff). It still describes the old `(file,line,hit)` exemption identity and
+  claims the self-test never calls `audit()` — both wrong as of D173.
+- **The four HARD REFUSALS remain untouched, correctly**: P-32 (52ch measure cap), D30
+  (light/dark), the home hero's height (D27), the 11px type floor. None came up in this run's
+  scope; none were built, drafted, or prepared.
+- **Model-behavior feedback about the repeated background-and-stop failure is drafted and queued
+  locally** (not sent) — see the first "went wrong" item above. The owner can send it via
+  `/feedback` if they want to.
 
-Neither is blocked on code. Patching either without answering its question reproduces the shape.
+## Traps that cost real time this session (add to the existing list)
 
-- **`harden-painted` — what does `painted()` promise?** Is it about an element's *text* or its
-  *paint*? A sized empty `<div>` and a `::before`-only element cannot both correctly return `true`,
-  and no amount of patching that line decides it. Open blockers, all reproduced: a container whose
-  only text is off-screen is certified painted; a real weakening of the descendant walk leaves all
-  38 fixtures green; the empty-node branch returns `true` unconditionally. Write the contract and a
-  failure matrix, get **that** reviewed, then derive the fixtures from it.
-- **`cite-audit` — what uniquely identifies a citation for exemption purposes,** given the scanner
-  normalises the path away? And **what makes the gate capable of failing,** with a partner proving
-  it? Until both are answered `main` has the sweep but no gate, so **nothing stops the citation form
-  coming back.** That is the known, accepted cost of shipping the sweep alone.
+- A subagent's final report saying it is "waiting for a notification" or has "monitors set up" on
+  a backgrounded long command means it has actually STOPPED, not paused — resume it explicitly with
+  `SendMessage` to the SAME agent id/name, never assume it will wake on its own.
+- When resuming a stalled agent, double-check you are calling `SendMessage` to its existing
+  id/name, not accidentally calling `Agent` fresh — a fresh call has no memory of the worktree or
+  prior work and will need to be manually killed and redone.
+- `isolation: "worktree"` on the `Agent` tool provisions its OWN worktree at
+  `.claude/worktrees/agent-<id>` regardless of any path named in the prompt text — don't
+  pre-build a worktree AND pass `isolation: "worktree"` on the same call; pick one mechanism.
 
-## What is already on `main` and must not be rebuilt
+## Traps carried forward from the previous handoff, still true
 
-- **The sweep (D165).** 49 citations gone from code, comments only, proved by a comment-region state
-  machine that was mutation-proved first. Four remain by design: two in `src/data/projects.js`
-  (invariant 3 forbids touching it) and two pointing at untracked Playwright internals.
-- **The alpha fix (D166).** `painted()`'s transparency guard was dead code against `color-mix`; a
-  1×1 canvas read replaces it. Restoring the old parse flips 6 of 8 holes. Two keepers are receipts,
-  not coverage: `11px type [THE REFUSED FLOOR]` proves the owner's reserved type-floor ruling was
-  not enacted, and `opaque rgb() black` guards a historical false-red.
-- **Container blindness is still open and unchanged from before the run.** D166 is strictly better,
-  not a regression, and its header says so.
-
-## Known-open, filed and deliberately not fixed
-
-- **DEF-79** — three `content-model.spec.js` calls do `await painted(x);` and discard the result, so
-  they assert nothing while reading as coverage. Fix by wrapping each in `expect(...)` **and**
-  confirming each turns red under a hard-wired-false `painted()`.
-- **DEF-78** — `global.css` described as 451 lines when it is 500; `print-floor` claiming the "same
-  numbers" as `type-floor` when they differ on `/404`.
-- **DEF-77** — ledger-id allocation collides across parallel packages.
-- **DEF-76** — the `hero-motion` flake, still uninvestigated, load-dependent.
-
-## Local machine state — FIXED 2026-08-31, nothing outstanding
-
-`node tests/hook-binding-selftest.mjs` used to fail on `main` on this laptop: *"this checkout is not
-bound to an absolute path — core.hooksPath = /Users/.../.githooks"*, DEF-62's exact defect living in
-this checkout's `.git/config`. **The owner ran `npm run prepare` on 2026-08-31 and it is fixed.**
-Verified after: `core.hooksPath` is now the relative `.githooks`, and the self-test passes **29 of
-29** — *"every clone and every worktree binds the hook"* — where it previously failed 1 of 29.
-That also proves DEF-62's remedy works on a real machine, not only on a runner.
-
-## Traps that cost real time
-
-- A fresh worktree has none of the gitignored darwin baselines, so its first full suite reports
-  **51 phantom failures**. Copy `tests/geometry-baseline.darwin.json` in from the main checkout.
-- `codex exec` backgrounded without `< /dev/null` stalls forever reading stdin.
-- Codex's read-only sandbox cannot launch Chromium or run `npx playwright` — genuinely
-  static-analysis-only. It still found the CRITICAL_BLOCKERs the same-model lenses missed on both
-  packages and both slices. It is the highest-value reviewer in this setup; keep it.
-- Port 4321 is effectively single-instance. Poll before a suite run.
-- A local green cannot clear the geometry gate. 48 of the 51 skips ARE the geometry comparisons.
-
-## The rendered-text boundary
-
-It held every time it ran — 7 routes, 24,578 characters, byte-identical, on both queued packages,
-both merged slices, and against the **live** site after each deploy. It never blocked anything,
-which is correct: nothing shipped changed a character a visitor can read.
-
-**The harness is still not committed.** It lives in the session scratchpad, so those figures cannot
-be reproduced from this repository. Promoting it to a real script is the obvious next package, and
-it should ship with the three-direction self-test it was given here: identical → exit 0; one
-reworded string → exit 1 naming route and line; a vacuous capture → **REFUSED**, not "identical".
-
-## The run doc needs four edits, and they are the real fix
-
-`docs/practices/autonomous-run.md` was followed literally and is where the process defects live.
-Not edited during the run, because rewriting the contract you are being judged against is marking
-your own homework.
-
-1. **Add a contract phase before build.** Phase 1 converges on "the smallest correct fix"; it must
-   first produce what the thing promises, over what input space, with the shapes enumerated — and
-   **that** gets reviewed. Fixtures derive from the enumeration.
-2. **Every gate ships a partner that fails if the gate becomes incapable of failing.**
-3. **The orchestrator pre-allocates ledger-id blocks.** DEF-77.
-4. **Line 242's "Delete every branch and worktree" needs the word *merged*.** As written it destroys
-   queued work and contradicts its own "a queued package is a success".
-
-Its package-A row also still says "20 spec files import it" — five do; twenty is the call count, of
-which seventeen assert. Corrected in D164 and D166, left standing there on purpose.
+- A fresh worktree has none of the gitignored darwin geometry baselines, so its first full suite
+  reports phantom failures until seeded (`UPDATE_GEOMETRY=1 npx playwright test
+  tests/geometry.spec.js --workers=1` — gitignored, non-destructive, doesn't touch `git status`).
+- `codex exec` backgrounded without `< /dev/null` or otherwise abandoned stalls or gets lost — run
+  it foreground, blocking, budget over an hour.
+- Codex's read-only sandbox cannot launch Chromium — genuinely static-analysis-only, and still the
+  highest-value reviewer measured in this repo's history; keep using it.
+- A local green cannot clear the geometry gate on an unseeded darwin machine.
 
 ## Still open, still the owner's — do not build these
 
-**P-32** (the 52ch measure cap), **D30** (light/dark), **the home hero's height** (D27), **the 11px
-type floor**. Untouched by this run; all four were refused to the machine by design.
+**P-32** (the 52ch measure cap), **D30** (light/dark), **the home hero's height** (D27), **the
+11px type floor**. Untouched by this run; all four remain refused to the machine by design.

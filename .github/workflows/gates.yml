@@ -109,6 +109,17 @@ jobs:
           node tests/file-budget.mjs --self-test
           node tests/file-budget.mjs
 
+      # DEF-71, RCA-018: a comment may cite a FILE, never a line inside it — nothing
+      # revalidates a line number when the target moves. Needs no build and no browser,
+      # so it belongs with the cheap checks, same as the two gates above. Both invocations
+      # run unconditionally, with no `|| true` and no exit-swallowing — the end-to-end
+      # partner inside --self-test already proves the real (non-self-test) run's exit code
+      # is what decides pass/fail, and this step has to actually observe that exit code too.
+      - name: citation form (DEF-71)
+        run: |
+          node tests/cite-audit.mjs --self-test
+          node tests/cite-audit.mjs
+
       # DEF-54: the geometry gate took over PRECISION from the screenshot gate.
       # Both still block; the screenshot gate stays blocking as a coarse
       # catastrophe net, so this is a change of job, not a handover of the

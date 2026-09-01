@@ -5,6 +5,17 @@ The ledger. What is decided, what is open, and what was rejected so it does not 
 Updated in the same change that alters any of it. If this file and the chat disagree, this file
 is wrong and must be fixed — chat is not a record.
 
+Last updated: 2026-09-01 (D173 — `cite-audit-v2` merged to `main` (PR #139, `f9ba046`), closing
+the second half of the D163 autonomous run. Package B's original branch had queued itself on two
+CRITICAL_BLOCKERs; D170 wrote the converged contract it was missing, and this package rebuilt the
+gate from scratch against it, cleared the autonomy invariant, and self-merged. CI green including
+the deploy job actually running (not skipped), production independently re-verified by the
+orchestrator with `npm run post-deploy` after merge. Both eligible packages from the D163 run are
+now on `main`: `harden-painted` (D171) and `cite-audit-v2` (D173). This line is stale between
+sessions — the individual `D`/`DEF` rows below are the record; read the tail of the Decided table,
+not this line, for current state.)
+
+Previously:
 Last updated: 2026-08-31 (D164 — D163's autonomous run EXECUTED. Both eligible packages were
 built and reviewed twice, and BOTH QUEUED; nothing merged. The rendered-text boundary held every
 time it ran (7 routes, 24,578 chars, byte-identical) and never blocked anything — what stopped

@@ -138,6 +138,22 @@
   --surface: #401937;
 }
 
+/* New route section: the eight-stage engineering-model tabs, inserted
+   between #how-i-build (hue 29, amber) and #evals-observability (hue 139,
+   spring green). Hue 90 (yellow-green) sits roughly 61 degrees from each
+   neighbour — well clear of the 17-degree minimum this file already
+   tolerates. Same formula as every rule above: L 9.5%/17.5%, S 44% —
+   EXCEPT surface, lowered to L 15% (same fix as #published-skills below,
+   same reason: this hue's ochre-on-surface reads under the 4.5:1 AA floor
+   at the standard 17.5%, measured 4.43:1; L 15% clears it at 5.03:1).
+   Computed (WCAG 2.1, this commit): bone on ground 13.77:1 · ochre on
+   ground 6.41:1 · ochre on surface 5.03:1 · bone on surface 10.80:1. All
+   inside or above the ladder's established range. Declared HERE ONLY. */
+#engineering-model {
+  --ground: #18230e;
+  --surface: #263715;
+}
+
 #evals-observability {
   --ground: #0e2314;
   --surface: #194025;

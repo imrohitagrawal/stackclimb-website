@@ -77,6 +77,20 @@ not that it is thin.
 - Any measured regression-detection rate. No evaluation artifact has been read from this repo.
 - Anything about the dashboard's appearance. It has not been run or captured.
 
+### Supplementary audit, 2026-09-01 — the five metrics, the judge, and the CI action
+
+For the same `/how-i-build` operating-model tabs. Read at the same pinned sha, `c3233de`
+(`~/Projects/evalaxis/evalaxis-ai`) — no new commit, just a closer read of files the original
+audit didn't quote.
+
+| Claim | Status | Source |
+|---|---|---|
+| Scores five named metrics | `VERIFIED` | `src/evalaxis/core/metrics/`: `faithfulness.py`, `answer_relevancy.py`, `hallucination.py`, `context_precision.py`, `context_recall.py` — five files, five metrics, matching `README.md`'s own list |
+| Default judge is deterministic and runs offline | `VERIFIED` | `README.md`: *"By default it uses a deterministic fake judge that runs offline and for free"*; `src/evalaxis/judge/fake.py` exists as the implementation |
+| Ships as a CLI and a composite GitHub Action | `VERIFIED` | `src/evalaxis/cli/` (four command modules); `gha/action.yml` header: `runs: using: composite` |
+| With no baseline committed, the gate fails open (passes) rather than blocking | `VERIFIED` | `gha/action.yml`: `if not baseline_path.exists(): print('::warning::...regression gate skipped...'); sys.exit(0)` — exits 0 (success) and prints a warning, not a failure |
+| Does not measure semantic quality | `VERIFIED`, unchanged from the original audit above | the fake judge's determinism is a mechanism proof, not a quality signal — the original audit's own framing |
+
 ---
 
 ## Aegis Contracts
@@ -84,25 +98,37 @@ not that it is thin.
 Early work on contract-shaped guarantees between AI systems. Its question, from the site's own
 copy: *"What should one AI system be allowed to promise another — and who checks?"*
 
-### State: nothing verifiable
+### AUDITED 2026-09-01 — read via `gh api`, still not cloned locally
 
-| Fact | Status |
-|---|---|
-| The repository exists | `VERIFIED` — `gh repo list imrohitagrawal` shows `aegis-contracts`, private |
-| **Not cloned on this machine** | `VERIFIED` — no `~/Projects/aegis*` path exists |
-| Any code, test, or artifact within it | `UNVERIFIED` — nothing has been read |
+The owner directed a verification pass for the new `/how-i-build` operating-model tabs (P-18
+territory: he supplied the specific claims from a mockup, and instructed they be checked against
+the real repository rather than dropped). Read via `gh api repos/imrohitagrawal/aegis-contracts`
+— the GitHub API, not a local clone; every figure below traces to a file read at that commit,
+not to memory or the mockup.
 
-**Correction to an earlier statement of mine:** on 2026-08-11 I told the owner Aegis Contracts
-had "no repo to harvest". That was wrong — I had checked only `~/Projects` and concluded the
-repository did not exist, when it exists on GitHub and is simply not cloned. Recorded in D63.
-The practical position is unchanged (nothing can be quoted), but the reason matters: *"not
-cloned"* is a different fact from *"does not exist"*, and stating the stronger one was a guess
-wearing the clothes of a check.
+| Claim | Status | Source |
+|---|---|---|
+| "Three versioned contracts: canonical artifact schema, traceability node/edge/coverage model, CloudEvents catalogue" | `VERIFIED` | `README.md`: *"The three frozen contracts every component of the AI-QE platform composes around... 1. Canonical artifact schema — schemas/*.json... 2. Traceability schema — traceability/... 3. Event format — events/ (CloudEvents 1.0 envelope + event catalog)"* |
+| Versioned, additive-only within v1 | `VERIFIED` | `README.md`: *"Status: v0.1.2 — additive changes only within major v1"*; `docs/VERSIONING.md` states SemVer per schema, backward-compatibility CI checks, and *"Freeze status: v0.1.0 is frozen for v1 scope"* |
+| "Models acceptance-criteria-level coverage as a first-class object" | `VERIFIED` | `docs/adr/0002-ac-level-coverage.md`: *"The AC is the unit of coverage... ACs are first-class nodes with stable ids"* |
+| Private | `VERIFIED` — unchanged | `gh repo list imrohitagrawal` shows `aegis-contracts`, private, still not cloned to `~/Projects` |
 
-### What the site may say
+**What is still not claimed:** any running system, any consumer of the contracts, any timeline,
+any adoption. This is a schema/contract repository — 11 JSON Schemas, a traceability node/edge
+registry, an event catalogue and their generated language bindings (Python, TypeScript) — not a
+deployed service. The three-contract structure and the AC-level coverage decision are the only
+claims this audit backs; nothing about scale, usage, or maturity beyond "frozen at v0.1.2" is
+asserted.
 
-Only what the owner has written: the question it exists to answer, that it is early-stage, and
-that it is private. No capability claim, no timeline, no artefact.
+**Correction to an earlier statement of mine, kept for the record:** on 2026-08-11 I told the
+owner Aegis Contracts had "no repo to harvest" — checking only `~/Projects` and concluding the
+repository did not exist, when it exists on GitHub and was simply not cloned. Recorded in D63.
+*"Not cloned"* is a different fact from *"does not exist"*, and stating the stronger one was a
+guess wearing the clothes of a check. This audit corrects the same class of error the other
+direction: the repository was real and checkable via the API the whole time; nobody had asked.
 
-To move beyond this, the repository would need cloning and the same audit the other four
-received. Until then it is honestly a name and a question — and the site already says so.
+### What the site may say now
+
+The three-contract structure, the AC-level coverage decision, the versioning discipline, and
+that it is private and early-stage. Still no capability claim beyond what is in the contracts
+themselves, no timeline, no adoption, no running system.

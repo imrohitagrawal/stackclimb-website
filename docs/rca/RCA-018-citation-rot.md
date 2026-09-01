@@ -62,20 +62,61 @@ because the edit that breaks it happens somewhere else.
   cite-audit:tests/cite-audit.mjs`): zero live breaches today. This package adds no sweep — the
   47-citation cleanup already landed and holds.
 
-## The fix, built in this package (not this document)
+## The fix, built in this package (not this document) — and corrected once by review
 
-Contract cell 15/16 supplies the answer C1 needed: the exemption identity has to cover **every
-citation on the line, not one hit in isolation** — an entry now records the full, ordered set of
-hits a reviewer expects on that exact line. If the live set on that line differs at all (a new
-citation appended, one removed, one changed), none of that line's citations are exempt, and the
-maintainer has to touch the table on purpose. That closes the exact C1 reproduction: appending a
-different-file citation to an exempted line now changes the set and the line fires.
+Contract cell 15/16 pointed at the answer C1 needed: the exemption identity has to cover more
+than one hit in isolation. The FIRST attempt built that as a per-line SET of hits — an entry
+records every hit a reviewer expects on that exact line, and any change to the set (an addition,
+a removal) drops exemption for the whole line. That closed the append case, but a round-1 `codex
+exec --sandbox read-only` review drove `audit()` directly and showed it was NOT the fix C1
+actually needed: a real path swapped onto the SAME basename+span, or a column suffix glued onto
+the SAME span, does not change the hit COUNT — only a value the regex had already truncated
+before the set ever saw it — so both still returned zero breaches. That is the literal C1
+reproduction from the old branch's queue, still open.
+
+**Corrected**, same review round: exemption is now keyed on the **raw, full line text**, not on
+any extracted hit or set of hits. An entry is live only if the line's current content is
+byte-identical to what it excuses. A path swap, a column suffix, a citation added or removed, or
+even a cosmetic reword all change the line's text, so all of them now drop exemption until a
+maintainer reviews the edit and updates the table on purpose — which is what the EXEMPT table's
+own "re-verify by hand" reasons already asked for, made literal.
 
 Contract `(f)`/`(f-cont)` supplies the C2 answer: extract the exit predicate into one exported
 `hasBreach()` both the self-test and the real run call, and add an end-to-end partner that
 spawns the real script as a **subprocess**, seeded with one untracked fixture file carrying an
 unexempted citation unique to the test, and asserts the child process's own exit code — not a
-call into an exported function standing in for it.
+call into an exported function standing in for it. The same review round found this partner
+could clobber and delete a pre-existing file of the same name; fixed with exclusive creation
+(`wx`) and a `finally`-guarded cleanup, so a mid-run throw only ever removes the file this run
+created.
+
+## Round-1 review record (codex exec --sandbox read-only, foreground, full transcript in the PR)
+
+Five findings, all reproduced before being fixed:
+
+1. **CRITICAL_BLOCKER** — C1's set-based identity still false-exempted a changed citation
+   (path swap, column suffix, malformed suffix). Reproduced with `audit()` driven directly;
+   fixed by switching identity to full raw line text (above).
+2. **CRITICAL_BLOCKER** — the end-to-end partner could destroy a pre-existing file. Fixed with
+   exclusive creation and `finally`-guarded cleanup (above).
+3. **REQUIRED_CONTRACT** — this document's first draft said the new identity was an "ordered
+   set" of hits; the code (correctly) compared unordered. The wording was wrong, not the code —
+   corrected above to describe what actually shipped: full line text, no ordering concept at all.
+4. **REQUIRED_CONTRACT** — no fixture exercised most of `TARGETS`' extensions (`mjs`, `cjs`,
+   `ts`, `astro`, `md`, `py`, `json`, `yml`, `html`); removing them from `TARGETS` left every
+   existing fixture passing. Fixed: one FINDS fixture added per `TARGETS` extension. `SCANNED`'s
+   `cjs`/`ts`/`html` stay an explicitly declared residual — no such file exists anywhere in this
+   repo to name, so no fixture can prove coverage without fabricating one, which is out of scope.
+5. **REQUIRED_CONTRACT** — the fixture-count check was a `>= 30` floor against 36 fixtures, six
+   free to vanish unnoticed; two fixture labels didn't test what they claimed (`d16` used a
+   different basename instead of reproducing the path-swap; `d18` was a string literal,
+   duplicating `d19`'s cell instead of covering "live code, not a string"). Fixed: an exact,
+   hand-maintained `REQUIRED_FIXTURES` count (46), an ID-uniqueness partner, `d16` rebuilt to
+   the real path-swap reproduction (finding 1 folded in), and `d18` rebuilt as unquoted code.
+
+Confirmed clean by the same review, no fix needed: C2's exit-decision partner (deletion,
+hard-wiring, and an unrelated child failure are all distinguished correctly); all six real
+`EXEMPT` entries' `cites` match their lines; `gates.yml`'s new step has no exit-swallowing.
 
 ## What will still bite, disclosed rather than hidden
 

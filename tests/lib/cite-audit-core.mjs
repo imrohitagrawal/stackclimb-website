@@ -37,51 +37,67 @@ const URL = /[a-z][a-z0-9+.-]*:\/\/\S+/gi;
 
 const cite = (name, span) => name + ':' + span;
 
-/* HAND-WRITTEN, never generated. Each entry names the FULL SET of citations expected on that
-   exact line, not one hit in isolation — the C1 fix. The old identity, (file, line, one hit),
-   let a line's set change (a citation to a DIFFERENT real file appended, sharing the same
-   stripped basename+span as something already excused) go undetected, because only the ALREADY
-   -exempt hit was ever checked. Requiring the full set to match means any edit to a line's
-   citations — added, removed, or swapped — drops exemption for every citation on that line
-   until a maintainer updates this table on purpose. */
+/* HAND-WRITTEN, never generated. `text` is the FULL, EXACT line the exemption covers — not the
+   stripped hit, not a set of hits. C1 ROUND-1 FIX (per-line SET of hits) closed the append
+   case but a `codex exec --sandbox read-only` review round drove `audit()` directly and showed
+   it still WASN'T CLOSED: a real path prefixed onto an exempted basename (the literal C1
+   reproduction from the old branch's queue — an in-repo file sharing a name with the exempted
+   node_modules one), and a column suffix or a malformed tail glued onto an exempted span (SPAN
+   has no right boundary) all still returned ZERO breaches against the existing exemption,
+   because the identity was still built from the ALREADY-TRUNCATED regex match, which throws
+   away exactly the information that distinguishes them. Fixed by keying on the RAW LINE TEXT
+   instead: an entry is live only if the line's CURRENT content is byte-identical to what it
+   excuses. Any edit at all — a path swapped in, a column appended, a citation added or removed,
+   even a wording change — drops exemption for every citation on that line until a maintainer
+   reviews it and updates this table on purpose. This is deliberately the strict direction: the
+   EXEMPT reasons below already say "re-verify by hand", and this makes that literal. `cites` is
+   kept for a human reading the table, and cross-checked against `text` by Partner 3's liveness
+   check, but `text` is what audit() actually keys on. */
 export const EXEMPT = [
   {
-    file: 'playwright.config.js', line: 23, cites: [cite('expect.js', '12486')],
+    file: 'playwright.config.js', line: 23,
+    text: '  // installed 1.62.1 (' + cite('expect.js', '12486') + ').',
+    cites: [cite('expect.js', '12486')],
     reason: 'Points into Playwright\'s bundled expect source under node_modules. Untracked, '
       + 'not ours to sweep, and the comment beside it already says so.',
   },
   {
-    file: 'playwright.config.js', line: 55, cites: [cite('index.js', '40')],
+    file: 'playwright.config.js', line: 55,
+    text: '    // command checks (node_modules/astro/dist/cli/preview/' + cite('index.js', '40')
+      + ') to skip',
+    cites: [cite('index.js', '40')],
     reason: 'Points into the Astro CLI preview entry under node_modules. Untracked.',
   },
   {
-    file: 'tests/geometry.spec.js', line: 124, cites: [cite('expect.js', '12486')],
+    file: 'tests/geometry.spec.js', line: 124,
+    text: '       installed 1.62.1 source, ' + cite('expect.js', '12486') + '.) */',
+    cites: [cite('expect.js', '12486')],
     reason: 'The same bundled Playwright expect source under node_modules. Untracked.',
   },
   {
-    file: 'tests/lib/viewport-clip.mjs', line: 140, cites: [cite('test.d.ts', '225')],
+    file: 'tests/lib/viewport-clip.mjs', line: 140,
+    text: '   default is `"css"` (types/' + cite('test.d.ts', '225')
+      + ', "Defaults to \\"css\\"") but it is a',
+    cites: [cite('test.d.ts', '225')],
     reason: 'Playwright type definitions under node_modules. Untracked.',
   },
   {
-    file: 'src/data/projects.js', line: 16, cites: [cite('file-budget.mjs', '16')],
+    file: 'src/data/projects.js', line: 16,
+    text: '   excepted — ' + cite('file-budget.mjs', '16')
+      + ' says never raise a ceiling without a written reason. */',
+    cites: [cite('file-budget.mjs', '16')],
     reason: 'QUEUED FOR THE OWNER, not resolved. In-repo and SHOULD be swept, but the '
       + 'autonomous run\'s invariant 3 bars any src/data/ change outright. Not permanent.',
   },
   {
-    file: 'src/data/projects.js', line: 128, cites: [cite('main.py', '174-179')],
+    file: 'src/data/projects.js', line: 128,
+    text: '         app\'s DEFAULT persona, age Adult (' + cite('main.py', '174-179')
+      + '); a senior with asthma',
+    cites: [cite('main.py', '174-179')],
     reason: 'UNCHECKABLE — points into an external repository this gate cannot read, and it '
       + 'is the ONLY citation in this repo backing RENDERED copy. Re-verify BY HAND.',
   },
 ];
-
-/* Order-independent, duplicate-count-sensitive equality: two citations that happen to be the
-   same VALUE still both have to be present for a match. */
-function sameMultiset(a, b) {
-  if (a.length !== b.length) return false;
-  const sa = [...a].sort();
-  const sb = [...b].sort();
-  return sa.every((v, i) => v === sb[i]);
-}
 
 /* One line in, every banned form on it out. */
 export function citationsIn(line) {
@@ -89,7 +105,8 @@ export function citationsIn(line) {
 }
 
 /* The audit walk. `exempt` is injectable so the self-test can drive it with a virtual table
-   without ever touching the real EXEMPT constant. */
+   without ever touching the real EXEMPT constant. Exemption is BY EXACT LINE TEXT, not by hit —
+   see the EXEMPT comment above for why. */
 export function audit(files, read, exempt = EXEMPT) {
   const breaches = [];
   for (const file of files) {
@@ -98,8 +115,7 @@ export function audit(files, read, exempt = EXEMPT) {
       const hits = citationsIn(lines[i]);
       if (hits.length === 0) continue;
       const entry = exempt.find((e) => e.file === file && e.line === i + 1);
-      const matches = entry ? sameMultiset(entry.cites, hits) : false;
-      if (matches) continue;
+      if (entry && entry.text === lines[i]) continue;
       for (const hit of hits) breaches.push({ file, line: i + 1, hit });
     }
   }

@@ -1,11 +1,11 @@
 // Fixtures derived from docs/contracts/cite-audit.md's matrix — one entry per contract cell,
-// not per bug already known (Phase 3-4 of docs/practices/autonomous-run.md). FIXTURE_COUNT is
-// asserted against this array's length in tests/cite-audit.mjs so a shrinking fixture set is
-// itself caught, per the same instruction.
+// not per bug already known (Phase 3-4 of docs/practices/autonomous-run.md). REQUIRED_FIXTURES
+// is a literal count, not a computed one, so deleting a fixture makes the two numbers disagree
+// instead of the check quietly re-deriving a smaller floor from itself — round-1 review found
+// the earlier `>= 30` version left 6 fixtures free to vanish unnoticed.
 //
-// Each row cites the matrix cell(s) it proves in its `cell` field so the mapping stays
-// traceable. `want` is the number of citationsIn() hits the FORM must produce on its own —
-// exemption is a separate layer, tested by EXEMPT_CASES below.
+// `want` is the number of citationsIn() hits the FORM must produce on its own — exemption is a
+// separate layer, tested by EXEMPT_CASES below.
 
 const C = ':'; // kept out of literal fixture strings so this file holds no real citation form.
 
@@ -21,7 +21,7 @@ export const FORM_FIXTURES = [
   ['d8 url with port', 'http://localhost' + C + '4321', 0],
   ['d9 url with embedded path+line', 'https://x.io' + C + '8080/a.js' + C + '3', 0],
   ['d10/d27 nonexistent target — verdict is form-only', 'ghost-file.css' + C + '99', 1],
-  ['d18 live code, not a comment', 'const CITE = "foo.js' + C + '12";', 1],
+  ['d18 live code, unquoted, not a string or comment', 'const map = { ref: foo.js' + C + '12 };', 1],
   ['d19 string literal', 'const s = "foo.js' + C + '12";', 1],
   ['d20 JSDoc block', '/** see foo.js' + C + '12 */', 1],
   ['d25 target ext not in TARGETS', 'see image.png' + C + '12', 0],
@@ -34,6 +34,17 @@ export const FORM_FIXTURES = [
   ['dcont2-37a line:column truncates the span', 'foo.js' + C + '12:7', 1],
   ['dcont2-37b malformed suffix truncates the span', 'foo.js' + C + '12-', 1],
   ['dcont-26 NAME stops at a space', 'my file.js' + C + '3', 1],
+  // One FINDS fixture per TARGETS extension (f-cont finding 8, round-1 codex review): narrowing
+  // TARGETS to drop any of these used to leave every existing fixture passing regardless.
+  ['ext mjs', 'see script.mjs' + C + '5', 1],
+  ['ext cjs', 'see script.cjs' + C + '5', 1],
+  ['ext ts', 'see types.ts' + C + '5', 1],
+  ['ext astro', 'see Page.astro' + C + '5', 1],
+  ['ext md', 'see notes.md' + C + '5', 1],
+  ['ext py', 'see script.py' + C + '5', 1],
+  ['ext json', 'see data.json' + C + '5', 1],
+  ['ext yml', 'see config.yml' + C + '5', 1],
+  ['ext html', 'see page.html' + C + '5', 1],
 ];
 
 /* dcont2-37a/b assert the truncated HIT, not just the count — checked separately in the
@@ -47,12 +58,14 @@ export const TRUNCATION_FIXTURES = [
 
 /* Exemption-layer cells — need audit(), not citationsIn(), because the verdict depends on the
    EXEMPT table, not the form alone. Each case is a fully virtual (file, lines, exempt table)
-   triple so none of it depends on anything in the real tree. */
+   triple so none of it depends on anything in the real tree. Exemption is keyed on the FULL
+   LINE TEXT (see cite-audit-core.mjs's EXEMPT comment) — `text` in each virtual exempt entry is
+   what a maintainer would have recorded EARLIER; `lines` is what is on the line NOW. */
 export const EXEMPT_CASES = [
   {
-    id: 'd11/13 exact triple matches — EXEMPT',
+    id: 'd11/13 exact text matches — EXEMPT',
     file: 'a.js', lines: ['x = purify.js' + C + '3;'],
-    exempt: [{ file: 'a.js', line: 1, cites: ['purify.js' + C + '3'] }],
+    exempt: [{ file: 'a.js', line: 1, text: 'x = purify.js' + C + '3;' }],
     wantBreaches: 0,
   },
   {
@@ -64,43 +77,62 @@ export const EXEMPT_CASES = [
   {
     id: 'd15 basename collision, distinct citing lines — each FIRES independently',
     file: 'a.js', lines: ['x = purify.js' + C + '3;', 'y = purify.js' + C + '3;'],
-    exempt: [{ file: 'a.js', line: 1, cites: ['purify.js' + C + '3'] }],
+    exempt: [{ file: 'a.js', line: 1, text: 'x = purify.js' + C + '3;' }],
     wantBreaches: 1, // line 1 exempt, line 2 (same hit text, different citing line) still fires
   },
   {
-    id: 'd16 C1 FIX — a different citation appended to an exempted line now FIRES (both)',
-    file: 'a.js', lines: ['x = purify.js' + C + '3, src variant purify2.js' + C + '3;'],
-    exempt: [{ file: 'a.js', line: 1, cites: ['purify.js' + C + '3'] }], // stale: set no longer matches
-    wantBreaches: 2,
+    // The C1 defect this fixture used to be labelled for, but a `codex exec --sandbox
+    // read-only` round drove audit() directly and showed a SET-based identity still let a
+    // real-file path swap at a FIXED (file,line) through, because the swap does not change the
+    // hit COUNT, only its stripped VALUE. Reproduces the branch's own C1 report against the
+    // real node_modules exemption: a same-named in-repo file prefixed onto the exempted target.
+    id: 'd16 C1 FIX — a same-basename path swap at a fixed (file,line) now FIRES',
+    file: 'a.js', lines: ['x = lib/purify.js' + C + '3;'], // path swapped in, same stripped hit
+    exempt: [{ file: 'a.js', line: 1, text: 'x = purify.js' + C + '3;' }], // records the OLD text
+    wantBreaches: 1,
   },
   {
-    id: 'identity truth table — field "line" wrong fails',
+    // Contract cell 37: SPAN has no right boundary, so a column suffix truncates to the same
+    // stripped hit as the un-suffixed citation. A hit-based identity (even a full-set one)
+    // cannot see this edit; a full-line-text identity does, because the line itself changed.
+    id: 'd16/cell37 a column suffix appended at a fixed (file,line) now FIRES',
+    file: 'a.js', lines: ['x = purify.js' + C + '3:9;'],
+    exempt: [{ file: 'a.js', line: 1, text: 'x = purify.js' + C + '3;' }],
+    wantBreaches: 1,
+  },
+  {
+    id: 'identity truth table — recorded "line" wrong fails',
     file: 'a.js', lines: ['x', 'y = purify.js' + C + '3;'],
-    exempt: [{ file: 'a.js', line: 1, cites: ['purify.js' + C + '3'] }], // recorded line 1, real is 2
+    exempt: [{ file: 'a.js', line: 1, text: 'y = purify.js' + C + '3;' }], // recorded line 1, real is 2
     wantBreaches: 1,
   },
   {
-    id: 'identity truth table — field "file" wrong fails',
+    id: 'identity truth table — recorded "file" wrong fails',
     file: 'a.js', lines: ['x = purify.js' + C + '3;'],
-    exempt: [{ file: 'b.js', line: 1, cites: ['purify.js' + C + '3'] }],
+    exempt: [{ file: 'b.js', line: 1, text: 'x = purify.js' + C + '3;' }],
     wantBreaches: 1,
   },
   {
-    id: 'identity truth table — cites value wrong fails',
-    file: 'a.js', lines: ['x = purify.js' + C + '3;'],
-    exempt: [{ file: 'a.js', line: 1, cites: ['different.js' + C + '9'] }],
+    id: 'identity truth table — a purely cosmetic reword of the SAME citation still fails',
+    file: 'a.js', lines: ['x = purify.js' + C + '3; // updated wording'],
+    exempt: [{ file: 'a.js', line: 1, text: 'x = purify.js' + C + '3;' }],
     wantBreaches: 1,
   },
   {
-    id: 'dcont-21 duplicate identical hits, set matches — BOTH exempted together',
+    id: 'dcont-21 duplicate identical hits, full line text matches — BOTH exempted together',
     file: 'a.js', lines: ['purify.js' + C + '3 and purify.js' + C + '3 again'],
-    exempt: [{ file: 'a.js', line: 1, cites: ['purify.js' + C + '3', 'purify.js' + C + '3'] }],
+    exempt: [{ file: 'a.js', line: 1, text: 'purify.js' + C + '3 and purify.js' + C + '3 again' }],
     wantBreaches: 0,
   },
   {
-    id: 'dcont-21 duplicate identical hits, recorded set of one — BOTH fire together',
+    id: 'dcont-21 duplicate identical hits, text does not match — BOTH fire together',
     file: 'a.js', lines: ['purify.js' + C + '3 and purify.js' + C + '3 again'],
-    exempt: [{ file: 'a.js', line: 1, cites: ['purify.js' + C + '3'] }],
+    exempt: [{ file: 'a.js', line: 1, text: 'purify.js' + C + '3 alone' }],
     wantBreaches: 2,
   },
 ];
+
+// A literal, hand-maintained count — bump it in the SAME change as any fixture addition or
+// removal. Round-1 review: a computed `>= 30` floor left six fixtures free to disappear
+// unnoticed. This mismatches on ANY change to the arrays above, not just a shrink.
+export const REQUIRED_FIXTURES = 46;

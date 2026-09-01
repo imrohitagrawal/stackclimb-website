@@ -11,9 +11,12 @@
 // itself on two CRITICAL_BLOCKERs: C1, the exemption identity dropped the citing PATH so a
 // basename collision could hide a new breach behind an old exemption; C2, the self-test never
 // drove the script's own exit decision, so a `breaches.length` → `breaches.lenght` typo passed
-// 18 green assertions while a live breach went through with exit 0. Both fixes live in
-// tests/lib/cite-audit-core.mjs: C1 as a full per-line citation SET identity, C2 as one shared
-// `hasBreach()` predicate plus an end-to-end subprocess partner below.
+// 18 green assertions while a live breach went through with exit 0. A round-1 `codex exec
+// --sandbox read-only` review found the FIRST attempt at C1 (a per-line SET of hits) still let a
+// same-basename path swap through unnoticed, because the identity was still built from the
+// regex's own already-truncated match. Fixed in tests/lib/cite-audit-core.mjs by keying
+// exemption on the RAW LINE TEXT instead — see that file's EXEMPT comment. C2's fix is one
+// shared `hasBreach()` predicate plus an end-to-end subprocess partner below.
 //
 // WHAT THIS CANNOT CATCH — disclosed, not fixed, per docs/contracts/cite-audit.md:
 //   truth-checking a surviving citation; prose forms ("line 82", "#L82"); a citation glued to a
@@ -25,11 +28,13 @@
 // bare "breaches is empty" counts zero of anything.
 
 import { execSync } from 'node:child_process';
-import { readFileSync, writeFileSync, unlinkSync } from 'node:fs';
+import { readFileSync, writeFileSync, unlinkSync, existsSync } from 'node:fs';
 import {
   ROOTS, FLOOR, NAMED, EXEMPT, audit, citationsIn, hasBreach, scanFiles, readReal,
 } from './lib/cite-audit-core.mjs';
-import { FORM_FIXTURES, TRUNCATION_FIXTURES, EXEMPT_CASES } from './lib/cite-audit-fixtures.mjs';
+import {
+  FORM_FIXTURES, TRUNCATION_FIXTURES, EXEMPT_CASES, REQUIRED_FIXTURES,
+} from './lib/cite-audit-fixtures.mjs';
 
 function report(label, rows) {
   for (const [n, ok] of rows) console.log(`  ${ok ? 'PASS' : 'FAIL'}  ${label}: ${n}`);
@@ -38,21 +43,31 @@ function report(label, rows) {
 
 /* Partner 6 — the end-to-end exit code, driven against the REAL script via a subprocess, over
    an untracked fixture file so `git ls-files -co` picks it up without ever being `git add`ed.
-   This is the direct answer to C2: nothing here stands in for the real exit path. */
+   This is the direct answer to C2: nothing here stands in for the real exit path.
+   Round-1 review: the first version wrote this file unconditionally and could clobber and then
+   DELETE a pre-existing file of the same name. `wx` (exclusive create) makes that a loud crash
+   instead of silent data loss, and cleanup runs in `finally` so a mid-test throw still removes
+   only the file THIS run created. */
 function endToEnd() {
   const fixture = 'tests/__cite_audit_e2e_fixture__.mjs';
+  if (existsSync(fixture)) {
+    throw new Error(`${fixture} already exists — refusing to touch it. Remove it and re-run.`);
+  }
   // Assembled at runtime, never written literally: this file is inside its own scan set.
   const unique = 'controlled-e2e-breach.js' + ':' + '1';
-  writeFileSync(fixture, `// seeded for the cite-audit self-test only: ${unique}\n`);
   let breachCaught = false;
   let breachStderr = '';
   try {
-    execSync('node tests/cite-audit.mjs', { encoding: 'utf8', stdio: 'pipe' });
-  } catch (e) {
-    breachCaught = e.status === 1;
-    breachStderr = String(e.stderr || '');
+    writeFileSync(fixture, `// seeded for the cite-audit self-test only: ${unique}\n`, { flag: 'wx' });
+    try {
+      execSync('node tests/cite-audit.mjs', { encoding: 'utf8', stdio: 'pipe' });
+    } catch (e) {
+      breachCaught = e.status === 1;
+      breachStderr = String(e.stderr || '');
+    }
+  } finally {
+    if (existsSync(fixture)) unlinkSync(fixture);
   }
-  unlinkSync(fixture);
   let cleanOk = false;
   try {
     execSync('node tests/cite-audit.mjs', { encoding: 'utf8', stdio: 'pipe' });
@@ -83,16 +98,23 @@ if (process.argv.includes('--self-test')) {
   const bigEnough = files.length >= FLOOR;
   const named = NAMED.map((f) => [f, files.includes(f)]);
 
-  /* Real-table liveness: THIS exact set of citations is still on THIS exact line — not "a
-     citation is still somewhere on it", which would pass on a neighbour. */
+  /* Real-table liveness: THIS exact line text is still on THIS exact line, byte for byte — not
+     "a citation is still somewhere on it", which would pass on a neighbour or a swapped path.
+     Also cross-checks `cites` (the human-readable summary) actually appears in `text`, so the
+     two fields cannot silently drift apart from each other. */
   const live = EXEMPT.map((e) => {
     let text = '';
     try { text = readFileSync(e.file, 'utf8').split('\n')[e.line - 1] || ''; } catch { text = ''; }
-    const hits = citationsIn(text);
-    const ok = hits.length === e.cites.length && [...hits].sort()
-      .every((v, i) => v === [...e.cites].sort()[i]);
-    return [`${e.file}:${e.line}`, ok];
+    const textOk = text === e.text;
+    const citesOk = e.cites.every((c) => citationsIn(e.text).includes(c));
+    return [`${e.file}:${e.line}`, textOk && citesOk];
   });
+
+  const allIds = [
+    ...FORM_FIXTURES.map((f) => f[0]), ...TRUNCATION_FIXTURES.map((f) => f[0]),
+    ...EXEMPT_CASES.map((c) => c.id),
+  ];
+  const idsUnique = new Set(allIds).size === allIds.length;
 
   const control = audit(['x.js'], () => 'controlled-breach.js' + ':' + '1', []);
   const predicate = [
@@ -110,11 +132,14 @@ if (process.argv.includes('--self-test')) {
   const okE2E = report('end-to-end subprocess', endToEnd());
 
   const fixtureCount = FORM_FIXTURES.length + TRUNCATION_FIXTURES.length + EXEMPT_CASES.length;
-  const floorMet = fixtureCount >= 30; // matrix-derived; a shrinking set drops below this.
-  console.log(`  ${floorMet ? 'PASS' : 'FAIL'}  fixture count: ${fixtureCount} (need >= 30)`);
+  // EXACT, not a floor: a floor lets fixtures vanish until the count merely clears it (round-1
+  // review, finding 5). REQUIRED_FIXTURES is bumped by hand in the same change as any addition.
+  const countMet = fixtureCount === REQUIRED_FIXTURES;
+  console.log(`  ${countMet ? 'PASS' : 'FAIL'}  fixture count: ${fixtureCount} (need exactly ${REQUIRED_FIXTURES})`);
+  console.log(`  ${idsUnique ? 'PASS' : 'FAIL'}  fixture ids are unique: ${allIds.length} ids`);
 
   const all = okForms && okTrunc && okExempt && bigEnough && okNamed && okLive
-    && okPredicate && okE2E && floorMet;
+    && okPredicate && okE2E && countMet && idsUnique;
   console.log(all ? 'SELF-TEST PASS — the scanner bites, the exit decision bites, the table is live'
     : 'SELF-TEST FAIL');
   process.exit(all ? 0 : 1);

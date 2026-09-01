@@ -1,0 +1,148 @@
+/* #engineering-model — the CSS-only tab MECHANISM (tablist, tab buttons,
+   panel switching, no-JS fallback). Content typography is in
+   engineering-model-content.css — split under D8's 250-line cap.
+   Ground/surface declared in palette.css (harvested by the ladder gate).
+   Via :has() — no JavaScript. Without CSS, every input/label/panel prints
+   in document order: readable, not tabbed, the same no-JS floor every
+   plate on this site holds.
+
+   RED WHEN: deleting the :has() rule below makes every panel render at
+   once with no active state — the no-JS fallback becomes the only state,
+   which is a real (if degraded) fallback, not a broken one. Deleting
+   `[type=radio]` from .model-tab-input's visually-hidden rule instead
+   makes the raw radio dot appear beside the styled label — a visible,
+   testable regression, not a silent one. */
+
+/* <legend> text for the radiogroup's accessible name — visible to a screen
+   reader, not to a sighted visitor, since the plate heading above already
+   names it visually. Scoped here rather than added to global.css, which is
+   already at its grandfathered 500-line ceiling. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* fieldset/legend give this radio group its accessible name and native
+   arrow-key navigation between options for free — no ARIA tab role, no JS.
+   Browser-default fieldset border/padding reset to zero: the visual frame
+   is .model-tab's own border, not this element's. */
+.model-tablist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 0.8rem;
+  padding: 0;
+  border: none;
+}
+
+/* The radio itself is visually hidden but stays in the accessibility tree
+   and the tab order — a real focusable control, not display:none. */
+.model-tab-input input[type='radio'] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.model-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  font-family: var(--mono, monospace);
+  font-size: 0.76rem;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  color: inherit;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.model-tab-num { opacity: 0.7; }
+
+.model-tab-input input:checked + .model-tab {
+  background: var(--bone, #f2ebdd);
+  color: var(--ground);
+  border-color: var(--bone, #f2ebdd);
+}
+
+.model-tab-input input:focus-visible + .model-tab {
+  outline: 2px solid var(--ochre);
+  outline-offset: 2px;
+}
+.model-tab:hover { border-color: color-mix(in srgb, currentColor 55%, transparent); }
+
+.model-panel {
+  display: none;
+  grid-template-columns: minmax(0, 1fr) 15rem;
+  gap: 2.4rem;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  background: var(--surface);
+}
+/* One .model-panel per radio input, matched by id — deliberately verbose
+   over a generic `:checked ~` sibling rule, because the inputs live nested
+   inside .model-tablist while the panels are .model-tabs's direct
+   children; :has() reaches across that boundary, a sibling combinator
+   could not without flattening the tablist markup. */
+#stage-discover:checked ~ #panel-discover,
+#stage-frame:checked ~ #panel-frame,
+#stage-architect:checked ~ #panel-architect,
+#stage-build:checked ~ #panel-build,
+#stage-evaluate:checked ~ #panel-evaluate,
+#stage-release:checked ~ #panel-release,
+#stage-operate:checked ~ #panel-operate,
+#stage-learn:checked ~ #panel-learn {
+  display: grid;
+}
+/* :has() drives the same result from the wrapper, kept as the primary
+   mechanism (works regardless of DOM nesting depth); the sibling rule
+   above is the belt-and-braces no-:has()-support fallback. */
+.model-tabs:has(#stage-discover:checked) #panel-discover,
+.model-tabs:has(#stage-frame:checked) #panel-frame,
+.model-tabs:has(#stage-architect:checked) #panel-architect,
+.model-tabs:has(#stage-build:checked) #panel-build,
+.model-tabs:has(#stage-evaluate:checked) #panel-evaluate,
+.model-tabs:has(#stage-release:checked) #panel-release,
+.model-tabs:has(#stage-operate:checked) #panel-operate,
+.model-tabs:has(#stage-learn:checked) #panel-learn {
+  display: grid;
+}
+
+/* No-:has() and no-JS-CSS-off fallback: nothing is :checked-driven, so no
+   panel matches any rule above and every .model-panel keeps its base
+   `display: none` from this file — WRONG for that case, so the fallback
+   below forces every panel visible whenever NO input in the whole tablist
+   is checked, which cannot happen with the server-rendered `checked` on
+   stage one but protects a state where CSS custom logic is stripped
+   without stripping display:none itself (a linter, a hostile proxy). */
+.model-tabs:not(:has(input:checked)) .model-panel { display: grid; }
+
+@media (max-width: 900px) {
+  /* 2 rows of 4 instead of an unpredictable flex-wrap (was 3+ rows at
+     390px) — grid gives an exact, shorter shape for the same 8 buttons.
+     minmax(0, 1fr), not a bare 1fr: a bare 1fr column will not shrink
+     below its content's min-content width, so "ARCHITECT" at 320px forced
+     the whole tablist 77px past the viewport edge — reproduced and fixed,
+     not guessed, DoD's no-horizontal-scroll gate at 320/360/390px. */
+  .model-tablist {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.4rem;
+  }
+  .model-tab {
+    justify-content: center;
+    padding: 0.45rem 0.2rem;
+    font-size: 0.6875rem;
+  }
+
+  .model-panel {
+    grid-template-columns: 1fr;
+    padding: 1.2rem 1.3rem;
+  }
+}

@@ -8,6 +8,24 @@
         "value": "9px",
         "createdAt": "2026-08-30T19:23:10.136Z",
         "reason": "test fixture: rendered-text-selftest mutates font-size in-page to prove the extractor does NOT register styling as text drift; not a site type step"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "1.3rem",
+        "files": [
+          "src/styles/engineering-model.css"
+        ],
+        "createdAt": "2026-09-01T10:23:56.367Z",
+        "reason": "New UI element (tab-panel h3 sub-heading) with no matching DESIGN.md step: Headline is plate-title-level (620wt display serif), Title/Pull-quote (1.1-1.4rem) is reserved for italic ochre-warmed pull quotes specifically. 1.3rem sits inside that clamp's numeric range but is used here as a plain non-italic sub-heading, a genuinely new register this component needs."
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "1.2rem",
+        "files": [
+          "src/styles/engineering-model-content.css"
+        ],
+        "createdAt": "2026-09-01T10:42:59.729Z",
+        "reason": "New UI element (tab-panel h3 sub-heading) with no matching DESIGN.md step: Headline is plate-title-level (620wt display serif), Title/Pull-quote (1.1-1.4rem) is reserved for italic ochre-warmed pull quotes specifically. Same rationale as the prior 1.3rem ignore on the now-superseded single-file version; value changed to 1.2rem during plate-height trimming."
       }
     ]
   }

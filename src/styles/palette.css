@@ -138,6 +138,31 @@
   --surface: #401937;
 }
 
+/* New route section: the eight-stage engineering-model tabs, inserted
+   between #how-i-build (hue 29, amber) and #evals-observability (hue 139,
+   spring green). CORRECTED TWICE, 2026-09-01. Draft 1 picked hue 90
+   (yellow-green) — technically clear of both immediate neighbours, but it
+   sat between #evals-observability (139) and #published-skills (77, two
+   plates down): three consecutive yellow-green-to-green plates reading as
+   one repeated colour, a real gap in what the ladder gate checks (per-page
+   adjacency only), caught by eye, not by any gate. Draft 2 moved to hue
+   220 (blue) — genuinely distinct from every plate ON THIS PAGE, but a
+   sitewide hue audit found 206/220/225 all within 19° of each other
+   across three OTHER routes' plates: not distinctive at the site level
+   even though it read fine in isolation. Settled on hue 355 (crimson) —
+   the widest open gap in the sitewide hue map (citevyn's 344 to
+   how-i-build's own 29, wrapping through 0), and it doubles as the
+   emphasis this section asked for: a warm, attention-holding colour
+   against the ambers and greens around it, still at the ladder's own
+   S44%/L9.5-17.5% (muted, not a loud saturated red). Computed (WCAG 2.1,
+   this commit): bone on ground 15.51:1 · ochre on ground 7.22:1 · ochre
+   on surface 6.00:1 · bone on surface 12.89:1. All inside or above the
+   ladder's established range. Declared HERE ONLY. */
+#engineering-model {
+  --ground: #230e0f;
+  --surface: #40191c;
+}
+
 #evals-observability {
   --ground: #0e2314;
   --surface: #194025;

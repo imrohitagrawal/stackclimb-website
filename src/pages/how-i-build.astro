@@ -11,10 +11,13 @@
  */
 import Layout from '../layouts/Layout.astro';
 import Plate from '../components/Plate.astro';
+import EngineeringModel from '../components/EngineeringModel.astro';
 import '../styles/how-i-build.css';
 /* .plate-grid.one-col / .plate-copy.wide — RCA-013: same dead-class defect
    as /experience, same fix (see that page's comment and one-col.css). */
 import '../styles/one-col.css';
+import '../styles/engineering-model.css';
+import '../styles/engineering-model-content.css';
 
 /* Pinned at quorum-ai's main HEAD when this citation was added (RCA-012).
    A const keeps the URL under the 120-char line ceiling — file-budget.mjs
@@ -34,6 +37,16 @@ const WATCHDOG_URL = `https://github.com/imrohitagrawal/quorum-ai/blob/${WATCHDO
     <div class="plate-grid one-col">
       <div class="plate-copy wide">
         <h1 class="plate-title tight">How I build.</h1>
+
+        {/* Framing line, added 2026-09-01 on the owner's read of a cold
+            visitor's first reaction: the quote below is dense and
+            technical with zero lead-in, so a reader hits the jargon before
+            knowing what it is proof OF. One sentence, not a restructure —
+            the artefact still runs first, per P-28/RCA-015 below; this
+            just tells the reader what they are about to read. */}
+        <p class="artefact-lead">
+          A real excerpt from one of my production systems — not a summary, the actual words:
+        </p>
 
         {/* RCA-015 (P5): the artefact sits ABOVE the claim bands, not after
             them. It used to arrive fourth, and P2's own accuracy fix — making
@@ -92,6 +105,21 @@ const WATCHDOG_URL = `https://github.com/imrohitagrawal/quorum-ai/blob/${WATCHDO
           </p>
         </div>
 
+      </div>
+    </div>
+  </Plate>
+
+  <Plate id="engineering-model">
+    <div class="plate-grid one-col">
+      <div class="plate-copy wide">
+        <p class="plate-eyebrow">02 — Engineering operating model</p>
+        <h2 class="plate-title tight">One lifecycle, held end to end.</h2>
+        <p class="model-intro">
+          Eight stages I work across rather than hand off. Select a stage to read what it
+          means in practice, which evidence supports it, and where it appears in the
+          independent systems below.
+        </p>
+        <EngineeringModel />
       </div>
     </div>
   </Plate>

@@ -10,7 +10,7 @@
   padding-top: 0.9rem;
   border-top: 1px solid color-mix(in srgb, currentColor 22%, transparent);
 }
-.model-band:first-of-type { border-top: none; padding-top: 0; margin-top: 1.2rem; }
+.model-band:first-of-type { border-top: none; padding-top: 0; margin-top: 0.9rem; }
 
 /* RCA-015 (P5): with the artefact hoisted above the bands, the last band's
    trailing margin became the last thing in .plate-copy with nothing to
@@ -67,11 +67,31 @@
    adding a second signal it doesn't need. */
 .band-lead .band-term { font-weight: 900; }
 
+/* .plate-copy .artefact-lead (2 classes), not .artefact-lead alone: same
+   global.css `.plate-copy p` specificity trap this file already documents
+   for .band-lead/.band-support — a bare single-class rule silently loses
+   to it. Sits on the plate's own dark ground (not the lit artefact panel
+   below), so it inherits --bone via .plate, not --ink. No max-width: this
+   is a short lead-in label, not body prose — the 52ch readable-measure
+   rule is for paragraphs meant to be read line by line, and capping it
+   wrapped the sentence to 2 lines, pushing #how-i-build 59px past
+   plate-height.spec.js's 1.1-viewport ceiling (measured, not guessed).
+   `max-width: none` is load-bearing, not decorative: omitting my own cap
+   still left global.css's `.plate-copy p` 52ch rule in force (it declares
+   the property, mine didn't, so theirs won on cascade) — measured at
+   409.7px wide inside a 1122.8px parent before this line was added. */
+.plate-copy .artefact-lead {
+  max-width: none;
+  font-size: 0.86rem;
+  opacity: 0.85;
+  margin: 0 0 0.15rem;
+}
+
 /* The Lit-Surface panel (D61/D62): ONE near-white surface holding real
    operational content — a verbatim quote, never test-suite output. */
 .artefact {
-  margin: 1.2rem 0 0;
-  padding: 1.1rem 1.3rem;
+  margin: 0.2rem 0 0;
+  padding: 0.6rem 1.3rem;
   background: var(--lit, #f4efe4);
   color: var(--ink, #16213c);
 }

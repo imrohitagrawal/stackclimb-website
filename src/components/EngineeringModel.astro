@@ -1,0 +1,82 @@
+---
+/* The eight-stage tabbed operating model on /how-i-build. CSS-only radio
+ * tabs — no JavaScript, matching this site's near-zero-JS claim (verified:
+ * dist/_astro/ carries no .js files anywhere on the built site). Every
+ * panel is a real element in the DOM at build time; :checked + a sibling
+ * combinator shows the active one and the label styling shows which is
+ * active. Without CSS at all, every panel prints in document order —
+ * readable, just not tabbed, the same no-JS floor Plate.astro holds
+ * elsewhere on this site.
+ *
+ * Data: src/data/engineering-model.js. Every claim there is sourced from
+ * docs/evidence/ or the owner's own GitHub profile README — see that
+ * file's header comment.
+ */
+import { groups, stages } from '../data/engineering-model.js';
+
+const first = stages[0].key;
+---
+
+<div class="model-groups" aria-hidden="true">
+  {
+    groups.map((g) => (
+      <span class="model-group-chip">
+        {g.label} <span class="model-group-artifact">→ {g.artifact}</span>
+      </span>
+    ))
+  }
+</div>
+
+<div class="model-tabs" data-first={first}>
+  <fieldset class="model-tablist">
+    <legend class="visually-hidden">Engineering operating model stage</legend>
+    {
+      stages.map((s) => (
+        <span class="model-tab-input">
+          <input
+            type="radio"
+            name="model-stage"
+            id={`stage-${s.key}`}
+            checked={s.key === first}
+          />
+          <label class="model-tab" for={`stage-${s.key}`}>
+            <span class="model-tab-num">{s.num}</span> {s.label.toUpperCase()}
+          </label>
+        </span>
+      ))
+    }
+  </fieldset>
+
+  {
+    stages.map((s) => (
+      <div class="model-panel" id={`panel-${s.key}`} data-stage={s.key}>
+        <div class="model-panel-main">
+          <h3 class="model-panel-heading">{s.heading}</h3>
+          <p class="model-panel-body">{s.body}</p>
+          {s.employer && (
+            <div class="model-evidence employer">
+              <span class="model-evidence-label">Employer evidence · Approximate</span>
+              <p>{s.employer}</p>
+            </div>
+          )}
+          <div class="model-evidence system">
+            <span class="model-evidence-label">Independent system</span>
+            <p>{s.system}</p>
+          </div>
+        </div>
+        <div class="model-panel-terms">
+          <span class="model-terms-label">Related terms</span>
+          <ul>
+            {s.terms.map((t) => (
+              <li>{t}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    ))
+  }
+
+  <p class="model-nojs-note">
+    All eight stages are in the page source and readable without JavaScript or animation.
+  </p>
+</div>

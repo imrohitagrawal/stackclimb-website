@@ -109,6 +109,16 @@ jobs:
           node tests/file-budget.mjs --self-test
           node tests/file-budget.mjs
 
+      # DEF-77, RCA-020: two parallel worktrees both computed "next free" ledger
+      # ids from the same base and both claimed D164/D165/DEF-77 for unrelated
+      # content. Convention (pre-allocating ranges) is not a gate. Needs no
+      # build and no browser, so it belongs with the cheap checks, same as the
+      # two gates above.
+      - name: ledger id uniqueness (DEF-77)
+        run: |
+          node tests/status-ledger.mjs --self-test
+          node tests/status-ledger.mjs
+
       # DEF-71, RCA-018: a comment may cite a FILE, never a line inside it — nothing
       # revalidates a line number when the target moves. Needs no build and no browser,
       # so it belongs with the cheap checks, same as the two gates above. Both invocations

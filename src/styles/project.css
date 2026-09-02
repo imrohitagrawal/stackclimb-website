@@ -1,8 +1,8 @@
 /* /projects/<slug> — the two surfaces the home plate cannot hold.
  *
  * Imported by the page, not by Layout.astro. Two reasons, both precedent:
- * cv.astro imports its own stylesheet the same way, and global.css stands at 451
- * lines against a grandfathered ceiling of 500. Shipping this to `/`, `/cv` and
+ * cv.astro imports its own stylesheet the same way, and global.css stands at 500
+ * lines — its grandfathered ceiling exactly, with zero headroom. Shipping this to `/`, `/cv` and
  * `/404` would cost every one of them bytes they never use.
  *
  * Everything structural is inherited: .plate, .plate-frame, .plate-grid, .plate-copy,

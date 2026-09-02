@@ -21,11 +21,18 @@ document is the enumeration.
 
 **The gate fails when a scanned file, under `ROOTS`, contains a line whose text matches
 the `CITATION` pattern (a bare `name.ext:span`, a `,:span` continuation, or a
-`.githooks/name:span`) at a `(file, line)` position not listed, with an exact matching
-`hit` string, in the hand-written `EXEMPT` table.**
+`.githooks/name:span`) at a `(file, line)` position that is either not listed in the
+hand-written `EXEMPT` table, or listed but whose recorded line text is not byte-identical
+to the file's current line at that position.**
 
 That is one sentence and it is written from the code as it exists on branch `cite-audit`,
 not from intent — see (b) for what it silently leaves undefined.
+
+**Corrected D178, against what shipped in D173:** this originally said exemption required
+"an exact matching `hit` string" — that was the pre-fix identity model. `cite-audit-core.mjs`'s
+`audit()` keys an `EXEMPT` row on `(file, line)` and then requires the row's `text` field to be
+byte-identical to the current line — the full line, not any stripped `hit`. See dimension 10 in
+(b) and cell 16 in (d) for why this changed.
 
 ## (b) The dimensions
 
@@ -60,9 +67,11 @@ the task; four more are implied by reading the scanner's own logic and are marke
 10. **[implied] Exemption re-target after a text edit at the SAME `(file, line)`** — the
     exact line at an exempted `(file, line)` is edited so its comment now cites a
     *different* real target that happens to produce the identical stripped `hit` string
-    (same basename, same span) as the thing originally exempted. `isExempt()` cannot
-    distinguish the old, reviewed citation from the new, unreviewed one — this is the
-    concrete shape of the D164 CRITICAL_BLOCKER, not a hypothetical.
+    (same basename, same span) as the thing originally exempted. This was the concrete
+    shape of the D164 CRITICAL_BLOCKER: the pre-D173 identity model could not distinguish
+    the old, reviewed citation from the new, unreviewed one. **Fixed in D173** — see cell
+    16 in (d): exemption now requires the recorded `text` to be byte-identical to the
+    current line, so this exact re-target now FIRES instead of staying silently EXEMPT.
 11. **[implied] Citing-line-number drift from an unrelated edit** — a line is
     inserted or deleted anywhere ABOVE an exempted line in the same file, shifting the
     exempted citation to a new line number with its text unchanged. Partner 3's liveness
@@ -114,8 +123,8 @@ sees it), **EXEMPT** (matched, but excused and declared so in `EXEMPT`), **UNDEF
 | 13 | external-repo target, exempted (`main.py:174-179`) | EXEMPT | The one `src/data/projects.js:128` row — declared "UNCHECKABLE... re-verify by hand." |
 | 14 | external-repo target, NOT exempted | FIRES | Same as #12: form-matching, not target-aware. |
 | 15 | basename collision, both paths new, unique `(file,line)` per citation | FIRES (each independently) | Exemption key includes the CITING `(file,line)`, which is unique per source location even when the `hit` string collides. Two different citing lines never share an exemption slot just because their hits match. |
-| 16 | basename collision, dimension 10 (re-target at the SAME citing `(file,line)`) | **UNDEFINED — false EXEMPT** | The D164 CRITICAL_BLOCKER. `playwright.config.js:23` is exempted for `expect.js:12486`. If that exact line is edited to instead read `... src/expect.js:12486` (or any other real target sharing the stripped basename+span), `isExempt()` still returns true: `file` and `line` are unchanged, and `hit` is computed from the SAME regex that already discarded the directory, so it is textually identical to the exempted string. The gate stays green over a brand-new, unreviewed, in-repo citation. Nothing in the current design can tell these apart, because the exemption never records the DIRECTORY of what it excuses — only the citing location and the stripped basename+span. |
-| 17 | dimension 11 (line-number drift, exemption target unchanged) | **UNDEFINED — false FIRES** | Insert one line above `playwright.config.js:23`; the real exemption text is now on line 24. `isExempt('playwright.config.js', 24, 'expect.js:12486')` returns false — no `EXEMPT` row has `line: 24` — so an untouched, previously-reviewed citation now breaches. Partner 3 (liveness) would ALSO fail here, correctly reporting the row stale, but the fix a maintainer reaches for under time pressure is "renumber the table," which silently repeats dimension 16's flaw rather than fixing the identity model. |
+| 16 | basename collision, dimension 10 (re-target at the SAME citing `(file,line)`) | **FIXED (D173) — FIRES** | The D164 CRITICAL_BLOCKER, closed by keying exemption on the raw, full line text rather than the stripped `hit`. `playwright.config.js:23` is exempted for `expect.js:12486` with the exact line text recorded. If that line is edited to instead read `... src/expect.js:12486` (or any other real target sharing the stripped basename+span), the line text no longer matches what is recorded, so exemption drops and the citation FIRES — reproduced by `tests/lib/cite-audit-fixtures.mjs`'s `d16` case. The identity is `(file, line, full line text)`, so a path swap, a column suffix, or any other edit at that location now breaches until a maintainer reviews it and updates the table on purpose. |
+| 17 | dimension 11 (line-number drift, exemption target unchanged) | **UNDEFINED — false FIRES. Still true as shipped (D173 did not change this).** | Insert one line above `playwright.config.js:23`; the real exemption text is now on line 24. `audit()`'s lookup (`exempt.find((e) => e.file === file && e.line === i + 1)`, `cite-audit-core.mjs:117`) finds no row with `line: 24` — so an untouched, previously-reviewed citation now breaches. The liveness check in `tests/cite-audit.mjs` would ALSO fail here, correctly reporting the row stale, but the fix a maintainer reaches for under time pressure is "renumber the table," which silently repeats dimension 16's flaw rather than fixing the identity model. |
 | 18 | live code (not comment, not string), otherwise like #1 | FIRES | The scanner has no comment/string-region awareness at all (unlike D165's sweep, which used a comment-region state machine). It matches raw line text regardless of syntactic context. This is a real gap against the header's own promise ("a comment may cite a FILE") — the gate is wider than its stated subject. |
 | 19 | string literal containing citation-shaped text | FIRES | Same reasoning as #18 — no distinction is made. |
 | 20 | JSDoc block | FIRES | JSDoc is `/* */`, already covered by #1's "comment" case; no separate handling exists. |
@@ -147,32 +156,48 @@ the table, so the addition is traceable to the finding that forced it.
 | 27 | **A citation whose target genuinely does not exist anywhere, is untracked, or is external** — regardless of whether it is exempted | **Verdict is unaffected by target existence in every case** | This is a form ban: whether the cited file exists, is tracked, or is readable never changes the FLAG/PASS verdict for the form itself — only whether an `EXEMPT` entry for it is even checkable by a human later (relevant to *maintaining* the exemption table, not to the gate's pass/fail decision). Stated explicitly here because dimension 7 in (b) listed target existence as a variable without the matrix ever saying it is verdict-irrelevant |
 | 28 | **An orphan continuation — `,:N` appearing with NO preceding base citation on the same line** (`// tuple marker ,:2`) | **FIRES — a declared false-positive class, found by round-2 review** | `CONTINUED` (`,\s*:span`) matches independently of whether a `FILE_LINE` alternative matched earlier on the same line; the regex has no memory of a prior match. Cell 3 (in (d)) and cell 22 above both describe the continuation form only in the context of a genuine prior citation — neither covers the case where no base citation exists at all. **No live instance found** (checked: `git grep -nE ',\s*:[0-9]' src tests scripts` for the pattern outside a real continuation context — none). Same disposition as cell 25 (host:port lookalike): a disclosed, mechanism-level false-positive risk, not a false-accept, and not blocking — a real occurrence would need a manual `EXEMPT` entry like any other false positive |
 
-## (g-cont) Fixture obligations found by round-1 review, not yet built
+## (g-cont) Fixture obligations found by round-1 review — BUILT in D173
 
-These are gaps in what the self-test in section (g) actually *proves*, as opposed to gaps in
-the matrix. Recorded as obligations for the eventual build phase (this document does not touch
-`tests/cite-audit.mjs`):
+These were gaps in what the self-test in section (g) actually *proved*, as opposed to gaps in
+the matrix. Recorded at the time as obligations for the eventual build phase; **all five are now
+built, in `tests/cite-audit.mjs` / `tests/lib/cite-audit-fixtures.mjs` (D173).** Kept below as
+the original record of what was missing when D170 wrote it, with a pointer to where each was
+closed — this is not a live TODO list any more:
 
 - Partner 2 proves the matcher finds seeded hits; it does not prove an unexempted hit reaches
   `process.exit(1)`. Needs an end-to-end fixture: seed one real unexempted breach, assert the
   process actually fails, not merely that `audit()` returns a non-empty array.
+  **BUILT:** `endToEnd()` in `tests/cite-audit.mjs`, spawning the real script as a subprocess
+  against a seeded, untracked fixture file and asserting on the child process's own exit code.
 - No fixture proves the exemption identity is the FULL triple rather than a weaker projection
   of it (file+line only, file+string only, string only, or "everything is exempt"). Needs a
   truth-table fixture set: exact triple → pass; any one field changed → fail; no exemption →
   fail (5 cases minimum, matching cell 8/20 and the new cells 21-22 above).
+  **BUILT, with the identity itself corrected**: exemption is `(file, line, full raw line text)`,
+  not `(file, line, hit)` — see (a) and cell 16. `tests/lib/cite-audit-fixtures.mjs`'s three
+  "identity truth table" `EXEMPT_CASES` (wrong recorded line, wrong recorded file, a cosmetic
+  reword of the same line) each assert the citation breaches.
 - No fixture proves every match on a line is processed, not just the first. Needs a two-citation
   line, one exempted and one not, asserting the unexempted one still breaches.
+  **BUILT:** `d3`/`dcont2-32` (`FORM_FIXTURES`) and the `dcont-21` duplicate-hit `EXEMPT_CASES`
+  cover multiple citations on one line.
 - The enumeration floor (`FLOOR = 120`) plus three named files does not prove the extension list
   or `ROOTS` are complete — dropping an extension or a directory can still clear both checks.
   Declared as a known weak partner rather than silently trusted; tightening it (e.g. asserting
   the exact `SCANNED` regex against a fixed list of extensions) is future work, not required to
   close DEF-71 as scoped.
+  **PARTIALLY BUILT:** shipped `FLOOR` is `140`, not `120`, and `NAMED` (`cite-audit-core.mjs`)
+  now names one file per `ROOTS` entry, closing the per-root half of this obligation. The
+  per-extension half is NOT fully closed — see the new DEF-86 row below.
 - No fixture exercises a string-literal-only citation distinctly from a comment one (cell 14).
+  **BUILT:** `d19` in `FORM_FIXTURES` (`const s = "foo.js:12";`).
 - Partner 4 (exemption liveness) does not run the exempted line's text through the SAME
   `citationsIn()` pipeline the real scan uses — it only checks the raw text contains the
   string. A citation that would actually be excluded from scanning for another reason (inside a
   URL) could still read as "live." Needs the liveness check to call `citationsIn()` itself
   rather than `String.includes()`.
+  **BUILT:** the liveness check in `tests/cite-audit.mjs` (`citesOk`) calls `citationsIn(e.text)`
+  directly, not a substring check.
 
 None of these change the PROMISE, the DIMENSIONS, or any VERDICT in the matrix — they are
 missing proof of properties the matrix already claims, which is exactly the class of defect
@@ -201,7 +226,7 @@ New matrix rows, added for traceability:
 | 32 | two independent full `FILE_LINE` citations on one line, no comma between them | FIRES (both, independently) | Two separate regex-alternation matches; each checked against `EXEMPT` on its own `hit`. No new mechanism beyond cell 3/21's occurrence-blindness, but the SHAPE (no comma) was previously unenumerated. |
 | 33 | citation glued to a URL with no separating whitespace | **SILENT (undisclosed false-negative)** | `URL`'s `\S+` eats past the URL's own end into the adjoining citation before `CITATION` ever runs. |
 | 34 | `.githooks/<subdir>/<name>:<span>` | **SILENT (undisclosed)** | Neither `HOOK` nor `FILE_LINE` matches a nested hook path; distinct from the already-disclosed "`.githooks/` as citing location" gap (cell 24). |
-| 37 | `file:line:column` form (`foo.js:12:7`) or a malformed suffix on the span (`foo.js:12-`, `foo.js:12abc`) | **FIRES, but with a TRUNCATED hit (`foo.js:12`), and this creates a false-EXEMPT edge distinct from cell 16/26** | Found by a second `codex exec` pass (round 2). `SPAN` (`[0-9]+(?:-[0-9]+)?`) has no right-hand boundary, so the match simply stops after the digits — `:7` (or `-`, or `abc`) is left in the line, unmatched and unreported. Two consequences: at a NEW location this fires with a hit that silently drops real information (a column number, or evidence the citation is malformed) from what gets logged as the breach. At a location already EXEMPT for the truncated `foo.js:12`, appending `:7` later (turning a line citation into a line:column citation, which is a real edit to what is being pointed at) does not change the `hit` string at all — `isExempt()` still matches, so the exemption silently survives an edit to the thing it excuses. This is the SAME failure shape as cell 16 (re-target at a fixed citing location) but triggered by right-side truncation of the SPAN rather than left-side truncation of the NAME, so it gets its own cell rather than being folded into 16 or into cell 26 (which is left-side/basename truncation only). |
+| 37 | `file:line:column` form (`foo.js:12:7`) or a malformed suffix on the span (`foo.js:12-`, `foo.js:12abc`) | **FIRES, with a TRUNCATED hit (`foo.js:12`); the exemption-survival half is FIXED (D173)** | Found by a second `codex exec` pass (round 2). `SPAN` (`[0-9]+(?:-[0-9]+)?`) has no right-hand boundary, so the match simply stops after the digits — `:7` (or `-`, or `abc`) is left in the line, unmatched and unreported. Two consequences: at a NEW location this fires with a hit that silently drops real information (a column number, or evidence the citation is malformed) from what gets logged as the breach. At a location already EXEMPT for the truncated `foo.js:12`, appending `:7` later (turning a line citation into a line:column citation) used to leave the `hit` string unchanged so the pre-D173, hit-based exemption silently survived the edit — the SAME failure shape as cell 16, triggered by right-side SPAN truncation rather than left-side NAME truncation. **D173's raw-line-text identity closes this too**: the line's text changed, so exemption drops and this now FIRES — reproduced by `tests/lib/cite-audit-fixtures.mjs`'s `d16/cell37` case. The hit-truncation observation itself (a column number silently dropped from what gets logged) is a live, disclosed cosmetic gap, unrelated to exemption identity, and is unchanged. |
 
 ## (f-cont) Further failability gaps, from the same second round-1 pass
 
@@ -266,7 +291,17 @@ so this contract does not silently contradict it:
 
 ## (f) The failability partner design
 
-**What the current self-test does NOT do:** partners 1–3 all exercise `citationsIn()`,
+**Corrected D178:** this section describes the OLD `cite-audit` branch's self-test (the one
+D164 queued on — 18 assertions, partners 1–3, the one with the `.lenght` typo), written as the
+design brief BEFORE D173 built the replacement. **It is not a description of what shipped.**
+The design below WAS built in D173: `tests/lib/cite-audit-core.mjs` exports `hasBreach()` as the
+single predicate both the self-test and the real run call, and `tests/cite-audit.mjs`'s
+`EXEMPT_CASES` partner calls `audit()` directly (11 fixtures) while its `endToEnd()` partner
+drives the real script as a subprocess — so "none of them ever call `audit()`" is no longer true
+of the shipped self-test. Kept below verbatim as the design record, since it correctly diagnoses
+why the OLD self-test missed C2 and states the fix that D173 then implemented.
+
+**What the OLD self-test did NOT do:** partners 1–3 all exercise `citationsIn()`,
 `scanFiles()`, and `readFileSync()` directly. None of them ever call `audit()`, and none
 of them ever reach the script's own `if (breaches.length) { ...; process.exit(1); }`
 block — the actual decision that makes the gate a gate. That block only runs on the
@@ -277,7 +312,7 @@ stayed invisible: the typo lives in a branch the self-test structurally cannot e
 assertion that FAILS specifically when the gate's own exit decision is broken, and PASSES
 otherwise — a partner with a bite, not a partner with a report.
 
-Design, not implemented here:
+Design, as proposed at the time (BUILT in D173 — see the correction above):
 
 1. **Partner 4 — the exit decision itself, driven with a live control.** Call `audit()`
    directly (bypassing `--self-test`'s narrower seam) with a virtual file list and a

@@ -5,15 +5,16 @@ The ledger. What is decided, what is open, and what was rejected so it does not 
 Updated in the same change that alters any of it. If this file and the chat disagree, this file
 is wrong and must be fixed — chat is not a record.
 
-Last updated: 2026-09-02 (D177 — DEF-82 diagnosed but NOT fixed: a real click/navigation-race
-mechanism was demonstrated (`global.css`'s global `scroll-behavior: smooth` plus the plate reveal
-transition racing Playwright's own snapshot-based stability check) but could not be naturally
-reproduced through the real `click()` API across ~230 stress repeats, 5 clean unstressed
-full-suite runs, and a targeted CPU-throttle probe — queued with RCA-022 rather than shipping an
-unproved fix. Package-lead run, its own worktree, no PR opened. ULTRACODE v4 autonomous run in
-progress: DEF-82 (still open, now diagnosed) and the `cite-audit.md` staleness item are the
-remaining buildable backlog. This line is stale between sessions — the individual `D`/`DEF` rows
-below are the record; read the tail of the Decided table, not this line, for current state.)
+Last updated: 2026-09-02 (D178 — ULTRACODE v4 autonomous run COMPLETE. `docs/contracts/cite-audit.md`
+refreshed against D173-shipped code (PR #147), the last item in the run's backlog; DEF-86 filed as
+a new, real, un-fixed gap found while correcting it (`NAMED` proves per-`ROOTS` coverage but not
+per-`SCANNED`-extension coverage). Every buildable item from this run is now merged, deployed, and
+independently re-verified in production: DEF-71's owner question and DEF-75 ruled and closed
+(P-33/P-34, PR #143), DEF-77 gated (D175, PR #144), DEF-78 fixed (D176, PR #145), DEF-82 diagnosed
+and honestly queued — not fixed, no provable fix found (D177, PR #146), and this contract refresh
+(D178, PR #147). `docs/HANDOFF.md` rewritten. Nothing pending on the owner from this run. This
+line is stale between sessions — the individual `D`/`DEF` rows below are the record; read the tail
+of the Decided table, not this line, for current state.)
 
 Previously:
 Last updated: 2026-09-02 (D176 — DEF-78 fixed: two stale FACTS corrected in code comments

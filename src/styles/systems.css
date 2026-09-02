@@ -6,8 +6,8 @@
  * have been lost with the list it lived in. `Not claimed` was already a caption cell;
  * here it becomes a labelled row, which is what projects.js has been asking for.
  *
- * Its own file, not global.css, which stands at 451 lines against a grandfathered
- * ceiling of 500. Same reasoning as shot.css.
+ * Its own file, not global.css, which stands at 500 lines — its grandfathered ceiling
+ * exactly, with zero headroom. Same reasoning as shot.css.
  */
 
 .sys-gate {

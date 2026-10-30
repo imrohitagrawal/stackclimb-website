@@ -266,7 +266,7 @@ jobs:
 
       - name: upload the regenerated geometry baseline
         if: github.event_name == 'workflow_dispatch' && inputs.update_geometry_baseline
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: geometry-baseline
           path: tests/geometry-baseline.linux.json
@@ -296,7 +296,7 @@ jobs:
 
       - name: upload regenerated visual baselines
         if: github.event_name == 'workflow_dispatch' && inputs.update_visual_baselines
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: visual-baselines
           path: tests/visual-baselines.spec.js-snapshots/

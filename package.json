@@ -15,7 +15,7 @@
   "dependencies": {
     "@fontsource-variable/archivo": "^5.2.0",
     "@fontsource-variable/bodoni-moda": "^5.2.0",
-    "astro": "^7.2.0",
+    "astro": "^7.2.8",
     "mammoth": "1.12.1",
     "pdf-parse": "2.4.5"
   },
